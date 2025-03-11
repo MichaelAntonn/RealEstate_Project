@@ -15,10 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone')->unique();
+            $table->text('address')->nullable();
+            $table->enum('user_type', ['user', 'admin'])->default('user');
+            $table->enum('account_status', ['active', 'suspended', 'banned'])->default('active');
+            $table->string('profile_image')->nullable();
+            $table->string('identity_document')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
