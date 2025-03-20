@@ -28,6 +28,7 @@ class User extends Authenticatable
         'address',
         'terms_and_conditions',
         'password',
+        'user_type',
         
     ];
 

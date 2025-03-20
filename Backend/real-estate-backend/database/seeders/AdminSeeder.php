@@ -25,7 +25,7 @@ class AdminSeeder extends Seeder
             'terms_and_conditions' => true,
             'email_verified_at' => now(),
             'password' => Hash::make('admin12345'),
-            'user_type' => 'admin',
+            'user_type' => 'super-admin',
             
         ]);
     }
