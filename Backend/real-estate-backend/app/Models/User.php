@@ -31,6 +31,13 @@ class User extends Authenticatable
         'user_type',
         'profile_image',
     ];
+    /**
+     * Get the properties owned by the user.
+     */
+    public function properties()
+    {
+        return $this->hasMany(Property::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

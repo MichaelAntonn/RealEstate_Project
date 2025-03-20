@@ -25,7 +25,8 @@ return new class extends Migration
             $table->integer('bedrooms')->nullable();
             $table->integer('bathrooms')->nullable();
             $table->enum('listing_type', ['for_sale', 'for_rent']);
-            $table->enum('status', ['available', 'under_construction']);
+            $table->enum('construction_status', ['available', 'under_construction']);
+            $table->enum('approval_status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->enum('transaction_status', ['pending', 'completed'])->nullable();
             $table->year('building_year')->nullable();
             $table->enum('legal_status', ['licensed', 'unlicensed', 'pending'])->default('pending');
