@@ -67,7 +67,7 @@ class DashboardController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Admin created successfully',
+            'success' => 'Admin created successfully',
             'admin' => $admin,
         ], 201);
     }
@@ -104,7 +104,7 @@ public function destroyUser(Request $request, $userId)
     $user->delete();
 
     return response()->json([
-        'message' => 'User deleted successfully',
+        'success' => 'User deleted successfully',
     ], 200);
 }
 
@@ -140,7 +140,7 @@ public function destroyAdmin(Request $request, $adminId)
     $admin->delete();
 
     return response()->json([
-        'message' => 'Admin deleted successfully',
+        'success' => 'Admin deleted successfully',
     ], 200);
 }
      /**
@@ -217,7 +217,7 @@ public function editProfile(Request $request)
     $user->update($validatedData);
 
     return response()->json([
-        'message' => 'Profile updated successfully',
+        'success' => 'Profile updated successfully',
         'user' => $user,
     ], 200);
 }
