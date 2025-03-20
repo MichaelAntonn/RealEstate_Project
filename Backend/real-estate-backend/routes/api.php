@@ -15,12 +15,12 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 Route::prefix('v1')->group(function () {
 
-    // User Routes
-    Route::name('user.')->group(function () {
-        Route::post('/register', [AuthController::class, 'register'])->name('register');
-        Route::post('/login', [AuthController::class, 'login'])->name('login');
-        Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout'])->name('logout');
-    });
+   // User Routes
+   Route::name('user.')->group(function () {
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
     // Social Login Routes
     Route::prefix('social')->name('social.')->group(function () {
@@ -34,13 +34,29 @@ Route::prefix('v1')->group(function () {
         Route::post('/reset-password', [ResetPasswordController::class, 'submitResetPasswordForm'])->name('reset-password');
     });
 
-    // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
+     // Admin Routes
+     Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
+        
         // Authenticated Admin Routes
-        Route::middleware(['auth:admin-api', AdminMiddleware::class])->group(function () {
+        Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
             Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            
+            // Route for creating admins (only accessible by super-admin)
+            Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('create-admin');
+            
+                // Route for deleting regular users (accessible by both super-admin and admin)
+        Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('destroy-user');
+        
+        // Route for deleting admins (accessible only by super-admin)
+        Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('destroy-admin');
+            
+            // Route to show all users (accessible by super-admin and admin)
+            Route::get('/users', [DashboardController::class, 'showUsers'])->name('show-users');
+            
+            // Route to show all admins (accessible only by super-admin)
+            Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show-admins');
         });
     });
 });
