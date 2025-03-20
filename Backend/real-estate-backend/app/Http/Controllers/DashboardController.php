@@ -180,4 +180,45 @@ public function destroyAdmin(Request $request, $adminId)
             'admins' => $admins,
         ]);
     }
+
+    /**
+ * Edit profile for admin and super-admin.
+ */
+public function editProfile(Request $request)
+{
+    // Get the authenticated user
+    $user = $request->user();
+
+    // Ensure the authenticated user is either an admin or super-admin
+    if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN) {
+        return response()->json(['error' => 'Forbidden. Only admins and super-admins can edit their profiles.'], 403);
+    }
+
+    // Validate the request data
+    $validatedData = $request->validate([
+           'first_name' => 'sometimes|string|max:255',
+        'last_name' => 'sometimes|string|max:255',
+        'email' => 'sometimes|email|unique:users,email,' . $user->id,
+        'password' => 'sometimes|string|min:8',
+        'phone_number' => 'sometimes|string|unique:users,phone_number,' . $user->id,
+        'address' => 'nullable|string',
+        'profile_image' => 'nullable|string',
+        'identity_document' => 'nullable|string',
+        'country' => 'nullable|string',
+        'city' => 'nullable|string',
+        
+    ]);
+
+    // Update the user's profile
+    if (isset($validatedData['password'])) {
+        $validatedData['password'] = Hash::make($validatedData['password']);
+    }
+
+    $user->update($validatedData);
+
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'user' => $user,
+    ], 200);
+}
 }

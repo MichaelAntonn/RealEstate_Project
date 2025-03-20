@@ -57,6 +57,9 @@ Route::prefix('v1')->group(function () {
             
             // Route to show all admins (accessible only by super-admin)
             Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show-admins');
+            
+              // Route for editing profile (accessible by both admin and super-admin)
+        Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit-profile');
         });
     });
 });

@@ -29,7 +29,7 @@ class User extends Authenticatable
         'terms_and_conditions',
         'password',
         'user_type',
-        
+        'profile_image',
     ];
 
     /**

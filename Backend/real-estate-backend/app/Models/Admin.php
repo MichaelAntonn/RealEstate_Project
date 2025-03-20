@@ -8,7 +8,19 @@ use Laravel\Sanctum\HasApiTokens;
 class Admin extends Authenticatable
 {
     use HasApiTokens;
-
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'email',
+        'phone_number',
+        'country',
+        'city',
+        'address',
+        'terms_and_conditions',
+        'password',
+        'profile_image',
+        
+    ];
     // Use the same table as users
     protected $table = 'users';
 
