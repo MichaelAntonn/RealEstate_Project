@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\UserType;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,33 +16,37 @@ class PropertyController extends Controller
     public function index(Request $request)
     {
  
-        // Start with all properties
-        $query = Property::query();
+       // Start with all properties
+    $query = Property::query();
 
-        // Apply filters
-        if ($request->has('city')) {
-            $query->where('city', $request->input('city'));
-        }
-        if ($request->has('type')) {
-            $query->where('type', $request->input('type'));
-        }
-        if ($request->has('min_price')) {
-            $query->where('price', '>=', $request->input('min_price'));
-        }
-        if ($request->has('max_price')) {
-            $query->where('price', '<=', $request->input('max_price'));
-        }
-        if ($request->has('construction_status')) {
-            $query->where('status', $request->input('status'));
-        }
+    // Apply filters
+    if ($request->has('city')) {
+        $query->where('city', $request->input('city'));
+    }
+    if ($request->has('type')) {
+        $query->where('type', $request->input('type'));
+    }
+    if ($request->has('min_price')) {
+        $query->where('price', '>=', $request->input('min_price'));
+    }
+    if ($request->has('max_price')) {
+        $query->where('price', '<=', $request->input('max_price'));
+    }
+    if ($request->has('construction_status')) {
+        $query->where('construction_status', $request->input('construction_status'));
+    }
+    if ($request->has('approval_status')) {
+        $query->where('approval_status', $request->input('approval_status'));
+    }
 
-        // Paginate the results
-        $properties = $query->paginate(10);
+    // Paginate the results
+    $properties = $query->paginate(10);
 
-        return response()->json([
-            'success' => true,
-            'properties' => $properties,
-        ]);    }
+    return response()->json([
+        'success' => true,
+        'properties' => $properties,
+    ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -91,7 +96,7 @@ class PropertyController extends Controller
     $data['user_id'] = Auth::id();
 
     // Set the initial status to 'pending' for regular users
-    if (Auth::user()->user_type === 'user') {
+    if (Auth::user()->user_type === UserType::USER) {
         $data['approval_status'] = 'pending';
     }
 
@@ -143,7 +148,7 @@ class PropertyController extends Controller
  
          // Check if the authenticated user is the owner, admin, or super-admin
          $user = Auth::user();
-         if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin' && $property->user_id !== $user->id) {
+         if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
              return response()->json(['error' => 'Forbidden. You do not have permission to update this property.'], 403);
          }
  
@@ -199,7 +204,7 @@ class PropertyController extends Controller
 
        // Check if the authenticated user is the owner, admin, or super-admin
        $user = Auth::user();
-       if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin' && $property->user_id !== $user->id) {
+       if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
            return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
        }
 
@@ -225,7 +230,7 @@ class PropertyController extends Controller
 
     // Ensure the authenticated user is an admin or super-admin
     $user = Auth::user();
-    if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin') {
+    if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN) {
         return response()->json(['error' => 'Forbidden. Only admins and super-admins can accept properties.'], 403);
     }
 
@@ -255,7 +260,7 @@ class PropertyController extends Controller
   
       // Ensure the authenticated user is an admin or super-admin
       $user = Auth::user();
-      if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin') {
+      if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN) {
           return response()->json(['error' => 'Forbidden. Only admins and super-admins can reject properties.'], 403);
       }
  
