@@ -7,6 +7,7 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Route;
 
 class PropertyController extends Controller
 {
@@ -272,5 +273,88 @@ class PropertyController extends Controller
           'message' => 'Property rejected successfully',
           'property' => $property,
       ], 200);
+    }
+    public function search(Request $request)
+    {
+        try {
+            $query = Property::query();
+
+            // البحث بالعنوان
+            if ($request->has('title')) {
+                $query->where('title', 'like', '%' . $request->title . '%');
+            }
+
+            // البحث بنوع العقار
+            if ($request->has('type')) {
+                $query->where('type', $request->type);
+            }
+
+            // البحث بنطاق السعر
+            if ($request->has('price_min')) {
+                $query->where('price', '>=', $request->price_min);
+            }
+            if ($request->has('price_max')) {
+                $query->where('price', '<=', $request->price_max);
+            }
+
+            // البحث بالمدينة
+            if ($request->has('city')) {
+                $query->where('city', 'like', '%' . $request->city . '%');
+            }
+
+            // البحث بالحي
+            if ($request->has('district')) {
+                $query->where('district', 'like', '%' . $request->district . '%');
+            }
+
+            // البحث بالمساحة
+            if ($request->has('area_min')) {
+                $query->where('area', '>=', $request->area_min);
+            }
+            if ($request->has('area_max')) {
+                $query->where('area', '<=', $request->area_max);
+            }
+
+            // البحث بعدد غرف النوم
+            if ($request->has('bedrooms')) {
+                $query->where('bedrooms', $request->bedrooms);
+            }
+
+            // البحث بعدد الحمامات
+            if ($request->has('bathrooms')) {
+                $query->where('bathrooms', $request->bathrooms);
+            }
+
+            // البحث بنوع العرض (بيع/إيجار)
+            if ($request->has('listing_type')) {
+                $query->where('listing_type', $request->listing_type);
+            }
+
+            // البحث بحالة البناء
+            if ($request->has('construction_status')) {
+                $query->where('construction_status', $request->construction_status);
+            }
+
+            // الترتيب
+            if ($request->has('sort_by')) {
+                $direction = $request->get('sort_direction', 'asc');
+                $query->orderBy($request->sort_by, $direction);
+            }
+
+            // عدد النتائج في الصفحة
+            $perPage = $request->get('per_page', 10);
+            $properties = $query->paginate($perPage);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $properties
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

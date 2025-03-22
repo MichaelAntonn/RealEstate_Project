@@ -10,6 +10,11 @@ use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\HomeController;
+
+Route::get('/home', [HomeController::class, 'index']);
+
+Route::get('/search', [PropertyController::class, 'search']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
