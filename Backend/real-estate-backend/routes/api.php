@@ -94,7 +94,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('reject');
         });
     });
-    // Routes لإدارة الحجوزات
+// booking routes
     Route::prefix('bookings')->group(function () {
         Route::get('/', [BookingController::class, 'index']);        
         Route::get('/{id}', [BookingController::class, 'show']);      
@@ -102,9 +102,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [BookingController::class, 'store']);        
     });
 
-    // Routes لإدارة العمولات
+// commission routes
     Route::prefix('properties')->group(function () {
         Route::put('/{id}/sell', [CommissionController::class, 'completeSale']); // إتمام البيع
     });
     Route::get('/commissions', [CommissionController::class, 'commissionsOverview']); // عرض الأرباح
+    Route::get('/commissions/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
 });
