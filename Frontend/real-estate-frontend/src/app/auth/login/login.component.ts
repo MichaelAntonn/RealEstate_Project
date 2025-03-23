@@ -22,7 +22,6 @@ export class LoginComponent {
       email: this.email,
       password: this.password
     };
-
     this.authService.login(credentials).subscribe(
       (response: any) => {
         console.log('Login successful:', response);
@@ -36,6 +35,11 @@ export class LoginComponent {
         console.error('Login failed:', error);
         alert('Login failed. Please check your credentials.');
       }
-    );
+    ); 
   }
+  
+  navigateToForgotPassword() {
+    this.router.navigate(['/forgot-password']);
+  }
+  
 }
