@@ -25,12 +25,15 @@ export class SignUpComponent implements AfterViewInit {
   onSubmit() {
     let isValid = true;
 
-    const validateInput = (input: HTMLInputElement | HTMLSelectElement, message: string) => {
-      if (input.value.trim() === '' || 
-          (input instanceof HTMLInputElement && input.type === 'email' && !input.value.match(input.pattern)) || 
-          (input.id === 'password' && input.value.length < 8) ||
-          (input.id === 'first_name' && input.value.length < 3) ||
-          (input.id === 'last_name' && input.value.length < 3)) {
+    // وظيفة للتحقق من صحة الإدخالات
+    const validateInput = (input: HTMLInputElement | HTMLSelectElement, message: string, pattern?: RegExp) => {
+      if (
+        input.value.trim() === '' ||
+        (pattern && !pattern.test(input.value)) ||
+        (input.id === 'password' && input.value.length < 8) ||
+        (input.id === 'first_name' && input.value.length < 3) ||
+        (input.id === 'last_name' && input.value.length < 3)
+      ) {
         input.classList.add('error');
         (input as HTMLInputElement).placeholder = message;
         isValid = false;
@@ -48,18 +51,21 @@ export class SignUpComponent implements AfterViewInit {
     const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
     const termsInput = document.getElementById('terms_and_conditions') as HTMLInputElement;
 
+    // التحقق من البيانات
     validateInput(first_nameInput, 'First name must be at least 3 characters');
     validateInput(last_nameInput, 'Last name must be at least 3 characters');
-    validateInput(emailInput, 'Please enter a valid email');
+    validateInput(emailInput, 'Please enter a valid email', /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
     validateInput(countryInput, 'Please select a country');
     validateInput(passwordInput, 'Password must be at least 8 characters');
 
+    // التحقق من تطابق كلمة المرور
     if (passwordInput.value !== confirmPasswordInput.value) {
       confirmPasswordInput.classList.add('error');
       confirmPasswordInput.placeholder = 'Passwords must match';
       isValid = false;
     }
 
+    // التحقق من الموافقة على الشروط
     if (!termsInput.checked) {
       termsInput.classList.add('error');
       isValid = false;
@@ -73,8 +79,8 @@ export class SignUpComponent implements AfterViewInit {
         phone_number: this.phone_number || null,
         country: this.country || null,
         password: this.password,
-        password_confirmation: this.confirmPassword, // Laravel يتطلب حقل تأكيد كلمة المرور
-        terms_and_conditions: this.terms_and_conditions ? 1 : 0, // يجب أن يكون 1 أو 0
+        password_confirmation: this.confirmPassword,
+        terms_and_conditions: this.terms_and_conditions ? 1 : 0,
       };
 
       const headers = new HttpHeaders({
@@ -94,7 +100,6 @@ export class SignUpComponent implements AfterViewInit {
       });
     }
   }
-  
 
   resetForm() {
     this.first_name = '';
@@ -115,7 +120,6 @@ export class SignUpComponent implements AfterViewInit {
     document.querySelectorAll('input').forEach(input => {
       input.addEventListener('focus', () => {
         input.classList.remove('error');
-        input.placeholder = input.id.charAt(0).toUpperCase() + input.id.slice(1).replace(/([A-Z])/g, ' $1');  
       });
     });
   }

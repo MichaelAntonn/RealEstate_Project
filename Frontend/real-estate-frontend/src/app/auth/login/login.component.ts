@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms'; // <-- استيراد FormsModule
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service'; 
+import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common'; // <-- استيراد CommonModule
 
 @Component({
   selector: 'app-login',
+  standalone: true, // <-- تحديد أن المكون standalone
+  imports: [FormsModule, CommonModule], // <-- إضافة FormsModule و CommonModule هنا
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -19,11 +23,13 @@ export class LoginComponent {
       password: this.password
     };
 
-    // استدعاء خدمة تسجيل الدخول
     this.authService.login(credentials).subscribe(
-      (response) => {
+      (response: any) => {
         console.log('Login successful:', response);
-        // إعادة توجيه المستخدم إلى الصفحة الرئيسية أو لوحة التحكم
+
+        this.authService.saveToken(response.access_token);
+        this.authService.saveUser(response.user);
+
         this.router.navigate(['/dashboard']);
       },
       (error) => {
