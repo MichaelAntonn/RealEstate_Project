@@ -4,10 +4,27 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-
+.sign-up-link a, 
 .forgot-password a {
+    color: #F77C34; 
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease-in-out, transform 0.2s;
+    display: inline-block;
+    padding: 5px 0;
     cursor: pointer;
-  }
+
+    
+}
+
+.sign-up-link a:hover, 
+.forgot-password a:hover {
+    color: #E66A2C; 
+    transform: scale(1.05); 
+    text-decoration: underline;
+}
+
 
 body {
     display: flex;
