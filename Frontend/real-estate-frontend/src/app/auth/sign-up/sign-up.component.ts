@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service'; // استيراد الخدمة
-import { Router } from '@angular/router'; // لإعادة التوجيه بعد التسجيل
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -10,7 +10,7 @@ import { Router } from '@angular/router'; // لإعادة التوجيه بعد 
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.css']
 })
-export class SignUpComponent {
+export class SignUpComponent implements AfterViewInit {
   first_name: string = '';
   last_name: string = '';
   email: string = '';
@@ -20,18 +20,17 @@ export class SignUpComponent {
   confirmPassword: string = '';
   terms_and_conditions: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit() {
     let isValid = true;
 
-    const validateInput = (input: HTMLInputElement | HTMLSelectElement, message: string, pattern?: RegExp) => {
+    const validateInput = (input: HTMLInputElement | HTMLSelectElement, message: string) => {
       if (input.value.trim() === '' || 
-         (input instanceof HTMLInputElement && input.type === 'email' && !input.value.match(input.pattern)) || 
-         (input.id === 'password' && input.value.length < 8) ||
-         (input.id === 'first_name' && input.value.length < 3) ||
-         (input.id === 'last_name' && input.value.length < 3)) {
-        
+          (input instanceof HTMLInputElement && input.type === 'email' && !input.value.match(input.pattern)) || 
+          (input.id === 'password' && input.value.length < 8) ||
+          (input.id === 'first_name' && input.value.length < 3) ||
+          (input.id === 'last_name' && input.value.length < 3)) {
         input.classList.add('error');
         (input as HTMLInputElement).placeholder = message;
         isValid = false;
@@ -71,24 +70,31 @@ export class SignUpComponent {
         first_name: this.first_name,
         last_name: this.last_name,
         email: this.email,
-        phone_number: this.phone_number,
-        country: this.country,
+        phone_number: this.phone_number || null,
+        country: this.country || null,
         password: this.password,
-        terms_and_conditions: this.terms_and_conditions,
+        password_confirmation: this.confirmPassword, // Laravel يتطلب حقل تأكيد كلمة المرور
+        terms_and_conditions: this.terms_and_conditions ? 1 : 0, // يجب أن يكون 1 أو 0
       };
 
-      this.authService.register(userData).subscribe({
-        next: (response) => {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      });
+
+      this.http.post('http://localhost:8000/api/v1/register', userData, { headers }).subscribe({
+        next: () => {
           alert('Registration successful!');
-          this.router.navigate(['/login']); // إعادة التوجيه لتسجيل الدخول
-          this.resetForm(); // إعادة تعيين النموذج
+          this.router.navigate(['/login']);
+          this.resetForm();
         },
         error: (error) => {
-          alert('Registration failed: ' + error.message);
+          alert('Registration failed: ' + JSON.stringify(error.error));
         },
       });
     }
   }
+  
 
   resetForm() {
     this.first_name = '';
@@ -102,7 +108,7 @@ export class SignUpComponent {
   }
 
   signInWithGoogle() {
-    window.location.href = 'http://localhost:8000/api/v1/social/auth/google'; 
+    window.location.href = 'http://localhost:8000/api/v1/social/auth/google';
   }
 
   ngAfterViewInit() {

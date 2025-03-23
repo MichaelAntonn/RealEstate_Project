@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/v1'; // Replace with your Laravel backend URL
+  private apiUrl = 'http://localhost:8000/api/v1'; // Replace with your Laravel backend URL
 
   constructor(private http: HttpClient) {}
 
