@@ -3,62 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Sign Up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
   <div class="container">
     <div class="form-container">
-        <h2>Sign up to explore the best real estate deals.</h2>
-        <form id="signupForm"  (ngSubmit)="onSubmit()">
-            <label>Full Name</label>
-            <div class="input-box">
-                <input type="text" id="fullName" placeholder="Enter full name" [(ngModel)]="fullName" name="fullName">
-            </div>
-            <label>Username</label>
-            <div class="input-box">
-                <input type="text" id="username" placeholder="Choose a username" [(ngModel)]="username" name="username">
-            </div>
+      <form id="signupForm" (ngSubmit)="onSubmit()">
+        <!-- First Name -->
+        <label>First Name</label>
+        <div class="input-box">
+          <input type="text" id="first_name" placeholder="Enter first name" [(ngModel)]="first_name" name="first_name">
+        </div>
 
-            <label>Email</label>
-            <div class="input-box">
-                <input type="email" id="email" placeholder="Enter email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" [(ngModel)]="email" name="email">
-            </div>
+        <!-- Last Name -->
+        <label>Last Name</label>
+        <div class="input-box">
+          <input type="text" id="last_name" placeholder="Enter last name" [(ngModel)]="last_name" name="last_name">
+        </div>
 
-            <label>Phone Number</label>
-            <div class="input-box">
-                <input type="tel" id="phone" placeholder="Enter phone number" pattern="01[0-9]{8}" [(ngModel)]="phone" name="phone">
-            </div>
+        <!-- Email -->
+        <label>Email</label>
+        <div class="input-box">
+          <input type="email" id="email" placeholder="Enter email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" [(ngModel)]="email" name="email">
+        </div>
 
-            <label>Country</label>
-            <div class="input-box">
-                <select id="country" [(ngModel)]="country" name="country">
-                    <option value="">Select Country</option>
-                    <option value="USA">USA</option>
-                    <option value="Canada">Canada</option>
-                    <option value="UK">UK</option>
-                </select>
-            </div>
+        <!-- Phone Number -->
+        <label>Phone Number</label>
+        <div class="input-box">
+          <input type="tel" id="phone_number" placeholder="Enter phone number" [(ngModel)]="phone_number" name="phone_number">
+        </div>
 
-            <label>Password</label>
-            <div class="input-box">
-                <input type="password" id="password" placeholder="Enter password" minlength="6" [(ngModel)]="password" name="password">
-            </div>
+        <!-- Country -->
+        <label>Country</label>
+        <div class="input-box">
+          <select id="country" [(ngModel)]="country" name="country">
+            <option value="">Select Country</option>
+            <option value="USA">USA</option>
+            <option value="Canada">Canada</option>
+            <option value="UK">UK</option>
+          </select>
+        </div>
 
-            <label>Confirm Password</label>
-            <div class="input-box">
-                <input type="password" id="confirmPassword" placeholder="Confirm password" [(ngModel)]="confirmPassword" name="confirmPassword">
-            </div>
+        <!-- Password -->
+        <label>Password</label>
+        <div class="input-box">
+          <input type="password" id="password" placeholder="Enter password" minlength="8" [(ngModel)]="password" name="password">
+        </div>
 
-            <button type="submit" id="btn">Sign Up</button>
-        </form>
+        <!-- Confirm Password -->
+        <label>Confirm Password</label>
+        <div class="input-box">
+          <input type="password" id="confirmPassword" placeholder="Confirm password" [(ngModel)]="confirmPassword" name="confirmPassword">
+        </div>
+
+        <!-- Terms and Conditions -->
+        <label>
+          <input type="checkbox" id="terms_and_conditions" [(ngModel)]="terms_and_conditions" name="terms_and_conditions" >
+          I accept the terms and conditions
+        </label>
+
+        <!-- Buttons -->
+        <div class="btns">
+          <button type="submit" id="btn">Sign Up</button>
+          <button type="button" (click)="signInWithGoogle()" class="google-btn">
+            <i class="fab fa-google"></i> Sign up with Google
+          </button>
+        </div>
+      </form>
     </div>
     <div class="image-container">
-        <img src="assets/Real-Estate-Agents.jpg" alt="Weal Estate">        <div class="info-box">
-            <i class="fas fa-tag"></i>
-            <p><strong>Best Price Guarantee</strong><br>Find the best deals from budget-friendly to luxury properties.</p>
-        </div>
+      <img src="assets/Real-Estate-Agents.jpg" alt="Real Estate">
+      <div class="info-box">
+        <i class="fas fa-tag"></i>
+        <p><strong>Best Price Guarantee</strong><br>Find the best deals from budget-friendly to luxury properties.</p>
+      </div>
     </div>
-</div>
+  </div>
 </body>
 </html>
