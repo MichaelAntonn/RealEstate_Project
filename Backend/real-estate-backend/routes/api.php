@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\BookingController;
+use App\Http\Controllers\API\CommissionController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -92,4 +94,17 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('reject');
         });
     });
+    // Routes لإدارة الحجوزات
+    Route::prefix('bookings')->group(function () {
+        Route::get('/', [BookingController::class, 'index']);        
+        Route::get('/{id}', [BookingController::class, 'show']);      
+        Route::put('/{id}/status', [BookingController::class, 'updateStatus']);
+        Route::post('/', [BookingController::class, 'store']);        
+    });
+
+    // Routes لإدارة العمولات
+    Route::prefix('properties')->group(function () {
+        Route::put('/{id}/sell', [CommissionController::class, 'completeSale']); // إتمام البيع
+    });
+    Route::get('/commissions', [CommissionController::class, 'commissionsOverview']); // عرض الأرباح
 });
