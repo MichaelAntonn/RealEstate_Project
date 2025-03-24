@@ -136,4 +136,4 @@ Route::get('/statistics', [DashboardController::class, 'generalStatistics']);
 Route::get('/latest-properties', [DashboardController::class, 'latestProperties']);
 
 Route::get('/user-activities', [DashboardController::class, 'userActivities']);
-    });
+});

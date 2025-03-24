@@ -287,24 +287,44 @@ public function latestProperties(Request $request)
         'latest_properties' => $latestProperties
     ]);
 }
-// User Activities (Super-Admin and Admin)
-public function userActivities(Request $request)
+// User Activities (Admin can get for any user, regular user gets their own)
+public function userActivities(Request $request, $userId = null)
 {
-    // Ensure the authenticated user is either a super-admin or an admin
-    if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
-        return response()->json(['error' => 'Forbidden. Only super-admins and admins can view user activities.'], 403);
+    $authUser = $request->user();
+    $userType = $authUser->user_type;
+
+    // Case 1: Admin (super-admin or admin) accessing any user's activities
+    if ($userType === UserType::SUPER_ADMIN || $userType === UserType::ADMIN) {
+        if ($userId && !User::find($userId)) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        $targetUserId = $userId; // Admin can specify any user
     }
+    // Case 2: Regular user accessing their own activities
+    elseif ($userType === UserType::USER) {
+        $targetUserId = $authUser->id; // Regular user can only see their own
+    }
+    // Unauthorized access
+    else {
+        return response()->json(['error' => 'Unauthorized access'], 403);
+    }
+
+    // Get the limit from the request, default to 20
+    $limit = $request->query('limit', 20);
 
     $activities = [];
 
-    // 1. Property Additions (New properties added)
-    $propertyAdditions = Property::select('id', 'title', 'user_id', 'created_at')
+    // 1. Property Additions
+    $propertyAdditionsQuery = Property::select('id', 'title', 'user_id', 'created_at')
         ->with(['user' => function ($query) {
             $query->select('id', 'first_name', 'last_name');
         }])
         ->orderBy('created_at', 'desc')
-        ->take(10) // Limit to 10 recent additions
-        ->get()
+        ->take(10);
+    if ($targetUserId) {
+        $propertyAdditionsQuery->where('user_id', $targetUserId);
+    }
+    $propertyAdditions = $propertyAdditionsQuery->get()
         ->map(function ($property) {
             return [
                 'type' => 'property_added',
@@ -315,15 +335,18 @@ public function userActivities(Request $request)
             ];
         });
 
-    // 2. Property Purchases (Completed transactions)
-    $propertyPurchases = Property::where('transaction_status', 'completed')
+    // 2. Property Purchases
+    $propertyPurchasesQuery = Property::where('transaction_status', 'completed')
         ->select('id', 'title', 'user_id', 'updated_at')
         ->with(['user' => function ($query) {
             $query->select('id', 'first_name', 'last_name');
         }])
         ->orderBy('updated_at', 'desc')
-        ->take(10)
-        ->get()
+        ->take(10);
+    if ($targetUserId) {
+        $propertyPurchasesQuery->where('user_id', $targetUserId);
+    }
+    $propertyPurchases = $propertyPurchasesQuery->get()
         ->map(function ($property) {
             return [
                 'type' => 'property_purchased',
@@ -334,16 +357,19 @@ public function userActivities(Request $request)
             ];
         });
 
-    // 3. Booking Additions (New bookings)
-    $bookingAdditions = Booking::select('id', 'user_id', 'property_id', 'created_at')
+    // 3. Booking Additions
+    $bookingAdditionsQuery = Booking::select('id', 'user_id', 'property_id', 'created_at')
         ->with(['user' => function ($query) {
             $query->select('id', 'first_name', 'last_name');
         }, 'property' => function ($query) {
             $query->select('id', 'title');
         }])
         ->orderBy('created_at', 'desc')
-        ->take(10)
-        ->get()
+        ->take(10);
+    if ($targetUserId) {
+        $bookingAdditionsQuery->where('user_id', $targetUserId);
+    }
+    $bookingAdditions = $bookingAdditionsQuery->get()
         ->map(function ($booking) {
             return [
                 'type' => 'booking_added',
@@ -354,8 +380,8 @@ public function userActivities(Request $request)
             ];
         });
 
-    // 4. Booking Updates (Status changes)
-    $bookingUpdates = Booking::whereColumn('created_at', '!=', 'updated_at')
+    // 4. Booking Updates
+    $bookingUpdatesQuery = Booking::whereColumn('created_at', '!=', 'updated_at')
         ->select('id', 'user_id', 'property_id', 'status', 'updated_at')
         ->with(['user' => function ($query) {
             $query->select('id', 'first_name', 'last_name');
@@ -363,8 +389,11 @@ public function userActivities(Request $request)
             $query->select('id', 'title');
         }])
         ->orderBy('updated_at', 'desc')
-        ->take(10)
-        ->get()
+        ->take(10);
+    if ($targetUserId) {
+        $bookingUpdatesQuery->where('user_id', $targetUserId);
+    }
+    $bookingUpdates = $bookingUpdatesQuery->get()
         ->map(function ($booking) {
             return [
                 'type' => 'booking_updated',
@@ -375,16 +404,19 @@ public function userActivities(Request $request)
             ];
         });
 
-    // 5. Reviews (Comments)
-    $reviews = Review::select('id', 'user_id', 'property_id', 'rating', 'comment', 'created_at')
+    // 5. Reviews
+    $reviewsQuery = Review::select('id', 'user_id', 'property_id', 'rating', 'comment', 'created_at')
         ->with(['user' => function ($query) {
             $query->select('id', 'first_name', 'last_name');
         }, 'property' => function ($query) {
             $query->select('id', 'title');
         }])
         ->orderBy('created_at', 'desc')
-        ->take(10)
-        ->get()
+        ->take(10);
+    if ($targetUserId) {
+        $reviewsQuery->where('user_id', $targetUserId);
+    }
+    $reviews = $reviewsQuery->get()
         ->map(function ($review) {
             return [
                 'type' => 'review_added',
@@ -395,7 +427,7 @@ public function userActivities(Request $request)
             ];
         });
 
-    // Merge all activities into one array
+    // Merge all activities
     $activities = array_merge(
         $propertyAdditions->toArray(),
         $propertyPurchases->toArray(),
@@ -409,11 +441,12 @@ public function userActivities(Request $request)
         return strtotime($b['timestamp']) - strtotime($a['timestamp']);
     });
 
-    // Limit to 20 recent activities
-    $activities = array_slice($activities, 0, 20);
+    // Apply the dynamic limit
+    $activities = array_slice($activities, 0, $limit);
 
     return response()->json([
         'success' => true,
         'activities' => $activities
-    ]);}
+    ]);
+}
 }
