@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\CommissionController;
+use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -99,8 +100,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [BookingController::class, 'index']);        
         Route::get('/{id}', [BookingController::class, 'show']);      
         Route::put('/{id}/status', [BookingController::class, 'updateStatus']);
-        Route::post('/', [BookingController::class, 'store']);        
+        Route::post('/', [BookingController::class, 'store']);   
+        
+        // New routes for filtering bookings by status
+        Route::get('/pending', [BookingController::class, 'getPending']);    // Get pending bookings
+        Route::get('/confirmed', [BookingController::class, 'getConfirmed']); // Get confirmed bookings
+        Route::get('/canceled', [BookingController::class, 'getCanceled']);   // Get canceled bookings
     });
+
 
 // commission routes
     Route::prefix('properties')->group(function () {
@@ -109,3 +116,24 @@ Route::prefix('v1')->group(function () {
     Route::get('/commissions', [CommissionController::class, 'commissionsOverview']); // عرض الأرباح
     Route::get('/commissions/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
 });
+// Public routes (accessible to all authenticated users)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store']); // Any user can create a review
+});
+
+// Public route (no authentication required)
+Route::get('/reviews/by-property/{propertyId}', [ReviewController::class, 'getByProperty']); // Anyone can view reviews
+
+// Admin routes (accessible only to admins)
+
+    Route::get('/reviews', [ReviewController::class, 'index']);           // Get all reviews
+    Route::get('/reviews/{id}', [ReviewController::class, 'show']);       // Get specific review
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']); // Delete review
+
+    Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+// New routes for statistics and latest properties
+Route::get('/statistics', [DashboardController::class, 'generalStatistics']);
+Route::get('/latest-properties', [DashboardController::class, 'latestProperties']);
+
+Route::get('/user-activities', [DashboardController::class, 'userActivities']);
+    });

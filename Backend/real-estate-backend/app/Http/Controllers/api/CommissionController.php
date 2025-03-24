@@ -1,12 +1,80 @@
 <?php
 namespace App\Http\Controllers\API;
-use Carbon\Carbon;
+
 use App\Http\Controllers\Controller;
 use App\Models\Property;
+use App\Models\Cost;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class CommissionController extends Controller
 {
+    // public function monthlyProfitMargin()
+    // {
+    //     $months = [];
+
+    //     for ($i = 0; $i < 4; $i++) {
+    //         $date = Carbon::create(2025, 3, 22)->subMonths($i); // Fixed date for testing
+    //         $startOfMonth = $date->startOfMonth();
+    //         $endOfMonth = $date->endOfMonth();
+
+    //         // Calculate total commissions for the month
+    //         $commissions = Property::where('transaction_status', 'completed')
+    //             ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+    //             ->sum('commission');
+
+    //         // Calculate total costs for the month based on created_at
+    //         $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+    //             ->sum('amount');
+
+    //         $profit = $commissions - $costs;
+    //         $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
+
+    //         $months[] = [
+    //             'month' => $date->format('F Y'),
+    //             'commissions' => $commissions,
+    //             'costs' => $costs,
+    //             'profit' => $profit,
+    //             'profit_margin' => round($profitMargin, 2) . '%'
+    //         ];
+    //     }
+
+    //     return response()->json(array_reverse($months));
+    // }
+
+    public function monthlyProfitMargin()
+    {
+        $months = [];
+        for ($i = 0; $i < 4; $i++) {
+            $date = Carbon::now()->subMonths($i); // Fixed date for testing: March 22, 2025
+            $startOfMonth = $date->startOfMonth();
+            $endOfMonth = ($i == 0) ? Carbon::now() : $date->endOfMonth(); // Current month ends today, others end at month-end
+
+            // Calculate total commissions for the month
+            $commissions = Property::where('transaction_status', 'completed')
+                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                ->sum('commission');
+
+            // Calculate total costs for the month based on created_at
+            $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->sum('amount');
+
+            $profit = $commissions - $costs;
+            $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
+
+            $months[] = [
+                'month' => $date->format('F Y'),
+                'commissions' => $commissions,
+                'costs' => $costs,
+                'profit' => $profit,
+                'profit_margin' => round($profitMargin, 2) . '%'
+            ];
+        }
+
+        return response()->json(array_reverse($months));
+    }
+
+
     public function completeSale(Request $request, $id)
     {
         $property = Property::findOrFail($id);
@@ -23,65 +91,6 @@ class CommissionController extends Controller
             'property' => $property
         ]);
     }
-
-    public function monthlyProfitMargin()
-    {
-        $months = [];
-        $fixedCosts = 50000;
-    
-        for ($i = 0; $i < 4; $i++) {
-            $date = Carbon::create(2025, 3, 22)->subMonths($i);
-            $startOfMonth = $date->startOfMonth();
-            $endOfMonth = ($i == 0) ? Carbon::now() : $date->endOfMonth(); 
-    
-            $commissions = Property::where('transaction_status', 'completed')
-                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-                ->sum('commission');
-    
-            $profit = $commissions - $fixedCosts;
-            $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-    
-            $months[] = [
-                'month' => $date->format('F Y'),
-                'commissions' => $commissions,
-                'profit' => $profit,
-                'profit_margin' => round($profitMargin, 2) . '%'
-            ];
-        }
-    
-        return response()->json(array_reverse($months));
-    }
-
-
-    
-        // public function monthlyProfitMargin()
-        // {
-        //     dd(Carbon::now());
-        //     $months = [];
-    
-        //     for ($i = 0; $i < 4; $i++) {
-        //         $date = Carbon::now()->subMonths($i);
-        //         $startOfMonth = $date->startOfMonth();
-        //         $endOfMonth = $date->endOfMonth();
-    
-        //         $commissions = Property::where('transaction_status', 'completed')
-        //             ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-        //             ->sum('commission');
-    
-        //         $fixedCosts = 50000; 
-        //         $profit = $commissions - $fixedCosts;
-        //         $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-    
-        //         $months[] = [
-        //             'month' => $date->format('F Y'),
-        //             'commissions' => $commissions,
-        //             'profit' => $profit,
-        //             'profit_margin' => round($profitMargin, 2) . '%'
-        //         ];
-        //     }
-    
-        //     return response()->json(array_reverse($months));
-        // }
 
     public function commissionsOverview()
     {
