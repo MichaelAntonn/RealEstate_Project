@@ -88,52 +88,53 @@ Route::prefix('v1')->group(function () {
 
         // Delete a property (accessible by admins, super-admins, and property owners)
         Route::delete('/{id}', [PropertyController::class, 'destroy'])->name('destroy');
-
+        //make the transaction completed 
+        Route::put('/{id}/sell', [CommissionController::class, 'completeSale']);
         // Accept a property (accessible by admins and super-admins)
         Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
             Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty'])->name('accept');
             Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('reject');
+        // comission and monthly profit       
+            Route::get('/commissions', [CommissionController::class, 'commissionsOverview']); 
+            Route::get('/commissions/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
         });
-    });
+
 // booking routes
     Route::prefix('bookings')->group(function () {
-        Route::get('/', [BookingController::class, 'index']);        
-        Route::get('/{id}', [BookingController::class, 'show']);      
+        Route::get('/', [BookingController::class, 'index']);
+            // need update
+        Route::get('/{id}', [BookingController::class, 'show']); 
+
         Route::put('/{id}/status', [BookingController::class, 'updateStatus']);
         Route::post('/', [BookingController::class, 'store']);   
         
         // New routes for filtering bookings by status
+        // need updated to be meaningful for specific user by auth
         Route::get('/pending', [BookingController::class, 'getPending']);    // Get pending bookings
         Route::get('/confirmed', [BookingController::class, 'getConfirmed']); // Get confirmed bookings
         Route::get('/canceled', [BookingController::class, 'getCanceled']);   // Get canceled bookings
     });
 
-
-// commission routes
-    Route::prefix('properties')->group(function () {
-        Route::put('/{id}/sell', [CommissionController::class, 'completeSale']); // إتمام البيع
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty']);
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [ReviewController::class, 'store']); // Any user can create a review
+        });
+        Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+            Route::get('/', [ReviewController::class, 'index']);           // Get all reviews
+            Route::get('/{id}', [ReviewController::class, 'show']);       // Get specific review
+            Route::delete('/{id}', [ReviewController::class, 'destroy']);
+        });
     });
-    Route::get('/commissions', [CommissionController::class, 'commissionsOverview']); // عرض الأرباح
-    Route::get('/commissions/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
-});
-// Public routes (accessible to all authenticated users)
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/reviews', [ReviewController::class, 'store']); // Any user can create a review
 });
 
-// Public route (no authentication required)
-Route::get('/reviews/by-property/{propertyId}', [ReviewController::class, 'getByProperty']); // Anyone can view reviews
-
-// Admin routes (accessible only to admins)
-
-    Route::get('/reviews', [ReviewController::class, 'index']);           // Get all reviews
-    Route::get('/reviews/{id}', [ReviewController::class, 'show']);       // Get specific review
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']); // Delete review
-
+Route::prefix('statistics')->name('statistics.')->group(function () {
     Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
 // New routes for statistics and latest properties
-Route::get('/statistics', [DashboardController::class, 'generalStatistics']);
+Route::get('/', [DashboardController::class, 'generalStatistics']);
 Route::get('/latest-properties', [DashboardController::class, 'latestProperties']);
 
 Route::get('/user-activities', [DashboardController::class, 'userActivities']);
+});
+});
 });
