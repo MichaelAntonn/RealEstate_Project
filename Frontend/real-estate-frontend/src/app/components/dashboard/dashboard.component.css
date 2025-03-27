@@ -1,0 +1,21 @@
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+  }
+  
+  .main-content {
+    padding: 20px;
+    min-height: 100vh; /* Ensures it takes up full height */
+  }
+  
+  .card-custom {
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  @media (max-width: 767.98px) {
+    .main-content {
+      padding-left: 20px; /* Maintain padding on small screens */
+      margin-left: 0; /* Remove any leftover margin */
+    }
+  }

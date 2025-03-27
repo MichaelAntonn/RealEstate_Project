@@ -1,0 +1,54 @@
+.sidebar {
+    height: 100vh; /* Full height of the viewport */
+    background-color: #fff;
+    padding: 20px;
+    border-right: 1px solid #dee2e6;
+    position: sticky; /* Keeps sidebar fixed while scrolling */
+    top: 0; /* Aligns it to the top */
+    overflow-y: auto; /* Allows scrolling if content exceeds height */
+  }
+  
+  .sidebar .nav-link {
+    color: #333;
+    padding: 10px 15px;
+    transition: all 0.50s ease;
+  }
+  
+  .sidebar .nav-link.active {
+    background-color: #e9ecef;
+    border-radius: 5px;
+  }
+  
+  .sidebar .nav-link:hover {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+  }
+  
+  .sidebar h5.nav-link {
+    color: #6c757d;
+    padding: 10px 15px;
+    transition: all 1.0s ease;
+  }
+  
+  .sidebar h5.nav-link:hover {
+    background-color: #020911;
+    color: #fff;
+    border-radius: 5px;
+  }
+  
+  @media (max-width: 767.98px) { /* Bootstrap's md breakpoint */
+    .sidebar {
+      position: fixed;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #fff;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+  
+    .sidebar.active {
+      left: 0;
+    }
+  }
