@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialLoginController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Middleware\AdminMiddleware;
@@ -11,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReviewController;
 
 Route::get('/home', [HomeController::class, 'index']);
 
@@ -71,6 +74,53 @@ Route::prefix('v1')->group(function () {
 
     // Property Routes
     Route::prefix('properties')->name('properties.')->group(function () {
+// booking
+// booking routes
+Route::prefix('bookings')->group(function () {
+    // Public routes for authenticated regular users
+   Route::middleware('auth:sanctum')->group(function () {
+       Route::get('/', [BookingController::class, 'index']);           // See bookings for owned properties
+       Route::get('/{id}', [BookingController::class, 'show']);       // See specific booking
+       Route::post('/', [BookingController::class, 'store']);          // Create a booking
+       Route::put('/{id}/status', [BookingController::class, 'updateStatus']); // Accept/Reject (only for property owner)
+       Route::get('/pending', [BookingController::class, 'getPending']);   // Pending bookings
+       Route::get('/confirmed', [BookingController::class, 'getConfirmed']); // Confirmed bookings
+       Route::get('/canceled', [BookingController::class, 'getCanceled']);  // Canceled bookings
+   });
+   
+   
+       });
+
+    // Admin routes
+Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+    Route::prefix('bookings')->group(function () {
+    Route::get('/', [BookingController::class, 'index']);           // See all bookings
+    Route::get('/{id}', [BookingController::class, 'show']);       // See specific booking
+    Route::put('/{id}/status', [BookingController::class, 'updateStatus']); // Accept/Reject (only if Admin owns the property)
+    Route::get('/pending', [BookingController::class, 'getPending']);   // All pending bookings
+    Route::get('/confirmed', [BookingController::class, 'getConfirmed']); // All confirmed bookings
+    Route::get('/canceled', [BookingController::class, 'getCanceled']);  // All canceled bookings
+});
+});
+// property review
+Route::prefix('reviews')->name('reviews.')->group(function () {
+    Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/', [ReviewController::class, 'store']); // Any user can create a review
+    });
+    Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+        Route::get('/', [ReviewController::class, 'index']);           // Get all reviews
+        Route::get('/{id}', [ReviewController::class, 'show']);       // Get specific review
+        Route::delete('/{id}', [ReviewController::class, 'destroy']);
+    });
+});
+
+// commission and monthly profit       
+Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+    Route::get('/commissions', [CommissionController::class, 'commissionsOverview']); 
+    Route::get('/commissions/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
+});
+
         // List all properties with filters (accessible by everyone)
         Route::get('/', [PropertyController::class, 'index'])->name('index');
 
@@ -85,11 +135,27 @@ Route::prefix('v1')->group(function () {
 
         // Delete a property (accessible by admins, super-admins, and property owners)
         Route::delete('/{id}', [PropertyController::class, 'destroy'])->name('destroy');
-
+        //make the transaction completed 
+        Route::put('/{id}/sell', [CommissionController::class, 'completeSale']);
         // Accept a property (accessible by admins and super-admins)
         Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
             Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty'])->name('accept');
             Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('reject');
         });
+
     });
+
+
+
+
+
+Route::prefix('statistics')->name('statistics.')->group(function () {
+    Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+// New routes for statistics and latest properties
+Route::get('/', [DashboardController::class, 'generalStatistics']);
+Route::get('/latest-properties', [DashboardController::class, 'latestProperties']);
+
+Route::get('/user-activities', [DashboardController::class, 'userActivities']);
+});
+});
 });

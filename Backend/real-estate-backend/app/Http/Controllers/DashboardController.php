@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Constants\UserType;
+use App\Models\Booking;
+use App\Models\Cost;
+use App\Models\Property;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -220,5 +224,229 @@ public function editProfile(Request $request)
         'success' => 'Profile updated successfully',
         'user' => $user,
     ], 200);
+}
+
+// General Statistics (Super-Admin and Admin)
+public function generalStatistics(Request $request)
+{
+    // Ensure the authenticated user is either a super-admin or an admin
+    if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
+        return response()->json(['error' => 'Forbidden. Only super-admins and admins can view statistics.'], 403);
+    }
+
+    // Number of properties
+    $totalProperties = Property::count();
+
+    // Number of users
+    $totalUsers = User::count();
+
+    // Number of bookings (requests)
+    $totalBookings = Booking::count();
+
+    // Total commissions (from completed transactions)
+    $totalCommissions = Property::where('transaction_status', 'completed')->sum('commission');
+
+    // Total costs
+    $totalCosts = Cost::sum('amount');
+
+    // Net profit
+    $netProfit = $totalCommissions - $totalCosts;
+
+    // Number of reviews
+    $totalReviews = Review::count();
+
+    return response()->json([
+        'success' => true,
+        'statistics' => [
+            'total_properties' => $totalProperties,
+            'total_users' => $totalUsers,
+            'total_bookings' => $totalBookings,
+            'total_commissions' => $totalCommissions,
+            'total_costs' => $totalCosts,
+            'net_profit' => $netProfit,
+            'total_reviews' => $totalReviews
+        ]
+    ]);
+}
+
+// Latest Properties (Super-Admin and Admin)
+public function latestProperties(Request $request)
+{
+    // Ensure the authenticated user is either a super-admin or an admin
+    if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
+        return response()->json(['error' => 'Forbidden. Only super-admins and admins can view latest properties.'], 403);
+    }
+
+    $latestProperties = Property::with('user')
+        ->orderBy('created_at', 'desc')
+        ->take(5) // Get the 5 most recent
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'latest_properties' => $latestProperties
+    ]);
+}
+// User Activities (Admin can get for any user, regular user gets their own)
+public function userActivities(Request $request, $userId = null)
+{
+    $authUser = $request->user();
+    $userType = $authUser->user_type;
+
+    // Case 1: Admin (super-admin or admin) accessing any user's activities
+    if ($userType === UserType::SUPER_ADMIN || $userType === UserType::ADMIN) {
+        if ($userId && !User::find($userId)) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        $targetUserId = $userId; // Admin can specify any user
+    }
+    // Case 2: Regular user accessing their own activities
+    elseif ($userType === UserType::USER) {
+        $targetUserId = $authUser->id; // Regular user can only see their own
+    }
+    // Unauthorized access
+    else {
+        return response()->json(['error' => 'Unauthorized access'], 403);
+    }
+
+    // Get the limit from the request, default to 20
+    $limit = $request->query('limit', 20);
+
+    $activities = [];
+
+    // 1. Property Additions
+    $propertyAdditionsQuery = Property::select('id', 'title', 'user_id', 'created_at')
+        ->with(['user' => function ($query) {
+            $query->select('id', 'first_name', 'last_name');
+        }])
+        ->orderBy('created_at', 'desc')
+        ->take(10);
+    if ($targetUserId) {
+        $propertyAdditionsQuery->where('user_id', $targetUserId);
+    }
+    $propertyAdditions = $propertyAdditionsQuery->get()
+        ->map(function ($property) {
+            return [
+                'type' => 'property_added',
+                'description' => "User {$property->user->first_name} {$property->user->last_name} added property '{$property->title}'",
+                'timestamp' => $property->created_at,
+                'user_id' => $property->user_id,
+                'property_id' => $property->id
+            ];
+        });
+
+    // 2. Property Purchases
+    $propertyPurchasesQuery = Property::where('transaction_status', 'completed')
+        ->select('id', 'title', 'user_id', 'updated_at')
+        ->with(['user' => function ($query) {
+            $query->select('id', 'first_name', 'last_name');
+        }])
+        ->orderBy('updated_at', 'desc')
+        ->take(10);
+    if ($targetUserId) {
+        $propertyPurchasesQuery->where('user_id', $targetUserId);
+    }
+    $propertyPurchases = $propertyPurchasesQuery->get()
+        ->map(function ($property) {
+            return [
+                'type' => 'property_purchased',
+                'description' => "Property '{$property->title}' was purchased (completed transaction)",
+                'timestamp' => $property->updated_at,
+                'user_id' => $property->user_id,
+                'property_id' => $property->id
+            ];
+        });
+
+    // 3. Booking Additions
+    $bookingAdditionsQuery = Booking::select('id', 'user_id', 'property_id', 'created_at')
+        ->with(['user' => function ($query) {
+            $query->select('id', 'first_name', 'last_name');
+        }, 'property' => function ($query) {
+            $query->select('id', 'title');
+        }])
+        ->orderBy('created_at', 'desc')
+        ->take(10);
+    if ($targetUserId) {
+        $bookingAdditionsQuery->where('user_id', $targetUserId);
+    }
+    $bookingAdditions = $bookingAdditionsQuery->get()
+        ->map(function ($booking) {
+            return [
+                'type' => 'booking_added',
+                'description' => "User {$booking->user->first_name} {$booking->user->last_name} booked property '{$booking->property->title}'",
+                'timestamp' => $booking->created_at,
+                'user_id' => $booking->user_id,
+                'property_id' => $booking->property_id
+            ];
+        });
+
+    // 4. Booking Updates
+    $bookingUpdatesQuery = Booking::whereColumn('created_at', '!=', 'updated_at')
+        ->select('id', 'user_id', 'property_id', 'status', 'updated_at')
+        ->with(['user' => function ($query) {
+            $query->select('id', 'first_name', 'last_name');
+        }, 'property' => function ($query) {
+            $query->select('id', 'title');
+        }])
+        ->orderBy('updated_at', 'desc')
+        ->take(10);
+    if ($targetUserId) {
+        $bookingUpdatesQuery->where('user_id', $targetUserId);
+    }
+    $bookingUpdates = $bookingUpdatesQuery->get()
+        ->map(function ($booking) {
+            return [
+                'type' => 'booking_updated',
+                'description' => "Booking for property '{$booking->property->title}' by user {$booking->user->first_name} {$booking->user->last_name} updated to status '{$booking->status}'",
+                'timestamp' => $booking->updated_at,
+                'user_id' => $booking->user_id,
+                'property_id' => $booking->property_id
+            ];
+        });
+
+    // 5. Reviews
+    $reviewsQuery = Review::select('id', 'user_id', 'property_id', 'rating', 'comment', 'created_at')
+        ->with(['user' => function ($query) {
+            $query->select('id', 'first_name', 'last_name');
+        }, 'property' => function ($query) {
+            $query->select('id', 'title');
+        }])
+        ->orderBy('created_at', 'desc')
+        ->take(10);
+    if ($targetUserId) {
+        $reviewsQuery->where('user_id', $targetUserId);
+    }
+    $reviews = $reviewsQuery->get()
+        ->map(function ($review) {
+            return [
+                'type' => 'review_added',
+                'description' => "User {$review->user->first_name} {$review->user->last_name} reviewed property '{$review->property->title}' with rating {$review->rating}: '{$review->comment}'",
+                'timestamp' => $review->created_at,
+                'user_id' => $review->user_id,
+                'property_id' => $review->property_id
+            ];
+        });
+
+    // Merge all activities
+    $activities = array_merge(
+        $propertyAdditions->toArray(),
+        $propertyPurchases->toArray(),
+        $bookingAdditions->toArray(),
+        $bookingUpdates->toArray(),
+        $reviews->toArray()
+    );
+
+    // Sort by timestamp (most recent first)
+    usort($activities, function ($a, $b) {
+        return strtotime($b['timestamp']) - strtotime($a['timestamp']);
+    });
+
+    // Apply the dynamic limit
+    $activities = array_slice($activities, 0, $limit);
+
+    return response()->json([
+        'success' => true,
+        'activities' => $activities
+    ]);
 }
 }
