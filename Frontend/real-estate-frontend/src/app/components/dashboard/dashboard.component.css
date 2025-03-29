@@ -1,21 +1,25 @@
-body {
-    background-color: #f8f9fa;
-    font-family: Arial, sans-serif;
-  }
-  
+.dashboard-wrapper {
+  min-height: 100vh; /* Full viewport height */
+  width: 100%; /* Ensure it doesn’t exceed viewport */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+.main-content {
+  margin-left: 250px; /* Offset by the sidebar’s width */
+  padding: 20px;
+  min-height: 100vh; /* Full height */
+  width: calc(100% - 250px); /* Adjust width to fit beside sidebar */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.card-custom {
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 767.98px) {
   .main-content {
-    padding: 20px;
-    min-height: 100vh; /* Ensures it takes up full height */
+    margin-left: 0; /* No offset on small screens */
+    width: 100%; /* Full width */
   }
-  
-  .card-custom {
-    border: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  
-  @media (max-width: 767.98px) {
-    .main-content {
-      padding-left: 20px; /* Maintain padding on small screens */
-      margin-left: 0; /* Remove any leftover margin */
-    }
-  }
+}

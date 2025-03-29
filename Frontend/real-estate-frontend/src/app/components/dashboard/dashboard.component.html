@@ -1,152 +1,156 @@
-<div class="container-fluid">
-    <div class="row">
-      <app-dashboard-sidebar></app-dashboard-sidebar>
-      <div class="col-md-10 main-content">
-        <app-dashboard-navbar></app-dashboard-navbar>
-        <div class="row mb-4">
-          <div class="col-md-3">
-            <div class="card card-custom text-center p-3">
-              <h6>Earned</h6>
-              <h3>$1,250</h3>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card card-custom text-center p-3">
-              <h6>Hours Logged</h6>
-              <h3>35.5 hrs</h3>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card card-custom text-center p-3">
-              <h6>Avg. Time</h6>
-              <h3>2:55 hrs</h3>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card card-custom text-center p-3">
-              <h6>Weekly Growth</h6>
-              <h3>14.5%</h3>
-            </div>
+<div class="dashboard-wrapper">
+  <app-dashboard-sidebar></app-dashboard-sidebar>
+  <div class="main-content">
+    <app-dashboard-navbar></app-dashboard-navbar>
+    <div class="container-fluid">
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card card-custom text-center p-3">
+            <h6>Earned</h6>
+            <h3>$1,250</h3>
           </div>
         </div>
-        <div class="container mt-5">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="card">
-                <div class="card-header bg-primary text-white">
-                  Sales Chart
-                </div>
-                <div class="card-body">
-                  <canvas id="myChart"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card">
-                <div class="card-header bg-success text-white">
-                  Profit Trend
-                </div>
-                <div class="card-body">
-                  <canvas id="lineChart"></canvas>
-                </div>
-              </div>
-            </div>
+        <div class="col-md-3">
+          <div class="card card-custom text-center p-3">
+            <h6>Hours Logged</h6>
+            <h3>35.5 hrs</h3>
           </div>
         </div>
+        <div class="col-md-3">
+          <div class="card card-custom text-center p-3">
+            <h6>Avg. Time</h6>
+            <h3>2:55 hrs</h3>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card card-custom text-center p-3">
+            <h6>Weekly Growth</h6>
+            <h3>14.5%</h3>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-5">
         <div class="row">
-          <div class="col-md-4">
-            <h5>Goals</h5>
-            <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Increase monthly revenue
-                <span>$10,000</span>
-                <span class="badge bg-primary">Mar 15</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Launch new feature
-                <span>Dark mode</span>
-                <span class="badge bg-warning">Oct 01</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Grow user base
-                <span>75%</span>
-                <span class="badge bg-danger">Dec 12</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Improve customer satisfaction
-                <span>85%</span>
-                <span class="badge bg-info">Dec 15</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Reduce response time
-                <span>1hr</span>
-                <span class="badge bg-success">Jan 01</span>
-              </li>
-            </ul>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                Sales Chart
+              </div>
+              <div class="card-body">
+                <canvas id="myChart"></canvas>
+              </div>
+            </div>
           </div>
-          <div class="col-md-4">
-            <h5>Active projects</h5>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Author</th>
-                  <th>Team</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Filters AI</td>
-                  <td><span class="badge bg-success">Ready to Ship</span></td>
-                  <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
-                  <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
-                </tr>
-                <tr>
-                  <td>Design landing page</td>
-                  <td><span class="badge bg-danger">Cancelled</span></td>
-                  <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
-                  <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
-                </tr>
-                <tr>
-                  <td>Update documentation</td>
-                  <td><span class="badge bg-warning">In Testing</span></td>
-                  <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
-                  <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
-                 </tbody>
-            </table>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-success text-white">
+                Profit Trend
+              </div>
+              <div class="card-body">
+                <canvas id="lineChart"></canvas>
+              </div>
+            </div>
           </div>
-          <div class="col-md-4">
-            <h5>Recent activity</h5>
-            <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                You
-                <span class="badge bg-primary">1hr ago</span>
-                <span>Liked a post by john_doe</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Jessica Miller
-                <span class="badge bg-primary">3hr ago</span>
-                <span>Commented on a photo</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Emily Thompson
-                <span class="badge bg-primary">3hr ago</span>
-                <span>Shared an article: "Top 10 Travel Destinations"</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                You
-                <span class="badge bg-primary">1 day ago</span>
-                <span>Started following jane_smith</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                Olivia Davis
-                <span class="badge bg-primary">2 days ago</span>
-                <span>Updated profile picture</span>
-              </li>
-            </ul>
-          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Goals</h5>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Increase monthly revenue
+              <span>$10,000</span>
+              <span class="badge bg-primary">Mar 15</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Launch new feature
+              <span>Dark mode</span>
+              <span class="badge bg-warning">Oct 01</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Grow user base
+              <span>75%</span>
+              <span class="badge bg-danger">Dec 12</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Improve customer satisfaction
+              <span>85%</span>
+              <span class="badge bg-info">Dec 15</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Reduce response time
+              <span>1hr</span>
+              <span class="badge bg-success">Jan 01</span>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Active projects</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Author</th>
+                <th>Team</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Filters AI</td>
+                <td><span class="badge bg-success">Ready to Ship</span></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
+              </tr>
+              <tr>
+                <td>Design landing page</td>
+                <td><span class="badge bg-danger">Cancelled</span></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
+              </tr>
+              <tr>
+                <td>Update documentation</td>
+                <td><span class="badge bg-warning">In Testing</span></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-4">
+          <h5>Recent activity</h5>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              You
+              <span class="badge bg-primary">1hr ago</span>
+              <span>Liked a post by john_doe</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Jessica Miller
+              <span class="badge bg-primary">3hr ago</span>
+              <span>Commented on a photo</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Emily Thompson
+              <span class="badge bg-primary">3hr ago</span>
+              <span>Shared an article: "Top 10 Travel Destinations"</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              You
+              <span class="badge bg-primary">1 day ago</span>
+              <span>Started following jane_smith</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Olivia Davis
+              <span class="badge bg-primary">2 days ago</span>
+              <span>Updated profile picture</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+
+<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error blanditiis, fugiat labore dolor non explicabo et sapiente assumenda sunt possimus. Ipsa laudantium repellat mollitia vel, ipsam incidunt modi suscipit unde error molestias? Tempora reprehenderit harum ipsa modi earum odit, explicabo voluptatem molestias nobis sequi a sunt autem excepturi similique ut quae ab, quia voluptates nisi impedit saepe perspiciatis aut veritatis officiis. Doloremque commodi iure, neque nisi voluptate beatae exercitationem alias sint esse! Dolorem officiis laborum modi fugiat deleniti. Ea aut eligendi et incidunt recusandae unde. Magnam corrupti, adipisci iste debitis architecto placeat dolor facilis veritatis at quis expedita quam, quidem sit ea tempora excepturi dolore rem minus veniam deleniti? Exercitationem cum, laboriosam eos possimus molestiae id accusantium sapiente, dolor illum incidunt quia a est harum iste provident! Sit, fuga amet alias odit ratione nihil ullam veniam nulla quidem dolor possimus. Dolore debitis laudantium illum cupiditate quasi minus iste rerum nulla vel velit est optio, ad nisi ullam error tempore. Corporis maxime tempora, aliquam, dolores mollitia atque qui exercitationem ullam laborum odio magni esse ipsam vero saepe non alias nam iusto. Autem consequuntur odit nihil id expedita, consectetur porro ratione rem error tempore exercitationem molestias, vitae suscipit quas, eum at voluptas? Facilis, magni pariatur eos quae perspiciatis reiciendis modi obcaecati voluptatum autem distinctio minus, repellat libero vitae velit, culpa voluptate. Earum ratione nisi delectus cumque libero fuga quibusdam eius. Accusamus, delectus. Commodi aspernatur ab voluptas? Officia cumque repellendus commodi veritatis assumenda tempore, asperiores dolorum, similique ut error ad rerum corporis autem ipsum tempora unde architecto quaerat harum quibusdam alias eligendi numquam cum, molestiae consequuntur. Molestiae quae odit ad aliquid corporis quia. Perferendis enim repellendus accusantium dolorem qui. Iste accusantium dignissimos ullam voluptas, a sunt qui numquam nobis reiciendis quisquam explicabo perferendis natus sequi doloremque nostrum quam quos? Fuga consequuntur hic ipsum. Tempora dolorem minima laudantium aliquid quis excepturi quia distinctio. Voluptas ipsam quam, tenetur cumque explicabo, consectetur officiis labore facilis at tempore provident voluptatem unde aperiam eaque temporibus sequi iure reprehenderit quia harum consequatur odio, molestias nobis! Eveniet molestiae laborum dolores error facilis earum delectus aliquid illo accusantium inventore, voluptatum possimus velit unde quos autem adipisci magni, neque aliquam nihil itaque blanditiis officia suscipit cupiditate! Sapiente rem velit, blanditiis, aperiam possimus nihil vitae similique ullam deleniti explicabo corporis sequi eius recusandae ea sunt facilis, voluptates consequatur nam? Aut non alias natus blanditiis animi a dolores, neque aperiam sunt, laboriosam magni accusamus soluta consequuntur earum asperiores sit cum sequi libero quisquam! Fugit dolorum eum illum vel, animi voluptatem vero voluptate quia ipsam mollitia soluta impedit cum itaque iusto delectus iure perspiciatis neque sunt reprehenderit nihil reiciendis non. Accusamus impedit eligendi quas harum dignissimos ea cumque, numquam modi quia tempora, tenetur sed laboriosam laborum, ut aut fuga quo doloribus culpa beatae inventore rem. Totam corrupti enim tempora eum fuga, alias nostrum tenetur facere suscipit et ab, vero itaque nobis? Dolorum at odio, aliquid quae ad consequuntur? Vel dolorem culpa, illo, quidem cumque tempora perspiciatis animi, omnis obcaecati recusandae autem consequuntur eos hic. Odit magni ipsa incidunt aperiam aliquid odio illo suscipit est consequatur assumenda ab autem doloribus perferendis in voluptate eum quo beatae repellendus qui quos, totam doloremque debitis tenetur. Consequuntur consectetur cum, totam vitae commodi sapiente minima ex magni cupiditate. Quo esse itaque quisquam minima ipsa odio nisi velit neque dolor cumque molestias aliquid possimus, ab, consequatur, distinctio voluptatibus voluptatem eveniet facilis. Vel iure, animi provident voluptatum sapiente cupiditate cum quo facere repellendus ducimus laboriosam. Nemo, eos dolor cupiditate voluptate quaerat nostrum esse molestiae? Consequatur impedit libero neque atque excepturi vero, molestias et asperiores nobis dignissimos porro laboriosam architecto numquam consequuntur hic animi natus saepe fugit? Dolorem, beatae. Quia ipsum explicabo, vero animi fugit, et ipsam consequatur dolorum neque iste nostrum. Beatae natus sint, a vero quisquam facilis molestias quod? Aut totam ab soluta nesciunt eum error iste voluptas minima, eius voluptatum perspiciatis! Inventore commodi non rerum sapiente asperiores alias laudantium et ea, totam expedita aliquam quam ad id at nulla praesentium, quos minima temporibus? Minima, rerum obcaecati perspiciatis tenetur esse sint labore iure eum, doloremque harum maiores assumenda. Repudiandae pariatur natus iure ea corrupti, odio aliquid mollitia ipsam praesentium similique temporibus! Dolor corporis explicabo deleniti aspernatur necessitatibus voluptatem soluta praesentium, deserunt incidunt pariatur voluptates doloribus quaerat similique, delectus provident vero, cum repellat. Debitis eum dolor sit quos nihil, sint vero. Labore reprehenderit necessitatibus pariatur, iste deleniti minima esse vitae eveniet voluptatum exercitationem unde accusantium in temporibus facilis amet eaque quis at. Unde architecto id corporis et! Assumenda veritatis dolor asperiores commodi voluptatibus voluptatum, odit eius voluptas sequi ratione nemo soluta aliquam facilis odio quibusdam fugiat praesentium alias explicabo distinctio ipsa aut animi! Tempora aliquid voluptate eum minima quo est ipsam labore? Fugiat fuga deserunt, nihil laboriosam consequatur eaque dolorem ea praesentium voluptate perspiciatis minus maiores, illo sapiente quidem sunt odit vel reprehenderit officiis tempora corporis ab quisquam quam animi. Tempora consequatur doloremque quaerat. Amet illum tenetur at voluptate, deleniti dolorem, hic tempora eos sequi corporis rerum molestias cupiditate fugiat, qui quo dolorum assumenda veritatis corrupti consequatur quos exercitationem dolore cum ipsam. Quasi quis dolorum aperiam aut magnam iusto sequi expedita deleniti commodi suscipit iure incidunt, tenetur eum quod aspernatur officiis exercitationem accusamus omnis dolorem nemo laborum, eligendi neque? Rerum veniam eligendi iure dolorem vitae quasi debitis inventore reiciendis distinctio earum, voluptatem ipsum molestias ea, sed soluta placeat, blanditiis ratione enim aliquam. Minima maiores dicta accusantium ea eligendi voluptate, beatae ipsam eaque fugit mollitia iusto molestiae at sequi tempora, sint veniam! Necessitatibus suscipit neque animi ea dicta nesciunt, deleniti vero illum vitae itaque aperiam impedit cum error veniam omnis, minus quos voluptates adipisci. Vitae architecto corporis tempora reiciendis, temporibus eaque. Mollitia possimus quidem quis neque provident libero odio dicta reiciendis nesciunt explicabo optio excepturi ex, dolore numquam. Quia cumque odit dicta ducimus amet doloribus repudiandae animi. Reiciendis nesciunt, tenetur dolor repellendus obcaecati at natus, aliquam iure pariatur nostrum iste, possimus ad deserunt unde ea ipsum accusamus exercitationem consequuntur in excepturi consectetur dolorum vero. Odit provident amet ullam aut tempora inventore beatae sequi.</p>

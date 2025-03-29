@@ -1,0 +1,12 @@
+html, body {
+    /* height: 100%; */
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+  
+  body {
+    width: 100%;
+  }
