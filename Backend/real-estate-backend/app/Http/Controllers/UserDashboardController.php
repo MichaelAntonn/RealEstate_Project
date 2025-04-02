@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 class UserDashboardController extends Controller
 {
@@ -116,25 +117,26 @@ class UserDashboardController extends Controller
             'email' => [
                 'required',
                 'email',
+                'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
             'phone_number' => [
-                'required',
-                'string',
+                'nullable', 
+                new Phone($request->country),
                 Rule::unique('users')->ignore($user->id),
             ],
-            'country' => 'nullable|string',
-            'city' => 'nullable|string',
-            'address' => 'nullable|string',
+            'country' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'address' => 'nullable|string|max:255',
             'profile_image' => 'nullable|string',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         $user->update($request->all());
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully',
@@ -150,7 +152,7 @@ class UserDashboardController extends Controller
             ]),
         ]);
     }
-
+    
     /**
      * Change user password
      */
@@ -160,23 +162,25 @@ class UserDashboardController extends Controller
         
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|different:current_password',
-            'confirm_password' => 'required|string|same:new_password',
+            'new_password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/|different:current_password',
         ]);
-
+    
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json([
+                'error' => $validator->errors(),
+                'message' => $validator->errors()->has('new_password.confirmed') ? 'The password confirmation does not match.' : null
+            ], 400);
         }
-
+    
         // Verify current password
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['error' => 'Current password is incorrect'], 400);
         }
-
+    
         $user->update([
             'password' => Hash::make($request->new_password)
         ]);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Password changed successfully',
