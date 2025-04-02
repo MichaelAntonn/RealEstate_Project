@@ -30,7 +30,10 @@ class DashboardController extends Controller
                     'success' => 'Admin Dashboard',
                    
                 ]);
+            } elseif ($userType === UserType::USER) {
+                return response()->json(['success' => 'User Dashboard']);
             }
+            
     
             // Fallback response
             return response()->json(['error' => 'Unauthorized access'], 403);
@@ -447,6 +450,24 @@ public function userActivities(Request $request, $userId = null)
     return response()->json([
         'success' => true,
         'activities' => $activities
+    ]);
+}
+public function userStatistics(Request $request)
+{
+    $user = $request->user();
+    
+    return response()->json([
+        'success' => true,
+        'statistics' => [
+            'properties_listed' => Property::where('user_id', $user->id)->count(),
+            'properties_sold' => Property::where('user_id', $user->id)
+                ->where('transaction_status', 'completed')
+                ->count(),
+            'active_bookings' => Booking::where('user_id', $user->id)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->count(),
+            'reviews_given' => Review::where('user_id', $user->id)->count()
+        ]
     ]);
 }
 }
