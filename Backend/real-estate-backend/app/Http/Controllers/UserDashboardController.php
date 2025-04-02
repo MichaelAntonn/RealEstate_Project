@@ -36,14 +36,15 @@ class UserDashboardController extends Controller
                     ->count(),
             ],
             'bookings' => [
-                'total' => Booking::where('user_id', $user->id)->count(),
-                'upcoming' => Booking::where('user_id', $user->id)
-                    ->where('start_date', '>', now())
-                    ->count(),
-                'completed' => Booking::where('user_id', $user->id)
-                    ->where('end_date', '<', now())
-                    ->count(),
-            ],
+    'total' => Booking::where('user_id', $user->id)->count(),
+    'upcoming' => Booking::where('user_id', $user->id)
+        ->where('visit_date', '>', now())
+        ->count(),
+    'completed' => Booking::where('user_id', $user->id)
+        ->where('visit_date', '<', now())
+        ->where('status', 'confirmed')
+        ->count(),
+],
             'reviews' => [
                 'given' => Review::where('user_id', $user->id)->count(),
                 'received' => Review::whereHas('property', function($query) use ($user) {
@@ -70,7 +71,6 @@ class UserDashboardController extends Controller
         
         $stats = [
             'joined_date' => $user->created_at->format('M d, Y'),
-            'last_login' => $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never',
             'properties_added' => Property::where('user_id', $user->id)->count(),
             'bookings_made' => Booking::where('user_id', $user->id)->count(),
             'reviews_given' => Review::where('user_id', $user->id)->count(),
@@ -259,12 +259,13 @@ class UserDashboardController extends Controller
         if ($request->has('status')) {
             $status = $request->input('status');
             if ($status === 'upcoming') {
-                $query->where('start_date', '>', now());
+                $query->where('visit_date', '>', now());
             } elseif ($status === 'completed') {
-                $query->where('end_date', '<', now());
+                $query->where('visit_date', '<', now())
+                      ->where('status', 'confirmed');
             } elseif ($status === 'current') {
-                $query->where('start_date', '<=', now())
-                    ->where('end_date', '>=', now());
+                $query->where('visit_date', '>=', now()->subDay())
+                      ->where('visit_date', '<=', now()->addDay());
             }
         }
 
