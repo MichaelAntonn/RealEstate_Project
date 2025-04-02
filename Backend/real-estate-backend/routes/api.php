@@ -84,8 +84,11 @@ Route::prefix('v1')->group(function () {
     });
 
     // Admin routes
-    Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
+
+        // Authenticated Admin Routes
+        Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -98,5 +101,5 @@ Route::prefix('v1')->group(function () {
         Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
     });
 
-    
+});
 });
