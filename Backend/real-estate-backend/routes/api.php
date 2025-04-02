@@ -16,132 +16,87 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserDashboardController;
 
 // Public routes
-Route::get('/home', [HomeController::class, 'index']);
-Route::get('/search', [PropertyController::class, 'search']);
+Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::get('/search', [PropertyController::class, 'search'])->name('search.properties');
 
 Route::prefix('v1')->group(function () {
-
     // Authentication routes (public)
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     
     // Password Reset Routes (public)
     Route::prefix('password')->name('password.')->group(function () {
-        Route::post('/forgot-password', [ResetPasswordController::class, 'submitForgetPasswordForm'])
-            ->name('forgot-password')
-            ->middleware('throttle:3,1');
-        Route::post('/reset-password', [ResetPasswordController::class, 'submitResetPasswordForm'])
-            ->name('reset-password')
-            ->middleware('throttle:3,1');
+        Route::post('/forgot-password', [ResetPasswordController::class, 'submitForgetPasswordForm'])->name('forgot');
+        Route::post('/reset-password', [ResetPasswordController::class, 'submitResetPasswordForm'])->name('reset');
     });
 
     // Social Login Routes (public)
     Route::prefix('social')->name('social.')->group(function () {
-        Route::get('/auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('googleRedirect');
-        Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback'])->name('googleCallback');
+        Route::get('/auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('google.redirect');
+        Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback'])->name('google.callback');
     });
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
-        });
-        
-        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        })->name('user.profile');
+
+        Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
         // Property Routes
-        Route::prefix('properties')->group(function () {
-            Route::get('/', [PropertyController::class, 'index']);
-            Route::get('/{id}', [PropertyController::class, 'show']);
-            Route::post('/', [PropertyController::class, 'store']);
-            Route::put('/{id}', [PropertyController::class, 'update']);
-            Route::delete('/{id}', [PropertyController::class, 'destroy']);
-            Route::put('/{id}/sell', [CommissionController::class, 'completeSale']);
+        Route::prefix('properties')->name('properties.')->group(function () {
+            Route::get('/', [PropertyController::class, 'index'])->name('index');
+            Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
+            Route::post('/', [PropertyController::class, 'store'])->name('store');
+            Route::put('/{id}', [PropertyController::class, 'update'])->name('update');
+            Route::delete('/{id}', [PropertyController::class, 'destroy'])->name('destroy');
+            Route::put('/{id}/sell', [CommissionController::class, 'completeSale'])->name('sell');
+        });
 
-            // Booking routes
-            Route::prefix('bookings')->group(function () {
-                Route::get('/', [BookingController::class, 'index']);
-                Route::get('/{id}', [BookingController::class, 'show']);
-                Route::post('/', [BookingController::class, 'store']);
-                Route::put('/{id}/status', [BookingController::class, 'updateStatus']);
-                Route::get('/pending', [BookingController::class, 'getPending']);
-                Route::get('/confirmed', [BookingController::class, 'getConfirmed']);
-                Route::get('/canceled', [BookingController::class, 'getCanceled']);
-            });
+        // Booking routes
+        Route::prefix('bookings')->name('bookings.')->group(function () {
+            Route::get('/', [BookingController::class, 'index'])->name('index');
+            Route::get('/{id}', [BookingController::class, 'show'])->name('show');
+            Route::post('/', [BookingController::class, 'store'])->name('store');
+            Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('update.status');
+            Route::get('/pending', [BookingController::class, 'getPending'])->name('pending');
+            Route::get('/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
+            Route::get('/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
+        });
 
-            // Review routes
-            Route::prefix('reviews')->group(function () {
-                Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty']);
-                Route::post('/', [ReviewController::class, 'store']);
-                Route::delete('/{id}', [ReviewController::class, 'destroy']);
-            });
+        // Review routes
+        Route::prefix('reviews')->name('reviews.')->group(function () {
+            Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty'])->name('by.property');
+            Route::post('/', [ReviewController::class, 'store'])->name('store');
+            Route::delete('/{id}', [ReviewController::class, 'destroy'])->name('destroy');
+        });
+
+        // User dashboard routes
+        Route::prefix('user')->name('user.')->group(function () {
+            Route::get('/dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+            Route::get('/statistics', [UserDashboardController::class, 'userStatistics'])->name('statistics');
+            Route::get('/profile', [UserDashboardController::class, 'getProfile'])->name('profile');
+            Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
+            Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('change.password');
+            Route::delete('/account', [UserDashboardController::class, 'deleteAccount'])->name('account.delete');
         });
     });
 
     // Admin routes
-    Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-        Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login');
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->name('admin.')->group(function () {
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Admin management
-        Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.create-admin');
-        Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('admin.destroy-user');
-        Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('admin.destroy-admin');
-        Route::get('/users', [DashboardController::class, 'showUsers'])->name('admin.show-users');
-        Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('admin.show-admins');
-        Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('admin.edit-profile');
-
-        // Property management
-        Route::prefix('properties')->group(function () {
-            Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty']);
-            Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty']);
-            
-            // Admin booking routes
-            Route::prefix('bookings')->group(function () {
-                Route::get('/', [BookingController::class, 'index']);
-                Route::get('/{id}', [BookingController::class, 'show']);
-                Route::put('/{id}/status', [BookingController::class, 'updateStatus']);
-                Route::get('/pending', [BookingController::class, 'getPending']);
-                Route::get('/confirmed', [BookingController::class, 'getConfirmed']);
-                Route::get('/canceled', [BookingController::class, 'getCanceled']);
-            });
-
-            // Admin review routes
-            Route::prefix('reviews')->group(function () {
-                Route::get('/', [ReviewController::class, 'index']);
-                Route::get('/{id}', [ReviewController::class, 'show']);
-            });
-        });
-
-        // Commission and statistics
-        Route::get('/commissions', [CommissionController::class, 'commissionsOverview']);
-        Route::get('/commissions/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
-        
-        Route::prefix('statistics')->group(function () {
-            Route::get('/', [DashboardController::class, 'generalStatistics']);
-            Route::get('/latest-properties', [DashboardController::class, 'latestProperties']);
-            Route::get('/user-activities', [DashboardController::class, 'userActivities']);
-        });
+        Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('create.admin');
+        Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('destroy.user');
+        Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('destroy.admin');
+        Route::get('/users', [DashboardController::class, 'showUsers'])->name('show.users');
+        Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
+        Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
     });
-    Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-        // Dashboard
-        Route::get('/dashboard', [UserDashboardController::class, 'dashboard']);
-        Route::get('/statistics', [UserDashboardController::class, 'userStatistics']);
-        
-        // Profile
-        Route::get('/profile', [UserDashboardController::class, 'getProfile']);
-        Route::put('/profile', [UserDashboardController::class, 'updateProfile']);
-        Route::post('/change-password', [UserDashboardController::class, 'changePassword']);
-        Route::delete('/account', [UserDashboardController::class, 'deleteAccount']);
-        
-        // Properties
-        Route::get('/properties', [UserDashboardController::class, 'getProperties']);
-        
-        // Bookings
-        Route::get('/bookings', [UserDashboardController::class, 'getBookings']);
-        
-        // Reviews
-        Route::get('/reviews', [UserDashboardController::class, 'getReviews']);
-    });
+
+    
 });
