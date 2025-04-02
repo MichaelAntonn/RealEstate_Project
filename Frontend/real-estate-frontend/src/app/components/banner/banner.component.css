@@ -1,0 +1,110 @@
+.banner-container {
+    max-width: 90%;
+    height: 380px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    margin: 20px auto;
+  }
+  
+  .banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .search-bar {
+    position: absolute;
+    top: 52%;
+    left: 49%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+  }
+  
+  .search-container {
+    background: rgba(255, 255, 255, 0.621);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .btn-toggle {
+    border: none;
+    padding: 5px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-rent {
+    background-color: #172940;
+    color: white;
+  }
+  
+  .btn-rent:hover {
+    color: #F2F4F3;
+    background-color: #172940;
+    transform: scale(1.05);
+  }
+  
+  .btn-sale {
+    background-color: white;
+    border: 2px solid #e56a2a;
+  }
+  
+  .btn-sale:hover {
+    border-color: white;
+    color: #172940;
+    transform: scale(1.05);
+  }
+  
+  .search-btn {
+    position: relative;
+    left: 3%; 
+    bottom: 10%;
+    width: 40px;
+    height: 40px;
+    background: #172940;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .search-icon {
+    width: 24px;
+    height: 24px;
+    fill: white;
+  }
+  
+  @media (max-width: 768px) {
+    .search-bar {
+      width: 90%;
+      top: 60%;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .banner-container {
+      height: 250px;
+    }
+    
+    .search-bar {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .search-bar input {
+      width: 100%;
+    }
+  }
