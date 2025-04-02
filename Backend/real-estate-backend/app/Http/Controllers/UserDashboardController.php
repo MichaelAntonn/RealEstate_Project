@@ -1,0 +1,311 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Property;
+use App\Models\Booking;
+use App\Models\Review;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
+class UserDashboardController extends Controller
+{
+    /**
+     * Get dashboard statistics
+     */
+    public function dashboard()
+    {
+        $user = Auth::user();
+        
+        $stats = [
+            'properties' => [
+                'total' => Property::where('user_id', $user->id)->count(),
+                'pending' => Property::where('user_id', $user->id)
+                    ->where('approval_status', 'pending')
+                    ->count(),
+                'approved' => Property::where('user_id', $user->id)
+                    ->where('approval_status', 'accepted')
+                    ->count(),
+                'rejected' => Property::where('user_id', $user->id)
+                    ->where('approval_status', 'rejected')
+                    ->count(),
+            ],
+            'bookings' => [
+                'total' => Booking::where('user_id', $user->id)->count(),
+                'upcoming' => Booking::where('user_id', $user->id)
+                    ->where('start_date', '>', now())
+                    ->count(),
+                'completed' => Booking::where('user_id', $user->id)
+                    ->where('end_date', '<', now())
+                    ->count(),
+            ],
+            'reviews' => [
+                'given' => Review::where('user_id', $user->id)->count(),
+                'received' => Review::whereHas('property', function($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })->count(),
+                'average_rating' => Review::whereHas('property', function($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })->avg('rating'),
+            ],
+        ];
+
+        return response()->json([
+            'success' => true,
+            'dashboard' => $stats,
+        ]);
+    }
+
+    /**
+     * Get user statistics
+     */
+    public function userStatistics()
+    {
+        $user = Auth::user();
+        
+        $stats = [
+            'joined_date' => $user->created_at->format('M d, Y'),
+            'last_login' => $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never',
+            'properties_added' => Property::where('user_id', $user->id)->count(),
+            'bookings_made' => Booking::where('user_id', $user->id)->count(),
+            'reviews_given' => Review::where('user_id', $user->id)->count(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'statistics' => $stats,
+        ]);
+    }
+
+    /**
+     * Get user profile
+     */
+    public function getProfile()
+    {
+        $user = Auth::user();
+        
+        return response()->json([
+            'success' => true,
+            'profile' => $user->only([
+                'first_name', 
+                'last_name', 
+                'email', 
+                'phone_number',
+                'country',
+                'city',
+                'address',
+                'profile_image'
+            ]),
+        ]);
+    }
+
+    /**
+     * Update user profile
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'phone_number' => [
+                'required',
+                'string',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'country' => 'nullable|string',
+            'city' => 'nullable|string',
+            'address' => 'nullable|string',
+            'profile_image' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user->update($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'profile' => $user->only([
+                'first_name', 
+                'last_name', 
+                'email', 
+                'phone_number',
+                'country',
+                'city',
+                'address',
+                'profile_image'
+            ]),
+        ]);
+    }
+
+    /**
+     * Change user password
+     */
+    public function changePassword(Request $request)
+    {
+        $user = Auth::user();
+        
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|different:current_password',
+            'confirm_password' => 'required|string|same:new_password',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['error' => 'Current password is incorrect'], 400);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully',
+        ]);
+    }
+
+    /**
+     * Delete user account
+     */
+    public function deleteAccount()
+    {
+        $user = Auth::user();
+        
+        // Soft delete the user
+        $user->delete();
+
+        // Log the user out
+        Auth::logout();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account deleted successfully',
+        ]);
+    }
+
+    /**
+     * Get user properties with filters
+     */
+    public function getProperties(Request $request)
+    {
+        $user = Auth::user();
+        
+        $query = Property::where('user_id', $user->id);
+
+        // Apply filters
+        if ($request->has('approval_status')) {
+            $query->where('approval_status', $request->input('approval_status'));
+        }
+        if ($request->has('type')) {
+            $query->where('type', $request->input('type'));
+        }
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->input('min_price'));
+        }
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->input('max_price'));
+        }
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $properties = $query->paginate($request->input('per_page', 10));
+
+        return response()->json([
+            'success' => true,
+            'properties' => $properties,
+        ]);
+    }
+
+    /**
+     * Get user bookings
+     */
+    public function getBookings(Request $request)
+    {
+        $user = Auth::user();
+        
+        $query = Booking::where('user_id', $user->id)
+            ->with(['property' => function($query) {
+                $query->select('id', 'title', 'cover_image');
+            }]);
+
+        // Apply filters
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            if ($status === 'upcoming') {
+                $query->where('start_date', '>', now());
+            } elseif ($status === 'completed') {
+                $query->where('end_date', '<', now());
+            } elseif ($status === 'current') {
+                $query->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now());
+            }
+        }
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'start_date');
+        $sortOrder = $request->input('sort_order', 'asc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $bookings = $query->paginate($request->input('per_page', 10));
+
+        return response()->json([
+            'success' => true,
+            'bookings' => $bookings,
+        ]);
+    }
+
+    /**
+     * Get user reviews
+     */
+    public function getReviews(Request $request)
+    {
+        $user = Auth::user();
+        
+        $query = Review::where('user_id', $user->id)
+            ->with(['property' => function($query) {
+                $query->select('id', 'title');
+            }]);
+
+        // Apply filters
+        if ($request->has('rating')) {
+            $query->where('rating', $request->input('rating'));
+        }
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $reviews = $query->paginate($request->input('per_page', 10));
+
+        return response()->json([
+            'success' => true,
+            'reviews' => $reviews,
+        ]);
+    }
+}

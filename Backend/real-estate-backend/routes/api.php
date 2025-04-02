@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\UserDashboardController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index']);
@@ -124,7 +125,23 @@ Route::prefix('v1')->group(function () {
         });
     });
     Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index']);
-        Route::get('/statistics', [DashboardController::class, 'userStatistics']);
+        // Dashboard
+        Route::get('/dashboard', [UserDashboardController::class, 'dashboard']);
+        Route::get('/statistics', [UserDashboardController::class, 'userStatistics']);
+        
+        // Profile
+        Route::get('/profile', [UserDashboardController::class, 'getProfile']);
+        Route::put('/profile', [UserDashboardController::class, 'updateProfile']);
+        Route::post('/change-password', [UserDashboardController::class, 'changePassword']);
+        Route::delete('/account', [UserDashboardController::class, 'deleteAccount']);
+        
+        // Properties
+        Route::get('/properties', [UserDashboardController::class, 'getProperties']);
+        
+        // Bookings
+        Route::get('/bookings', [UserDashboardController::class, 'getBookings']);
+        
+        // Reviews
+        Route::get('/reviews', [UserDashboardController::class, 'getReviews']);
     });
 });
