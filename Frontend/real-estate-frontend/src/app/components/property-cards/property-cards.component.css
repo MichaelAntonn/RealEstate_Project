@@ -13,6 +13,14 @@
     height: 100%;
   }
   
+  .btn-danger{
+    background-color: #F77C34;
+    border: none;
+  }
+  .btn-danger:hover{
+    background-color: #f96d1b;
+  }
+
   .card.no-bg:hover {
     transform: translateY(-5px);
     box-shadow: none;
