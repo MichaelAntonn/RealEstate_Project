@@ -60,4 +60,5 @@ public function sendMessage(Request $request) {
 
         return response()->json($messages);
     }
+    
 }
