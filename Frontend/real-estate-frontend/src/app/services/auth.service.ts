@@ -12,7 +12,16 @@ export class AuthService {
   private sanctumUrl = 'http://localhost:8000/sanctum';
   private userRole: string | null = null;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    // Load user role from localStorage on initialization
+    const storedRole = localStorage.getItem('userRole');
+    if (storedRole) {
+      this.userRole = storedRole;
+      console.log('User role loaded from localStorage:', this.userRole);
+    } else {
+      console.log('No user role found in localStorage');
+    }
+  }
 
   getCsrfCookie(): Observable<any> {
     console.log('Fetching CSRF cookie...');
@@ -23,10 +32,6 @@ export class AuthService {
         throw error;
       })
     );
-  }
-
-  login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials, { withCredentials: true });
   }
 
   adminLogin(credentials: { email: string; password: string }): Observable<any> {
@@ -45,35 +50,78 @@ export class AuthService {
 
   setUserRole(role: string) {
     this.userRole = role;
-  }
-
-  isLoggedIn(): Observable<boolean> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return of(false);
-    }
-    return this.http.get(`${this.apiUrl}/user`, { // Changed from /api/v1/user to /api/user
-      headers: { Authorization: `Bearer ${token}` },
-      withCredentials: true
-    }).pipe(
-      tap(response => console.log('User validation response:', response)), // Add logging
-      map(() => true),
-      catchError(error => {
-        console.error('Error validating token:', error);
-        this.logout();
-        return of(false);
-      })
-    );
+    localStorage.setItem('userRole', role);
+    console.log('User role set and stored in localStorage:', role);
   }
 
   getUserRole(): string | null {
     return this.userRole;
   }
 
+  isLoggedIn(): Observable<boolean> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No token found in localStorage');
+      return of(false);
+    }
+    console.log('Token found, validating with /api/user:', token);
+    return this.http.get(`${this.apiUrl}/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true
+    }).pipe(
+      tap(response => console.log('User validation response:', response)),
+      map((response: any) => {
+        console.log('Token validation successful');
+        if (response.user_type) {
+          this.setUserRole(response.user_type);
+        }
+        return true;
+      }),
+      catchError(error => {
+        console.error('Error validating token:', error);
+        console.log('Error status:', error.status);
+        console.log('Error message:', error.message);
+        return of(false);
+      })
+    );
+  }
+
+  // Add the fetchUserRole method
+  fetchUserRole(): Observable<string | null> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No token found in localStorage for fetchUserRole');
+      return of(null);
+    }
+    console.log('Fetching user role with token:', token);
+    return this.http.get(`${this.apiUrl}/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true
+    }).pipe(
+      map((response: any) => {
+        const role = response.user_type || null;
+        if (role) {
+          this.setUserRole(role);
+          console.log('User role fetched and set:', role);
+        } else {
+          console.log('No user_type found in response:', response);
+        }
+        return role;
+      }),
+      catchError(error => {
+        console.error('Error fetching user role:', error);
+        return of(null);
+      })
+    );
+  }
+
   logout(): void {
+    const role = this.userRole;
     this.userRole = null;
     localStorage.removeItem('token');
-    if (this.userRole === 'admin' || this.userRole === 'super-admin') {
+    localStorage.removeItem('userRole');
+    console.log('User logged out, redirecting to login page');
+    if (role === 'admin' || role === 'super-admin') {
       this.router.navigate(['/admin/login']);
     } else {
       this.router.navigate(['/login']);
