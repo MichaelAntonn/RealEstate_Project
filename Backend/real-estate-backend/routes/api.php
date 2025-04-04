@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserDashboardController;
-
+use App\Http\Controllers\ChatController;
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 Route::get('/search', [PropertyController::class, 'search'])->name('search.properties');
@@ -81,6 +81,16 @@ Route::prefix('v1')->group(function () {
             Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('change.password');
             Route::delete('/account', [UserDashboardController::class, 'deleteAccount'])->name('account.delete');
         });
+
+        // Chat routes
+        Route::prefix('messages')->name('messages.')->group(function () {
+            Route::post('/send', [ChatController::class, 'sendMessage'])
+                ->middleware('auth:sanctum');
+            Route::patch('/{message}/read', [ChatController::class, 'markAsRead'])
+                ->middleware('auth:sanctum');
+            Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages'])
+                ->middleware('auth:sanctum');
+        });
     });
 
     // Admin routes
@@ -100,6 +110,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
         Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
     });
-
+Route::get('/login', function() {
+    return response()->json(['message' => 'Unauthorized'], 401);
+})->name('login');
 });
 });
