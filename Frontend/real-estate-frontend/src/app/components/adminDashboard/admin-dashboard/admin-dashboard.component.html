@@ -1,0 +1,223 @@
+<div class="dashboard-wrapper">
+  <app-admin-dashboard-sidebar></app-admin-dashboard-sidebar>
+  <div class="main-content">
+    <app-dashboard-navbar></app-dashboard-navbar>
+    <div class="container-fluid">
+      <!-- Display loading spinner while fetching statistics -->
+      <ng-container *ngIf="loadingStatistics">
+        <div class="col-12 text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Display statistics if loaded and not loading -->
+      <ng-container *ngIf="!loadingStatistics && statistics">
+        <!-- Check for error state -->
+        <ng-container *ngIf="statistics === 'Error'">
+          <div class="col-12">
+            <div class="alert alert-danger text-center">
+              Error loading statistics. Please try again later.
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Display statistics if no error -->
+        <ng-container *ngIf="isStatistics(statistics)">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card card-custom card-income text-center p-3">
+                <i class="bi bi-currency-dollar icon-custom"></i>
+                <h6>Income</h6>
+                <h3>{{ statistics.total_commissions ? '$' + (statistics.total_commissions | number) : 'N/A' }}</h3>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card card-custom card-properties text-center p-3">
+                <i class="bi bi-house-door icon-custom"></i>
+                <h6>Total Properties</h6>
+                <h3>{{ statistics.total_properties }}</h3> <!-- Removed ?? 'N/A' -->
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card card-custom card-users text-center p-3">
+                <i class="bi bi-people icon-custom"></i>
+                <h6>Total Users</h6>
+                <h3>{{ statistics.total_users }}</h3> <!-- Removed ?? 'N/A' -->
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card card-custom card-profit text-center p-3">
+                <i class="bi bi-graph-up icon-custom"></i>
+                <h6>Net Profit</h6>
+                <h3>{{ statistics.net_profit ? '$' + (statistics.net_profit | number) : 'N/A' }}</h3>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- Rest of the template (charts, latest properties, etc.) -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <img src="/assets/images/1.png" alt="Performance Insights Banner" class="img-fluid banner-image">
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                Properties Sold Chart
+              </div>
+              <div class="card-body">
+                <canvas id="myChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-success text-white">
+                Profit Margin Trend
+              </div>
+              <div class="card-body">
+                <canvas id="lineChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-info text-white">
+                New Users vs Added Properties
+              </div>
+              <div class="card-body">
+                <canvas id="usersPropertiesChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h5>Latest Properties</h5>
+            <ng-container *ngIf="latestProperties !== 'Error' && isArray(latestProperties); else errorTemplate">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>City</th>
+                    <th>Listing Type</th>
+                    <th>Listed By</th>
+                    <th>Added On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let property of latestProperties">
+                    <td>{{ property.title || 'N/A' }}</td>
+                    <td>{{ property.price ? '$' + (property.price | number) : 'N/A' }}</td>
+                    <td>{{ property.city || 'N/A' }}</td>
+                    <td>{{ property.listing_type === 'for_sale' ? 'For Sale' : 'For Rent' }}</td>
+                    <td>{{ property.user ? (property.user.first_name + ' ' + property.user.last_name) : 'N/A' }}</td>
+                    <td>{{ property.created_at ? (property.created_at | date: 'mediumDate') : 'N/A' }}</td>
+                  </tr>
+                  <tr *ngIf="latestProperties.length === 0">
+                    <td colspan="6" class="text-center">No properties available.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </ng-container>
+            <ng-template #errorTemplate>
+              <div class="alert alert-danger text-center">
+                Error loading latest properties. Please try again later.
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Goals</h5>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Increase monthly revenue
+              <span>$10,000</span>
+              <span class="badge bg-primary">Mar 15</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Launch new feature
+              <span>Dark mode</span>
+              <span class="badge bg-warning">Oct 01</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Grow user base
+              <span>75%</span>
+              <span class="badge bg-danger">Dec 12</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Improve customer satisfaction
+              <span>85%</span>
+              <span class="badge bg-info">Dec 15</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Reduce response time
+              <span>1hr</span>
+              <span class="badge bg-success">Jan 01</span>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Active projects</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Author</th>
+                <th>Team</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Filters AI</td>
+                <td><span class="badge bg-success">Ready to Ship</span></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
+              </tr>
+              <tr>
+                <td>Design landing page</td>
+                <td><span class="badge bg-danger">Cancelled</span></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
+              </tr>
+              <tr>
+                <td>Update documentation</td>
+                <td><span class="badge bg-warning">In Testing</span></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Author" class="rounded-circle"></td>
+                <td><img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" width="40px" alt="Team" class="rounded-circle me-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-4">
+          <h5>Recent activity</h5>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              You
+              <span class="badge bg-primary">1hr ago</span>
+              <span>Liked a post by john_doe</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Jessica Miller
+              <span class="badge bg-primary">3hr ago</span>
+              <span>Commented on a photo</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

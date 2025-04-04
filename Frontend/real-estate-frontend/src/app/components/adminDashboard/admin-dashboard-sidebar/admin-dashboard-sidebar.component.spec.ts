@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardSidebarComponent } from './dashboard-sidebar.component';
+import { DashboardSidebarComponent } from './admin-dashboard-sidebar.component';
 
 describe('DashboardSidebarComponent', () => {
   let component: DashboardSidebarComponent;

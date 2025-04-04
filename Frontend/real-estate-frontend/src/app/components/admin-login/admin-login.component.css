@@ -1,0 +1,15 @@
+.container {
+  max-width: 400px;
+  margin: auto;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 10px;
+}
