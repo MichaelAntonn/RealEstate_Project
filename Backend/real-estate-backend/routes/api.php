@@ -116,3 +116,7 @@ Route::get('/login', function() {
 })->name('login');
 });
 });
+// routes/api.php
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/messages/send', [ChatController::class, 'sendMessage']);
+});

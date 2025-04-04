@@ -10,31 +10,27 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    // إرسال رسالة جديدة
-    public function sendMessage(Request $request)
-    {
-        $request->validate([
-            'conversation_id' => 'required|exists:conversations,id',
-            'receiver_id' => 'required|exists:users,id',
-            'message_text' => 'required|string|max:1000',
-        ]);
+ 
 
-        // إنشاء الرسالة
-        $message = Message::create([
-            'conversation_id' => $request->conversation_id,
-            'sender_id' => Auth::id(), // المرسل هو المستخدم الحالي
-            'receiver_id' => $request->receiver_id,
-            'message_text' => $request->message_text,
-        ]);
+public function sendMessage(Request $request) {
+    $validated = $request->validate([
+        'conversation_id' => 'required|exists:conversations,id',
+        'receiver_id' => 'required|exists:users,id',
+        'message_text' => 'required|string|max:1000'
+    ]);
 
-        // بث الحدث للطرف الآخر
-        broadcast(new NewChatMessage($message))->toOthers();
+    $message = Message::create([
+        'conversation_id' => $validated['conversation_id'],
+        'sender_id' => auth()->id(),
+        'receiver_id' => $validated['receiver_id'],
+        'message_text' => $validated['message_text']
+    ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => $message
-        ]);
-    }
+    return response()->json([
+        'status' => 'Message sent!',
+        'message' => $message
+    ]);
+}
 
     // تحديد الرسالة كمقروءة (اختياري)
     public function markAsRead(Message $message)
