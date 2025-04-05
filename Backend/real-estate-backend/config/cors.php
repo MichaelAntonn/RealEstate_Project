@@ -72,7 +72,7 @@ return [
     | Indicates how long (in seconds) the results of a preflight request can be cached.
     |
     */
-    'max_age' => 1,
+    'max_age' => 0,
 
     /*
     |--------------------------------------------------------------------------

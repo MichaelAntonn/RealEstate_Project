@@ -110,10 +110,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
         Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
     });
-    
-Route::get('/login', function() {
-    return response()->json(['message' => 'Unauthorized'], 401);
-})->name('login');
 });
 });
 // routes/api.php
