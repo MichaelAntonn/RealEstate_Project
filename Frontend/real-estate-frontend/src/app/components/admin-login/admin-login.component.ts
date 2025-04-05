@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AdminAuthService } from '../../services/admin-auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { ReactiveFormsModule } from '@angular/forms'; // Import ReactiveFormsModule for formGroup
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-login',
-  standalone: true, // Ensure the component is marked as standalone
-  imports: [CommonModule, ReactiveFormsModule], // Add CommonModule and ReactiveFormsModule
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './admin-login.component.html',
   styleUrls: ['./admin-login.component.css']
 })
@@ -20,7 +20,7 @@ export class AdminLoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private adminAuthService: AdminAuthService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -34,6 +34,7 @@ export class AdminLoginComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['returnUrl']) {
         this.sessionExpiredMessage = 'Your session has expired. Please log in again.';
+        console.log('Session expired, returnUrl:', params['returnUrl']);
       }
     });
   }
@@ -50,22 +51,15 @@ export class AdminLoginComponent implements OnInit {
 
     const credentials = this.loginForm.value;
     console.log('onSubmit called with:', credentials);
-    this.authService.adminLogin(credentials).subscribe({
+    this.adminAuthService.adminLogin(credentials).subscribe({
       next: (response) => {
         console.log('Login response:', response);
-        if (response && response.token && response.user_type) {
-          localStorage.setItem('token', response.token);
-          this.authService.setUserRole(response.user_type);
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';
-          console.log('Navigating to:', returnUrl);
-          this.router.navigateByUrl(returnUrl).catch(err => {
-            console.error('Navigation error:', err);
-            this.router.navigate(['/admin/dashboard']);
-          });
-        } else {
-          console.error('Login response is missing token or user_type:', response);
-          this.errorMessage = 'Invalid login response from server. Please try again.';
-        }
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin'; // Changed to '/admin'
+        console.log('Navigating to:', returnUrl);
+        this.router.navigateByUrl(returnUrl).catch(err => {
+          console.error('Navigation error:', err);
+          this.router.navigate(['/admin']); // Fallback to '/admin'
+        });
         this.isLoading = false;
       },
       error: (error) => {

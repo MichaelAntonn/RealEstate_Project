@@ -1,50 +1,46 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { map, tap, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { AdminAuthService } from '../services/admin-auth.service';
+import { map } from 'rxjs/operators';
 
 export const AuthGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
-  const authService = inject(AuthService);
+  const adminAuthService = inject(AdminAuthService);
 
-  return authService.isLoggedIn().pipe(
-    tap(isLoggedIn => console.log('AuthGuard: isLoggedIn:', isLoggedIn)),
-    switchMap(isLoggedIn => {
-      if (!isLoggedIn) {
-        const expectedRoles = route.data['roles'] as string[] | undefined;
-        console.log('User is not logged in, redirecting to login page');
-        if (expectedRoles && expectedRoles.includes('admin')) {
-          return of(router.createUrlTree(['/admin/login'], { 
-            queryParams: { returnUrl: state.url as string } 
-          }));
+  const isLoggedIn = adminAuthService.isLoggedIn();
+  console.log('AuthGuard: isLoggedIn:', isLoggedIn);
+
+  if (!isLoggedIn) {
+    const expectedRoles = route.data['roles'] as string[] | undefined;
+    console.log('User not logged in, redirecting to:', expectedRoles?.includes('admin') ? '/admin/login' : '/login');
+    return router.createUrlTree(
+      expectedRoles && expectedRoles.includes('admin') ? ['/admin/login'] : ['/login'],
+      { queryParams: { returnUrl: state.url } }
+    );
+  }
+
+  const expectedRoles = route.data['roles'] as string[] | undefined;
+  const userRole = adminAuthService.getUserRole();
+  console.log('AuthGuard: userRole:', userRole, 'expectedRoles:', expectedRoles);
+
+  if (!userRole) {
+    return adminAuthService.fetchUserRole().pipe(
+      map(role => {
+        console.log('Fetched user role:', role);
+        if (expectedRoles && role && (expectedRoles.includes(role) || role === 'super-admin')) {
+          return true;
         }
-        return of(router.createUrlTree(['/login'], { 
-          queryParams: { returnUrl: state.url as string } 
-        }));
-      }
+        console.log('Role mismatch, redirecting to /admin/login');
+        return router.createUrlTree(['/admin/login'], { queryParams: { returnUrl: state.url } });
+      })
+    );
+  }
 
-      const expectedRoles = route.data['roles'] as string[] | undefined;
-      const userRole = authService.getUserRole();
+  if (expectedRoles && userRole && (expectedRoles.includes(userRole) || userRole === 'super-admin')) {
+    console.log('Role matches, allowing access');
+    return true;
+  }
 
-      if (!userRole) {
-        return authService.fetchUserRole().pipe(
-          map(role => {
-            console.log('Fetched user role:', role);
-            if (expectedRoles && role && (expectedRoles.includes(role) || role === 'super-admin')) {
-              return true;
-            }
-            console.log('User role does not match expected roles, redirecting to login');
-            return router.createUrlTree(['/admin/login']);
-          })
-        );
-      }
-
-      if (expectedRoles && userRole && (expectedRoles.includes(userRole) || userRole === 'super-admin')) {
-        return of(true);
-      }
-      console.log('User role does not match expected roles, redirecting to login');
-      return of(router.createUrlTree(['/admin/login']));
-    })
-  );
+  console.log('Role mismatch, redirecting to /admin/login');
+  return router.createUrlTree(['/admin/login'], { queryParams: { returnUrl: state.url } });
 };
