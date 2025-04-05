@@ -1,0 +1,72 @@
+/* Styles for the statistics cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .card-custom {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-income {
+    border-left: 4px solid #007bff;
+  }
+  
+  .card-properties {
+    border-left: 4px solid #28a745;
+  }
+  
+  .card-users {
+    border-left: 4px solid #17a2b8;
+  }
+  
+  .card-profit {
+    border-left: 4px solid #dc3545;
+  }
+  
+  .card-custom h6 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .card-custom h3 {
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .icon-custom {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* Styles for the banner image */
+  .banner-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  /* Styles for the chart container */
+  .chart-container {
+    margin-top: 40px;
+    max-width: 600px;
+  }
+  
+  /* Styles for the cards */
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }

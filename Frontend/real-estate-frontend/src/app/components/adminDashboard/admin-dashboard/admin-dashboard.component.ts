@@ -6,6 +6,7 @@ import { DashboardNavbarComponent } from '../dashboard-navbar/dashboard-navbar.c
 import { CommonModule } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
+import { RouterModule } from '@angular/router';
 
 // Define interfaces for the API responses
 interface Statistics {
@@ -35,7 +36,7 @@ interface Property {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, AdminDashboardSidebarComponent, DashboardNavbarComponent],
+  imports: [CommonModule,RouterModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })

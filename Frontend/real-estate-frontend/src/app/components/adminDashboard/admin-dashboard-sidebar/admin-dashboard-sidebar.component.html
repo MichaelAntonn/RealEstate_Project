@@ -1,14 +1,38 @@
-<div class="sidebar">
-  <h5 class="nav-link" [routerLink]="['/admin/dashboard']" routerLinkActive="active">Admin Dashboard</h5>
-  <nav class="nav flex-column">
-    <a class="nav-link" [routerLink]="['/admin/users']" routerLinkActive="active"><i class="bi bi-house-door"></i> Users</a>
-    <a class="nav-link" [routerLink]="['/admin/properties']" routerLinkActive="active"><i class="bi bi-person"></i> Properties</a>
-    <a class="nav-link" [routerLink]="['/admin/bookings']" routerLinkActive="active"><i class="bi bi-chat-left-text"></i> Bookings</a>
-    <a class="nav-link" [routerLink]="['/admin/activities']" routerLinkActive="active"><i class="bi bi-folder"></i> Activities</a>
-    <a class="nav-link" [routerLink]="['/admin/settings']" routerLinkActive="active"><i class="bi bi-gear"></i> Settings</a>
-  </nav>
-  <div class="mt-5">
-    <p class="text-muted">Need help?</p>
-    <p>Feel free to reach out to us should you have any questions or suggestions.</p>
+<div class="sidebar-content">
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin" routerLinkActive="active">
+        <i class="bi bi-house-door"></i> Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/layout/users" routerLinkActive="active">
+        <i class="bi bi-people"></i> Users
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/layout/properties" routerLinkActive="active">
+        <i class="bi bi-house"></i> Properties
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/layout/bookings" routerLinkActive="active">
+        <i class="bi bi-calendar-check"></i> Bookings
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/layout/activities" routerLinkActive="active">
+        <i class="bi bi-activity"></i> Activities
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/layout/settings" routerLinkActive="active">
+        <i class="bi bi-gear"></i> Settings
+      </a>
+    </li>
+  </ul>
+  <div class="support-text mt-4">
+    <p>Need help?</p>
+    <p>Contact our support team for assistance.</p>
   </div>
 </div>
