@@ -1,1 +1,108 @@
-<p>admin-bookings works!</p>
+<div class="container">
+    <!-- Pending Bookings Section -->
+    <h2>Pending Bookings (Total: {{ pendingTotal }})</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Property</th>
+          <th>Booking Date</th>
+          <th>Visit Date</th>
+          <th>Status</th>
+          <th *ngIf="!isAdmin">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let booking of pendingBookings">
+          <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
+          <td>{{ booking.property?.title }}</td>
+          <td>{{ booking.booking_date }}</td>
+          <td>{{ booking.visit_date || 'N/A' }}</td>
+          <td>{{ booking.status }}</td>
+          <td *ngIf="!isAdmin">
+            <button class="btn btn-success" (click)="updateBookingStatus(booking.id, 'confirmed')">Confirm</button>
+            <button class="btn btn-danger" (click)="updateBookingStatus(booking.id, 'canceled')">Cancel</button>
+          </td>
+        </tr>
+        <tr *ngIf="pendingBookings.length === 0">
+          <td [attr.colspan]="isAdmin ? 5 : 6">No pending bookings found.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button class="btn" (click)="prevPage('pending')" [disabled]="pendingPage === 1">Previous</button>
+      <button class="btn page-btn" *ngFor="let page of getPageNumbers('pending')"
+              [class.active]="page === pendingPage"
+              (click)="goToPage('pending', page)">{{ page }}</button>
+      <button class="btn" (click)="nextPage('pending')" [disabled]="pendingPage === pendingLastPage">Next</button>
+      <span>Page {{ pendingPage }} of {{ pendingLastPage }}</span>
+    </div>
+  
+    <!-- Confirmed Bookings Section -->
+    <h2>Confirmed Bookings (Total: {{ confirmedTotal }})</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Property</th>
+          <th>Booking Date</th>
+          <th>Visit Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let booking of confirmedBookings">
+          <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
+          <td>{{ booking.property?.title }}</td>
+          <td>{{ booking.booking_date }}</td>
+          <td>{{ booking.visit_date || 'N/A' }}</td>
+          <td>{{ booking.status }}</td>
+        </tr>
+        <tr *ngIf="confirmedBookings.length === 0">
+          <td colspan="5">No confirmed bookings found.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button class="btn" (click)="prevPage('confirmed')" [disabled]="confirmedPage === 1">Previous</button>
+      <button class="btn page-btn" *ngFor="let page of getPageNumbers('confirmed')"
+              [class.active]="page === confirmedPage"
+              (click)="goToPage('confirmed', page)">{{ page }}</button>
+      <button class="btn" (click)="nextPage('confirmed')" [disabled]="confirmedPage === confirmedLastPage">Next</button>
+      <span>Page {{ confirmedPage }} of {{ confirmedLastPage }}</span>
+    </div>
+  
+    <!-- Canceled Bookings Section -->
+    <h2>Canceled Bookings (Total: {{ canceledTotal }})</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Property</th>
+          <th>Booking Date</th>
+          <th>Visit Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let booking of canceledBookings">
+          <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
+          <td>{{ booking.property?.title }}</td>
+          <td>{{ booking.booking_date }}</td>
+          <td>{{ booking.visit_date || 'N/A' }}</td>
+          <td>{{ booking.status }}</td>
+        </tr>
+        <tr *ngIf="canceledBookings.length === 0">
+          <td colspan="5">No canceled bookings found.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button class="btn" (click)="prevPage('canceled')" [disabled]="canceledPage === 1">Previous</button>
+      <button class="btn page-btn" *ngFor="let page of getPageNumbers('canceled')"
+              [class.active]="page === canceledPage"
+              (click)="goToPage('canceled', page)">{{ page }}</button>
+      <button class="btn" (click)="nextPage('canceled')" [disabled]="canceledPage === canceledLastPage">Next</button>
+      <span>Page {{ canceledPage }} of {{ canceledLastPage }}</span>
+    </div>
+  </div>

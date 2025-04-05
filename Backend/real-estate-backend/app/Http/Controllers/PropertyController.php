@@ -41,7 +41,7 @@ class PropertyController extends Controller
     }
 
     // Paginate the results
-    $properties = $query->paginate(10);
+    $properties = $query->paginate(5);
 
     return response()->json([
         'success' => true,
@@ -194,28 +194,92 @@ class PropertyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-       // Find the property
-       $property = Property::find($id);
+    // public function destroy(string $id)
+    // {
+    //     try {
+    //         $token = request()->bearerToken();
+    //         Log::info('Received Token: ' . $token);
+    
+    //         $user = Auth::user();
+    //         if (!$user) {
+    //             Log::info('User is null. Token not recognized.');
+    //             return response()->json(['error' => 'Unauthenticated'], 401);
+    //         }
+    
+    //         Log::info('Authenticated User ID: ' . $user->id . ', Type: ' . $user->user_type);
+    
+    //         $property = Property::find($id);
+    //         if (!$property) {
+    //             return response()->json(['error' => 'Property not found'], 404);
+    //         }
+    
+    //         if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
+    //             return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
+    //         }
+    
+    //         $property->delete();
+    
+    //         return response()->json(['success' => 'Property deleted successfully'], 200);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Server error', 'details' => $e->getMessage()], 500);
+    //     }
+    // }
 
-       if (!$property) {
-           return response()->json(['error' => 'Property not found'], 404);
-       }
 
-       // Check if the authenticated user is the owner, admin, or super-admin
-       $user = Auth::user();
-       if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
-           return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
-       }
+//     public function destroy(string $id)
+//     {
+//        // Find the property
+//        $property = Property::find($id);
 
-       // Delete the property
-       $property->delete();
+//        if (!$property) {
+//            return response()->json(['error' => 'Property not found'], 404);
+//        }
 
-       return response()->json([
-           'success' => 'Property deleted successfully',
-       ], 200);
-   }
+//        // Check if the authenticated user is the owner, admin, or super-admin
+//        $user = Auth::user();
+//        if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
+//            return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
+//        }
+
+//        // Delete the property
+//        $property->delete();
+
+//        return response()->json([
+//            'success' => 'Property deleted successfully',
+//        ], 200);
+//    }
+
+
+
+
+
+   public function destroy(string $id)
+   {
+      // Find the property
+      $property = Property::find($id);
+
+      if (!$property) {
+          return response()->json(['error' => 'Property not found'], 404);
+      }
+
+      // Check if the authenticated user is the owner, admin, or super-admin
+      $user = Auth::user();
+      if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
+          return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
+        }
+ 
+        // Delete the property
+        $property->delete();
+ 
+        return response()->json([
+            'success' => 'Property deleted successfully',
+        ], 200);
+    }
+
+
+
+
 
    /**
      * Accept a property (accessible by admin and super-admin).

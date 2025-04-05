@@ -13,15 +13,13 @@ class BookingController extends Controller
     {
         $user = $request->user();
 
-        if ($user->user_type === 'super-admin' || $user->user_type === 'admin') {
-            // Admin can see all bookings
-            $bookings = Booking::with(['user', 'property'])->get();
+        if ($user->user_type === 'super_admin' || $user->user_type === 'admin') {
+            $bookings = Booking::with(['user', 'property'])->paginate(5);
         } else {
-            // Regular user can only see bookings for properties they own
             $ownedProperties = Property::where('user_id', $user->id)->pluck('id');
             $bookings = Booking::whereIn('property_id', $ownedProperties)
                 ->with(['user', 'property'])
-                ->get();
+                ->paginate(5);
         }
 
         return response()->json($bookings);
@@ -33,8 +31,7 @@ class BookingController extends Controller
         $user = $request->user();
         $booking = Booking::with(['user', 'property'])->findOrFail($id);
 
-        // Check if the user is Admin or owns the property
-        if ($user->user_type !== 'super-admin' && $user->user_type !== 'admin' && $booking->property->user_id !== $user->id) {
+        if ($user->user_type !== 'super_admin' && $user->user_type !== 'admin' && $booking->property->user_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized access to this booking'], 403);
         }
 
@@ -47,12 +44,12 @@ class BookingController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'status' => 'required|in:confirmed,canceled' // Only allow confirmed or canceled
+            'status' => 'required|in:confirmed,canceled'
         ]);
 
         $booking = Booking::findOrFail($id);
 
-        // Check if the user owns the property tied to this booking
+        // Only property owner can update (already restricted to non-admin users)
         if ($booking->property->user_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized: Only the property owner can update this booking'], 403);
         }
@@ -66,7 +63,7 @@ class BookingController extends Controller
         ]);
     }
 
-    // Create a new booking (unchanged)
+    // Create a new booking
     public function store(Request $request)
     {
         $request->validate([
@@ -81,61 +78,67 @@ class BookingController extends Controller
         return response()->json($booking, 201);
     }
 
-    // Get only pending bookings (filtered by user or Admin)
+    // Get only pending bookings (filtered by user or Admin, paginated)
     public function getPending(Request $request)
     {
         $user = $request->user();
 
-        if ($user->user_type === 'super-admin' || $user->user_type === 'admin') {
+        if ($user->user_type === 'super_admin' || $user->user_type === 'admin') {
             $bookings = Booking::where('status', 'pending')
                 ->with(['user', 'property'])
-                ->get();
+                ->latest()
+                ->paginate(5);
         } else {
             $ownedProperties = Property::where('user_id', $user->id)->pluck('id');
             $bookings = Booking::where('status', 'pending')
                 ->whereIn('property_id', $ownedProperties)
                 ->with(['user', 'property'])
-                ->get();
+                ->latest()
+                ->paginate(5);
         }
 
         return response()->json($bookings);
     }
 
-    // Get only confirmed bookings (filtered by user or Admin)
+    // Get only confirmed bookings (filtered by user or Admin, paginated)
     public function getConfirmed(Request $request)
     {
         $user = $request->user();
 
-        if ($user->user_type === 'super-admin' || $user->user_type === 'admin') {
+        if ($user->user_type === 'super_admin' || $user->user_type === 'admin') {
             $bookings = Booking::where('status', 'confirmed')
                 ->with(['user', 'property'])
-                ->get();
+                ->latest()
+                ->paginate(5);
         } else {
             $ownedProperties = Property::where('user_id', $user->id)->pluck('id');
             $bookings = Booking::where('status', 'confirmed')
                 ->whereIn('property_id', $ownedProperties)
                 ->with(['user', 'property'])
-                ->get();
+                ->latest()
+                ->paginate(5);
         }
 
         return response()->json($bookings);
     }
 
-    // Get only canceled bookings (filtered by user or Admin)
+    // Get only canceled bookings (filtered by user or Admin, paginated)
     public function getCanceled(Request $request)
     {
         $user = $request->user();
 
-        if ($user->user_type === 'super-admin' || $user->user_type === 'admin') {
+        if ($user->user_type === 'super_admin' || $user->user_type === 'admin') {
             $bookings = Booking::where('status', 'canceled')
                 ->with(['user', 'property'])
-                ->get();
+                ->latest()
+                ->paginate(5);
         } else {
             $ownedProperties = Property::where('user_id', $user->id)->pluck('id');
             $bookings = Booking::where('status', 'canceled')
                 ->whereIn('property_id', $ownedProperties)
                 ->with(['user', 'property'])
-                ->get();
+                ->latest()
+                ->paginate(5);
         }
 
         return response()->json($bookings);

@@ -1,72 +1,135 @@
-/* Styles for the statistics cards */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+/* Container for the entire dashboard content */
+.container-fluid {
+    padding: 30px;
+    background-color: #f5f6fa;
+    min-height: 100vh;
   }
   
+  /* Main content wrapper to account for the sidebar */
+  .main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+  
+  /* Row containing the statistics cards */
+  .row.mb-4 {
+    margin-bottom: 2rem !important;
+  }
+  
+  /* Base styling for all custom cards */
   .card-custom {
-    background-color: #f8f9fa;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
   }
   
+  /* Hover effect for all cards */
+  .card-custom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Specific styling for each card with colorful gradients */
   .card-income {
-    border-left: 4px solid #007bff;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
   }
   
   .card-properties {
-    border-left: 4px solid #28a745;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
   }
   
   .card-users {
-    border-left: 4px solid #17a2b8;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
   }
   
   .card-profit {
-    border-left: 4px solid #dc3545;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
   }
   
-  .card-custom h6 {
-    margin-bottom: 10px;
-    font-size: 1rem;
-    color: #666;
-  }
-  
-  .card-custom h3 {
-    font-size: 1.5rem;
-    color: #333;
-  }
-  
+  /* Styling for the icons in the cards */
   .icon-custom {
     font-size: 2rem;
+    color: #fff;
     margin-bottom: 10px;
-    color: #333;
+    display: block;
   }
   
-  /* Styles for the banner image */
-  .banner-image {
-    width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
+  /* Styling for the card title */
+  .card-custom h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #140404;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   
-  /* Styles for the chart container */
-  .chart-container {
-    margin-top: 40px;
-    max-width: 600px;
+  /* Styling for the card value */
+  .card-custom h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
   }
   
-  /* Styles for the cards */
-  .card {
+  /* Error message styling */
+  .alert-danger {
+    background-color: #e74c3c;
+    color: #fff;
     border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 15px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
   }
   
-  .card-header {
-    font-size: 1.1rem;
-    font-weight: bold;
+  /* Spinner styling */
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    margin: 20px 0;
   }
+  
+  .spinner-border.text-primary {
+    color: #f39c12 !important;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .main-content {
+      margin-left: 0;
+      width: 100%;
+    }
+  
+    .container-fluid {
+      padding: 15px;
+    }
+  
+    .card-custom {
+      padding: 15px;
+    }
+  
+    .card-custom h6 {
+      font-size: 0.9rem;
+    }
+  
+    .card-custom h3 {
+      font-size: 1.2rem;
+    }
+  
+    .icon-custom {
+      font-size: 1.5rem;
+    }
+  
+    .alert-danger {
+      font-size: 0.9rem;
+      padding: 10px 15px;
+    }
+  }
+  

@@ -6,6 +6,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './admin-dashboard-sidebar.component.html',
-  styleUrls: ['./admin-dashboard-sidebar.component.scss']
+  styleUrls: ['./admin-dashboard-sidebar.component.css']
 })
 export class AdminDashboardSidebarComponent {}
