@@ -1,0 +1,38 @@
+.text-muted {
+  color: #D0944B;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.real-estate-card {
+  background-color: white;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.4s ease-in-out;
+}
+
+.real-estate-card-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #D94B2B;
+}
+
+.real-estate-tilted-card {
+  background-color: #172940;
+  color: white;
+  clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
+}
+
+.real-estate-normal-card {
+  background-color: white;
+  color: black;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+.real-estate-card:hover {
+  background-color: #172940;
+  color: #F9FDFF !important;
+  clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
+}

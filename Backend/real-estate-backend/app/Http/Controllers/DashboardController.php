@@ -30,7 +30,10 @@ class DashboardController extends Controller
                     'success' => 'Admin Dashboard',
                    
                 ]);
+            } elseif ($userType === UserType::USER) {
+                return response()->json(['success' => 'User Dashboard']);
             }
+            
     
             // Fallback response
             return response()->json(['error' => 'Unauthorized access'], 403);
