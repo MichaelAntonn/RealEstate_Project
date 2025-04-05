@@ -161,7 +161,8 @@ public function destroyAdmin(Request $request, $adminId)
         }
 
         // Fetch all users except super-admin
-    $users = User::where('user_type', '!=', UserType::SUPER_ADMIN)->get();
+    $users = User::where('user_type', '!=', [UserType::SUPER_ADMIN,UserType::ADMIN])->latest()
+    ->paginate(5);
 
         return response()->json([
             'success' => true,

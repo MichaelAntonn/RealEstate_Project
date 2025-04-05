@@ -1,0 +1,109 @@
+<div class="container">
+    <!-- Pending Properties Section -->
+    <h2>Pending Properties</h2>
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search by title or property ID"
+        (input)="filteredPendingProperties"
+      />
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Property Code</th>
+          <th>Price</th>
+          <th>City</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let property of filteredPendingProperties">
+          <td>{{ property.title }}</td>
+          <td>{{ property.property_code }}</td>
+          <td>{{ property.price }}</td>
+          <td>{{ property.city }}</td>
+          <td>
+            <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
+            <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredPendingProperties.length === 0">
+          <td colspan="5">No pending properties found.</td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Accepted Properties Section -->
+    <h2>Accepted Properties</h2>
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="acceptedSearchQuery"
+        placeholder="Search by title or property ID"
+      />
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Property Code</th>
+          <th>Price</th>
+          <th>City</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let property of filteredAcceptedProperties">
+          <td>{{ property.title }}</td>
+          <td>{{ property.property_code }}</td>
+          <td>{{ property.price }}</td>
+          <td>{{ property.city }}</td>
+          <td>
+            <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredAcceptedProperties.length === 0">
+          <td colspan="5">No accepted properties found.</td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Rejected Properties Section -->
+    <h2>Rejected Properties</h2>
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="rejectedSearchQuery"
+        placeholder="Search by title or property ID"
+      />
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Property Code</th>
+          <th>Price</th>
+          <th>City</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let property of filteredRejectedProperties">
+          <td>{{ property.title }}</td>
+          <td>{{ property.property_code }}</td>
+          <td>{{ property.price }}</td>
+          <td>{{ property.city }}</td>
+          <td>
+            <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
+            <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredRejectedProperties.length === 0">
+          <td colspan="5">No rejected properties found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
