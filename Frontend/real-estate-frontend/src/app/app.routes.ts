@@ -15,7 +15,6 @@ import { AdminStatisticsComponent } from './components/adminDashboard/admin-stat
 // User imports
 import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
 
@@ -26,7 +25,7 @@ export const routes: Routes = [
   // User routes
   { path: 'login', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
-  { path: 'dashboard', component: DashboardComponent },
+
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
 
