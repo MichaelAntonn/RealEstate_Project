@@ -1,0 +1,43 @@
+<div class="card">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Upcoming Appointments</h6>
+      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Add Appointment
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Client</th>
+              <th>Property</th>
+              <th>Purpose</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let appointment of appointments">
+              <td>{{ appointment.date }}</td>
+              <td>{{ appointment.time }}</td>
+              <td>{{ appointment.client }}</td>
+              <td>{{ appointment.property }}</td>
+              <td>{{ appointment.purpose }}</td>
+              <td><span class="badge" [ngClass]="getStatusBadgeClass(appointment.status)">{{ appointment.status }}</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary edit-appointment" [attr.data-id]="appointment.id">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-appointment" [attr.data-id]="appointment.id">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
