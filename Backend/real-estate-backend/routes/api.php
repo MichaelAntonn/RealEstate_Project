@@ -111,11 +111,14 @@ Route::prefix('v1')->group(function () {
             Route::get('/users', [DashboardController::class, 'showUsers'])->name('show.users');
             Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
             Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+            Route::get('/statistics', [DashboardController::class, 'generalStatistics'])->name('statistics');
+            Route::get('/latest-properties', [DashboardController::class, 'latestProperties'])->name('latest-properties');
+            Route::get('/user-activities/{userId?}', [DashboardController::class, 'userActivities'])->name('user-activities');
 
             // Property Routes
             Route::prefix('properties')->group(function () {
-                Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty'])->name('admin.properties.accept');
-                Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('admin.properties.reject');
+                Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty'])->name('properties.accept');
+                Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('properties.reject');
             });
 
             // Commission Routes
