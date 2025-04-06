@@ -112,6 +112,12 @@ Route::prefix('v1')->group(function () {
             Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
             Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
 
+            // Property Routes
+            Route::prefix('properties')->group(function () {
+                Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty'])->name('admin.properties.accept');
+                Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('admin.properties.reject');
+            });
+
             // Commission Routes
             Route::prefix('commissions')->group(function () {
                 Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin'])->name('commissions.monthly-profit');
