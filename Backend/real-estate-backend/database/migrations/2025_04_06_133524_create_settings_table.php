@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('property_media', function (Blueprint $table) {
+        Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('PropertyID')->constrained('properties')->onDelete('cascade'); 
-            $table->string('MediaURL');
-            $table->enum('MediaType', ['image', 'video']);
-            $table->timestamps();
+    $table->string('key')->unique();
+    $table->text('value');
+    $table->string('group')->default('general');
+    $table->timestamps();
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('property_media');
+        Schema::dropIfExists('settings');
     }
 };

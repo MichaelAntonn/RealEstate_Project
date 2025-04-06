@@ -15,6 +15,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SettingController;
+
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 Route::get('/search', [PropertyController::class, 'search'])->name('search.properties');
@@ -23,7 +25,7 @@ Route::prefix('v1')->group(function () {
     // Authentication routes (public)
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
-    
+
     // Password Reset Routes (public)
     Route::prefix('password')->name('password.')->group(function () {
         Route::post('/forgot-password', [ResetPasswordController::class, 'submitForgetPasswordForm'])->name('forgot');
@@ -99,23 +101,40 @@ Route::prefix('v1')->group(function () {
 
         // Authenticated Admin Routes
         Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Admin management
-        Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('create.admin');
-        Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('destroy.user');
-        Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('destroy.admin');
-        Route::get('/users', [DashboardController::class, 'showUsers'])->name('show.users');
-        Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
-        Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+            // Admin management
+            Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('create.admin');
+            Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('destroy.user');
+            Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('destroy.admin');
+            Route::get('/users', [DashboardController::class, 'showUsers'])->name('show.users');
+            Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
+            Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+
+            // Commission Routes
+            Route::prefix('commissions')->group(function () {
+                Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
+                Route::get('/overview', [CommissionController::class, 'commissionsOverview']);
+                Route::get('/property-stats', [CommissionController::class, 'propertyStatistics']);
+                Route::get('/agent-performance', [CommissionController::class, 'agentPerformance']);
+                Route::get('/yearly-summary/{year?}', [CommissionController::class, 'yearlySummary']);
+                Route::get('/cost-analysis', [CommissionController::class, 'costAnalysis']);
+                Route::post('/complete-sale/{id}', [CommissionController::class, 'completeSale']);
+            });
+            
+            // Settings Routes 
+            Route::prefix('settings')->group(function () {
+                Route::get('/financial', [SettingController::class, 'getFinancialSettings']);
+                Route::post('/commission-rate', [SettingController::class, 'updateCommissionRate']);
+            });
+        });
     });
-});
 });
 // routes/api.php
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages/send', [ChatController::class, 'sendMessage']);
 
-    
+
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
 });

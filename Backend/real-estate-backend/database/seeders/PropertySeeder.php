@@ -22,8 +22,8 @@ class PropertySeeder extends Seeder
             'bedrooms' => 4,
             'bathrooms' => 3,
             'listing_type' => 'for_sale',
-            'construction_status' => 'available', // بدل status
-            'approval_status' => 'accepted', // إضافة افتراضية
+            'construction_status' => 'available',
+            'approval_status' => 'accepted', 
             'transaction_status' => 'completed',
             'building_year' => 2020,
             'legal_status' => 'licensed',
@@ -32,7 +32,7 @@ class PropertySeeder extends Seeder
             'payment_options' => json_encode(['cash']),
             'cover_image' => 'villa.jpg',
             'property_code' => 'VIL001',
-            'user_id' => 3, // Sara (Seller)
+            'user_id' => 3, 
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -43,7 +43,7 @@ class PropertySeeder extends Seeder
             'description' => 'A cozy apartment near the sea.',
             'type' => 'apartment',
             'price' => 15000.00,
-            'commission' => null, // No commission yet
+            'commission' => null, 
             'city' => 'Alexandria',
             'district' => 'Sidi Gaber',
             'full_address' => '456 Sea St, Sidi Gaber',
@@ -51,8 +51,8 @@ class PropertySeeder extends Seeder
             'bedrooms' => 2,
             'bathrooms' => 1,
             'listing_type' => 'for_rent',
-            'construction_status' => 'available', // بدل status
-            'approval_status' => 'accepted', // إضافة افتراضية
+            'construction_status' => 'available', 
+            'approval_status' => 'accepted', 
             'transaction_status' => 'pending',
             'building_year' => 2018,
             'legal_status' => 'licensed',
@@ -61,7 +61,7 @@ class PropertySeeder extends Seeder
             'payment_options' => json_encode(['cash']),
             'cover_image' => 'apartment.jpg',
             'property_code' => 'APT001',
-            'user_id' => 3, // Sara (Seller)
+            'user_id' => 3, 
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -80,8 +80,8 @@ class PropertySeeder extends Seeder
             'bedrooms' => null,
             'bathrooms' => 2,
             'listing_type' => 'for_sale',
-            'construction_status' => 'available', // بدل status
-            'approval_status' => 'pending', // إضافة افتراضية
+            'construction_status' => 'available', 
+            'approval_status' => 'pending', 
             'transaction_status' => 'pending',
             'building_year' => 2015,
             'legal_status' => 'pending',

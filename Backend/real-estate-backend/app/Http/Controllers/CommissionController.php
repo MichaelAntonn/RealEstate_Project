@@ -1,202 +1,216 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Constants\UserType;
 use App\Models\Property;
 use App\Models\Cost;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class CommissionController extends Controller
 {
-    // public function monthlyProfitMargin()
-    // {
-    //     $months = [];
-
-    //     for ($i = 0; $i < 4; $i++) {
-    //         $date = Carbon::create(2025, 3, 22)->subMonths($i); // Fixed date for testing
-    //         $startOfMonth = $date->startOfMonth();
-    //         $endOfMonth = $date->endOfMonth();
-
-    //         // Calculate total commissions for the month
-    //         $commissions = Property::where('transaction_status', 'completed')
-    //             ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-    //             ->sum('commission');
-
-    //         // Calculate total costs for the month based on created_at
-    //         $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //             ->sum('amount');
-
-    //         $profit = $commissions - $costs;
-    //         $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-
-    //         $months[] = [
-    //             'month' => $date->format('F Y'),
-    //             'commissions' => $commissions,
-    //             'costs' => $costs,
-    //             'profit' => $profit,
-    //             'profit_margin' => round($profitMargin, 2) . '%'
-    //         ];
-    //     }
-
-    //     return response()->json(array_reverse($months));
-    // }
-
-    // public function monthlyProfitMargin()
-    // {
-    //     $months = [];
-    //     for ($i = 0; $i < 4; $i++) {
-    //         $date = Carbon::now()->subMonths($i); // Fixed date for testing: March 22, 2025
-    //         $startOfMonth = $date->startOfMonth();
-    //         $endOfMonth = ($i == 0) ? Carbon::now() : $date->endOfMonth(); // Current month ends today, others end at month-end
-
-    //         // Calculate total commissions for the month
-    //         $commissions = Property::where('transaction_status', 'completed')
-    //             ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-    //             ->sum('commission');
-
-    //         // Calculate total costs for the month based on created_at
-    //         $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //             ->sum('amount');
-
-    //         $profit = $commissions - $costs;
-    //         $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-
-    //         $months[] = [
-    //             'month' => $date->format('F Y'),
-    //             'commissions' => $commissions,
-    //             'costs' => $costs,
-    //             'profit' => $profit,
-    //             'profit_margin' => round($profitMargin, 2) . '%'
-    //         ];
-    //     }
-
-    //     return response()->json(array_reverse($months));
-    // }
-
-
-    // public function completeSale(Request $request, $id)
-    // {
-    //     $property = Property::findOrFail($id);
-
-    //     $commissionRate = 0.05; // 5%
-    //     $commission = $property->price * $commissionRate;
-
-    //     $property->transaction_status = 'completed';
-    //     $property->commission = $commission;
-    //     $property->save();
-
-    //     return response()->json([
-    //         'message' => 'Property sale completed and commission calculated',
-    //         'property' => $property
-    //     ]);
-    // }
-
-
-    public function monthlyProfitMargin()
+    public function monthlyProfitMargin(Request $request)
     {
-        \Log::info("Current date: " . Carbon::now());
-    
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can access commission data.'], 403);
+        }
+
         $months = [];
-        $totalPropertiesSold = 0;
-        $totalNewUsers = 0;
-        $totalAddedProperties = 0;
-    
-        $uniqueMonths = []; // Track months to prevent duplicates
-    
-        for ($i = 0; $i < 5; $i++) {
-            $date = Carbon::now()->subMonths($i)->startOfMonth();
-            $startOfMonth = $date->clone(); // Ensure start date is not modified
-            $endOfMonth = ($i == 0) ? Carbon::now()->endOfDay() : $date->clone()->endOfMonth()->endOfDay();
-    
-            // Prevent duplicate months
-            $formattedMonth = $date->format('F Y');
-            if (in_array($formattedMonth, $uniqueMonths)) {
-                continue;
-            }
-            $uniqueMonths[] = $formattedMonth;
-    
-            \Log::info("Month: {$formattedMonth}, Start: {$startOfMonth}, End: {$endOfMonth}");
-    
-            $propertiesSold = Property::where('transaction_status', 'completed')
-                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-                ->count();
-            $totalPropertiesSold += $propertiesSold;
-    
-            $newUsers = User::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
-            \Log::info("New users for {$formattedMonth}: {$newUsers}");
-            $totalNewUsers += $newUsers;
-    
-            $addedProperties = Property::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
-            \Log::info("Added properties for {$formattedMonth}: {$addedProperties}");
-            $totalAddedProperties += $addedProperties;
-    
+        for ($i = 0; $i < 4; $i++) {
+            $date = Carbon::now()->subMonths($i);
+            $startOfMonth = $date->copy()->startOfMonth();
+            $endOfMonth = ($i == 0) ? Carbon::now() : $date->copy()->endOfMonth();
+
             $commissions = Property::where('transaction_status', 'completed')
                 ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
                 ->sum('commission');
-            \Log::info("Commissions for {$formattedMonth}: {$commissions}");
-    
-            $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])->sum('amount');
-            \Log::info("Costs for {$formattedMonth}: {$costs}");
-    
+
+            $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->sum('amount');
+
+            $propertiesSold = Property::where('transaction_status', 'completed')
+                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                ->count();
+
+            $newListings = Property::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->count();
+
             $profit = $commissions - $costs;
             $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-    
+
             $months[] = [
-                'month' => $formattedMonth,
-                'properties_sold' => $propertiesSold,
-                'new_users' => $newUsers,
-                'added_properties' => $addedProperties,
+                'month' => $date->format('F Y'),
                 'commissions' => $commissions,
                 'costs' => $costs,
                 'profit' => $profit,
-                'profit_margin' => round($profitMargin, 2) . '%'
+                'profit_margin' => round($profitMargin, 2),
+                'properties_sold' => $propertiesSold,
+                'new_listings' => $newListings,
             ];
         }
-    
+
         return response()->json([
-            'monthly_data' => array_reverse($months),
-            'total_properties_sold' => $totalPropertiesSold,
-            'total_new_users' => $totalNewUsers,
-            'total_added_properties' => $totalAddedProperties
+            'success' => true,
+            'data' => array_reverse($months)
         ]);
     }
-    
 
-    public function commissionsOverview()
+    public function completeSale(Request $request, $id)
     {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can complete sales.'], 403);
+        }
+
+        $property = Property::findOrFail($id);
+        
+        if ($property->transaction_status === 'completed') {
+            return response()->json(['error' => 'Property sale already completed'], 400);
+        }
+
+        $commissionRate = Setting::getCommissionRate();
+        $commission = $property->price * $commissionRate;
+
+        $property->transaction_status = 'completed';
+        $property->commission = $commission;
+        $property->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Property sale completed and commission calculated',
+            'property' => $property,
+            'commission_rate_applied' => $commissionRate
+        ]);
+    }
+
+    public function commissionsOverview(Request $request)
+    {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can view commissions overview.'], 403);
+        }
+
         $totalCommissions = Property::where('transaction_status', 'completed')
             ->sum('commission');
+            
         $pendingCommissions = Property::where('transaction_status', 'pending')
             ->whereNotNull('commission')
             ->sum('commission');
+            
         $completedProperties = Property::where('transaction_status', 'completed')
             ->count();
 
         return response()->json([
+            'success' => true,
             'total_commissions' => $totalCommissions,
             'pending_commissions' => $pendingCommissions,
             'completed_properties' => $completedProperties
         ]);
     }
+
+    public function propertyStatistics(Request $request)
+    {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can view property statistics.'], 403);
+        }
+
+        $totalProperties = Property::count();
+        $activeListings = Property::where('approval_status', 'accepted')->count();
+        $soldProperties = Property::where('transaction_status', 'completed')->count();
+        $averageTimeToSell = Property::where('transaction_status', 'completed')
+            ->selectRaw('AVG(DATEDIFF(updated_at, created_at)) as average_days')
+            ->first()->average_days;
+
+        return response()->json([
+            'success' => true,
+            'total_properties' => $totalProperties,
+            'active_listings' => $activeListings,
+            'sold_properties' => $soldProperties,
+            'average_time_to_sell' => round($averageTimeToSell, 1)
+        ]);
+    }
+
+    public function agentPerformance(Request $request)
+    {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can view agent performance.'], 403);
+        }
+
+        $topAgents = User::whereHas('properties', function($query) {
+                $query->where('transaction_status', 'completed');
+            })
+            ->withCount(['properties as completed_sales' => function($query) {
+                $query->where('transaction_status', 'completed');
+            }])
+            ->withSum(['properties as total_commission' => function($query) {
+                $query->where('transaction_status', 'completed');
+            }], 'commission')
+            ->orderByDesc('total_commission')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'top_agents' => $topAgents
+        ]);
+    }
+
+    public function yearlySummary(Request $request, $year = null)
+    {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can view yearly summary.'], 403);
+        }
+
+        $year = $year ?? Carbon::now()->year;
+        
+        $summary = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $start = Carbon::create($year, $month, 1)->startOfMonth();
+            $end = Carbon::create($year, $month, 1)->endOfMonth();
+
+            $summary[] = [
+                'month' => $start->format('F'),
+                'sales' => Property::where('transaction_status', 'completed')
+                    ->whereBetween('updated_at', [$start, $end])
+                    ->count(),
+                'revenue' => Property::where('transaction_status', 'completed')
+                    ->whereBetween('updated_at', [$start, $end])
+                    ->sum('commission'),
+                'new_listings' => Property::whereBetween('created_at', [$start, $end])
+                    ->count()
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'year' => $year,
+            'summary' => $summary
+        ]);
+    }
+
+    public function costAnalysis(Request $request)
+    {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            return response()->json(['error' => 'Forbidden. Only super-admins can view cost analysis.'], 403);
+        }
+
+        $categories = Cost::select('category')
+            ->selectRaw('SUM(amount) as total_amount')
+            ->groupBy('category')
+            ->orderByDesc('total_amount')
+            ->get();
+
+        $monthlyCosts = Cost::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+            ->whereYear('created_at', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'categories' => $categories,
+            'monthly_costs' => $monthlyCosts
+        ]);
+    }
 }
-
-//     public function commissionsOverview()
-//     {
-//         $totalCommissions = Property::where('transaction_status', 'completed')
-//             ->sum('commission');
-//         $pendingCommissions = Property::where('transaction_status', 'pending')
-//             ->whereNotNull('commission')
-//             ->sum('commission');
-//         $completedProperties = Property::where('transaction_status', 'completed')
-//             ->count();
-
-//         return response()->json([
-//             'total_commissions' => $totalCommissions,
-//             'pending_commissions' => $pendingCommissions,
-//             'completed_properties' => $completedProperties
-//         ]);
-//     }
-// }

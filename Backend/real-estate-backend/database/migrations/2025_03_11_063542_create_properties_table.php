@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->enum('type', ['land', 'apartment', 'villa', 'office']); // نوع العقار
+            $table->enum('type', ['land', 'apartment', 'villa', 'office']); // Property type
             $table->decimal('price', 15, 2);
             $table->string('city');
             $table->string('district');
