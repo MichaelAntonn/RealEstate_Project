@@ -19,12 +19,25 @@ public function sendMessage(Request $request) {
         'message_text' => 'required|string|max:1000'
     ]);
 
+    // تحقق من أن المستخدم جزء من المحادثة
+    $conversation = Conversation::find($validated['conversation_id']);
+    if (!$conversation) {
+        return response()->json(['error' => 'Conversation not found'], 404);
+    }
+
+    if (!in_array(auth()->id(), $conversation->participants->pluck('user_id')->toArray())) {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
     $message = Message::create([
         'conversation_id' => $validated['conversation_id'],
         'sender_id' => auth()->id(),
         'receiver_id' => $validated['receiver_id'],
         'message_text' => $validated['message_text']
     ]);
+
+    // بث الرسالة
+    broadcast(new NewChatMessage($message))->toOthers();
 
     return response()->json([
         'status' => 'Message sent!',
