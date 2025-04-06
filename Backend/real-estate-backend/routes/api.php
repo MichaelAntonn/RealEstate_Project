@@ -114,19 +114,34 @@ Route::prefix('v1')->group(function () {
 
             // Commission Routes
             Route::prefix('commissions')->group(function () {
-                Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin']);
-                Route::get('/overview', [CommissionController::class, 'commissionsOverview']);
-                Route::get('/property-stats', [CommissionController::class, 'propertyStatistics']);
-                Route::get('/agent-performance', [CommissionController::class, 'agentPerformance']);
-                Route::get('/yearly-summary/{year?}', [CommissionController::class, 'yearlySummary']);
-                Route::get('/cost-analysis', [CommissionController::class, 'costAnalysis']);
-                Route::post('/complete-sale/{id}', [CommissionController::class, 'completeSale']);
+                Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin'])->name('commissions.monthly-profit');
+                Route::get('/overview', [CommissionController::class, 'commissionsOverview'])->name('commissions.overview');
+                Route::get('/property-stats', [CommissionController::class, 'propertyStatistics'])->name('commissions.property-stats');
+                Route::get('/agent-performance', [CommissionController::class, 'agentPerformance'])->name('commissions.agent-performance');
+                Route::get('/yearly-summary/{year?}', [CommissionController::class, 'yearlySummary'])->name('commissions.yearly-summary');
+                Route::get('/cost-analysis', [CommissionController::class, 'costAnalysis'])->name('commissions.cost-analysis');
+                Route::post('/complete-sale/{id}', [CommissionController::class, 'completeSale'])->name('commissions.complete-sale');
+
+                // Goal routes
+                Route::post('/set-goal', [CommissionController::class, 'setSalesGoal'])->name('commissions.set-goal');
+                Route::get('/goals-progress', [CommissionController::class, 'getGoalsProgress'])->name('commissions.goals-progress');
+                Route::get('/monthly-profit-with-goals', [CommissionController::class, 'monthlyProfitMarginWithGoals'])->name('commissions.monthly-profit-with-goals');
+                Route::get('/goal-details/{id}', [CommissionController::class, 'getGoalDetails'])->name('commissions.goal-details');
+
+                // Yearly Goals Routes
+                Route::post('/yearly-goals', [CommissionController::class, 'createYearlyGoal'])->name('commissions.create.yearly-goal');
+                Route::get('/yearly-goals', [CommissionController::class, 'getYearlyGoals'])->name('commissions.get.yearly-goals');
+                Route::get('/yearly-goals/{year}', [CommissionController::class, 'getYearlyGoalDetails'])->name('commissions.get.yearly-goal-details');
+                Route::put('/yearly-goals/{id}', [CommissionController::class, 'updateYearlyGoal'])->name('commissions.update.yearly-goal');
+                Route::delete('/yearly-goals/{id}', [CommissionController::class, 'deleteYearlyGoal'])->name('commissions.delete.yearly-goal');
+                Route::get('/yearly-goals/{year}/progress', [CommissionController::class, 'getYearlyGoalProgress'])->name('commissions.get.yearly-goal-progress');
+                
             });
-            
+
             // Settings Routes 
             Route::prefix('settings')->group(function () {
-                Route::get('/financial', [SettingController::class, 'getFinancialSettings']);
-                Route::post('/commission-rate', [SettingController::class, 'updateCommissionRate']);
+                Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('settings.financial');
+                Route::post('/commission-rate', [SettingController::class, 'updateCommissionRate'])->name('settings.commission-rate');
             });
         });
     });
