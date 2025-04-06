@@ -1,109 +1,178 @@
 <div class="container">
-    <!-- Pending Properties Section -->
-    <h2>Pending Properties</h2>
-    <div class="search-bar">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        placeholder="Search by title or property ID"
-        (input)="filteredPendingProperties"
-      />
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Property Code</th>
-          <th>Price</th>
-          <th>City</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let property of filteredPendingProperties">
-          <td>{{ property.title }}</td>
-          <td>{{ property.property_code }}</td>
-          <td>{{ property.price }}</td>
-          <td>{{ property.city }}</td>
-          <td>
-            <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
-            <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
-          </td>
-        </tr>
-        <tr *ngIf="filteredPendingProperties.length === 0">
-          <td colspan="5">No pending properties found.</td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <!-- Accepted Properties Section -->
-    <h2>Accepted Properties</h2>
-    <div class="search-bar">
-      <input
-        type="text"
-        [(ngModel)]="acceptedSearchQuery"
-        placeholder="Search by title or property ID"
-      />
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Property Code</th>
-          <th>Price</th>
-          <th>City</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let property of filteredAcceptedProperties">
-          <td>{{ property.title }}</td>
-          <td>{{ property.property_code }}</td>
-          <td>{{ property.price }}</td>
-          <td>{{ property.city }}</td>
-          <td>
-            <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
-          </td>
-        </tr>
-        <tr *ngIf="filteredAcceptedProperties.length === 0">
-          <td colspan="5">No accepted properties found.</td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <!-- Rejected Properties Section -->
-    <h2>Rejected Properties</h2>
-    <div class="search-bar">
-      <input
-        type="text"
-        [(ngModel)]="rejectedSearchQuery"
-        placeholder="Search by title or property ID"
-      />
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Property Code</th>
-          <th>Price</th>
-          <th>City</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let property of filteredRejectedProperties">
-          <td>{{ property.title }}</td>
-          <td>{{ property.property_code }}</td>
-          <td>{{ property.price }}</td>
-          <td>{{ property.city }}</td>
-          <td>
-            <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
-            <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
-          </td>
-        </tr>
-        <tr *ngIf="filteredRejectedProperties.length === 0">
-          <td colspan="5">No rejected properties found.</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Pending Properties Section -->
+  <h2>Pending Properties</h2>
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      placeholder="Search by title or property ID"
+    />
   </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Property Code</th>
+        <th>Price</th>
+        <th>City</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let property of filteredPendingProperties">
+        <td>{{ property.title }}</td>
+        <td>{{ property.property_code }}</td>
+        <td>{{ property.price }}</td>
+        <td>{{ property.city }}</td>
+        <td>
+          <button class="btn btn-info" (click)="viewProperty(property)">View</button>
+          <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
+          <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredPendingProperties.length === 0">
+        <td colspan="5">No pending properties found.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Accepted Properties Section -->
+  <h2>Accepted Properties</h2>
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="acceptedSearchQuery"
+      placeholder="Search by title or property ID"
+    />
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Property Code</th>
+        <th>Price</th>
+        <th>City</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let property of filteredAcceptedProperties">
+        <td>{{ property.title }}</td>
+        <td>{{ property.property_code }}</td>
+        <td>{{ property.price }}</td>
+        <td>{{ property.city }}</td>
+        <td>
+          <button class="btn btn-info" (click)="viewProperty(property)">View</button>
+          <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
+          <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredAcceptedProperties.length === 0">
+        <td colspan="5">No accepted properties found.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Rejected Properties Section -->
+  <h2>Rejected Properties</h2>
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="rejectedSearchQuery"
+      placeholder="Search by title or property ID"
+    />
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Property Code</th>
+        <th>Price</th>
+        <th>City</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let property of filteredRejectedProperties">
+        <td>{{ property.title }}</td>
+        <td>{{ property.property_code }}</td>
+        <td>{{ property.price }}</td>
+        <td>{{ property.city }}</td>
+        <td>
+          <button class="btn btn-info" (click)="viewProperty(property)">View</button>
+          <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
+          <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredRejectedProperties.length === 0">
+        <td colspan="5">No rejected properties found.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal for Viewing Property Details -->
+  <div class="modal" *ngIf="selectedProperty">
+    <div class="modal-content">
+      <!-- Image Section -->
+      <div class="property-image">
+        <img
+          [src]="selectedProperty.cover_image ? 'http://localhost:8000/storage/' + selectedProperty.cover_image : 'https://picsum.photos/600/300?blur=2'"
+          alt="{{ selectedProperty.title }}"
+          (error)="onImageError($event)"
+        />
+      </div>
+
+      <!-- Property Details -->
+      <div class="property-details">
+        <h3>{{ selectedProperty.title }}</h3>
+        <div class="details-grid">
+          <p><strong>Property Code:</strong> {{ selectedProperty.property_code }}</p>
+          <p><strong>Price:</strong> {{ selectedProperty.price | currency:'EGP' }}</p>
+          <p><strong>City:</strong> {{ selectedProperty.city }}</p>
+          <p><strong>Type:</strong> {{ selectedProperty.type }}</p>
+          <p><strong>Area:</strong> {{ selectedProperty.area }} m²</p>
+          <p><strong>Approval Status:</strong> {{ selectedProperty.approval_status }}</p>
+          <p><strong>Legal Status:</strong> {{ selectedProperty.legal_status }}</p>
+          <p><strong>Furnished:</strong> {{ selectedProperty.furnished ? 'Yes' : 'No' }}</p>
+          <p><strong>Amenities:</strong> {{ getAmenities(selectedProperty.amenities) }}</p>
+          <p><strong>Bedrooms:</strong> {{ selectedProperty.bedrooms ?? 'N/A' }}</p>
+          <p><strong>Bathrooms:</strong> {{ selectedProperty.bathrooms ?? 'N/A' }}</p>
+        </div>
+        <p class="description"><strong>Description:</strong> {{ selectedProperty.description || 'No description available' }}</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <button
+          *ngIf="selectedProperty.approval_status === 'pending'"
+          class="btn btn-success"
+          (click)="acceptProperty(selectedProperty.id)"
+        >
+          Accept
+        </button>
+        <button
+          *ngIf="selectedProperty.approval_status === 'pending' || selectedProperty.approval_status === 'accepted'"
+          class="btn btn-danger"
+          (click)="rejectProperty(selectedProperty.id)"
+        >
+          Reject
+        </button>
+        <button
+          *ngIf="selectedProperty.approval_status === 'rejected'"
+          class="btn btn-success"
+          (click)="acceptProperty(selectedProperty.id)"
+        >
+          Accept
+        </button>
+        <button
+          *ngIf="selectedProperty.approval_status === 'accepted' || selectedProperty.approval_status === 'rejected'"
+          class="btn btn-danger"
+          (click)="deleteProperty(selectedProperty.id)"
+        >
+          Delete
+        </button>
+        <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -17,6 +17,7 @@ export class AdminPropertiesComponent implements OnInit {
   searchQuery: string = '';         // For pending properties
   acceptedSearchQuery: string = ''; // For accepted properties
   rejectedSearchQuery: string = ''; // For rejected properties
+  selectedProperty: any = null;     // For modal display
 
   constructor(private dashboardService: DashboardService) {}
 
@@ -26,15 +27,15 @@ export class AdminPropertiesComponent implements OnInit {
 
   loadProperties(): void {
     this.dashboardService.getPendingProperties().subscribe((response) => {
-      this.pendingProperties = response.properties.data;
+      this.pendingProperties = response.properties.data || response.data;
     });
 
     this.dashboardService.getAcceptedProperties().subscribe((response) => {
-      this.acceptedProperties = response.properties.data;
+      this.acceptedProperties = response.properties.data || response.data;
     });
 
     this.dashboardService.getRejectedProperties().subscribe((response) => {
-      this.rejectedProperties = response.properties.data;
+      this.rejectedProperties = response.properties.data || response.data;
     });
   }
 
@@ -71,23 +72,67 @@ export class AdminPropertiesComponent implements OnInit {
     );
   }
 
+  viewProperty(property: any): void {
+    this.dashboardService.getProperty(property.id).subscribe({
+      next: (response) => {
+        this.selectedProperty = response.property; // Set detailed property data
+        console.log('Property details loaded:', this.selectedProperty);
+      },
+      error: (error) => {
+        console.error('Error fetching property details:', error);
+        this.selectedProperty = { ...property }; // Fallback to basic data if API fails
+      }
+    });
+  }
+
   acceptProperty(id: number): void {
-    this.dashboardService.acceptProperty(id).subscribe(() => {
-      this.loadProperties();
+    this.dashboardService.acceptProperty(id).subscribe({
+      next: () => {
+        this.loadProperties();
+        this.closeModal();
+      },
+      error: (error) => console.error('Error accepting property:', error)
     });
   }
 
   rejectProperty(id: number): void {
-    this.dashboardService.rejectProperty(id).subscribe(() => {
-      this.loadProperties();
+    this.dashboardService.rejectProperty(id).subscribe({
+      next: () => {
+        this.loadProperties();
+        this.closeModal();
+      },
+      error: (error) => console.error('Error rejecting property:', error)
     });
   }
 
   deleteProperty(id: number): void {
     if (confirm('Are you sure you want to delete this property?')) {
-      this.dashboardService.deleteProperty(id).subscribe(() => {
-        this.loadProperties();
+      this.dashboardService.deleteProperty(id).subscribe({
+        next: () => {
+          this.loadProperties();
+          this.closeModal();
+        },
+        error: (error) => console.error('Error deleting property:', error)
       });
+    }
+  }
+
+  closeModal(): void {
+    this.selectedProperty = null;
+  }
+
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = 'assets/placeholder.jpg';
+  }
+
+  // Helper method to parse and format amenities
+  getAmenities(amenities: string): string {
+    try {
+      const parsed = JSON.parse(amenities);
+      return Array.isArray(parsed) ? parsed.join(', ') : 'None';
+    } catch (e) {
+      console.error('Error parsing amenities:', e);
+      return 'None';
     }
   }
 }
