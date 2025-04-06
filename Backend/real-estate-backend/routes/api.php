@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
             Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('change.password');
             Route::delete('/account', [UserDashboardController::class, 'deleteAccount'])->name('account.delete');
+            Route::get('/user/activities', [DashboardController::class, 'userActivities'])->name('Activities');;
         });
 
         // Chat routes
