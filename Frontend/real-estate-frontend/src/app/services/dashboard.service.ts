@@ -61,10 +61,10 @@ export class DashboardService {
     return this.http.delete(`${this.apiUrl}/properties/${id}`, { headers: this.getHeaders(), withCredentials: true });
   }
   acceptProperty(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/properties/${id}/accept`, {}, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.put(`${this.apiUrl}/admin/properties/${id}/accept`, {}, { headers: this.getHeaders(), withCredentials: true });
   }
   rejectProperty(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/properties/${id}/reject`, {}, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.put(`${this.apiUrl}/admin/properties/${id}/reject`, {}, { headers: this.getHeaders(), withCredentials: true });
   }
 
 
