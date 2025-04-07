@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -7,47 +8,178 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
- 
-        // Ahmed
-        if (!User::where('email', 'ahmed@example.com')->exists()) {
-            User::create([
+        $users = [
+            [
                 'first_name' => 'Ahmed',
-                'last_name' => 'Mohamed',
+                'last_name' => 'Mostafa',
                 'email' => 'ahmed@example.com',
                 'password' => Hash::make('password123'),
-                'phone_number' => '0987654322',
-                'address' => '456 Buyer St',
-                'user_type' => 'user',
-                'account_status' => 'active',
-                'country' => 'Egypt',
-                'city' => 'Alexandria',
+                'user_type' => 'super-admin',
+                'phone_number' => '01012345678', // Egyptian phone number format
                 'email_verified_at' => now(),
-                'terms_and_conditions' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
-        }
-
-        // Sara
-        if (!User::where('email', 'sara@example.com')->exists()) {
-            User::create([
+            ],
+            [
                 'first_name' => 'Sara',
-                'last_name' => 'Ali',
+                'last_name' => 'Hassan',
                 'email' => 'sara@example.com',
                 'password' => Hash::make('password123'),
-                'phone_number' => '1122334466',
-                'address' => '789 Seller St',
-                'user_type' => 'user',
-                'account_status' => 'active',
-                'country' => 'Egypt',
-                'city' => 'Giza',
+                'user_type' => 'admin',
+                'phone_number' => '01123456789',
                 'email_verified_at' => now(),
-                'terms_and_conditions' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ],
+            [
+                'first_name' => 'Mohamed',
+                'last_name' => 'Ali',
+                'email' => 'mohamed@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01234567890',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Fatima',
+                'last_name' => 'Youssef',
+                'email' => 'fatima@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01556789012',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Omar',
+                'last_name' => 'Khaled',
+                'email' => 'omar@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01098765432',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Laila',
+                'last_name' => 'Ibrahim',
+                'email' => 'laila@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'admin',
+                'phone_number' => '01187654321',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Hassan',
+                'last_name' => 'Mahmoud',
+                'email' => 'hassan@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01265432109',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Nour',
+                'last_name' => 'Sayed',
+                'email' => 'nour@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01543210987',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Yasmin',
+                'last_name' => 'Adel',
+                'email' => 'yasmin@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01055556666',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Khaled',
+                'last_name' => 'Fathy',
+                'email' => 'khaled@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'super-admin',
+                'phone_number' => '01177778888',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Mona',
+                'last_name' => 'Ezzat',
+                'email' => 'mona@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01299990000',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Ali',
+                'last_name' => 'Salem',
+                'email' => 'ali@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01511112222',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Rania',
+                'last_name' => 'Gamal',
+                'email' => 'rania@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'admin',
+                'phone_number' => '01033334444',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Tarek',
+                'last_name' => 'Nabil',
+                'email' => 'tarek@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01155557777',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'first_name' => 'Dina',
+                'last_name' => 'Zaki',
+                'email' => 'dina@example.com',
+                'password' => Hash::make('password123'),
+                'user_type' => 'user',
+                'phone_number' => '01288889999',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+
+        foreach ($users as $user) {
+            User::create($user);
         }
     }
 }

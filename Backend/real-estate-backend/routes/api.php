@@ -68,12 +68,12 @@ Route::prefix('v1')->group(function () {
         // Booking routes
         Route::prefix('bookings')->name('bookings.')->group(function () {
             Route::get('/', [BookingController::class, 'index'])->name('index');
-            Route::get('/{id}', [BookingController::class, 'show'])->name('show');
-            Route::post('/', [BookingController::class, 'store'])->name('store');
-            Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('update.status');
             Route::get('/pending', [BookingController::class, 'getPending'])->name('pending');
             Route::get('/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
             Route::get('/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
+            Route::get('/{id}', [BookingController::class, 'show'])->name('show');
+            Route::post('/', [BookingController::class, 'store'])->name('store');
+            Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('update.status');
         });
 
         // Review routes

@@ -98,20 +98,40 @@ deleteUser(id: number): Observable<any> {
 
 // bookings
 getPendingBookings(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/properties/bookings/pending?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  return this.http.get(`${this.apiUrl}/bookings/pending?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 getConfirmedBookings(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/properties/bookings/confirmed?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  return this.http.get(`${this.apiUrl}/bookings/confirmed?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 getCanceledBookings(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/properties/bookings/canceled?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  return this.http.get(`${this.apiUrl}/bookings/canceled?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 updateBookingStatus(id: number, status: string): Observable<any> {
   return this.http.put(`${this.apiUrl}/properties/bookings/${id}/status`, { status }, { headers: this.getHeaders(), withCredentials: true });
 }
+
+
+
+
+// reviews
+getPropertyReviews(propertyId: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/reviews/by-property/${propertyId}`, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
+}
+
+deleteReview(reviewId: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/reviews/${reviewId}`, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
+}
+
+
 
 // activities
 
