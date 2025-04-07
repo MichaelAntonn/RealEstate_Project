@@ -1,0 +1,27 @@
+<div class="d-flex justify-content-between align-items-center mb-4 px-3 py-2 bg-light rounded-3 shadow-sm">
+  <h2 class="mb-0 text-primary fw-bold fs-3"></h2>
+  <div class="d-flex align-items-center">
+    <span class="text-muted me-3 fw-medium">
+      <i class="fas fa-clock me-1"></i>
+      Cairo: {{ egyptTime | date:'shortTime' }}
+    </span>
+    <div class="dropdown">
+      <div class="d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+        <img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" 
+             alt="User" 
+             class="rounded-circle border border-2 border-primary"
+             style="width: 42px; height: 42px; object-fit: cover;">
+        <span class="ms-2 me-1 fw-medium text-dark">John Williams</span>
+        <i class="fas fa-chevron-down text-muted small"></i>
+      </div>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+        <li>
+          <a class="dropdown-item d-flex align-items-center py-2" href="#" (click)="logout()">
+            <i class="fas fa-sign-out-alt me-2 text-danger"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

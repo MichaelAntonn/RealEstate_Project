@@ -9,21 +9,21 @@ class BookingSeeder extends Seeder
     public function run(): void
     {
         Booking::create([
-            'user_id' => 2, // Ahmed (Buyer)
-            'property_id' => 2, // Cozy Apartment
+            'user_id' => 2, 
+            'property_id' => 2, 
             'booking_date' => '2025-03-25',
             'visit_date' => '2025-03-26',
-            'status' => 'pending', // بدل under_review
+            'status' => 'pending', 
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         Booking::create([
-            'user_id' => 2, // Ahmed (Buyer)
-            'property_id' => 3, // Office Space
+            'user_id' => 2, 
+            'property_id' => 3,
             'booking_date' => '2025-03-26',
             'visit_date' => '2025-03-27',
-            'status' => 'confirmed', // بدل accepted
+            'status' => 'confirmed',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

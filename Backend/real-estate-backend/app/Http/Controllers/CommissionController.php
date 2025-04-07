@@ -1,111 +1,121 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Constants\UserType;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
-use App\Models\Cost;
+use App\Models\Goal;
+use App\Services\CommissionCalculationService;
+use App\Services\GoalTrackingService;
+use App\Services\PropertyStatisticsService;
+use App\Services\CostAnalysisService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class CommissionController extends Controller
 {
-    // public function monthlyProfitMargin()
-    // {
-    //     $months = [];
+    public function __construct(
+        private CommissionCalculationService $commissionService,
+        private GoalTrackingService $goalService,
+        private PropertyStatisticsService $propertyStatsService,
+        private CostAnalysisService $costAnalysisService
+    ) {}
 
-    //     for ($i = 0; $i < 4; $i++) {
-    //         $date = Carbon::create(2025, 3, 22)->subMonths($i); // Fixed date for testing
-    //         $startOfMonth = $date->startOfMonth();
-    //         $endOfMonth = $date->endOfMonth();
-
-    //         // Calculate total commissions for the month
-    //         $commissions = Property::where('transaction_status', 'completed')
-    //             ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-    //             ->sum('commission');
-
-    //         // Calculate total costs for the month based on created_at
-    //         $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-    //             ->sum('amount');
-
-    //         $profit = $commissions - $costs;
-    //         $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-
-    //         $months[] = [
-    //             'month' => $date->format('F Y'),
-    //             'commissions' => $commissions,
-    //             'costs' => $costs,
-    //             'profit' => $profit,
-    //             'profit_margin' => round($profitMargin, 2) . '%'
-    //         ];
-    //     }
-
-    //     return response()->json(array_reverse($months));
-    // }
-
-    public function monthlyProfitMargin()
+    public function monthlyProfitMargin(Request $request)
     {
-        $months = [];
-        for ($i = 0; $i < 4; $i++) {
-            $date = Carbon::now()->subMonths($i); // Fixed date for testing: March 22, 2025
-            $startOfMonth = $date->startOfMonth();
-            $endOfMonth = ($i == 0) ? Carbon::now() : $date->endOfMonth(); // Current month ends today, others end at month-end
-
-            // Calculate total commissions for the month
-            $commissions = Property::where('transaction_status', 'completed')
-                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-                ->sum('commission');
-
-            // Calculate total costs for the month based on created_at
-            $costs = Cost::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                ->sum('amount');
-
-            $profit = $commissions - $costs;
-            $profitMargin = $commissions > 0 ? ($profit / $commissions) * 100 : 0;
-
-            $months[] = [
-                'month' => $date->format('F Y'),
-                'commissions' => $commissions,
-                'costs' => $costs,
-                'profit' => $profit,
-                'profit_margin' => round($profitMargin, 2) . '%'
-            ];
-        }
-
-        return response()->json(array_reverse($months));
+        $this->authorizeAccess($request);
+        return $this->successResponse([
+            'data' => $this->commissionService->calculateMonthlyProfitMargins()
+        ]);
     }
-
 
     public function completeSale(Request $request, $id)
     {
+        $this->authorizeAccess($request);
         $property = Property::findOrFail($id);
+        
+        if ($property->transaction_status === 'completed') {
+            return $this->errorResponse('Property sale already completed', 400);
+        }
 
-        $commissionRate = 0.05; // 5%
-        $commission = $property->price * $commissionRate;
-
-        $property->transaction_status = 'completed';
-        $property->commission = $commission;
-        $property->save();
-
-        return response()->json([
+        $result = $this->commissionService->completeSale($property);
+        return $this->successResponse([
             'message' => 'Property sale completed and commission calculated',
-            'property' => $property
+            ...$result
         ]);
     }
 
-    public function commissionsOverview()
+    public function commissionsOverview(Request $request)
     {
-        $totalCommissions = Property::where('transaction_status', 'completed')
-            ->sum('commission');
-        $pendingCommissions = Property::where('transaction_status', 'pending')
-            ->whereNotNull('commission')
-            ->sum('commission');
-        $completedProperties = Property::where('transaction_status', 'completed')
-            ->count();
+        $this->authorizeAccess($request);
+        $data = $this->commissionService->getCommissionsOverview();
+        $data['current_month_goal'] = $this->goalService->getMonthlyGoalProgress();
 
-        return response()->json([
-            'total_commissions' => $totalCommissions,
-            'pending_commissions' => $pendingCommissions,
-            'completed_properties' => $completedProperties
+        return $this->successResponse($data);
+    }
+
+    public function propertyStatistics(Request $request)
+    {
+        $this->authorizeAccess($request);
+        return $this->successResponse(
+            $this->propertyStatsService->getPropertyStats()
+        );
+    }
+
+    public function agentPerformance(Request $request)
+    {
+        $this->authorizeAccess($request);
+        return $this->successResponse([
+            'top_agents' => $this->propertyStatsService->getAgentPerformance()
         ]);
+    }
+
+    public function yearlySummary(Request $request, $year = null)
+    {
+        $this->authorizeAccess($request);
+        $year = $year ?? Carbon::now()->year;
+
+        return $this->successResponse([
+            'year' => $year,
+            'summary' => $this->commissionService->getYearlySummary($year),
+            'yearly_goal' => $this->goalService->getYearlyGoalProgress($year)
+        ]);
+    }
+
+    public function costAnalysis(Request $request)
+    {
+        $this->authorizeAccess($request);
+        return $this->successResponse([
+            'categories' => $this->costAnalysisService->getCostCategories(),
+            'monthly_costs' => $this->costAnalysisService->getMonthlyCosts()
+        ]);
+    }
+
+    public function getYearlyGoalProgress(Request $request, $year)
+    {
+        $this->authorizeAccess($request);
+        return $this->successResponse([
+            'goal' => $this->goalService->getYearlyGoalProgress($year),
+            'monthly_progress' => $this->goalService->getMonthlyBreakdown($year)
+        ]);
+    }
+
+    // Helper methods
+    protected function authorizeAccess(Request $request): void
+    {
+        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+            abort(403, 'Forbidden. Only super-admins can access this resource.');
+        }
+    }
+
+    protected function successResponse(array $data, int $status = 200)
+    {
+        return response()->json(['success' => true, ...$data], $status);
+    }
+
+    protected function errorResponse(string $message, int $status = 400)
+    {
+        return response()->json(['success' => false, 'error' => $message], $status);
     }
 }

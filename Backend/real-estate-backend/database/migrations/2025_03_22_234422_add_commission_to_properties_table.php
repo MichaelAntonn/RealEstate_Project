@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('properties', function (Blueprint $table) {
-            $table->decimal('commission', 15, 2)->nullable()->after('price'); // العمولة بس
+            $table->decimal('commission', 15, 2)->nullable()->after('price'); // only commision
         });
     }
 

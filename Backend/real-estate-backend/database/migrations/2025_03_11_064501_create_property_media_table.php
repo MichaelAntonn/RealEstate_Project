@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('property_media', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('PropertyID')->constrained('properties')->onDelete('cascade'); // مفتاح أجنبي
+            $table->foreignId('PropertyID')->constrained('properties')->onDelete('cascade'); 
             $table->string('MediaURL');
             $table->enum('MediaType', ['image', 'video']);
             $table->timestamps();

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // User who added the cost
             $table->decimal('amount', 15, 2); // Cost amount
             $table->text('description')->nullable(); // Optional description of the cost
+            $table->string('category')->nullable(); // Optional category
             $table->timestamps(); // created_at and updated_at (will use created_at to determine the month)
         });
     }

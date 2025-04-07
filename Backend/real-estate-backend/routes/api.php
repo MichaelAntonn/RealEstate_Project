@@ -15,15 +15,17 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SettingController;
+
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
-Route::get('/search', [PropertyController::class, 'search'])->name('search.properties');
+Route::get('/search', [PropertyController::class, 'search'])->name('search.properties')->middleware('throttle:search');
 
 Route::prefix('v1')->group(function () {
     // Authentication routes (public)
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-    Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
-    
+    Route::post('/login', [AuthController::class, 'login'])->name('auth.login')->middleware('throttle:login');
+
     // Password Reset Routes (public)
     Route::prefix('password')->name('password.')->group(function () {
         Route::post('/forgot-password', [ResetPasswordController::class, 'submitForgetPasswordForm'])->name('forgot');
@@ -36,6 +38,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback'])->name('google.callback');
     });
 
+    // Property Routes (public)
+    Route::prefix('properties')->name('properties.')->group(function () {
+        Route::get('/', [PropertyController::class, 'index'])->name('index');
+        Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
+    });
+
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
@@ -46,12 +54,15 @@ Route::prefix('v1')->group(function () {
 
         // Property Routes
         Route::prefix('properties')->name('properties.')->group(function () {
-            Route::get('/', [PropertyController::class, 'index'])->name('index');
-            Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
             Route::post('/', [PropertyController::class, 'store'])->name('store');
             Route::put('/{id}', [PropertyController::class, 'update'])->name('update');
             Route::delete('/{id}', [PropertyController::class, 'destroy'])->name('destroy');
             Route::put('/{id}/sell', [CommissionController::class, 'completeSale'])->name('sell');
+            Route::prefix('/{propertyId}/media')->name('propertyMedia.')->group(function () {
+            Route::get('/', [PropertyController::class, 'getMedia'])->name('index');
+            Route::post('/', [PropertyController::class, 'addMedia'])->name('store');
+            Route::delete('/{mediaId}', [PropertyController::class, 'deleteMedia'])->name('delete');
+            });
         });
 
         // Booking routes
@@ -80,6 +91,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
             Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('change.password');
             Route::delete('/account', [UserDashboardController::class, 'deleteAccount'])->name('account.delete');
+            Route::get('/user/activities', [DashboardController::class, 'userActivities'])->name('Activities');;
         });
 
         // Chat routes
@@ -99,28 +111,65 @@ Route::prefix('v1')->group(function () {
 
         // Authenticated Admin Routes
         Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Admin management
-        Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('create.admin');
-        Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('destroy.user');
-        Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('destroy.admin');
-        Route::get('/users', [DashboardController::class, 'showUsers'])->name('show.users');
-        Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
-        Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+            // Admin management
+            Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('create.admin');
+            Route::delete('/users/{userId}', [DashboardController::class, 'destroyUser'])->name('destroy.user');
+            Route::delete('/admins/{adminId}', [DashboardController::class, 'destroyAdmin'])->name('destroy.admin');
+            Route::get('/users', [DashboardController::class, 'showUsers'])->name('show.users');
+            Route::get('/admins', [DashboardController::class, 'showAdmins'])->name('show.admins');
+            Route::put('/edit-profile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+            Route::get('/statistics', [DashboardController::class, 'generalStatistics'])->name('statistics');
+            Route::get('/latest-properties', [DashboardController::class, 'latestProperties'])->name('latest-properties');
+            Route::get('/user-activities/{userId?}', [DashboardController::class, 'userActivities'])->name('user-activities');
+
+            // Property Routes
+            Route::prefix('properties')->name('properties.')->group(function () {
+                Route::put('/{id}/accept', [PropertyController::class, 'acceptProperty'])->name('accept');
+                Route::put('/{id}/reject', [PropertyController::class, 'rejectProperty'])->name('reject');
+            });
+
+            // Commission Routes
+            Route::prefix('commissions')->name('commissions.')->group(function () {
+                Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin'])->name('monthly-profit');
+                Route::get('/overview', [CommissionController::class, 'commissionsOverview'])->name('overview');
+                Route::get('/property-stats', [CommissionController::class, 'propertyStatistics'])->name('property-stats');
+                Route::get('/agent-performance', [CommissionController::class, 'agentPerformance'])->name('agent-performance');
+                Route::get('/yearly-summary/{year?}', [CommissionController::class, 'yearlySummary'])->name('yearly-summary');
+                Route::get('/cost-analysis', [CommissionController::class, 'costAnalysis'])->name('cost-analysis');
+                Route::post('/complete-sale/{id}', [CommissionController::class, 'completeSale'])->name('complete-sale');
+
+                // Goal routes
+                Route::post('/set-goal', [CommissionController::class, 'setSalesGoal'])->name('set-goal');
+                Route::get('/goals-progress', [CommissionController::class, 'getGoalsProgress'])->name('goals-progress');
+                Route::get('/monthly-profit-with-goals', [CommissionController::class, 'monthlyProfitMarginWithGoals'])->name('monthly-profit-with-goals');
+                Route::get('/goal-details/{id}', [CommissionController::class, 'getGoalDetails'])->name('goal-details');
+
+                // Yearly Goals Routes
+                Route::post('/yearly-goals', [CommissionController::class, 'createYearlyGoal'])->name('create.yearly-goal');
+                Route::get('/yearly-goals', [CommissionController::class, 'getYearlyGoals'])->name('get.yearly-goals');
+                Route::get('/yearly-goals/{year}', [CommissionController::class, 'getYearlyGoalDetails'])->name('get.yearly-goal-details');
+                Route::put('/yearly-goals/{id}', [CommissionController::class, 'updateYearlyGoal'])->name('update.yearly-goal');
+                Route::delete('/yearly-goals/{id}', [CommissionController::class, 'deleteYearlyGoal'])->name('delete.yearly-goal');
+                Route::get('/yearly-goals/{year}/progress', [CommissionController::class, 'getYearlyGoalProgress'])->name('get.yearly-goal-progress');
+            });
+
+            // Settings Routes 
+            Route::prefix('settings')->name('settings.')->group(function () {
+                Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
+                Route::post('/commission-rate', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');
+            });
+        });
     });
-    
-Route::get('/login', function() {
-    return response()->json(['message' => 'Unauthorized'], 401);
-})->name('login');
-});
 });
 // routes/api.php
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages/send', [ChatController::class, 'sendMessage']);
 
-    
+
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
+
     Route::post('/conversations', [ChatController::class, 'createConversation'])->middleware('auth:sanctum');
 });
