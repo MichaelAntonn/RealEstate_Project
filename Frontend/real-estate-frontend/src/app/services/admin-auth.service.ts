@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { tap, map, catchError, switchMap } from 'rxjs/operators';
@@ -150,5 +150,35 @@ export class AdminAuthService {
     } else {
       this.router.navigate(['/login']);
     }
+  }
+
+  // New method to fetch user profile
+  getUserProfile(): Observable<{ first_name: string; last_name: string; profile_image: string | null }> {
+    const token = this.getToken();
+    if (!token) {
+      console.log('No token found for getUserProfile, returning fallback');
+      return of({ first_name: 'Admin', last_name: 'User', profile_image: null });
+    }
+    console.log('Fetching user profile with token:', token);
+    return this.http.get<{ success: boolean; profile: { first_name: string; last_name: string; profile_image: string | null } }>(
+      `${this.apiUrl}/v1/user/profile`,
+      {
+        headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
+        withCredentials: true
+      }
+    ).pipe(
+      map(response => {
+        if (response.success && response.profile) {
+          console.log('User profile fetched:', response.profile);
+          return response.profile; // Return only the profile object
+        }
+        console.warn('No profile data in response:', response);
+        throw new Error('No profile data found in response');
+      }),
+      catchError(error => {
+        console.error('Error fetching user profile:', error);
+        return of({ first_name: 'Admin', last_name: 'User', profile_image: null }); // Fallback profile
+      })
+    );
   }
 }
