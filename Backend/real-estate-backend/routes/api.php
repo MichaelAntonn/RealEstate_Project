@@ -168,9 +168,6 @@ Route::prefix('v1')->group(function () {
 // routes/api.php
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages/send', [ChatController::class, 'sendMessage']);
-
-
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
-
     Route::post('/conversations', [ChatController::class, 'createConversation'])->middleware('auth:sanctum');
 });
