@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../../services/dashboard.service';
-import { AdminAuthService } from '../../../services/admin-auth.service';
 
 @Component({
   selector: 'app-admin-settings',
@@ -26,25 +25,14 @@ export class AdminSettingsComponent implements OnInit {
   };
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  isSuperAdmin: boolean = false; // Flag to check super-admin role
 
-  constructor(
-    private dashboardService: DashboardService,
-    private adminAuthService: AdminAuthService
-  ) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
-    this.checkUserRole();
-  }
-
-  checkUserRole(): void {
-    const role = this.adminAuthService.getUserRole();
-    this.isSuperAdmin = role === 'super-admin';
-    console.log('User role:', role, 'Is Super Admin:', this.isSuperAdmin);
+    // No role check needed; AuthGuard ensures only super-admins reach this component
   }
 
   openModal(): void {
-    if (!this.isSuperAdmin) return; // Prevent modal from opening if not super-admin
     this.showModal = true;
     this.errorMessage = null;
     this.successMessage = null;

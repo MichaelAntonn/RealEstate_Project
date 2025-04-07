@@ -160,7 +160,7 @@ Route::prefix('v1')->group(function () {
             // Settings Routes 
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
-                Route::post('/commission-rate', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');
+                Route::post('/financial', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');
             });
         });
     });
