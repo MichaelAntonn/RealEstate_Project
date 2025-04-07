@@ -20,35 +20,72 @@ import { HomeComponent } from './components/home/home.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 
 export const routes: Routes = [
+
   // Default route (choose one based on your app's primary audience)
   { path: '', redirectTo: 'home', pathMatch: 'full' }, // Default to user home; change to 'admin' if admin-focused
  
+
+
   // User routes
   { path: 'login', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
-
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'dashboard', component: UserDashboardComponent },
   // Admin routes
   { path: 'admin/login', component: AdminLoginComponent },
-  { path: 'admin', component: AdminDashboardComponent }, // Admin landing page (no sidebar/navbar)
+  { 
+    path: 'admin', 
+    component: AdminDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin', 'super-admin'] } // Both admins and super-admins can access
+  },
   {
     path: 'admin/layout', // Admin layout with sidebar and navbar
     component: AdminLayoutComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] },
+    data: { roles: ['admin', 'super-admin'] }, // Both admins and super-admins can access the layout
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },
-      { path: 'users', component: AdminUsersComponent },
-      { path: 'properties', component: AdminPropertiesComponent },
-      { path: 'bookings', component: AdminBookingsComponent },
-      { path: 'activities', component: AdminActivitiesComponent },
-      { path: 'settings', component: AdminSettingsComponent },
-      { path: 'statistics', component: AdminStatisticsComponent },
+      { 
+        path: 'users', 
+        component: AdminUsersComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'properties', 
+        component: AdminPropertiesComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'bookings', 
+        component: AdminBookingsComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'activities', 
+        component: AdminActivitiesComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'settings', 
+        component: AdminSettingsComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['super-admin'] } // Only super-admins
+      },
+      { 
+        path: 'statistics', 
+        component: AdminStatisticsComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['super-admin'] } // Only super-admins
+      },
     ],
   },
 
   // Wildcard route (fallback)
-  { path: '**', redirectTo: 'home' } // Default to user home; change to 'admin' if admin-focused
+  { path: '**', redirectTo: 'home' } // Default to user home
 ];

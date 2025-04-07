@@ -19,11 +19,14 @@ export class DashboardService {
   }
 
   getStatistics(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/statistics`, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.get(`${this.apiUrl}/admin/statistics`, { headers: this.getHeaders(), withCredentials: true });
   }
 
   getMonthlyData(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/commissions/monthly-profit`, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.get(`${this.apiUrl}/admin/commissions/monthly-profit`, { headers: this.getHeaders(), withCredentials: true });
+  }
+  getYearlyData(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/commissions/monthly-profit`, { headers: this.getHeaders(), withCredentials: true });
   }
 
   getLatestProperties(): Observable<any> {
@@ -61,10 +64,10 @@ export class DashboardService {
     return this.http.delete(`${this.apiUrl}/properties/${id}`, { headers: this.getHeaders(), withCredentials: true });
   }
   acceptProperty(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/properties/${id}/accept`, {}, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.put(`${this.apiUrl}/admin/properties/${id}/accept`, {}, { headers: this.getHeaders(), withCredentials: true });
   }
   rejectProperty(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/properties/${id}/reject`, {}, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.put(`${this.apiUrl}/admin/properties/${id}/reject`, {}, { headers: this.getHeaders(), withCredentials: true });
   }
 
 
@@ -76,8 +79,12 @@ getAdmins(): Observable<any> {
   return this.http.get(`${this.apiUrl}/admin/admins`, { headers: this.getHeaders(), withCredentials: true });
 }
 
-getUsers(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/admin/users`, { headers: this.getHeaders(), withCredentials: true });
+// Fetch users (excluding admins and super-admins)
+getUsers(page: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/users?page=${page}`, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
 }
 
 deleteAdmin(id: number): Observable<any> {
@@ -91,20 +98,54 @@ deleteUser(id: number): Observable<any> {
 
 // bookings
 getPendingBookings(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/properties/bookings/pending?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  return this.http.get(`${this.apiUrl}/bookings/pending?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 getConfirmedBookings(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/properties/bookings/confirmed?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  return this.http.get(`${this.apiUrl}/bookings/confirmed?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 getCanceledBookings(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/properties/bookings/canceled?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  return this.http.get(`${this.apiUrl}/bookings/canceled?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 updateBookingStatus(id: number, status: string): Observable<any> {
   return this.http.put(`${this.apiUrl}/properties/bookings/${id}/status`, { status }, { headers: this.getHeaders(), withCredentials: true });
 }
 
+
+
+
+// reviews
+getPropertyReviews(propertyId: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/reviews/by-property/${propertyId}`, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
+}
+
+deleteReview(reviewId: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/reviews/${reviewId}`, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
+}
+
+
+
+// activities
+
+getUserActivities(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/user-activities`, { headers: this.getHeaders(), withCredentials: true });
+}
+
+
+// create admin
+createAdmin(adminData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/admin/create-admin`, adminData, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
+}
 
 }

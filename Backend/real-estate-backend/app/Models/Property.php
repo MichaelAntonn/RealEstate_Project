@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Property extends Model
 {
@@ -18,6 +19,26 @@ class Property extends Model
         'payment_options' => 'array',
         'furnished' => 'boolean',
     ];
+    protected static function boot()
+    {
+        parent::boot();
+
+    static::deleting(function($property) {
+        if ($property->cover_image) {
+            Storage::disk('public')->delete($property->cover_image);
+        }
+
+        $property->media->each(function($media) {
+            Storage::disk('public')->delete($media->MediaURL);
+            $media->delete();
+        });
+
+        $directory = 'property_media/' . $property->id;
+        if (Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->deleteDirectory($directory);
+        }
+    });
+    }
 
     public function user()
     {
@@ -28,4 +49,10 @@ class Property extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function media()
+    {
+        return $this->hasMany(PropertyMedia::class, 'PropertyID');
+    }
+
 }

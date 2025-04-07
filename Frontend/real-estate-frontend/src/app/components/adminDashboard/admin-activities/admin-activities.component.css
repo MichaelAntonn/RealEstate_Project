@@ -1,0 +1,80 @@
+.activities-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+  .activity-list {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+  }
+  
+  .activity-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .activity-content {
+    flex: 1;
+  }
+  
+  .description {
+    margin: 0;
+    font-size: 15px;
+    color: #444;
+  }
+  
+  .timestamp {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #888;
+  }
+  
+  .activity-type {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+    color: #fff;
+  }
+  
+  .property-added {
+    background-color: #28a745; /* Green for added */
+  }
+  
+  .property-purchased {
+    background-color: #007bff; /* Blue for purchased */
+  }
+  
+  .booking-added {
+    background-color: #ffc107; /* Yellow for booking */
+  }
+  
+  .default-type {
+    background-color: #6c757d; /* Gray for unknown types */
+  }
+  
+  .no-activities {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+  }

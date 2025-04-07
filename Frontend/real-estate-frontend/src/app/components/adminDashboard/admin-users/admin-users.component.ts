@@ -2,14 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../../services/dashboard.service';
+import { AdminAuthService } from '../../../services/admin-auth.service';
+
 @Component({
   selector: 'app-admin-users',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-users.component.html',
-  styleUrl: './admin-users.component.css'
+  styleUrls: ['./admin-users.component.css']
 })
-export class AdminUsersComponent {
-
+export class AdminUsersComponent implements OnInit {
   admins: any[] = [];
   users: any[] = [];
   searchQuery: string = '';
@@ -17,30 +19,55 @@ export class AdminUsersComponent {
   totalUsers: number = 0;
   lastPage: number = 1;
   usersPerPage: number = 5;
+  isSuperAdmin: boolean = false; // Flag for super-admin check
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private adminAuthService: AdminAuthService
+  ) {}
 
   ngOnInit(): void {
+    this.checkUserRole();
     this.loadData();
   }
 
+  checkUserRole(): void {
+    const role = this.adminAuthService.getUserRole();
+    this.isSuperAdmin = role === 'super-admin';
+    console.log('User role:', role, 'Is Super Admin:', this.isSuperAdmin);
+  }
+
   loadData(): void {
-    this.loadAdmins();
+    if (this.isSuperAdmin) {
+      this.loadAdmins(); // Only load admins for super-admin
+    }
     this.loadUsers(this.currentPage);
   }
 
   loadAdmins(): void {
-    this.dashboardService.getAdmins().subscribe((response) => {
-      this.admins = response.admins;
+    this.dashboardService.getAdmins().subscribe({
+      next: (response) => {
+        this.admins = response.admins || response.data || [];
+      },
+      error: (error) => {
+        console.error('Error loading admins:', error);
+        this.admins = [];
+      }
     });
   }
 
   loadUsers(page: number): void {
-    this.dashboardService.getUsers(page).subscribe((response) => {
-      this.users = response.users.data;
-      this.totalUsers = response.users.total;
-      this.lastPage = response.users.last_page;
-      this.currentPage = response.users.current_page;
+    this.dashboardService.getUsers(page).subscribe({
+      next: (response) => {
+        this.users = response.users.data || [];
+        this.totalUsers = response.users.total;
+        this.lastPage = response.users.last_page;
+        this.currentPage = response.users.current_page;
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.users = [];
+      }
     });
   }
 
@@ -54,18 +81,24 @@ export class AdminUsersComponent {
     );
   }
 
-  deleteAdmin(id: number): void {
-    if (confirm('Are you sure you want to delete this admin?')) {
-      this.dashboardService.deleteAdmin(id).subscribe(() => {
-        this.loadAdmins();
+  deleteUser(id: number): void {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.dashboardService.deleteUser(id).subscribe({
+        next: () => {
+          this.loadUsers(this.currentPage);
+        },
+        error: (error) => console.error('Error deleting user:', error)
       });
     }
   }
 
-  deleteUser(id: number): void {
-    if (confirm('Are you sure you want to delete this user?')) {
-      this.dashboardService.deleteUser(id).subscribe(() => {
-        this.loadUsers(this.currentPage);
+  deleteAdmin(id: number): void {
+    if (confirm('Are you sure you want to delete this admin?')) {
+      this.dashboardService.deleteUser(id).subscribe({
+        next: () => {
+          this.loadAdmins();
+        },
+        error: (error) => console.error('Error deleting admin:', error)
       });
     }
   }

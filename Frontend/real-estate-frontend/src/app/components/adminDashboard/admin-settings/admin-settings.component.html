@@ -1,1 +1,117 @@
-<p>admin-settings works!</p>
+<div class="settings-container">
+  <h2>Settings</h2>
+  <section class="add-admin-section">
+    <h3>Administrators</h3>
+    <button class="btn btn-primary" (click)="openModal()">Add Admin</button>
+  </section>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Admin</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="submitForm()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="first_name">First Name</label>
+              <input
+                id="first_name"
+                type="text"
+                [(ngModel)]="adminForm.first_name"
+                name="first_name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="last_name">Last Name</label>
+              <input
+                id="last_name"
+                type="text"
+                [(ngModel)]="adminForm.last_name"
+                name="last_name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                [(ngModel)]="adminForm.email"
+                name="email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone_number">Phone Number</label>
+              <input
+                id="phone_number"
+                type="tel"
+                [(ngModel)]="adminForm.phone_number"
+                name="phone_number"
+              />
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input
+                id="country"
+                type="text"
+                [(ngModel)]="adminForm.country"
+                name="country"
+              />
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input
+                id="city"
+                type="text"
+                [(ngModel)]="adminForm.city"
+                name="city"
+              />
+            </div>
+            <div class="form-group full-width">
+              <label for="address">Address</label>
+              <input
+                id="address"
+                type="text"
+                [(ngModel)]="adminForm.address"
+                name="address"
+              />
+            </div>
+            <div class="form-group full-width">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                [(ngModel)]="adminForm.password"
+                name="password"
+                required
+              />
+            </div>
+            <div class="form-group checkbox">
+              <input
+                id="terms"
+                type="checkbox"
+                [(ngModel)]="adminForm.terms_and_conditions"
+                name="terms_and_conditions"
+                required
+              />
+              <label for="terms">I agree to the terms and conditions</label>
+            </div>
+          </div>
+          <div class="form-messages">
+            <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+            <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success">Create Admin</button>
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
