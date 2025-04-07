@@ -10,6 +10,44 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
+    public function createConversation(Request $request)
+    {
+        $validated = $request->validate([
+            'receiver_id' => 'required|exists:users,id|not_in:' . auth()->id(), // التأكد من أن المستقبل ليس المستخدم نفسه
+            'property_id' => 'nullable|exists:properties,id', // اختياري: إذا كانت المحادثة مرتبطة بعقار
+        ]);
+
+        // التحقق من وجود محادثة سابقة بين المستخدمين
+        $existingConversation = Conversation::where(function ($query) use ($validated) {
+            $query->where('user1_id', auth()->id())
+                  ->where('user2_id', $validated['receiver_id']);
+        })->orWhere(function ($query) use ($validated) {
+            $query->where('user1_id', $validated['receiver_id'])
+                  ->where('user2_id', auth()->id());
+        })->first();
+
+        // إذا كانت هناك محادثة موجودة، قم بإرجاعها
+        if ($existingConversation) {
+            return response()->json([
+                'status' => 'Conversation already exists',
+                'conversation' => $existingConversation
+            ]);
+        }
+
+        // إنشاء محادثة جديدة
+        $conversation = Conversation::create([
+            'user1_id' => auth()->id(),
+            'user2_id' => $validated['receiver_id'],
+            'property_id' => $validated['property_id'] ?? null, // اختياري
+            'start_date' => now(),
+            'last_message_date' => null, // سيتم تحديثه عند إرسال أول رسالة
+        ]);
+
+        return response()->json([
+            'status' => 'Conversation created successfully',
+            'conversation' => $conversation
+        ], 201);
+    }
     public function sendMessage(Request $request)
     {
         $validated = $request->validate([
