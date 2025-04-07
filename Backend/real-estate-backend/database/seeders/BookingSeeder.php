@@ -4,174 +4,146 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Booking;
+use App\Models\User;
+use App\Models\Property;
+use Carbon\Carbon;
 
 class BookingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Booking for Luxury Villa in Cairo (PROP001)
-        Booking::create([
-            'user_id' => 1, // Matches user who owns PROP001
-            'property_id' => 1, // PROP001
-            'booking_date' => '2025-03-20',
-            'visit_date' => '2025-04-01',
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Clear existing bookings
+        Booking::truncate();
 
-        // Booking for Downtown Apartment (PROP002)
-        Booking::create([
-            'user_id' => 2, // Matches user who owns PROP002
-            'property_id' => 2, // PROP002
-            'booking_date' => '2025-03-22',
-            'visit_date' => '2025-04-03',
-            'status' => 'confirmed',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Get all regular users (non-admin)
+        $regularUsers = User::whereNotIn('user_type', ['super_admin', 'admin'])->pluck('id');
+        
+        // Get all properties
+        $properties = Property::all();
 
-        // Booking for Beachfront Land (PROP003)
-        Booking::create([
-            'user_id' => 3, // Matches user who owns PROP003
-            'property_id' => 3, // PROP003
-            'booking_date' => '2025-03-23',
-            'visit_date' => '2025-04-05',
-            'status' => 'canceled', // Fixed from 'cancelled'
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Create bookings with proper relationships
+        $bookings = [
+            // Pending bookings (future visit dates)
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 1)->random()->id, // Property owned by user 1
+                'booking_date' => Carbon::now()->subDays(2),
+                'visit_date' => Carbon::now()->addDays(5),
+                'status' => 'pending',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 2)->random()->id,
+                'booking_date' => Carbon::now()->subDays(1),
+                'visit_date' => Carbon::now()->addDays(3),
+                'status' => 'pending',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 1)->random()->id,
+                'booking_date' => Carbon::now()->subDays(3),
+                'visit_date' => Carbon::now()->addDays(7),
+                'status' => 'pending',
+            ],
 
-        // Booking for Office in Giza (PROP004)
-        Booking::create([
-            'user_id' => 4, // Matches user who owns PROP004
-            'property_id' => 4, // PROP004
-            'booking_date' => '2025-03-25',
-            'visit_date' => '2025-04-07',
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // Confirmed bookings (future visit dates)
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 4)->random()->id,
+                'booking_date' => Carbon::now()->subDays(5),
+                'visit_date' => Carbon::now()->addDays(2),
+                'status' => 'confirmed',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 5)->random()->id,
+                'booking_date' => Carbon::now()->subDays(7),
+                'visit_date' => Carbon::now()->addDays(1),
+                'status' => 'confirmed',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 3)->random()->id,
+                'booking_date' => Carbon::now()->subDays(4),
+                'visit_date' => Carbon::now()->addDays(4),
+                'status' => 'confirmed',
+            ],
 
-        // Booking for Apartment in Zamalek (PROP005)
-        Booking::create([
-            'user_id' => 5, // Matches user who owns PROP005
-            'property_id' => 5, // PROP005
-            'booking_date' => '2025-03-27',
-            'visit_date' => '2025-04-09',
-            'status' => 'confirmed',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // Canceled bookings (past visit dates)
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 2)->random()->id,
+                'booking_date' => Carbon::now()->subDays(10),
+                'visit_date' => Carbon::now()->subDays(3),
+                'status' => 'canceled',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 1)->random()->id,
+                'booking_date' => Carbon::now()->subDays(8),
+                'visit_date' => Carbon::now()->subDays(2),
+                'status' => 'canceled',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 3)->random()->id,
+                'booking_date' => Carbon::now()->subDays(6),
+                'visit_date' => Carbon::now()->subDays(1),
+                'status' => 'canceled',
+            ],
 
-        // Booking for Villa in Maadi (PROP006)
-        Booking::create([
-            'user_id' => 2, // Different user booking PROP006
-            'property_id' => 6, // PROP006
-            'booking_date' => '2025-03-29',
-            'visit_date' => null, // No visit scheduled yet
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // Completed visits (confirmed status with past visit dates)
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 4)->random()->id,
+                'booking_date' => Carbon::now()->subDays(15),
+                'visit_date' => Carbon::now()->subDays(5),
+                'status' => 'confirmed',
+            ],
+            [
+                'user_id' => $regularUsers->random(),
+                'property_id' => $properties->where('user_id', 5)->random()->id,
+                'booking_date' => Carbon::now()->subDays(12),
+                'visit_date' => Carbon::now()->subDays(4),
+                'status' => 'confirmed',
+            ],
+        ];
 
-        // Booking for Apartment in Heliopolis (PROP007)
-        Booking::create([
-            'user_id' => 3,
-            'property_id' => 7, // PROP007
-            'booking_date' => '2025-03-31',
-            'visit_date' => '2025-04-12',
-            'status' => 'canceled',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Create the bookings
+        foreach ($bookings as $booking) {
+            Booking::create([
+                'user_id' => $booking['user_id'],
+                'property_id' => $booking['property_id'],
+                'booking_date' => $booking['booking_date'],
+                'visit_date' => $booking['visit_date'],
+                'status' => $booking['status'],
+                'created_at' => $booking['booking_date'],
+                'updated_at' => $booking['status'] === 'pending' 
+                    ? $booking['booking_date'] 
+                    : Carbon::parse($booking['booking_date'])->addDays(1),
+            ]);
+        }
 
-        // Booking for Land in Sharm (PROP008)
-        Booking::create([
-            'user_id' => 4,
-            'property_id' => 8, // PROP008
-            'booking_date' => '2025-04-02',
-            'visit_date' => '2025-04-14',
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Apartment in 6th October (PROP009)
-        Booking::create([
-            'user_id' => 5,
-            'property_id' => 9, // PROP009
-            'booking_date' => '2025-04-04',
-            'visit_date' => '2025-04-16',
-            'status' => 'confirmed',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Villa in El Gouna (PROP010)
-        Booking::create([
-            'user_id' => 1,
-            'property_id' => 10, // PROP010
-            'booking_date' => '2025-04-06',
-            'visit_date' => '2025-04-18',
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Land in Madinaty (PROP011)
-        Booking::create([
-            'user_id' => 2,
-            'property_id' => 11, // PROP011
-            'booking_date' => '2025-04-08',
-            'visit_date' => null,
-            'status' => 'canceled',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Apartment in Mansoura (PROP012)
-        Booking::create([
-            'user_id' => 3,
-            'property_id' => 12, // PROP012
-            'booking_date' => '2025-04-10',
-            'visit_date' => '2025-04-20',
-            'status' => 'confirmed',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Villa in Ain Sokhna (PROP013)
-        Booking::create([
-            'user_id' => 4,
-            'property_id' => 13, // PROP013
-            'booking_date' => '2025-04-12',
-            'visit_date' => '2025-04-22',
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Apartment in Hurghada (PROP014)
-        Booking::create([
-            'user_id' => 5,
-            'property_id' => 14, // PROP014
-            'booking_date' => '2025-04-14',
-            'visit_date' => '2025-04-24',
-            'status' => 'canceled',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Booking for Villa in Luxor (PROP015)
-        Booking::create([
-            'user_id' => 1,
-            'property_id' => 15, // PROP015
-            'booking_date' => '2025-04-16',
-            'visit_date' => '2025-04-26',
-            'status' => 'confirmed',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Create additional random bookings to ensure pagination works
+        for ($i = 0; $i < 15; $i++) {
+            $status = ['pending', 'confirmed', 'canceled'][rand(0, 2)];
+            $daysAgo = rand(1, 20);
+            $daysFuture = rand(1, 14);
+            $property = $properties->random();
+            
+            Booking::create([
+                'user_id' => $regularUsers->random(),
+                'property_id' => $property->id,
+                'booking_date' => Carbon::now()->subDays($daysAgo),
+                'visit_date' => $status === 'canceled' 
+                    ? Carbon::now()->subDays(rand(1, 5)) 
+                    : Carbon::now()->addDays($daysFuture),
+                'status' => $status,
+                'created_at' => Carbon::now()->subDays($daysAgo),
+                'updated_at' => $status === 'pending' 
+                    ? Carbon::now()->subDays($daysAgo)
+                    : Carbon::now()->subDays($daysAgo - 1),
+            ]);
+        }
     }
 }
