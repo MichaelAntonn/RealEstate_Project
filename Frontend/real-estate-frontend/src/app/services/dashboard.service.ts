@@ -19,11 +19,14 @@ export class DashboardService {
   }
 
   getStatistics(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/statistics`, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.get(`${this.apiUrl}/admin/statistics`, { headers: this.getHeaders(), withCredentials: true });
   }
 
   getMonthlyData(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/commissions/monthly-profit`, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.get(`${this.apiUrl}/admin/commissions/monthly-profit`, { headers: this.getHeaders(), withCredentials: true });
+  }
+  getYearlyData(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/commissions/monthly-profit`, { headers: this.getHeaders(), withCredentials: true });
   }
 
   getLatestProperties(): Observable<any> {
@@ -76,8 +79,12 @@ getAdmins(): Observable<any> {
   return this.http.get(`${this.apiUrl}/admin/admins`, { headers: this.getHeaders(), withCredentials: true });
 }
 
-getUsers(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/admin/users`, { headers: this.getHeaders(), withCredentials: true });
+// Fetch users (excluding admins and super-admins)
+getUsers(page: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/users?page=${page}`, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
 }
 
 deleteAdmin(id: number): Observable<any> {
@@ -106,5 +113,19 @@ updateBookingStatus(id: number, status: string): Observable<any> {
   return this.http.put(`${this.apiUrl}/properties/bookings/${id}/status`, { status }, { headers: this.getHeaders(), withCredentials: true });
 }
 
+// activities
+
+getUserActivities(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/user-activities`, { headers: this.getHeaders(), withCredentials: true });
+}
+
+
+// create admin
+createAdmin(adminData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/admin/create-admin`, adminData, {
+    headers: this.getHeaders(),
+    withCredentials: true
+  });
+}
 
 }
