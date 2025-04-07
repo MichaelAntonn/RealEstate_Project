@@ -58,10 +58,11 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [PropertyController::class, 'update'])->name('update');
             Route::delete('/{id}', [PropertyController::class, 'destroy'])->name('destroy');
             Route::put('/{id}/sell', [CommissionController::class, 'completeSale'])->name('sell');
+
             Route::prefix('/{propertyId}/media')->name('propertyMedia.')->group(function () {
-            Route::get('/', [PropertyController::class, 'getMedia'])->name('index');
-            Route::post('/', [PropertyController::class, 'addMedia'])->name('store');
-            Route::delete('/{mediaId}', [PropertyController::class, 'deleteMedia'])->name('delete');
+                Route::get('/', [PropertyController::class, 'getMedia'])->name('index');
+                Route::post('/', [PropertyController::class, 'addMedia'])->name('store');
+                Route::delete('/{mediaId}', [PropertyController::class, 'deleteMedia'])->name('delete');
             });
         });
 
