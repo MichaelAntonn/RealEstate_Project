@@ -139,6 +139,33 @@
           <p><strong>Bathrooms:</strong> {{ selectedProperty.bathrooms ?? 'N/A' }}</p>
         </div>
         <p class="description"><strong>Description:</strong> {{ selectedProperty.description || 'No description available' }}</p>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+          <h4>Reviews</h4>
+          <div class="reviews-list">
+            <div class="review-item" *ngFor="let review of reviews">
+              <div class="review-header">
+                <img
+                  [src]="getReviewerImage(review)"
+                  alt="Reviewer Image"
+                  class="reviewer-pic"
+                  (error)="onImageError($event)"
+                />
+                <div class="review-content">
+                  <p class="review-text">{{ review.comment || 'No comment provided' }}</p>
+                  <p class="review-meta">
+                    <strong>Rating:</strong> {{ review.rating }} / 5 |
+                    <strong>Reviewer:</strong> {{ review.anonymous_review ? 'Anonymous' : (review.user?.first_name + ' ' + review.user?.last_name) || 'Unknown' }} |
+                    <strong>Date:</strong> {{ review.review_date | date:'medium' }}
+                  </p>
+                </div>
+              </div>
+              <button class="btn btn-danger btn-small" (click)="deleteReview(review.id)">Delete</button>
+            </div>
+            <p *ngIf="reviews.length === 0" class="no-reviews">No reviews available for this property.</p>
+          </div>
+        </div>
       </div>
 
       <!-- Actions -->
