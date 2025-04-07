@@ -28,4 +28,8 @@ class Property extends Model
     {
         return $this->hasMany(Booking::class);
     }
+    public function media()
+{
+    return $this->hasMany(PropertyMedia::class, 'PropertyID');
+}
 }
