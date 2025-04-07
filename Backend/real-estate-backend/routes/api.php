@@ -122,5 +122,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
     
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
-    Route::post('/conversations', [ChatController::class, 'createConversation'])->middleware('auth:sanctum');
 });
