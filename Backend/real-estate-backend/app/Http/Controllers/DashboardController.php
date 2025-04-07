@@ -151,11 +151,12 @@ public function destroyAdmin(Request $request, $adminId)
     {
         // Ensure the authenticated user is either a super-admin or an admin
         $this->authorizeAdmin($request);
-
-        // Fetch all users except super-admin
-    $users = User::where('user_type', '!=', [UserType::SUPER_ADMIN,UserType::ADMIN])->latest()
-    ->paginate(5);
-
+    
+        // Fetch all users except super-admin and admin
+        $users = User::whereNotIn('user_type', [UserType::SUPER_ADMIN, UserType::ADMIN])
+            ->latest()
+            ->paginate(5);
+    
         return response()->json([
             'success' => true,
             'users' => $users,
