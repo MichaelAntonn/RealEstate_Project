@@ -17,17 +17,21 @@ import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
+import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 
 export const routes: Routes = [
-  // Default route
-  { path: '', redirectTo: 'home', pathMatch: 'full' }, // Default to user home
+
+  // Default route (choose one based on your app's primary audience)
+  { path: '', redirectTo: 'home', pathMatch: 'full' }, // Default to user home; change to 'admin' if admin-focused
+ 
+
 
   // User routes
   { path: 'login', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
-
+  { path: 'dashboard', component: UserDashboardComponent },
   // Admin routes
   { path: 'admin/login', component: AdminLoginComponent },
   { 
