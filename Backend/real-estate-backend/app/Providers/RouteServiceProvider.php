@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -28,12 +29,12 @@ class RouteServiceProvider extends ServiceProvider
 
         // Custom rate limit for login route
         RateLimiter::for('login', function (Request $request) {
-            return RateLimiter::perMinute(10); // Allow 10 requests per minute
+            return Limit::perMinute(10); // Allow 10 requests per minute
         });
 
         // Custom rate limit for search route
         RateLimiter::for('search', function (Request $request) {
-            return RateLimiter::perMinute(5); // Allow 5 searches per minute
+            return Limit::perMinute(5); // Allow 5 searches per minute
         });
     }
 }

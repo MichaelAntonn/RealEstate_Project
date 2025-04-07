@@ -275,24 +275,24 @@ class PropertyController extends Controller
     public function destroy(string $id)
     {
         // Find the property
-        $property = Property::find($id);
+    $property = Property::find($id);
 
-        if (!$property) {
-            return response()->json(['error' => 'Property not found'], 404);
-        }
+    if (!$property) {
+        return response()->json(['error' => 'Property not found'], 404);
+    }
 
-        // Check if the authenticated user is the owner, admin, or super-admin
-        $user = Auth::user();
-        if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
-            return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
-        }
+    // Check if the authenticated user is the owner, admin, or super-admin
+    $user = Auth::user();
+    if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
+        return response()->json(['error' => 'Forbidden. You do not have permission to delete this property.'], 403);
+    }
 
-        // Delete the property
-        $property->delete();
+    // Delete the property (the model event will handle media deletion)
+    $property->delete();
 
-        return response()->json([
-            'success' => 'Property deleted successfully',
-        ], 200);
+    return response()->json([
+        'success' => 'Property and all associated media deleted successfully',
+    ], 200);
     }
 
 
