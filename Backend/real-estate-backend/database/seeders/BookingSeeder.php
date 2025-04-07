@@ -4,13 +4,16 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Booking;
+use App\Models\User;
+use App\Models\Property;
+use Carbon\Carbon;
 
 class BookingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Booking for Luxury Villa in Cairo (PROP001)
-        Booking::create([
+         // Booking for Luxury Villa in Cairo (PROP001)
+         Booking::create([
             'user_id' => 1, // Matches user who owns PROP001
             'property_id' => 1, // PROP001
             'booking_date' => '2025-03-20',
@@ -173,5 +176,5 @@ class BookingSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        }
     }
-}
