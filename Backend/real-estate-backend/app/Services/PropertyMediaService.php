@@ -16,25 +16,28 @@ class PropertyMediaService
     public function handleUpload(Property $property, array $files): array
     {
         $uploadedMedia = [];
-        
-        foreach ($files as $file) {
-            $this->validateFile($file);
-            
-            $path = $file->store('property_media', 'public');
-            $mediaType = $this->determineMediaType($file);
-            
-            $media = PropertyMedia::create([
-                'PropertyID' => $property->id,
-                'MediaURL' => $path,
-                'MediaType' => $mediaType,
-            ]);
+    
+    $basePath = 'property_media/' . $property->id . '/';
 
-            $uploadedMedia[] = $media;
-            
-            $this->updateCoverImageIfNeeded($property, $mediaType, $path);
-        }
+    foreach ($files as $file) {
+        $this->validateFile($file);
         
-        return $uploadedMedia;
+        $path = $file->store($basePath, 'public');
+        
+        $mediaType = $this->determineMediaType($file);
+        
+        $media = PropertyMedia::create([
+            'PropertyID' => $property->id,
+            'MediaURL' => $path,
+            'MediaType' => $mediaType,
+        ]);
+
+        $uploadedMedia[] = $media;
+        
+        $this->updateCoverImageIfNeeded($property, $mediaType, $path);
+    }
+    
+    return $uploadedMedia;
     }
 
     public function deleteMedia(Property $property, PropertyMedia $media): void
