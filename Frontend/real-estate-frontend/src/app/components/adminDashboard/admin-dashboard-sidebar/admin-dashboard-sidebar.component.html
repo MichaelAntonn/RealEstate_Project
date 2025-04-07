@@ -12,7 +12,7 @@
         <span class="gold-hover-effect"></span>
       </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" *ngIf="isSuperAdmin()">
       <a class="nav-link" routerLink="/admin/layout/statistics" routerLinkActive="active">
         <i class="bi bi-graph-up-arrow gold-icon"></i>
         <span class="link-text">Statistics</span>
@@ -47,7 +47,7 @@
         <span class="gold-hover-effect"></span>
       </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" *ngIf="isSuperAdmin()">
       <a class="nav-link" routerLink="/admin/layout/settings" routerLinkActive="active">
         <i class="bi bi-gear gold-icon"></i>
         <span class="link-text">Settings</span>
