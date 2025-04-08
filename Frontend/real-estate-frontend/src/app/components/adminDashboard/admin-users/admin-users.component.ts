@@ -94,7 +94,7 @@ export class AdminUsersComponent implements OnInit {
 
   deleteAdmin(id: number): void {
     if (confirm('Are you sure you want to delete this admin?')) {
-      this.dashboardService.deleteUser(id).subscribe({
+      this.dashboardService.deleteAdmin(id).subscribe({
         next: () => {
           this.loadAdmins();
         },

@@ -26,10 +26,53 @@ export class AdminSettingsComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
+  commissionRate: number = 0; // Current commission rate
+  newCommissionRate: number = 0; // For input binding
+  commissionError: string | null = null;
+  commissionSuccess: string | null = null;
+
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
-    // No role check needed; AuthGuard ensures only super-admins reach this component
+    this.fetchCommissionRate();
+  }
+
+  fetchCommissionRate(): void {
+    this.dashboardService.getCommissionRate().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.commissionRate = response.commission_rate * 100; // Convert to percentage
+          this.newCommissionRate = this.commissionRate; // Sync input field
+          console.log('Commission rate fetched:', this.commissionRate);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching commission rate:', error);
+        this.commissionError = 'Failed to load commission rate.';
+      }
+    });
+  }
+
+  updateCommissionRate(): void {
+    if (this.newCommissionRate < 0 || this.newCommissionRate > 100) {
+      this.commissionError = 'Commission rate must be between 0% and 100%.';
+      return;
+    }
+
+    this.dashboardService.updateCommissionRate(this.newCommissionRate / 100).subscribe({
+      next: (response) => {
+        this.commissionRate = this.newCommissionRate;
+        this.commissionSuccess = 'Commission rate updated successfully!';
+        this.commissionError = null;
+        console.log('Commission rate updated:', this.commissionRate);
+        setTimeout(() => this.commissionSuccess = null, 3000); // Clear success message after 3s
+      },
+      error: (error) => {
+        console.error('Error updating commission rate:', error);
+        this.commissionError = 'Failed to update commission rate.';
+        this.commissionSuccess = null;
+      }
+    });
   }
 
   openModal(): void {
@@ -54,7 +97,7 @@ export class AdminSettingsComponent implements OnInit {
         console.log('Admin created:', response);
         this.successMessage = 'Admin created successfully!';
         this.errorMessage = null;
-        setTimeout(() => this.closeModal(), 2000); // Close after 2 seconds
+        setTimeout(() => this.closeModal(), 2000);
       },
       error: (error) => {
         console.error('Error creating admin:', error);
