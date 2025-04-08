@@ -55,16 +55,26 @@ Route::prefix('v1')->group(function () {
         // Property Routes
         Route::prefix('properties')->name('properties.')->group(function () {
             Route::post('/', [PropertyController::class, 'store'])->name('store');
-            Route::put('/{id}', [PropertyController::class, 'update'])->name('update');
-            Route::delete('/{id}', [PropertyController::class, 'destroy'])->name('destroy');
-            Route::put('/{id}/sell', [CommissionController::class, 'completeSale'])->name('sell');
+            Route::put('/{property}', [PropertyController::class, 'update'])->name('update');
+            Route::delete('/{property}', [PropertyController::class, 'destroy'])->name('destroy');
+            Route::put('/{property}/sell', [CommissionController::class, 'completeSale'])->name('sell');
 
-            Route::prefix('/{propertyId}/media')->name('propertyMedia.')->group(function () {
+            // Status Routes
+            Route::prefix('status')->group(function () {
+                Route::get('/pending', [PropertyController::class, 'getPendingProperties'])->name('pending');
+                Route::get('/accepted', [PropertyController::class, 'getAcceptedProperties'])->name('accepted');
+                Route::get('/rejected', [PropertyController::class, 'getRejectedProperties'])->name('rejected');
+            });
+
+            // Media Routes
+            Route::prefix('/{property}/media')->name('media.')->group(function () {
                 Route::get('/', [PropertyController::class, 'getMedia'])->name('index');
                 Route::post('/', [PropertyController::class, 'addMedia'])->name('store');
-                Route::delete('/{mediaId}', [PropertyController::class, 'deleteMedia'])->name('delete');
+                Route::delete('/{media}', [PropertyController::class, 'deleteMedia'])->name('delete');
             });
         });
+
+
 
         // Booking routes
         Route::prefix('bookings')->name('bookings.')->group(function () {
