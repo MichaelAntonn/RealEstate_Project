@@ -108,8 +108,36 @@ class CommissionCalculationService
         return Property::whereBetween('created_at', [$start, $end])->count();
     }
 
+    public function getProfitAnalysis(int $year = null): array
+{
+    $year = $year ?? Carbon::now()->year;
+    $analysis = [];
+
+    for ($month = 1; $month <= 12; $month++) {
+        $start = Carbon::create($year, $month, 1)->startOfMonth();
+        $end = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $revenue = $this->getCommissions($start, $end);
+        $costs = $this->getCosts($start, $end);
+        $profit = $revenue - $costs;
+
+        $analysis[] = [
+            'month' => $start->format('F'),
+            'revenue' => $revenue,
+            'costs' => $costs,
+            'profit' => $profit,
+            'margin' => $revenue > 0 ? round(($profit / $revenue) * 100, 2) : 0,
+            'cost_ratio' => $revenue > 0 ? round(($costs / $revenue) * 100, 2) : 0
+        ];
+    }
+
+    return $analysis;
+}
+
+
     protected function getNewUsersCount(Carbon $start, Carbon $end): int
     {
         return User::whereBetween('created_at', [$start, $end])->count();
     }
+
 }
