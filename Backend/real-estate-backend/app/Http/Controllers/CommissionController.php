@@ -118,4 +118,20 @@ class CommissionController extends Controller
     {
         return response()->json(['success' => false, 'error' => $message], $status);
     }
+
+    public function costTrends(Request $request)
+{
+    $this->authorizeAccess($request);
+    return $this->successResponse([
+        'trends' => $this->costAnalysisService->getCostTrends()
+    ]);
+}
+
+public function profitAnalysis(Request $request, $year = null)
+{
+    $this->authorizeAccess($request);
+    return $this->successResponse([
+        'analysis' => $this->commissionService->getProfitAnalysis($year)
+    ]);
+}
 }
