@@ -4,7 +4,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
-    font-size: small;
+    font-size: x-small;
 }
 .checkbox-container {
     display: flex;
