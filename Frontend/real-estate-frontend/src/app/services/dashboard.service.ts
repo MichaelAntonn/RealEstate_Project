@@ -30,7 +30,7 @@ export class DashboardService {
   }
 
   getLatestProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/statistics/latest-properties`, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.get(`${this.apiUrl}/admin/latest-properties`, { headers: this.getHeaders(), withCredentials: true });
   }
 
 

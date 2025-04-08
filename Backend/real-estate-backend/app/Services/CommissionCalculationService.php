@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Property;
 use App\Models\Cost;
+use App\Models\User;
 use App\Models\Setting;
 use Carbon\Carbon;
 
@@ -30,6 +31,7 @@ class CommissionCalculationService
                 'profit_margin' => $commissions > 0 ? round(($profit / $commissions) * 100, 2) : 0,
                 'properties_sold' => $this->getCompletedPropertiesCount($startOfMonth, $endOfMonth),
                 'new_listings' => $this->getNewListingsCount($startOfMonth, $endOfMonth),
+                'new_users' => $this->getNewUsersCount($startOfMonth, $endOfMonth), 
             ];
         }
 
@@ -105,6 +107,7 @@ class CommissionCalculationService
     {
         return Property::whereBetween('created_at', [$start, $end])->count();
     }
+
     public function getProfitAnalysis(int $year = null): array
 {
     $year = $year ?? Carbon::now()->year;
@@ -130,4 +133,11 @@ class CommissionCalculationService
 
     return $analysis;
 }
+
+
+    protected function getNewUsersCount(Carbon $start, Carbon $end): int
+    {
+        return User::whereBetween('created_at', [$start, $end])->count();
+    }
+
 }
