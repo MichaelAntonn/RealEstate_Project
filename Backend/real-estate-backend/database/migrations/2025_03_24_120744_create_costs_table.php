@@ -9,11 +9,15 @@ return new class extends Migration
     {
         Schema::create('costs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // User who added the cost
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->decimal('amount', 15, 2); // Cost amount
-            $table->text('description')->nullable(); // Optional description of the cost
-            $table->string('category')->nullable(); // Optional category
-            $table->timestamps(); // created_at and updated_at (will use created_at to determine the month)
+            $table->text('description')->nullable(); // Description
+            $table->string('category')->nullable(); // Category
+            $table->string('custom_category')->nullable();
+            $table->string('type')->default('variable'); // Fixed or variable
+            $table->string('month')->nullable(); // For month tracking
+            $table->string('year')->nullable(); // For year tracking
+            $table->timestamps();
         });
     }
 
