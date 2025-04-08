@@ -38,14 +38,25 @@ export class DashboardService {
   getProperties(): Observable<any> {
     return this.http.get(`${this.apiUrl}/properties`, { headers: this.getHeaders(), withCredentials: true });
   }
-  getAcceptedProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/?approval_status=accepted`, { headers: this.getHeaders(), withCredentials: true });
+  getPendingProperties(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/properties/status/pending?page=${page}${search ? '&search=' + encodeURIComponent(search) : ''}`, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    });
   }
-  getRejectedProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/?approval_status=rejected`, { headers: this.getHeaders(), withCredentials: true });
+
+  getAcceptedProperties(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/properties/status/accepted?page=${page}${search ? '&search=' + encodeURIComponent(search) : ''}`, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    });
   }
-  getPendingProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/?approval_status=pending`, { headers: this.getHeaders(), withCredentials: true });
+
+  getRejectedProperties(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/properties/status/rejected?page=${page}${search ? '&search=' + encodeURIComponent(search) : ''}`, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    });
   }
 
   getProperty(id: number): Observable<any> {
