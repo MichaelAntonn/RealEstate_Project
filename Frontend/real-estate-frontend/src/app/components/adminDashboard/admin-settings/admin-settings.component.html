@@ -1,11 +1,38 @@
 <div class="settings-container">
   <h2>Settings</h2>
+
+  <!-- Administrators Section -->
   <section class="add-admin-section">
     <h3>Administrators</h3>
     <button class="btn btn-primary" (click)="openModal()">Add Admin</button>
   </section>
 
-  <!-- Modal -->
+  <!-- Commission Rate Section -->
+  <section class="commission-section">
+    <h3>Financial Settings</h3>
+    <div class="commission-display">
+      <p>Current Commission Rate: <span class="highlight">{{ commissionRate }}%</span></p>
+      <div class="commission-form">
+        <label for="commissionRate">Set New Commission Rate (%)</label>
+        <input
+          id="commissionRate"
+          type="number"
+          [(ngModel)]="newCommissionRate"
+          name="commissionRate"
+          min="0"
+          max="100"
+          step="0.1"
+          placeholder="Enter rate (0-100)"
+          class="commission-input"
+        />
+        <button class="btn btn-gold" (click)="updateCommissionRate()">Update Rate</button>
+      </div>
+      <p class="error" *ngIf="commissionError">{{ commissionError }}</p>
+      <p class="success" *ngIf="commissionSuccess">{{ commissionSuccess }}</p>
+    </div>
+  </section>
+
+  <!-- Modal for Adding Admin -->
   <div class="modal" *ngIf="showModal">
     <div class="modal-content">
       <div class="modal-header">

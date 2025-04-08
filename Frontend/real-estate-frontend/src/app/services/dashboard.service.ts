@@ -148,4 +148,23 @@ createAdmin(adminData: any): Observable<any> {
   });
 }
 
+
+// New method to get current commission rate
+getCommissionRate(): Observable<{ success: boolean; commission_rate: number; status: string }> {
+  return this.http.get<{ success: boolean; commission_rate: number; status: string }>(
+    `${this.apiUrl}/admin/settings/financial`,
+    { headers: this.getHeaders(), withCredentials: true }
+  );
+}
+
+// New method to update commission rate
+updateCommissionRate(commissionRate: number): Observable<any> {
+  return this.http.post(
+    `${this.apiUrl}/admin/settings/financial`,
+    { commission_rate: commissionRate },
+    { headers: this.getHeaders(), withCredentials: true }
+  );
+}
+
+
 }
