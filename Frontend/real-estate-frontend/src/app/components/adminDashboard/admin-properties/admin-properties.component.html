@@ -5,7 +5,8 @@
     <input
       type="text"
       [(ngModel)]="searchQuery"
-      placeholder="Search by title or property ID"
+      placeholder="Search by title or property code"
+      (keyup)="onPendingSearch(searchQuery)"
     />
   </div>
   <table class="table">
@@ -19,7 +20,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let property of filteredPendingProperties">
+      <tr *ngFor="let property of pendingProperties">
         <td>{{ property.title }}</td>
         <td>{{ property.property_code }}</td>
         <td>{{ property.price }}</td>
@@ -30,11 +31,37 @@
           <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
         </td>
       </tr>
-      <tr *ngIf="filteredPendingProperties.length === 0">
+      <tr *ngIf="pendingProperties.length === 0">
         <td colspan="5">No pending properties found.</td>
       </tr>
     </tbody>
   </table>
+  <div class="pagination" *ngIf="pendingPagination.total > 0">
+    <button
+      class="btn btn-secondary"
+      [disabled]="pendingPagination.current_page === 1"
+      (click)="setPendingPage(pendingPagination.current_page - 1)"
+    >
+      Previous
+    </button>
+    <span *ngFor="let page of [].constructor(pendingPagination.last_page); let i = index">
+      <button
+        class="btn"
+        [class.btn-primary]="pendingPagination.current_page === i + 1"
+        [class.btn-outline-primary]="pendingPagination.current_page !== i + 1"
+        (click)="setPendingPage(i + 1)"
+      >
+        {{ i + 1 }}
+      </button>
+    </span>
+    <button
+      class="btn btn-secondary"
+      [disabled]="pendingPagination.current_page === pendingPagination.last_page"
+      (click)="setPendingPage(pendingPagination.current_page + 1)"
+    >
+      Next
+    </button>
+  </div>
 
   <!-- Accepted Properties Section -->
   <h2>Accepted Properties</h2>
@@ -42,7 +69,8 @@
     <input
       type="text"
       [(ngModel)]="acceptedSearchQuery"
-      placeholder="Search by title or property ID"
+      placeholder="Search by title or property code"
+      (keyup)="onAcceptedSearch(acceptedSearchQuery)"
     />
   </div>
   <table class="table">
@@ -56,7 +84,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let property of filteredAcceptedProperties">
+      <tr *ngFor="let property of acceptedProperties">
         <td>{{ property.title }}</td>
         <td>{{ property.property_code }}</td>
         <td>{{ property.price }}</td>
@@ -67,11 +95,37 @@
           <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
         </td>
       </tr>
-      <tr *ngIf="filteredAcceptedProperties.length === 0">
+      <tr *ngIf="acceptedProperties.length === 0">
         <td colspan="5">No accepted properties found.</td>
       </tr>
     </tbody>
   </table>
+  <div class="pagination" *ngIf="acceptedPagination.total > 0">
+    <button
+      class="btn btn-secondary"
+      [disabled]="acceptedPagination.current_page === 1"
+      (click)="setAcceptedPage(acceptedPagination.current_page - 1)"
+    >
+      Previous
+    </button>
+    <span *ngFor="let page of [].constructor(acceptedPagination.last_page); let i = index">
+      <button
+        class="btn"
+        [class.btn-primary]="acceptedPagination.current_page === i + 1"
+        [class.btn-outline-primary]="acceptedPagination.current_page !== i + 1"
+        (click)="setAcceptedPage(i + 1)"
+      >
+        {{ i + 1 }}
+      </button>
+    </span>
+    <button
+      class="btn btn-secondary"
+      [disabled]="acceptedPagination.current_page === acceptedPagination.last_page"
+      (click)="setAcceptedPage(acceptedPagination.current_page + 1)"
+    >
+      Next
+    </button>
+  </div>
 
   <!-- Rejected Properties Section -->
   <h2>Rejected Properties</h2>
@@ -79,7 +133,8 @@
     <input
       type="text"
       [(ngModel)]="rejectedSearchQuery"
-      placeholder="Search by title or property ID"
+      placeholder="Search by title or property code"
+      (keyup)="onRejectedSearch(rejectedSearchQuery)"
     />
   </div>
   <table class="table">
@@ -93,7 +148,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let property of filteredRejectedProperties">
+      <tr *ngFor="let property of rejectedProperties">
         <td>{{ property.title }}</td>
         <td>{{ property.property_code }}</td>
         <td>{{ property.price }}</td>
@@ -104,11 +159,37 @@
           <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
         </td>
       </tr>
-      <tr *ngIf="filteredRejectedProperties.length === 0">
+      <tr *ngIf="rejectedProperties.length === 0">
         <td colspan="5">No rejected properties found.</td>
       </tr>
     </tbody>
   </table>
+  <div class="pagination" *ngIf="rejectedPagination.total > 0">
+    <button
+      class="btn btn-secondary"
+      [disabled]="rejectedPagination.current_page === 1"
+      (click)="setRejectedPage(rejectedPagination.current_page - 1)"
+    >
+      Previous
+    </button>
+    <span *ngFor="let page of [].constructor(rejectedPagination.last_page); let i = index">
+      <button
+        class="btn"
+        [class.btn-primary]="rejectedPagination.current_page === i + 1"
+        [class.btn-outline-primary]="rejectedPagination.current_page !== i + 1"
+        (click)="setRejectedPage(i + 1)"
+      >
+        {{ i + 1 }}
+      </button>
+    </span>
+    <button
+      class="btn btn-secondary"
+      [disabled]="rejectedPagination.current_page === rejectedPagination.last_page"
+      (click)="setRejectedPage(rejectedPagination.current_page + 1)"
+    >
+      Next
+    </button>
+  </div>
 
   <!-- Modal for Viewing Property Details -->
   <div class="modal" *ngIf="selectedProperty">

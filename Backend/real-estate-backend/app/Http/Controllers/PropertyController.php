@@ -358,54 +358,76 @@ class PropertyController extends Controller
     }
 
 
-
     public function getPendingProperties(Request $request)
     {
         $user = $request->user();
-
         $query = Property::where('approval_status', 'pending');
-
+    
         if ($user->user_type === UserType::USER) {
             $query->where('user_id', $user->id);
         }
-
+    
+        // Add search functionality
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('property_code', 'like', "%{$search}%");
+            });
+        }
+    
         $properties = $query->latest()->paginate(5);
-
+    
         return response()->json([
             'properties' => $properties
         ]);
     }
-
+    
     public function getAcceptedProperties(Request $request)
     {
         $user = $request->user();
-
         $query = Property::where('approval_status', 'accepted');
-
+    
         if ($user->user_type === UserType::USER) {
             $query->where('user_id', $user->id);
         }
-
+    
+        // Add search functionality
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('property_code', 'like', "%{$search}%");
+            });
+        }
+    
         $properties = $query->latest()->paginate(5);
-
+    
         return response()->json([
             'properties' => $properties
         ]);
     }
-
-
+    
     public function getRejectedProperties(Request $request)
     {
         $user = $request->user();
-
         $query = Property::where('approval_status', 'rejected');
-
+    
         if ($user->user_type === UserType::USER) {
             $query->where('user_id', $user->id);
         }
-
+    
+        // Add search functionality
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('property_code', 'like', "%{$search}%");
+            });
+        }
+    
         $properties = $query->latest()->paginate(5);
-
+    
         return response()->json([
             'properties' => $properties
         ]);
