@@ -1,0 +1,158 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <button class="btn btn-link text-white d-lg-none" (click)="toggleSidebar()">
+            <fa-icon [icon]="faBars"></fa-icon>
+        </button>
+        
+        <a class="navbar-brand" href="#">
+            <fa-icon [icon]="faHome"></fa-icon> Real Estate 
+        </a>
+        
+        <div class="d-flex align-items-center">
+            <div class="dropdown me-3">
+                <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <fa-icon [icon]="faBell"></fa-icon>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        3
+                    </span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                    <li><h6 class="dropdown-header">New Notifications</h6></li>
+                    <li><a class="dropdown-item" href="#">New booking for Nile View Apartment</a></li>
+                    <li><a class="dropdown-item" href="#">New message from Ahmed</a></li>
+                    <li><a class="dropdown-item" href="#">Your listing was approved</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-center" href="#">View All</a></li>
+                </ul>
+            </div>
+            
+            <div class="form-check form-switch me-3">
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" (change)="toggleDarkMode()" [checked]="darkMode">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="user-info">
+                <span>Welcome, Mohamed</span>
+                <img src="assets/images/user-avatar.png" alt="User" class="user-avatar">
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <fa-icon [icon]="faHome"></fa-icon>
+                    Dashboard
+                    <span class="badge bg-primary ms-auto">5</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faUser"></fa-icon>
+                    Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faBuilding"></fa-icon>
+                    My Properties
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faHeart"></fa-icon>
+                    Favorites
+                    <span class="badge bg-danger ms-auto">2</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faCalendarAlt"></fa-icon>
+                    Appointments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faEnvelope"></fa-icon>
+                    Messages
+                    <span class="badge bg-success ms-auto">4</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faChartLine"></fa-icon>
+                    Statistics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <fa-icon [icon]="faCog"></fa-icon>
+                    Settings
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a href="#" class="nav-link text-danger">
+                    <fa-icon [icon]="faSignOutAlt"></fa-icon>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                    <fa-icon [icon]="faPlus" class="fa-sm text-white-50"></fa-icon> Add New Property
+                </button>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-box">
+                <fa-icon [icon]="faSearch"></fa-icon>
+                <input type="text" class="form-control" placeholder="Search properties or clients...">
+            </div>
+
+            <!-- Stats Cards -->
+            <app-stats-cards 
+                [listedCount]="listedCount" 
+                [bookedCount]="bookedCount" 
+                [soldCount]="soldCount">
+            </app-stats-cards>
+
+            <!-- Recent Properties -->
+            <div class="row">
+                <div class="col-lg-12 mb-4">
+                    <app-recent-properties [properties]="properties"></app-recent-properties>
+                </div>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="row">
+                <div class="col-lg-12 mb-4">
+                    <app-appointments [appointments]="appointments"></app-appointments>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Property Modal -->
+<div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
+    <!-- Modal content same as in original HTML -->
+</div>
+
+<!-- Add Appointment Modal -->
+<div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
+    <!-- Modal content same as in original HTML -->
+</div>

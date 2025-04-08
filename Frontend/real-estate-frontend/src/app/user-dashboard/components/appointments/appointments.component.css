@@ -1,0 +1,19 @@
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #172940;
+    color: white;
+}
+
+.badge {
+    padding: 5px 10px;
+    font-weight: 500;
+}

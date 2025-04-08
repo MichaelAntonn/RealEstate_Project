@@ -1,0 +1,85 @@
+<div class="luxury-admin-dashboard">
+  <div class="container-fluid">
+    <h1 class="dashboard-title">Welcome, <span>Admin</span></h1>
+    
+    <div class="cards-grid">
+      <!-- Users Card -->
+      <div class="card-wrapper">
+        <a routerLink="/admin/layout/users" class="luxury-card card-users">
+          <div class="card-inner">
+            <i class="bi bi-people-fill card-icon"></i>
+            <div class="card-content">
+              <h6>Users</h6>
+              <h3>Manage Users</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Properties Card -->
+      <div class="card-wrapper">
+        <a routerLink="/admin/layout/properties" class="luxury-card card-properties">
+          <div class="card-inner">
+            <i class="bi bi-house-fill card-icon"></i>
+            <div class="card-content">
+              <h6>Properties</h6>
+              <h3>Manage Properties</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Bookings Card -->
+      <div class="card-wrapper">
+        <a routerLink="/admin/layout/bookings" class="luxury-card card-income">
+          <div class="card-inner">
+            <i class="bi bi-calendar-check-fill card-icon"></i>
+            <div class="card-content">
+              <h6>Bookings</h6>
+              <h3>View Bookings</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Activities Card -->
+      <div class="card-wrapper">
+        <a routerLink="/admin/layout/activities" class="luxury-card card-profit">
+          <div class="card-inner">
+            <i class="bi bi-activity card-icon"></i>
+            <div class="card-content">
+              <h6>Activities</h6>
+              <h3>Track Activities</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Statistics Card (Super-Admin Only) -->
+      <div class="card-wrapper" *ngIf="isSuperAdmin()">
+        <a routerLink="/admin/layout/statistics" class="luxury-card card-statistics">
+          <div class="card-inner">
+            <i class="bi bi-graph-up-arrow card-icon"></i>
+            <div class="card-content">
+              <h6>Statistics</h6>
+              <h3>View Analytics</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Settings Card (Super-Admin Only) -->
+      <div class="card-wrapper" *ngIf="isSuperAdmin()">
+        <a routerLink="/admin/layout/settings" class="luxury-card card-settings">
+          <div class="card-inner">
+            <i class="bi bi-gear-wide-connected card-icon"></i>
+            <div class="card-content">
+              <h6>Settings</h6>
+              <h3>System Config</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
