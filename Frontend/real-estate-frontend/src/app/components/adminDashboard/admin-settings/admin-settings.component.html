@@ -32,6 +32,16 @@
     </div>
   </section>
 
+  <!-- Costs Section -->
+  <section class="costs-section">
+    <h3>Costs Management</h3>
+    <div class="costs-actions">
+      <button class="btn btn-primary" (click)="openAddCostModal()">Add New Cost</button>
+      <button class="btn btn-info" (click)="openCostsModal()">View Costs</button>
+      <button class="btn btn-primary" (click)="openSearchCostsModal()">Search Costs</button>
+    </div>
+  </section>
+
   <!-- Modal for Adding Admin -->
   <div class="modal" *ngIf="showModal">
     <div class="modal-content">
@@ -136,6 +146,212 @@
           <div class="modal-actions">
             <button type="submit" class="btn btn-success">Create Admin</button>
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Viewing Costs -->
+  <div class="modal" *ngIf="showCostsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Costs List</h3>
+        <button class="close-btn" (click)="closeCostsModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <table class="costs-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Month/Year</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cost of costs">
+              <td>{{ cost.amount | currency:'EGP' }}</td>
+              <td>{{ cost.description }}</td>
+              <td>{{ cost.category || 'N/A' }}</td>
+              <td>{{ types[cost.type] || cost.type }}</td>
+              <td>{{ (cost.month && cost.year) ? (cost.month + '/' + cost.year) : 'N/A' }}</td>
+              <td>
+                <button class="btn btn-warning" (click)="openEditCostModal(cost)">Edit</button>
+                <button class="btn btn-danger" (click)="deleteCost(cost.id)">Delete</button>
+              </td>
+            </tr>
+            <tr *ngIf="costs.length === 0">
+              <td colspan="6">No costs found.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <button 
+            class="btn btn-secondary" 
+            (click)="setCostsPage(costsPagination.current_page - 1)" 
+            [disabled]="costsPagination.current_page === 1">
+            Previous
+          </button>
+          <span>Page {{ costsPagination.current_page }} of {{ costsPagination.last_page }}</span>
+          <button 
+            class="btn btn-secondary" 
+            (click)="setCostsPage(costsPagination.current_page + 1)" 
+            [disabled]="costsPagination.current_page === costsPagination.last_page">
+            Next
+          </button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" (click)="backToSearch()">Back to Search</button>
+          <button class="btn btn-secondary" (click)="closeCostsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Adding New Cost -->
+  <div class="modal" *ngIf="showAddCostModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Cost</h3>
+        <button class="close-btn" (click)="closeAddCostModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="addCost()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="amount">Amount</label>
+              <input type="number" id="amount" [(ngModel)]="newCost.amount" name="amount" required min="0" />
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" id="description" [(ngModel)]="newCost.description" name="description" required />
+            </div>
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" [(ngModel)]="newCost.category" name="category" required>
+                <option value="">Select Category</option>
+                <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+                <option value="Other">Other</option>
+              </select>
+              <input *ngIf="newCost.category === 'Other'" type="text" [(ngModel)]="newCost.custom_category" name="custom_category" placeholder="Custom Category" required />
+            </div>
+            <div class="form-group">
+              <label for="type">Type</label>
+              <select id="type" [(ngModel)]="newCost.type" name="type" required>
+                <option value="fixed">Fixed</option>
+                <option value="variable">Variable</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="month">Month</label>
+              <input type="number" id="month" [(ngModel)]="newCost.month" name="month" min="1" max="12" />
+            </div>
+            <div class="form-group">
+              <label for="year">Year</label>
+              <input type="number" id="year" [(ngModel)]="newCost.year" name="year" min="2000" max="2100" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success">Add Cost</button>
+            <button type="button" class="btn btn-secondary" (click)="closeAddCostModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Editing Cost -->
+  <div class="modal" *ngIf="showEditCostModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Cost</h3>
+        <button class="close-btn" (click)="closeEditCostModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="updateCost()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit-amount">Amount</label>
+              <input type="number" id="edit-amount" [(ngModel)]="editCost.amount" name="amount" required min="0" />
+            </div>
+            <div class="form-group">
+              <label for="edit-description">Description</label>
+              <input type="text" id="edit-description" [(ngModel)]="editCost.description" name="description" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-category">Category</label>
+              <select id="edit-category" [(ngModel)]="editCost.category" name="category" required>
+                <option value="">Select Category</option>
+                <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+                <option value="Other">Other</option>
+              </select>
+              <input *ngIf="editCost.category === 'Other'" type="text" [(ngModel)]="editCost.custom_category" name="custom_category" placeholder="Custom Category" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-type">Type</label>
+              <select id="edit-type" [(ngModel)]="editCost.type" name="type" required>
+                <option value="fixed">Fixed</option>
+                <option value="variable">Variable</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit-month">Month</label>
+              <input type="number" id="edit-month" [(ngModel)]="editCost.month" name="month" min="1" max="12" />
+            </div>
+            <div class="form-group">
+              <label for="edit-year">Year</label>
+              <input type="number" id="edit-year" [(ngModel)]="editCost.year" name="year" min="2000" max="2100" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success">Update Cost</button>
+            <button type="button" class="btn btn-secondary" (click)="closeEditCostModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Searching Costs -->
+  <div class="modal" *ngIf="showSearchCostsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Search Costs</h3>
+        <button class="close-btn" (click)="closeSearchCostsModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="searchCosts()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="search-type">Type</label>
+              <select id="search-type" [(ngModel)]="searchFilters.type" name="type">
+                <option value="">All Types</option>
+                <option value="fixed">Fixed</option>
+                <option value="variable">Variable</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="search-month">Month</label>
+              <input type="number" id="search-month" [(ngModel)]="searchFilters.month" name="month" min="1" max="12" placeholder="1-12" required />
+            </div>
+            <div class="form-group">
+              <label for="search-year">Year</label>
+              <input type="number" id="search-year" [(ngModel)]="searchFilters.year" name="year" min="2000" max="2100" placeholder="e.g., 2025" required />
+            </div>
+            <div class="form-group">
+              <label for="search-category">Category</label>
+              <select id="search-category" [(ngModel)]="searchFilters.category" name="category">
+                <option value="">All Categories</option>
+                <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success">Search</button>
+            <button type="button" class="btn btn-secondary" (click)="closeSearchCostsModal()">Cancel</button>
           </div>
         </form>
       </div>

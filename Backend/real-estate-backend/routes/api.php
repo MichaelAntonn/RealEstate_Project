@@ -171,15 +171,13 @@ Route::prefix('v1')->group(function () {
 
                 Route::get('/', [CostController::class, 'index']); // Retrieve all costs (with optional filters: search, month, year, type)
                 Route::post('/', [CostController::class, 'store']); // Create a new cost entry
-
+                // Additional cost routes
+                Route::get('/summary', [CostController::class, 'summary']); // Get a cost summary for a specific month and year
+                Route::get('/categories', [CostController::class, 'usedCategories']); // Get distinct categories used in existing cost records
                 // Individual cost routes
                 Route::get('/{cost}', [CostController::class, 'show']); // Show details of a specific cost by ID
                 Route::put('/{cost}', [CostController::class, 'update']); // Update an existing cost
                 Route::delete('/{cost}', [CostController::class, 'destroy']); // Delete a cost by ID
-
-                // Additional cost routes
-                Route::get('/summary', [CostController::class, 'summary']); // Get a cost summary for a specific month and year
-                Route::get('/categories', [CostController::class, 'usedCategories']); // Get distinct categories used in existing cost records
             });
 
             // Settings Routes 
