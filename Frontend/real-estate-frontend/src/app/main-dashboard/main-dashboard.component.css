@@ -16,10 +16,71 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
 }
+
+/* Navbar Styles */
+.navbar {
+    background: var(--navbar-bg);
+    color: white;
+    padding: 10px 0;
+    box-shadow: var(--card-shadow);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--main-color);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--main-color);
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 280px;
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    position: fixed;
+    padding-top: 70px;
+    transition: var(--transition);
+}
+
+.sidebar .nav-link {
+    color: white;
+    font-size: 16px;
+    padding: 12px 20px;
+    margin: 5px 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: var(--main-color);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link .badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+}
+
 /* Main Content */
 .main-content {
-    margin-left: 150px;
-    padding: 60px 20px 20px;
+    margin-left: 280px;
+    padding: 90px 20px 20px;
     transition: var(--transition);
 }
 
