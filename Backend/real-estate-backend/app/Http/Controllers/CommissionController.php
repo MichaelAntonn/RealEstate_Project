@@ -34,7 +34,7 @@ class CommissionController extends Controller
     {
         $this->authorizeAccess($request);
         $property = Property::findOrFail($id);
-        
+
         if ($property->transaction_status === 'completed') {
             return $this->errorResponse('Property sale already completed', 400);
         }
@@ -120,18 +120,19 @@ class CommissionController extends Controller
     }
 
     public function costTrends(Request $request)
-{
-    $this->authorizeAccess($request);
-    return $this->successResponse([
-        'trends' => $this->costAnalysisService->getCostTrends()
-    ]);
-}
+    {
+        $this->authorizeAccess($request);
+        return $this->successResponse([
+            'trends' => $this->costAnalysisService->getCostTrends()
+        ]);
+    }
 
-public function profitAnalysis(Request $request, $year = null)
-{
-    $this->authorizeAccess($request);
-    return $this->successResponse([
-        'analysis' => $this->commissionService->getProfitAnalysis($year)
-    ]);
-}
+    public function profitAnalysis(Request $request, $year = null)
+    {
+        $this->authorizeAccess($request);
+        return $this->successResponse([
+            'analysis' => $this->commissionService->getProfitAnalysis($year)
+        ]);
+    }
+
 }
