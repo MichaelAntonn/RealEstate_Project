@@ -6,6 +6,7 @@ use App\Http\Requests\CostRequest;
 use App\Models\Cost;
 use Illuminate\Http\Request;
 use App\Constants\UserType;
+use Illuminate\Support\Facades\Auth;
 
 class CostController extends Controller
 {
@@ -79,7 +80,7 @@ class CostController extends Controller
             : $request->category;
 
         $cost = Cost::create([
-            'user_id' => $request->user_id ?? auth()->id(),
+            'user_id' => $request->user_id ?? Auth::id(),
             'amount' => $request->amount,
             'description' => $request->description,
             'category' => $category,
