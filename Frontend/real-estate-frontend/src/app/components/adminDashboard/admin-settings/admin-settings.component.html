@@ -39,6 +39,7 @@
       <button class="btn btn-primary" (click)="openAddCostModal()">Add New Cost</button>
       <button class="btn btn-info" (click)="openCostsModal()">View Costs</button>
       <button class="btn btn-primary" (click)="openSearchCostsModal()">Search Costs</button>
+      <button class="btn btn-success" (click)="openSummaryModal()">Costs Summary</button>
     </div>
   </section>
 
@@ -354,6 +355,49 @@
             <button type="button" class="btn btn-secondary" (click)="closeSearchCostsModal()">Cancel</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Costs Summary -->
+  <div class="modal" *ngIf="showSummaryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Costs Summary</h3>
+        <button class="close-btn" (click)="closeSummaryModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="getCostsSummary()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="summary-month">Month</label>
+              <input type="number" id="summary-month" [(ngModel)]="summaryFilters.month" name="month" min="1" max="12" placeholder="1-12" required />
+            </div>
+            <div class="form-group">
+              <label for="summary-year">Year</label>
+              <input type="number" id="summary-year" [(ngModel)]="summaryFilters.year" name="year" min="2000" max="2100" placeholder="e.g., 2025" required />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success">Get Summary</button>
+            <button type="button" class="btn btn-secondary" (click)="closeSummaryModal()">Cancel</button>
+          </div>
+        </form>
+
+        <div class="summary-results" *ngIf="summaryData">
+          <h4>Summary for {{ summaryFilters.month }}/{{ summaryFilters.year }}</h4>
+          <p><strong>Total Costs:</strong> {{ summaryData.total | currency:'EGP' }}</p>
+          <p><strong>Fixed Costs:</strong> {{ summaryData.fixed | currency:'EGP' }}</p>
+          <p><strong>Variable Costs:</strong> {{ summaryData.variable | currency:'EGP' }}</p>
+          <h5>Costs by Category:</h5>
+          <ul>
+            <li *ngFor="let category of summaryData.by_category | keyvalue">
+              {{ category.key }}: {{ category.value | currency:'EGP' }}
+            </li>
+          </ul>
+        </div>
+
+        <p class="error" *ngIf="summaryError">{{ summaryError }}</p>
       </div>
     </div>
   </div>

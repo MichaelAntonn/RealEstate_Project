@@ -346,3 +346,40 @@ h2 {
     transform: translateY(0);
   }
 }
+/* أضف ده في آخر الـ CSS */
+.summary-results {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.summary-results h4 {
+  font-size: 18px;
+  color: #34495e;
+  margin-bottom: 15px;
+}
+
+.summary-results p {
+  font-size: 15px;
+  color: #555;
+  margin: 5px 0;
+}
+
+.summary-results h5 {
+  font-size: 16px;
+  color: #34495e;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.summary-results ul {
+  list-style: none;
+  padding: 0;
+}
+
+.summary-results li {
+  font-size: 15px;
+  color: #555;
+  margin: 5px 0;
+}
