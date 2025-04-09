@@ -35,9 +35,12 @@
             </div>
             
             <div class="user-info">
-                <span>Welcome, Mohamed</span>
+                <span>Welcome, {{ username }}</span> 
                 <img src="assets/images/user-avatar.png" alt="User" class="user-avatar">
-            </div>
+              </div>
+            
+
+            
         </div>
     </div>
 </nav>
@@ -98,7 +101,7 @@
                 </a>
             </li>
             <li class="nav-item mt-4">
-                <a href="#" class="nav-link text-danger">
+                <a href="#" class="nav-link text-danger" id="logoutButton" (click)="logout()">
                     <fa-icon [icon]="faSignOutAlt"></fa-icon>
                     Logout
                 </a>
@@ -107,41 +110,79 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
-                    <fa-icon [icon]="faPlus" class="fa-sm text-white-50"></fa-icon> Add New Property
-                </button>
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" (click)="openAddPropertyModal()" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                <fa-icon [icon]="faPlus" class="fa-sm text-white-50"></fa-icon> Add New Property
+            </button>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-box">
+            <fa-icon [icon]="faSearch"></fa-icon>
+            <input type="text" class="form-control" placeholder="Search properties or clients...">
+        </div>
+
+        <!-- Stats Cards -->
+        <app-stats-cards 
+            [listedCount]="listedCount" 
+            [bookedCount]="bookedCount" 
+            [soldCount]="soldCount"
+            [averageRating]="averageRating"
+            [givenReviews]="givenReviews"
+            [receivedReviews]="receivedReviews">
+        </app-stats-cards>
+
+        <!-- charts -->
+  <!-- Stats Charts Section -->
+<div class="row mt-5" >
+    <!-- Dashboard Chart (Left Side) -->
+    <div class="col-md-4">
+      <app-dashboard-chart 
+        [listed]="listedCount" 
+        [booked]="bookedCount" 
+        [sold]="soldCount">
+      </app-dashboard-chart>
+    </div>
+  
+    <!-- Stats Chart (Right Side) -->
+    <div class="col-md-8">
+      <app-stats-chart
+        [listedCount]="listedCount"
+        [bookedCount]="bookedCount"
+        [soldCount]="soldCount"
+        [givenReviews]="givenReviews"
+        [receivedReviews]="receivedReviews">
+      </app-stats-chart>
+    </div>
+  </div>
+        <!-- Recent Properties -->
+        <div class="row mt-5">
+            <div class="col-lg-12 mb-4">
+                <app-recent-properties 
+                    [properties]="properties"
+                    (edit)="editProperty($event)"
+                    (delete)="deleteProperty($event)">
+                </app-recent-properties>
             </div>
+        </div>
 
-            <!-- Search Box -->
-            <div class="search-box">
-                <fa-icon [icon]="faSearch"></fa-icon>
-                <input type="text" class="form-control" placeholder="Search properties or clients...">
-            </div>
 
-            <!-- Stats Cards -->
-            <app-stats-cards 
-                [listedCount]="listedCount" 
-                [bookedCount]="bookedCount" 
-                [soldCount]="soldCount">
-            </app-stats-cards>
 
-            <!-- Recent Properties -->
-            <div class="row">
-                <div class="col-lg-12 mb-4">
-                    <app-recent-properties [properties]="properties"></app-recent-properties>
-                </div>
-            </div>
 
-            <!-- Appointments Table -->
-            <div class="row">
-                <div class="col-lg-12 mb-4">
-                    <app-appointments [appointments]="appointments"></app-appointments>
-                </div>
+
+        <!-- Appointments Table -->
+        <div class="row mt-5">
+            <div class="col-lg-12 mb-4">
+                <app-appointments 
+                    [appointments]="appointments"
+                    (edit)="editAppointment($event)"
+                    (delete)="deleteAppointment($event)">
+                </app-appointments>
             </div>
         </div>
     </div>
@@ -149,10 +190,139 @@
 
 <!-- Add Property Modal -->
 <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
-    <!-- Modal content same as in original HTML -->
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPropertyModalLabel">{{ isEditingProperty ? 'Edit Property' : 'Add New Property' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="propertyTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="propertyTitle" 
+                                   [(ngModel)]="currentProperty.title" name="title" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="propertyPrice" class="form-label">Price (EGP)</label>
+                            <input type="number" class="form-control" id="propertyPrice" 
+                                   [(ngModel)]="currentProperty.price" name="price" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="propertyBedrooms" class="form-label">Bedrooms</label>
+                            <input type="number" class="form-control" id="propertyBedrooms" 
+                                   [(ngModel)]="currentProperty.bedrooms" name="bedrooms" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="propertyBathrooms" class="form-label">Bathrooms</label>
+                            <input type="number" class="form-control" id="propertyBathrooms" 
+                                   [(ngModel)]="currentProperty.bathrooms" name="bathrooms" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="propertyArea" class="form-label">Area (m²)</label>
+                            <input type="number" class="form-control" id="propertyArea" 
+                                   [(ngModel)]="currentProperty.area" name="area" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="propertyLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="propertyLocation" 
+                               [(ngModel)]="currentProperty.location" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="propertyImage" class="form-label">Image URL</label>
+                        <input type="text" class="form-control" id="propertyImage" 
+                               [(ngModel)]="currentProperty.image" name="image" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="propertyStatus" class="form-label">Status</label>
+                        <select class="form-select" id="propertyStatus" 
+                                [(ngModel)]="currentProperty.status" name="status" required>
+                            <option value="Available">Available</option>
+                            <option value="Under Contract">Under Contract</option>
+                            <option value="Sold">Sold</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="propertyDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="propertyDescription" rows="3"
+                                  [(ngModel)]="currentProperty.description" name="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="saveProperty()" data-bs-dismiss="modal">
+                    {{ isEditingProperty ? 'Update Property' : 'Save Property' }}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Add Appointment Modal -->
 <div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
-    <!-- Modal content same as in original HTML -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAppointmentModalLabel">{{ isEditingAppointment ? 'Edit Appointment' : 'Add New Appointment' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="appointmentDate" 
+                               [(ngModel)]="currentAppointment.date" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentTime" class="form-label">Time</label>
+                        <input type="time" class="form-control" id="appointmentTime" 
+                               [(ngModel)]="currentAppointment.time" name="time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentClient" class="form-label">Client Name</label>
+                        <input type="text" class="form-control" id="appointmentClient" 
+                               [(ngModel)]="currentAppointment.client" name="client" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentProperty" class="form-label">Property</label>
+                        <select class="form-select" id="appointmentProperty" 
+                                [(ngModel)]="currentAppointment.property_id" name="property_id" required>
+                            <option *ngFor="let property of properties" [value]="property.id">{{ property.title }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentPurpose" class="form-label">Purpose</label>
+                        <select class="form-select" id="appointmentPurpose" 
+                                [(ngModel)]="currentAppointment.purpose" name="purpose" required>
+                            <option value="Property Viewing">Property Viewing</option>
+                            <option value="Contract Signing">Contract Signing</option>
+                            <option value="Site Tour">Site Tour</option>
+                            <option value="Consultation">Consultation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentStatus" class="form-label">Status</label>
+                        <select class="form-select" id="appointmentStatus" 
+                                [(ngModel)]="currentAppointment.status" name="status" required>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="saveAppointment()" data-bs-dismiss="modal">
+                    {{ isEditingAppointment ? 'Update Appointment' : 'Save Appointment' }}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -8,9 +8,11 @@
     --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
 }
-
+.join-date{
+    display: block !important;
+}
 body {
-    background-color: var(--background-color);
+    background-color: var(--background-color) ;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
 }
