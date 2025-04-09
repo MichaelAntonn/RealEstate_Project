@@ -3,6 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../../services/dashboard.service';
 
+interface CostsSummary {
+  total: number;
+  fixed: number;
+  variable: number;
+  by_category: { [key: string]: number };
+}
+
 @Component({
   selector: 'app-admin-settings',
   standalone: true,
@@ -37,7 +44,14 @@ export class AdminSettingsComponent implements OnInit {
   showEditCostModal: boolean = false;
   showSearchCostsModal: boolean = false;
 
-  // Pagination properties
+  showSummaryModal: boolean = false;
+  summaryFilters = {
+    month: undefined as number | undefined,
+    year: undefined as number | undefined
+  };
+  summaryData: CostsSummary | null = null;
+  summaryError: string | null = null;
+
   costsPagination = {
     current_page: 1,
     last_page: 1,
@@ -45,7 +59,6 @@ export class AdminSettingsComponent implements OnInit {
     per_page: 10
   };
 
-  // Search filters
   searchFilters = {
     type: '' as string | undefined,
     month: undefined as number | undefined,
@@ -81,7 +94,8 @@ export class AdminSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchCommissionRate();
-    this.loadCategoriesAndTypes();
+    this.loadCategories(); // استبدلنا loadCategoriesAndTypes بـ loadCategories
+    this.loadTypes(); // فصلنا تحميل الـ types
   }
 
   fetchCommissionRate(): void {
@@ -168,13 +182,25 @@ export class AdminSettingsComponent implements OnInit {
     };
   }
 
-  loadCategoriesAndTypes(): void {
+  // دالة جديدة لتحميل الـ categories باستخدام getCostCategories
+  loadCategories(): void {
+    this.dashboardService.getCostCategories().subscribe({
+      next: (categories: string[]) => {
+        this.categories = categories;
+        console.log('Categories loaded:', this.categories); // للتأكد من الـ response
+      },
+      error: (error: any) => console.error('Error fetching categories:', error)
+    });
+  }
+
+  // دالة لتحميل الـ types من getCosts (أو ممكن تعدليها حسب الـ backend)
+  loadTypes(): void {
     this.dashboardService.getCosts().subscribe({
       next: (response: { costs: any[]; pagination: any; categories: string[]; types: { [key: string]: string } }) => {
-        this.categories = response.categories;
         this.types = response.types;
+        console.log('Types loaded:', this.types);
       },
-      error: (error: any) => console.error('Error fetching categories and types:', error)
+      error: (error: any) => console.error('Error fetching types:', error)
     });
   }
 
@@ -218,12 +244,16 @@ export class AdminSettingsComponent implements OnInit {
     const costData = { ...this.newCost };
     if (costData.category === 'Other' && this.newCost.custom_category) {
       costData.category = this.newCost.custom_category;
+      if (!this.categories.includes(costData.category)) {
+        this.categories.push(costData.category);
+      }
     }
     delete costData.custom_category;
     this.dashboardService.createCost(costData).subscribe({
       next: (response: any) => {
         this.closeAddCostModal();
         if (this.showCostsModal) this.loadCosts(this.costsPagination.current_page);
+        this.loadCategories(); // تحديث الـ categories بعد الإضافة
       },
       error: (error: any) => console.error('Error adding cost:', error)
     });
@@ -242,6 +272,9 @@ export class AdminSettingsComponent implements OnInit {
     const costData = { ...this.editCost };
     if (costData.category === 'Other' && this.editCost.custom_category) {
       costData.category = this.editCost.custom_category;
+      if (!this.categories.includes(costData.category)) {
+        this.categories.push(costData.category);
+      }
     }
     delete costData.custom_category;
     delete costData.id;
@@ -249,6 +282,7 @@ export class AdminSettingsComponent implements OnInit {
       next: (response: any) => {
         this.closeEditCostModal();
         this.loadCosts(this.costsPagination.current_page);
+        this.loadCategories(); // تحديث الـ categories بعد التعديل
       },
       error: (error: any) => console.error('Error updating cost:', error)
     });
@@ -277,7 +311,6 @@ export class AdminSettingsComponent implements OnInit {
     };
   }
 
-  // Search Modal Methods
   openSearchCostsModal(): void {
     this.showSearchCostsModal = true;
   }
@@ -289,9 +322,9 @@ export class AdminSettingsComponent implements OnInit {
 
   searchCosts(): void {
     if (this.searchFilters.month !== undefined && this.searchFilters.year !== undefined) {
-      this.loadCosts(1, this.searchFilters); // جلب البيانات بس من غير فتح الـ View Costs تلقائيًا
+      this.loadCosts(1, this.searchFilters);
       this.closeSearchCostsModal();
-      this.showCostsModal = true; // فتح الـ View Costs بعد البحث
+      this.showCostsModal = true;
     } else {
       alert('Please enter both month and year to search.');
     }
@@ -306,9 +339,47 @@ export class AdminSettingsComponent implements OnInit {
     };
   }
 
-  // New method to go back to Search Costs modal from View Costs modal
   backToSearch(): void {
-    this.showCostsModal = false; // إغلاق الـ View Costs
-    this.openSearchCostsModal(); // فتح الـ Search Costs
+    this.showCostsModal = false;
+    this.openSearchCostsModal();
+  }
+
+  openSummaryModal(): void {
+    this.showSummaryModal = true;
+    this.summaryData = null;
+    this.summaryError = null;
+  }
+
+  closeSummaryModal(): void {
+    this.showSummaryModal = false;
+    this.resetSummaryFilters();
+  }
+
+  getCostsSummary(): void {
+    if (this.summaryFilters.month !== undefined && this.summaryFilters.year !== undefined) {
+      this.dashboardService.getCostsSummary(this.summaryFilters.month, this.summaryFilters.year).subscribe({
+        next: (response: CostsSummary) => {
+          this.summaryData = response;
+          this.summaryError = null;
+          console.log('Summary data:', this.summaryData);
+        },
+        error: (error: any) => {
+          console.error('Error fetching costs summary:', error);
+          this.summaryError = 'Failed to load costs summary. Please try again.';
+          this.summaryData = null;
+        }
+      });
+    } else {
+      alert('Please enter both month and year to get the summary.');
+    }
+  }
+
+  resetSummaryFilters(): void {
+    this.summaryFilters = {
+      month: undefined,
+      year: undefined
+    };
+    this.summaryData = null;
+    this.summaryError = null;
   }
 }

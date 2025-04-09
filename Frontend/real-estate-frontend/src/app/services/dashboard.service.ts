@@ -181,7 +181,7 @@ updateCommissionRate(commissionRate: number): Observable<any> {
 
 
 // costs 
-// في DashboardService
+//  DashboardService
 getCosts(page: number = 1, search: string = '', month?: number, year?: number, type?: string, category?: string): Observable<any> {
   let url = `${this.apiUrl}/admin/costs?page=${page.toString()}`;
   const params: string[] = [];
@@ -191,6 +191,12 @@ getCosts(page: number = 1, search: string = '', month?: number, year?: number, t
   if (type) params.push(`type=${type}`);
   if (category) params.push(`category=${category}`);
   if (params.length) url += `&${params.join('&')}`;
+  return this.http.get(url, { headers: this.getHeaders(), withCredentials: true });
+}
+
+// Costs Summary
+getCostsSummary(month: number, year: number): Observable<any> {
+  const url = `${this.apiUrl}/admin/costs/summary?month=${month}&year=${year}`;
   return this.http.get(url, { headers: this.getHeaders(), withCredentials: true });
 }
 
