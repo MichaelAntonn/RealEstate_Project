@@ -17,6 +17,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CostController;
+use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 
 // Public routes
@@ -158,6 +159,13 @@ Route::prefix('v1')->group(function () {
                 Route::get('/profit-analysis/{year?}', [CommissionController::class, 'profitAnalysis'])->name('profit-analysis'); // Analyzes yearly profits and compares them with costs
             });
 
+            // Goals Routes
+            Route::prefix('goals')->name('goals.')->group(function () {
+                Route::get('/monthly-progress/{year}/{month}', [GoalController::class, 'getMonthlyGoalProgress'])->name('monthly-progress');
+                Route::get('/yearly-progress/{year}', [GoalController::class, 'getYearlyGoalProgress'])->name('yearly-progress');
+                Route::get('/monthly-breakdown/{year}', [GoalController::class, 'getMonthlyBreakdown'])->name('monthly-breakdown');
+            });
+
             // Costs Routes
             Route::prefix('costs')->name('costs.')->group(function () {
 
@@ -178,6 +186,15 @@ Route::prefix('v1')->group(function () {
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
                 Route::post('/financial', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');
+                Route::prefix('goals')->name('goals.')->group(function () {
+                    Route::post('/monthly', [SettingController::class, 'createMonthlyGoal'])->name('monthly-goal'); // Create a monthly goal
+                    Route::get('/monthly/target', [SettingController::class, 'getMonthlyTarget'])->name('monthly-goal'); // Get a monthly goal
+                    Route::post('/yearly', [SettingController::class, 'createYearlyGoal'])->name('yearly-goal');  // Create a yearly goal
+                    Route::get('/yearly/target', [SettingController::class, 'getYearlyTarget'])->name('yearly-goal'); // Get a yearly goal
+                    Route::put('/monthly/{goalId}', [SettingController::class, 'updateMonthlyGoal'])->name('monthly-goal'); // Update a monthly goal
+                    Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly-goal'); // Update a yearly goal
+                    Route::delete('/{goal}', [SettingController::class, 'deleteGoal']); // Delete a Goal
+                });
             });
         });
     });
