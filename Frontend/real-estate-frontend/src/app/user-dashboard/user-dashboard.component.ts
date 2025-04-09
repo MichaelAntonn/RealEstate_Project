@@ -6,9 +6,12 @@ import { StatsCardsComponent } from './components/stats-cards/stats-cards.compon
 import { RecentPropertiesComponent } from './components/recent-properties/recent-properties.component';
 import { AppointmentsComponent } from './components/appointments/appointments.component';
 import { CommonModule } from '@angular/common';
+import { DashboardChartComponent } from './components/dashboard-chart/dashboard-chart.component';
+import { StatsChartComponent } from './components/stats-chart/stats-chart.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { 
   faBars, faBell, faHome, faUser, faBuilding, 
@@ -24,7 +27,10 @@ import {
     FontAwesomeModule,
     StatsCardsComponent,
     RecentPropertiesComponent,
-    AppointmentsComponent
+    AppointmentsComponent,
+    FormsModule,
+    DashboardChartComponent,
+    StatsChartComponent
   ],
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css'],
@@ -57,7 +63,31 @@ export class UserDashboardComponent implements OnInit {
   properties: Property[] = [];
   appointments: Appointment[] = [];
   darkMode: boolean = false;
-  username: string = ''; // متغير جديد لاسم المستخدم
+  username: string = '';
+  isEditingProperty: boolean = false;
+  isEditingAppointment: boolean = false;
+  showSuccessMessage: boolean = false;
+  successMessage: string = '';
+  
+  currentProperty: Property = {
+    title: '',
+    price: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    area: 0,
+    location: '',
+    image: '',
+    status: 'Available'
+  };
+
+  currentAppointment: Appointment = {
+    date: '',
+    time: '',
+    client: '',
+    property_id: 0,
+    purpose: 'Property Viewing',
+    status: 'Scheduled'
+  };
 
   constructor(
     private dashboardService: UserDashboardService,
@@ -67,12 +97,13 @@ export class UserDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.loadDashboardData();
     this.getUsername();
+    this.loadProperties();
+    this.loadAppointments();
   }
 
-  // دالة لاسترجاع اسم المستخدم من localStorage
   getUsername(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.username = user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : 'User'; // دمج الاسم الأول والاسم الأخير
+    this.username = user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : 'User';
   }
 
   loadDashboardData(): void {
@@ -82,31 +113,23 @@ export class UserDashboardComponent implements OnInit {
       return;
     }
   
-    // استرجاع بيانات الداش بورد
-    this.dashboardService.getDashboardData().subscribe(
-      res => {
+    this.dashboardService.getDashboardData().subscribe({
+      next: (res) => {
         const data = res.dashboard;
-  
         this.listedCount = data.properties.total;
         this.bookedCount = data.bookings.upcoming;
         this.soldCount = data.bookings.completed;
-  
         this.averageRating = data.reviews.average_rating;
         this.givenReviews = data.reviews.given;
         this.receivedReviews = data.reviews.received;
-
-        // لو لسه في recent_properties و upcoming_appointments خليهم كده، أو احذفهم لو مش بيرجعوا
-        this.properties = res.recent_properties || [];
-        this.appointments = res.upcoming_appointments || [];
       },
-      error => {
+      error: (error) => {
         console.error('Error fetching dashboard data', error);
       }
-    );
+    });
   
-    // استرجاع الإحصائيات الخاصة بالمستخدم
-    this.dashboardService.getStatistics().subscribe(
-      stats => {
+    this.dashboardService.getStatistics().subscribe({
+      next: (stats) => {
         this.listedCount = stats.properties.total;
         this.bookedCount = stats.bookings.upcoming;
         this.soldCount = stats.bookings.completed;
@@ -114,10 +137,41 @@ export class UserDashboardComponent implements OnInit {
         this.givenReviews = stats.reviews.given;
         this.receivedReviews = stats.reviews.received;
       },
-      error => {
+      error: (error) => {
         console.error('Error fetching statistics data', error);
       }
+    });
+  }
+
+  loadProperties(): void {
+    this.dashboardService.getProperties().subscribe(
+      (data: any) => {
+        // تحقق إذا كانت البيانات هي مصفوفة
+        if (Array.isArray(data)) {
+          this.properties = data;  // إذا كانت مصفوفة، احفظها في المتغير
+        } else {
+          console.error('البيانات المستلمة ليست مصفوفة:', data);
+          this.properties = [];  // في حال كانت البيانات ليست مصفوفة، يمكن تعيينها إلى مصفوفة فارغة
+        }
+      },
+      (error) => {
+        console.error('حدث خطأ أثناء جلب البيانات:', error);
+      }
     );
+  }
+  
+  loadAppointments(): void {
+    this.dashboardService.getAppointments().subscribe({
+      next: (appointments: Appointment[]) => {
+        this.appointments = appointments.map(appointment => ({
+          ...appointment,
+          property_title: appointment.property_title || 'Unknown' // التعامل مع حالة البيانات المفقودة
+        }));
+      },
+      error: (error) => {
+        console.error('Error fetching appointments', error);
+      }
+    });
   }
   
   toggleDarkMode(): void {
@@ -136,5 +190,138 @@ export class UserDashboardComponent implements OnInit {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
+  }
+
+  // Property CRUD Operations
+ 
+openAddPropertyModal(): void {
+  this.isEditingProperty = false;
+  this.currentProperty = {
+    title: '',
+    price: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    area: 0,
+    location: '',
+    image: '',
+    status: 'Available'
+  };
+}
+
+  editProperty(property: Property): void {
+    this.isEditingProperty = true;
+    this.currentProperty = { ...property };
+  }
+
+  saveProperty(): void {
+    const operation = this.isEditingProperty && this.currentProperty.id
+      ? this.dashboardService.updateProperty(this.currentProperty.id, this.currentProperty)
+      : this.dashboardService.createProperty(this.currentProperty);
+
+    operation.subscribe({
+      next: (savedProperty) => {
+        if (this.isEditingProperty) {
+          const index = this.properties.findIndex(p => p.id === savedProperty.id);
+          if (index !== -1) {
+            this.properties[index] = savedProperty;
+          }
+        } else {
+          this.properties.unshift(savedProperty);
+        }
+
+        this.updateStats();
+        this.showSuccess(this.isEditingProperty ? 'تم تحديث العقار بنجاح!' : 'تم إضافة العقار بنجاح!');
+        this.loadProperties();
+        this.loadDashboardData();
+      },
+      error: (err) => {
+        console.error('Error saving property', err);
+      }
+    });
+  }
+
+  deleteProperty(id: number): void {
+    if (confirm('هل أنت متأكد من حذف هذا العقار؟')) {
+      this.dashboardService.deleteProperty(id).subscribe({
+        next: () => {
+          this.properties = this.properties.filter(p => p.id !== id);
+          this.updateStats();
+          this.showSuccess('تم حذف العقار بنجاح');
+          this.loadProperties();
+          this.loadDashboardData();
+        },
+        error: (err) => console.error('Error deleting property', err)
+      });
+    }
+  }
+
+  // Appointment CRUD Operations
+openAddAppointmentModal(): void {
+  this.isEditingAppointment = false;
+  this.currentAppointment = {
+    date: '',
+    time: '',
+    client: '',
+    property_id: this.properties[0]?.id || 0, // تعيين القيمة الافتراضية بشكل صحيح
+    purpose: 'Property Viewing',
+    status: 'Scheduled'
+  };
+}
+
+  editAppointment(appointment: Appointment): void {
+    this.isEditingAppointment = true;
+    this.currentAppointment = { ...appointment };
+  }
+
+  saveAppointment(): void {
+    if (!this.currentAppointment) return;
+  
+    const operation = this.isEditingAppointment && this.currentAppointment.id
+      ? this.dashboardService.updateAppointment(this.currentAppointment.id, this.currentAppointment)
+      : this.dashboardService.createAppointment(this.currentAppointment);
+  
+    operation.subscribe({
+      next: (savedAppointment) => {
+        if (this.isEditingAppointment) {
+          const index = this.appointments.findIndex(a => a.id === savedAppointment.id);
+          if (index !== -1) {
+            this.appointments[index] = savedAppointment;
+          }
+        } else {
+          this.appointments.unshift(savedAppointment);
+        }
+        this.showSuccess(this.isEditingAppointment ? 'تم تحديث الموعد بنجاح!' : 'تم إضافة الموعد بنجاح!');
+      },
+      error: (err) => {
+        console.error('Error saving appointment', err);
+      }
+    });
+  }
+
+  deleteAppointment(id: number): void {
+    if (confirm('هل أنت متأكد من حذف هذا الموعد؟')) {
+      this.dashboardService.deleteAppointment(id).subscribe({
+        next: () => {
+          this.appointments = this.appointments.filter(a => a.id !== id);
+          this.showSuccess('تم حذف الموعد بنجاح');
+        },
+        error: (err) => {
+          console.error('Error deleting appointment', err);
+        }
+      });
+    }
+  }
+
+  // Helper methods
+  private updateStats(): void {
+    this.listedCount = this.properties.length;
+    this.bookedCount = this.properties.filter(p => p.status === 'Under Contract').length;
+    this.soldCount = this.properties.filter(p => p.status === 'Sold').length;
+  }
+
+  private showSuccess(message: string): void {
+    this.showSuccessMessage = true;
+    this.successMessage = message;
+    setTimeout(() => this.showSuccessMessage = false, 3000);
   }
 }
