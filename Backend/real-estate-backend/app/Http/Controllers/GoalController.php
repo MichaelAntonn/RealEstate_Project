@@ -30,7 +30,7 @@ class GoalController extends Controller
     public function getYearlyGoalProgress($year,Request $request)
     {
         $this->authorizeAccess($request);
-        $yearlyGoalProgress = $this->goalService->getYearlyGoalProgress($year);
+        $yearlyGoalProgress = $this->goalService->getYearlyGoalProgress();
 
         if ($yearlyGoalProgress === null) {
             return response()->json(['message' => 'No yearly goal found for the given year'], 404);
