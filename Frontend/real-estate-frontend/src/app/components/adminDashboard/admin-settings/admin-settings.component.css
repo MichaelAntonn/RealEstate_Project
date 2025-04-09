@@ -17,7 +17,9 @@ h2 {
   letter-spacing: 1px;
 }
 
-.add-admin-section, .commission-section {
+.add-admin-section,
+.commission-section,
+.costs-section {
   margin-bottom: 50px;
   background: #fff;
   padding: 25px;
@@ -26,11 +28,15 @@ h2 {
   transition: transform 0.3s ease;
 }
 
-.add-admin-section:hover, .commission-section:hover {
+.add-admin-section:hover,
+.commission-section:hover,
+.costs-section:hover {
   transform: translateY(-5px);
 }
 
-.add-admin-section h3, .commission-section h3 {
+.add-admin-section h3,
+.commission-section h3,
+.costs-section h3 {
   font-size: 22px;
   color: #34495e;
   margin-bottom: 20px;
@@ -73,7 +79,21 @@ h2 {
   color: #fff;
 }
 
-/* Commission Section */
+.btn-info {
+  background: #17a2b8;
+  color: #fff;
+}
+
+.btn-warning {
+  background: #f39c12;
+  color: #fff;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+}
+
 .commission-display {
   padding: 20px;
   border-radius: 10px;
@@ -122,7 +142,39 @@ h2 {
   outline: none;
 }
 
-/* Modal Styles */
+.costs-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.costs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.costs-table th,
+.costs-table td {
+  padding: 12px;
+  border: 1px solid #dfe6e9;
+  text-align: left;
+}
+
+.costs-table th {
+  background: #ecf0f1;
+  color: #34495e;
+  font-weight: 600;
+}
+
+.costs-table td {
+  background: #fff;
+  color: #555;
+}
+
+.costs-table tr:nth-child(even) td {
+  background: #f8f9fa;
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -204,7 +256,9 @@ h2 {
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group input[type="tel"],
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group select {
   padding: 12px;
   border: 1px solid #dfe6e9;
   border-radius: 8px;
@@ -214,7 +268,8 @@ h2 {
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: #3498db;
   box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
   outline: none;
@@ -254,6 +309,31 @@ h2 {
   justify-content: flex-end;
   padding-top: 25px;
   border-top: 1px solid #dfe6e9;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.pagination span {
+  font-size: 15px;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.pagination .btn {
+  padding: 8px 16px;
+}
+
+.pagination .btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 @keyframes slideIn {

@@ -178,4 +178,40 @@ updateCommissionRate(commissionRate: number): Observable<any> {
 }
 
 
+
+
+// costs 
+// في DashboardService
+getCosts(page: number = 1, search: string = '', month?: number, year?: number, type?: string, category?: string): Observable<any> {
+  let url = `${this.apiUrl}/admin/costs?page=${page.toString()}`;
+  const params: string[] = [];
+  if (search) params.push(`search=${encodeURIComponent(search)}`);
+  if (month !== undefined) params.push(`month=${month}`);
+  if (year !== undefined) params.push(`year=${year}`);
+  if (type) params.push(`type=${type}`);
+  if (category) params.push(`category=${category}`);
+  if (params.length) url += `&${params.join('&')}`;
+  return this.http.get(url, { headers: this.getHeaders(), withCredentials: true });
+}
+
+createCost(costData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/admin/costs`, costData, { headers: this.getHeaders(), withCredentials: true });
+}
+
+getCost(id: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/costs/${id}`, { headers: this.getHeaders(), withCredentials: true });
+}
+
+updateCost(id: number, costData: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/admin/costs/${id}`, costData, { headers: this.getHeaders(), withCredentials: true });
+}
+
+deleteCost(id: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/admin/costs/${id}`, { headers: this.getHeaders(), withCredentials: true });
+}
+
+getCostCategories(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/costs/categories`, { headers: this.getHeaders(), withCredentials: true });
+}
+
 }

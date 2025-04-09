@@ -16,48 +16,58 @@ class CostController extends Controller
          abort(403, 'Forbidden. Only super-admins can perform this action.');
      }
  }
-
-    // الحصول على جميع المصاريف
-    public function index(Request $request)
-    {
-       // Ensure the authenticated user is a super-admin
-       $this->authorizeSuperAdmin($request);
-
-        $query = Cost::query(); // Super admin can see all costs
-
-        if ($request->has('search')) {
-            $query->where('description', 'like', '%'.$request->search.'%');
-        }
-
-        if ($request->has('month') && $request->has('year')) {
-            $query->forMonth($request->month, $request->year);
-        }
-
-        if ($request->has('type')) {
-            $query->ofType($request->type);
-        }
-
-        $costs = $query->get()->map(function($cost) {
-            return [
-                'id' => $cost->id,
-                'amount' => $cost->amount,
-                'description' => $cost->description,
-                'category' => $cost->category,
-                'type' => $cost->type,
-                'month' => $cost->month,
-                'year' => $cost->year,
-                'created_at' => $cost->created_at,
-                'user_id' => $cost->user_id
-            ];
-        });
-
-        return response()->json([
-            'costs' => $costs,
-            'categories' => Cost::getCategories(),
-            'types' => Cost::getTypes()
-        ]);
-    }
-
+ public function index(Request $request)
+ {
+     $this->authorizeSuperAdmin($request);
+ 
+     $query = Cost::query();
+ 
+     if ($request->has('search')) {
+         $query->where('description', 'like', '%' . $request->search . '%');
+     }
+ 
+     if ($request->has('month') && $request->has('year')) {
+         $query->forMonth($request->month, $request->year);
+     }
+ 
+     if ($request->has('type')) {
+         $query->ofType($request->type);
+     }
+ 
+     // Add filter by category
+     if ($request->has('category')) {
+         $query->where('category', $request->category);
+     }
+ 
+     $perPage = $request->input('per_page', 10);
+     $costs = $query->paginate($perPage);
+ 
+     $costsData = collect($costs->items())->map(function ($cost) {
+         return [
+             'id' => $cost->id,
+             'amount' => $cost->amount,
+             'description' => $cost->description,
+             'category' => $cost->category,
+             'type' => $cost->type,
+             'month' => $cost->month,
+             'year' => $cost->year,
+             'created_at' => $cost->created_at,
+             'user_id' => $cost->user_id
+         ];
+     });
+ 
+     return response()->json([
+         'costs' => $costsData,
+         'pagination' => [
+             'current_page' => $costs->currentPage(),
+             'last_page' => $costs->lastPage(),
+             'total' => $costs->total(),
+             'per_page' => $costs->perPage()
+         ],
+         'categories' => Cost::getCategories(),
+         'types' => Cost::getTypes()
+     ]);
+ }
     // إنشاء مصروف جديد
     public function store(CostRequest $request)
     {
