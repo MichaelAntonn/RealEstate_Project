@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { CommonModule } from '@angular/common';
 import { RecentPropertiesComponent } from './recent-properties.component';
 
 describe('RecentPropertiesComponent', () => {
@@ -8,7 +8,7 @@ describe('RecentPropertiesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RecentPropertiesComponent]
+      imports: [RecentPropertiesComponent, CommonModule],
     })
     .compileComponents();
 

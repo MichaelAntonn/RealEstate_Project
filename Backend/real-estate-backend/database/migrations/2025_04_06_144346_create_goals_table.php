@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', ['monthly_sales', 'yearly_sales', 'new_listings', 'agent_performance']);
-            $table->decimal('target_amount', 15, 2);
+            $table->enum('goal_type', ['units', 'commission'])->default('commission'); 
+            $table->decimal('target_amount', 15, 2)->nullable(); 
+            $table->integer('target_units')->nullable(); 
             $table->date('start_date');
             $table->date('end_date');
+            $table->text('description')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // For agent-specific goals
             $table->timestamps();
         });

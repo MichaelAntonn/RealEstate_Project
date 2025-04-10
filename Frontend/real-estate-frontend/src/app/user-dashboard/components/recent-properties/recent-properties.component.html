@@ -1,36 +1,116 @@
-<div class="card">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Recently Added Properties</h6>
-      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
-        <i class="fas fa-plus fa-sm text-white-50"></i> Add Property
+<!-- جدول عرض الـ Properties -->
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Recent Properties</h6>
+      <button class="btn btn-primary btn-sm" (click)="openAddModal()">
+          <i class="fas fa-plus"></i> Add Property
       </button>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-4 mb-4" *ngFor="let property of properties">
-          <div class="card h-100">
-            <img [src]="property.image" class="card-img-top" [alt]="property.title">
-            <div class="card-body">
-              <h5 class="card-title">{{ property.title }}</h5>
-              <p class="card-text">{{ property.bedrooms }} Bedrooms, {{ property.bathrooms }} Baths, {{ property.area }} m²</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="text-primary font-weight-bold">EGP {{ property.price }}</span>
-                <span class="badge" [ngClass]="getStatusBadgeClass(property.status)">{{ property.status }}</span>
-              </div>
-            </div>
-            <div class="card-footer bg-transparent">
-              <small class="text-muted">Added {{ property.added }}</small>
-              <div class="mt-2">
-                <button class="btn btn-sm btn-outline-primary edit-property" [attr.data-id]="property.id">
-                  <fa-icon [icon]="faEdit"></fa-icon>
-                </button>
-                <button class="btn btn-sm btn-outline-danger delete-property" [attr.data-id]="property.id">
-                  <fa-icon [icon]="faTrash"></fa-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
+  <div class="card-body">
+      <div class="table-responsive">
+          <table class="table table-bordered" width="100%" cellspacing="0">
+              <thead>
+                  <tr>
+                      <th>Title</th>
+                      <th>Price</th>
+                      <th>Bedrooms</th>
+                      <th>Bathrooms</th>
+                      <th>Area</th>
+                      <th>Location</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let property of properties">
+                      <td>{{ property.title }}</td>
+                      <td>{{ property.price | currency }}</td>
+                      <td>{{ property.bedrooms }}</td>
+                      <td>{{ property.bathrooms }}</td>
+                      <td>{{ property.area }} sq.m</td>
+                      <td>{{ property.location }}</td>
+                      <td>
+                          <span class="badge" [ngClass]="getStatusBadgeClass(property.status)">
+                              {{ property.status }}
+                          </span>
+                      </td>
+                      <td>
+                          <button class="btn btn-sm btn-outline-primary" (click)="onEdit(property)">
+                              <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="btn btn-sm btn-outline-danger" (click)="onDelete(property.id)">
+                              <i class="fas fa-trash"></i>
+                          </button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+
+<!-- Add/Edit Property Modal -->
+<div class="modal fade" [ngClass]="{'show': isModalVisible}" tabindex="-1" role="dialog" aria-labelledby="propertyModalLabel" aria-hidden="true" [style.display]="isModalVisible ? 'block' : 'none'">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="propertyModalLabel">{{ isEditing ? 'Edit Property' : 'Add New Property' }}</h5>
+              <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form (ngSubmit)="onSave()">
+                  <div class="form-group">
+                      <label for="propertyTitle">Title</label>
+                      <input type="text" class="form-control" id="propertyTitle" 
+                             [(ngModel)]="currentProperty.title" name="title" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyPrice">Price</label>
+                      <input type="number" class="form-control" id="propertyPrice" 
+                             [(ngModel)]="currentProperty.price" name="price" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyBedrooms">Bedrooms</label>
+                      <input type="number" class="form-control" id="propertyBedrooms" 
+                             [(ngModel)]="currentProperty.bedrooms" name="bedrooms" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyBathrooms">Bathrooms</label>
+                      <input type="number" class="form-control" id="propertyBathrooms" 
+                             [(ngModel)]="currentProperty.bathrooms" name="bathrooms" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyArea">Area</label>
+                      <input type="number" class="form-control" id="propertyArea" 
+                             [(ngModel)]="currentProperty.area" name="area" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyLocation">Location</label>
+                      <input type="text" class="form-control" id="propertyLocation" 
+                             [(ngModel)]="currentProperty.location" name="location" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyDescription">Description</label>
+                      <textarea class="form-control" id="propertyDescription" 
+                                [(ngModel)]="currentProperty.description" name="description" required></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label for="propertyStatus">Status</label>
+                      <select class="form-control" id="propertyStatus" 
+                              [(ngModel)]="currentProperty.status" name="status" required>
+                          <option value="Available">Available</option>
+                          <option value="Under Contract">Under Contract</option>
+                          <option value="Sold">Sold</option>
+                      </select>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>

@@ -30,7 +30,7 @@ export class DashboardService {
   }
 
   getLatestProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/statistics/latest-properties`, { headers: this.getHeaders(), withCredentials: true });
+    return this.http.get(`${this.apiUrl}/admin/latest-properties`, { headers: this.getHeaders(), withCredentials: true });
   }
 
 
@@ -38,14 +38,25 @@ export class DashboardService {
   getProperties(): Observable<any> {
     return this.http.get(`${this.apiUrl}/properties`, { headers: this.getHeaders(), withCredentials: true });
   }
-  getAcceptedProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/?approval_status=accepted`, { headers: this.getHeaders(), withCredentials: true });
+  getPendingProperties(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/properties/status/pending?page=${page}${search ? '&search=' + encodeURIComponent(search) : ''}`, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    });
   }
-  getRejectedProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/?approval_status=rejected`, { headers: this.getHeaders(), withCredentials: true });
+
+  getAcceptedProperties(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/properties/status/accepted?page=${page}${search ? '&search=' + encodeURIComponent(search) : ''}`, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    });
   }
-  getPendingProperties(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/properties/?approval_status=pending`, { headers: this.getHeaders(), withCredentials: true });
+
+  getRejectedProperties(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/properties/status/rejected?page=${page}${search ? '&search=' + encodeURIComponent(search) : ''}`, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    });
   }
 
   getProperty(id: number): Observable<any> {
@@ -146,6 +157,67 @@ createAdmin(adminData: any): Observable<any> {
     headers: this.getHeaders(),
     withCredentials: true
   });
+}
+
+
+// New method to get current commission rate
+getCommissionRate(): Observable<{ success: boolean; commission_rate: number; status: string }> {
+  return this.http.get<{ success: boolean; commission_rate: number; status: string }>(
+    `${this.apiUrl}/admin/settings/financial`,
+    { headers: this.getHeaders(), withCredentials: true }
+  );
+}
+
+// New method to update commission rate
+updateCommissionRate(commissionRate: number): Observable<any> {
+  return this.http.post(
+    `${this.apiUrl}/admin/settings/financial`,
+    { commission_rate: commissionRate },
+    { headers: this.getHeaders(), withCredentials: true }
+  );
+}
+
+
+
+
+// costs 
+//  DashboardService
+getCosts(page: number = 1, search: string = '', month?: number, year?: number, type?: string, category?: string): Observable<any> {
+  let url = `${this.apiUrl}/admin/costs?page=${page.toString()}`;
+  const params: string[] = [];
+  if (search) params.push(`search=${encodeURIComponent(search)}`);
+  if (month !== undefined) params.push(`month=${month}`);
+  if (year !== undefined) params.push(`year=${year}`);
+  if (type) params.push(`type=${type}`);
+  if (category) params.push(`category=${category}`);
+  if (params.length) url += `&${params.join('&')}`;
+  return this.http.get(url, { headers: this.getHeaders(), withCredentials: true });
+}
+
+// Costs Summary
+getCostsSummary(month: number, year: number): Observable<any> {
+  const url = `${this.apiUrl}/admin/costs/summary?month=${month}&year=${year}`;
+  return this.http.get(url, { headers: this.getHeaders(), withCredentials: true });
+}
+
+createCost(costData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/admin/costs`, costData, { headers: this.getHeaders(), withCredentials: true });
+}
+
+getCost(id: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/costs/${id}`, { headers: this.getHeaders(), withCredentials: true });
+}
+
+updateCost(id: number, costData: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/admin/costs/${id}`, costData, { headers: this.getHeaders(), withCredentials: true });
+}
+
+deleteCost(id: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/admin/costs/${id}`, { headers: this.getHeaders(), withCredentials: true });
+}
+
+getCostCategories(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/admin/costs/categories`, { headers: this.getHeaders(), withCredentials: true });
 }
 
 }

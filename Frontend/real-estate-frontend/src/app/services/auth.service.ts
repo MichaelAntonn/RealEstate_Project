@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
@@ -57,5 +57,20 @@ export class AuthService {
   // التحقق من حالة تسجيل الدخول
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  // إضافة التوكن إلى الهيدر في الطلبات المحمية
+  getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : '',
+    });
+  }
+
+  // التأكد من أن التوكن موجود وأنه صالح قبل إجراء أي طلب محمي
+  checkToken(): boolean {
+    const token = this.getToken();
+    // يمكن إضافة تحقق إضافي من صحة التوكن إذا كان لديك آلية لذلك
+    return !!token;
   }
 }

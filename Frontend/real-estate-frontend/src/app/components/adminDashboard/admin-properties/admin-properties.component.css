@@ -268,3 +268,18 @@
   padding: 5px 10px;
   font-size: 0.85rem;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.pagination .btn {
+  min-width: 35px;
+}
+
+.table {
+  margin-bottom: 0;
+}
