@@ -1,0 +1,27 @@
+<div class="grid-container">
+  @for (property of properties; track property.id) {
+  <div class="property-card">
+    <img
+      [src]="property.cover_image"
+      [alt]="property.title"
+      class="property-image"
+    />
+    <div class="property-card-body">
+      <span class="property-badge badge-verified">Verified</span>
+      @if (property.approval_status === 'accepted') {
+      <span class="property-badge badge-new">New</span>
+      }
+      <h6 class="property-title">
+        {{ property.title }} | {{ property.area }} sq.m
+      </h6>
+      <p class="property-location">{{ property.full_address }}</p>
+      <h5 class="property-price">${{ property.price }}</h5>
+      <div class="property-details">
+        <span><i class="fa fa-house"></i> {{ property.bedrooms ?? "-" }}</span>
+        <span><i class="fa fa-bath"></i> {{ property.bathrooms ?? "-" }}</span>
+        <span><i class="fa fa-car"></i> 1</span>
+      </div>
+    </div>
+  </div>
+  }
+</div>
