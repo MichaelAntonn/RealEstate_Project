@@ -1,0 +1,58 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+.property-card {
+  /* background: white; */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+.property-card:hover {
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+.property-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.property-card-body {
+  padding: 15px;
+}
+.property-badge {
+  font-size: 0.8rem;
+  padding: 5px 8px;
+  border-radius: 5px;
+  color: white;
+  display: inline-block;
+  margin-right: 5px;
+}
+.badge-verified {
+  background-color: green;
+}
+.badge-new {
+  background-color: blue;
+}
+.badge-featured {
+  background-color: red;
+}
+.property-title {
+  font-weight: bold;
+  margin-top: 10px;
+}
+.property-location {
+  color: gray;
+  font-size: 14px;
+}
+.property-price {
+  font-size: 18px;
+  margin: 10px 0;
+}
+.property-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #333;
+}
