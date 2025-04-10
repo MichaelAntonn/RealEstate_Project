@@ -27,8 +27,8 @@ return new class extends Migration
             $table->date('date_of_establishment')->nullable(); 
             $table->string('password'); 
             $table->boolean('accept_terms')->default(false); 
-            $table->timestamp('created_at')->useCurrent(); 
             $table->enum('verification_status', ['Pending', 'Verified', 'Rejected'])->default('Pending'); 
+            $table->timestamps(); // إضافة عمود created_at و updated_at
         });
     }
 

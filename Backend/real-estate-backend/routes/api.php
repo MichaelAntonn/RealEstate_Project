@@ -19,6 +19,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CostController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\CompanyController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
@@ -204,3 +205,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
     Route::post('/conversations', [ChatController::class, 'createConversation'])->middleware('auth:sanctum');
 });
+// routes/Company
+Route::post('/company/register', [CompanyController::class, 'store']);
+
