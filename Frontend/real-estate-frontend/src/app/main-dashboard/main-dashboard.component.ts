@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ViewEncapsulation } from '@angular/core';
-
 import { 
   faBars, faBell, faHome, faUser, faBuilding, 
   faHeart, faCalendarAlt, faEnvelope, faChartLine, 
