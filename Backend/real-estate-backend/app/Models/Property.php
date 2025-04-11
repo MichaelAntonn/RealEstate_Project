@@ -54,5 +54,9 @@ class Property extends Model
     {
         return $this->hasMany(PropertyMedia::class, 'PropertyID');
     }
+    public function favoritedBy()
+{
+    return $this->belongsToMany(User::class, 'favorites');
+}
 
 }
