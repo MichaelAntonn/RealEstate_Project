@@ -1,0 +1,112 @@
+/* src/app/profile/profile.component.css */
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profile-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.profile-header h2 {
+  color: var(--main-color);
+  margin-bottom: 10px;
+}
+
+.profile-header p {
+  color: #6c757d;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.profile-image-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid var(--main-color);
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 20px;
+  border: none;
+}
+
+.card-header {
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  font-weight: 600;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+
+.btn-primary:hover {
+  background-color: #e56b2b;
+  border-color: #e56b2b;
+}
+
+.btn-outline-primary {
+  color: var(--main-color);
+  border-color: var(--main-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--main-color);
+  color: white;
+}
+
+.danger-card {
+  border-left: 4px solid #dc3545;
+}
+
+.password-card {
+  border-left: 4px solid #0d6efd;
+}
+
+.profile-card {
+  border-left: 4px solid var(--main-color);
+}
+
+/* Dark mode styles */
+.dark-mode .card,
+.dark-mode .card-header {
+  background-color: #1a1a2e;
+  color: #f8f9fa;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #16213e;
+  color: #f8f9fa;
+  border-color: #0f3460;
+}
+
+.dark-mode .form-control:read-only {
+  background-color: #16213e;
+  color: #adb5bd;
+}
+
+.dark-mode .card-header {
+  border-bottom-color: #0f3460;
+}
