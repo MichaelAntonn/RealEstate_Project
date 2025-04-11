@@ -1,43 +1,112 @@
-<div class="card">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Upcoming Appointments</h6>
-      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
-        <i class="fas fa-plus fa-sm text-white-50"></i> Add Appointment
+<!-- جدول عرض الـ Appointments -->
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Appointments</h6>
+      <button class="btn btn-primary btn-sm" (click)="openAddModal()">
+          <i class="fas fa-plus"></i> Add Appointment
       </button>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Client</th>
-              <th>Property</th>
-              <th>Purpose</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let appointment of appointments">
-              <td>{{ appointment.date }}</td>
-              <td>{{ appointment.time }}</td>
-              <td>{{ appointment.client }}</td>
-              <td>{{ appointment.property }}</td>
-              <td>{{ appointment.purpose }}</td>
-              <td><span class="badge" [ngClass]="getStatusBadgeClass(appointment.status)">{{ appointment.status }}</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary edit-appointment" [attr.data-id]="appointment.id">
-                  <fa-icon [icon]="faEdit"></fa-icon>
-                </button>
-                <button class="btn btn-sm btn-outline-danger delete-appointment" [attr.data-id]="appointment.id">
-                  <fa-icon [icon]="faTrash"></fa-icon>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
+  <div class="card-body">
+      <div class="table-responsive">
+          <table class="table table-bordered" width="100%" cellspacing="0">
+              <thead>
+                  <tr>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Client</th>
+                      <th>Property</th>
+                      <th>Purpose</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let appointment of appointments">
+                      <td>{{ appointment.date | date }}</td>
+                      <td>{{ appointment.time }}</td>
+                      <td>{{ appointment.client }}</td>
+                      <td>{{ getPropertyTitle(appointment.property_id) }}</td>
+                      <td>{{ appointment.purpose }}</td>
+                      <td>
+                          <span class="badge" [ngClass]="getStatusBadgeClass(appointment.status)">
+                              {{ appointment.status }}
+                          </span>
+                      </td>
+                      <td>
+                          <button class="btn btn-sm btn-outline-primary" (click)="onEdit(appointment)">
+                              <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="btn btn-sm btn-outline-danger" (click)="onDelete(appointment.id)">
+                              <i class="fas fa-trash"></i>
+                          </button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+
+<!-- Add/Edit Appointment Modal -->
+<div class="modal fade" [ngClass]="{'show': isModalVisible}" tabindex="-1" role="dialog" aria-labelledby="appointmentModalLabel" aria-hidden="true" [style.display]="isModalVisible ? 'block' : 'none'">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="appointmentModalLabel">{{ isEditing ? 'Edit Appointment' : 'Add New Appointment' }}</h5>
+              <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form (ngSubmit)="onSave()">
+                  <div class="form-group">
+                      <label for="appointmentDate">Date</label>
+                      <input type="date" class="form-control" id="appointmentDate" 
+                             [(ngModel)]="currentAppointment.date" name="date" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="appointmentTime">Time</label>
+                      <input type="time" class="form-control" id="appointmentTime" 
+                             [(ngModel)]="currentAppointment.time" name="time" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="appointmentClient">Client Name</label>
+                      <input type="text" class="form-control" id="appointmentClient" 
+                             [(ngModel)]="currentAppointment.client" name="client" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="appointmentProperty">Property</label>
+                      <select class="form-control" id="appointmentProperty" 
+                              [(ngModel)]="currentAppointment.property_id" name="property_id" required>
+                          <option *ngFor="let property of properties" [value]="property.id">{{ property.title }}</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label for="appointmentPurpose">Purpose</label>
+                      <select class="form-control" id="appointmentPurpose" 
+                              [(ngModel)]="currentAppointment.purpose" name="purpose" required>
+                          <option value="Property Viewing">Property Viewing</option>
+                          <option value="Contract Signing">Contract Signing</option>
+                          <option value="Site Tour">Site Tour</option>
+                          <option value="Consultation">Consultation</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label for="appointmentStatus">Status</label>
+                      <select class="form-control" id="appointmentStatus" 
+                              [(ngModel)]="currentAppointment.status" name="status" required>
+                          <option value="Scheduled">Scheduled</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Cancelled">Cancelled</option>
+                      </select>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>

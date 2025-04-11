@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             PropertySeeder::class,
             BookingSeeder::class,
             CostSeeder::class,
+            ReviewSeeder::class,
         ]);
     }
 }

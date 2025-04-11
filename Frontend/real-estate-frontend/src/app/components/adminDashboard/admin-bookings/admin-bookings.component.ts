@@ -10,112 +10,142 @@ import { DashboardService } from '../../../services/dashboard.service';
   styleUrl: './admin-bookings.component.css'
 })
 export class AdminBookingsComponent {
-
   pendingBookings: any[] = [];
   confirmedBookings: any[] = [];
   canceledBookings: any[] = [];
+
   pendingPage: number = 1;
   confirmedPage: number = 1;
   canceledPage: number = 1;
-  pendingTotal: number = 0;
-  confirmedTotal: number = 0;
-  canceledTotal: number = 0;
+
   pendingLastPage: number = 1;
   confirmedLastPage: number = 1;
   canceledLastPage: number = 1;
-  bookingsPerPage: number = 5;
-  isAdmin: boolean = false; // Track if user is admin/super-admin
+
+  pendingTotal: number = 0;
+  confirmedTotal: number = 0;
+  canceledTotal: number = 0;
+
+  isAdmin: boolean = false; // Set based on user role; adjust as needed
 
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
-    this.checkUserRole();
-    this.loadBookings();
+    this.loadPendingBookings();
+    this.loadConfirmedBookings();
+    this.loadCanceledBookings();
   }
 
-  checkUserRole(): void {
-    const userType = localStorage.getItem('user_type'); // Adjust based on your auth setup
-    this.isAdmin = userType === 'admin' || userType === 'super_admin';
-  }
-
-  loadBookings(): void {
-    this.loadPendingBookings(this.pendingPage);
-    this.loadConfirmedBookings(this.confirmedPage);
-    this.loadCanceledBookings(this.canceledPage);
-  }
-
-  loadPendingBookings(page: number): void {
-    this.dashboardService.getPendingBookings(page).subscribe((response) => {
-      this.pendingBookings = response.data;
-      this.pendingTotal = response.total;
-      this.pendingLastPage = response.last_page;
-      this.pendingPage = response.current_page;
+  loadPendingBookings(): void {
+    this.dashboardService.getPendingBookings(this.pendingPage).subscribe({
+      next: (response) => {
+        console.log('Raw API response for pending:', response);
+        const bookingsData = response.bookings || {};
+        this.pendingBookings = bookingsData.data || [];
+        this.pendingPage = bookingsData.current_page || 1;
+        this.pendingLastPage = bookingsData.last_page || 1;
+        this.pendingTotal = bookingsData.total || 0;
+        console.log('Pending bookings assigned:', this.pendingBookings);
+      },
+      error: (error) => {
+        console.error('Error fetching pending bookings:', error);
+        this.pendingBookings = [];
+      }
     });
   }
 
-  loadConfirmedBookings(page: number): void {
-    this.dashboardService.getConfirmedBookings(page).subscribe((response) => {
-      this.confirmedBookings = response.data;
-      this.confirmedTotal = response.total;
-      this.confirmedLastPage = response.last_page;
-      this.confirmedPage = response.current_page;
+  loadConfirmedBookings(): void {
+    this.dashboardService.getConfirmedBookings(this.confirmedPage).subscribe({
+      next: (response) => {
+        console.log('Raw API response for confirmed:', response);
+        const bookingsData = response.bookings || {};
+        this.confirmedBookings = bookingsData.data || [];
+        this.confirmedPage = bookingsData.current_page || 1;
+        this.confirmedLastPage = bookingsData.last_page || 1;
+        this.confirmedTotal = bookingsData.total || 0;
+        console.log('Confirmed bookings assigned:', this.confirmedBookings);
+      },
+      error: (error) => {
+        console.error('Error fetching confirmed bookings:', error);
+        this.confirmedBookings = [];
+      }
     });
   }
 
-  loadCanceledBookings(page: number): void {
-    this.dashboardService.getCanceledBookings(page).subscribe((response) => {
-      this.canceledBookings = response.data;
-      this.canceledTotal = response.total;
-      this.canceledLastPage = response.last_page;
-      this.canceledPage = response.current_page;
+  loadCanceledBookings(): void {
+    this.dashboardService.getCanceledBookings(this.canceledPage).subscribe({
+      next: (response) => {
+        console.log('Raw API response for canceled:', response);
+        const bookingsData = response.bookings || {};
+        this.canceledBookings = bookingsData.data || [];
+        this.canceledPage = bookingsData.current_page || 1;
+        this.canceledLastPage = bookingsData.last_page || 1;
+        this.canceledTotal = bookingsData.total || 0;
+        console.log('Canceled bookings assigned:', this.canceledBookings);
+      },
+      error: (error) => {
+        console.error('Error fetching canceled bookings:', error);
+        this.canceledBookings = [];
+      }
     });
   }
 
-  updateBookingStatus(id: number, status: string): void {
-    this.dashboardService.updateBookingStatus(id, status).subscribe(() => {
-      this.loadBookings();
+  updateBookingStatus(bookingId: number, status: string): void {
+    this.dashboardService.updateBookingStatus(bookingId, status).subscribe({
+      next: () => {
+        console.log(`Booking ${bookingId} updated to ${status}`);
+        this.loadPendingBookings();
+        this.loadConfirmedBookings();
+        this.loadCanceledBookings();
+      },
+      error: (error) => console.error(`Error updating booking ${bookingId}:`, error)
     });
   }
 
-  prevPage(section: string): void {
-    if (section === 'pending' && this.pendingPage > 1) {
-      this.loadPendingBookings(this.pendingPage - 1);
-    } else if (section === 'confirmed' && this.confirmedPage > 1) {
-      this.loadConfirmedBookings(this.confirmedPage - 1);
-    } else if (section === 'canceled' && this.canceledPage > 1) {
-      this.loadCanceledBookings(this.canceledPage - 1);
+  prevPage(status: string): void {
+    if (status === 'pending' && this.pendingPage > 1) {
+      this.pendingPage--;
+      this.loadPendingBookings();
+    } else if (status === 'confirmed' && this.confirmedPage > 1) {
+      this.confirmedPage--;
+      this.loadConfirmedBookings();
+    } else if (status === 'canceled' && this.canceledPage > 1) {
+      this.canceledPage--;
+      this.loadCanceledBookings();
     }
   }
 
-  nextPage(section: string): void {
-    if (section === 'pending' && this.pendingPage < this.pendingLastPage) {
-      this.loadPendingBookings(this.pendingPage + 1);
-    } else if (section === 'confirmed' && this.confirmedPage < this.confirmedLastPage) {
-      this.loadConfirmedBookings(this.confirmedPage + 1);
-    } else if (section === 'canceled' && this.canceledPage < this.canceledLastPage) {
-      this.loadCanceledBookings(this.canceledPage + 1);
+  nextPage(status: string): void {
+    if (status === 'pending' && this.pendingPage < this.pendingLastPage) {
+      this.pendingPage++;
+      this.loadPendingBookings();
+    } else if (status === 'confirmed' && this.confirmedPage < this.confirmedLastPage) {
+      this.confirmedPage++;
+      this.loadConfirmedBookings();
+    } else if (status === 'canceled' && this.canceledPage < this.canceledLastPage) {
+      this.canceledPage++;
+      this.loadCanceledBookings();
     }
   }
 
-  goToPage(section: string, page: number): void {
-    if (page < 1 || page > this.getLastPage(section)) return;
-    if (section === 'pending') {
-      this.loadPendingBookings(page);
-    } else if (section === 'confirmed') {
-      this.loadConfirmedBookings(page);
-    } else if (section === 'canceled') {
-      this.loadCanceledBookings(page);
+  goToPage(status: string, page: number): void {
+    if (status === 'pending') {
+      this.pendingPage = page;
+      this.loadPendingBookings();
+    } else if (status === 'confirmed') {
+      this.confirmedPage = page;
+      this.loadConfirmedBookings();
+    } else if (status === 'canceled') {
+      this.canceledPage = page;
+      this.loadCanceledBookings();
     }
   }
 
-  getLastPage(section: string): number {
-    return section === 'pending' ? this.pendingLastPage :
-           section === 'confirmed' ? this.confirmedLastPage :
-           this.canceledLastPage;
-  }
-
-  getPageNumbers(section: string): number[] {
-    const lastPage = this.getLastPage(section);
+  getPageNumbers(status: string): number[] {
+    let lastPage: number;
+    if (status === 'pending') lastPage = this.pendingLastPage;
+    else if (status === 'confirmed') lastPage = this.confirmedLastPage;
+    else lastPage = this.canceledLastPage;
     return Array.from({ length: lastPage }, (_, i) => i + 1);
   }
 }

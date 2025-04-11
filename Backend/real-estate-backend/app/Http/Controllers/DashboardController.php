@@ -44,9 +44,7 @@ class DashboardController extends Controller
     public function createAdmin(Request $request)
     {
         // Ensure the authenticated user is a super-admin
-        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
-            return response()->json(['error' => 'Forbidden. Only super-admins can create admins.'], 403);
-        }
+        $this->authorizeSuperAdmin($request);
 
         // Validate the request data
         $validatedData = $request->validate([
@@ -85,9 +83,7 @@ class DashboardController extends Controller
 public function destroyUser(Request $request, $userId)
 {
     // Ensure the authenticated user is either a super-admin or an admin
-    if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
-        return response()->json(['error' => 'Forbidden. Only super-admins and admins can delete users.'], 403);
-    }
+    $this->authorizeAdmin($request);
 
     // Find the user to delete
     $user = User::find($userId);
@@ -121,9 +117,7 @@ public function destroyUser(Request $request, $userId)
 public function destroyAdmin(Request $request, $adminId)
 {
     // Ensure the authenticated user is a super-admin
-    if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
-        return response()->json(['error' => 'Forbidden. Only super-admins can delete admins.'], 403);
-    }
+    $this->authorizeSuperAdmin($request);
 
     // Find the admin to delete
     $admin = User::find($adminId);
@@ -156,14 +150,13 @@ public function destroyAdmin(Request $request, $adminId)
     public function showUsers(Request $request)
     {
         // Ensure the authenticated user is either a super-admin or an admin
-        if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
-            return response()->json(['error' => 'Forbidden. Only super-admins and admins can view users.'], 403);
-        }
-
-        // Fetch all users except super-admin
-    $users = User::where('user_type', '!=', [UserType::SUPER_ADMIN,UserType::ADMIN])->latest()
-    ->paginate(5);
-
+        $this->authorizeAdmin($request);
+    
+        // Fetch all users except super-admin and admin
+        $users = User::whereNotIn('user_type', [UserType::SUPER_ADMIN, UserType::ADMIN])
+            ->latest()
+            ->paginate(5);
+    
         return response()->json([
             'success' => true,
             'users' => $users,
@@ -176,9 +169,7 @@ public function destroyAdmin(Request $request, $adminId)
     public function showAdmins(Request $request)
     {
         // Ensure the authenticated user is a super-admin
-        if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
-            return response()->json(['error' => 'Forbidden. Only super-admins can view admins.'], 403);
-        }
+        $this->authorizeSuperAdmin($request);
 
         // Fetch all admins except super-admin
     $admins = User::where('user_type', UserType::ADMIN)->get();
@@ -234,9 +225,7 @@ public function editProfile(Request $request)
 public function generalStatistics(Request $request)
 {
     // Ensure the authenticated user is either a super-admin or an admin
-    if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
-        return response()->json(['error' => 'Forbidden. Only super-admins and admins can view statistics.'], 403);
-    }
+    $this->authorizeAdmin($request);
 
     // Number of properties
     $totalProperties = Property::count();
@@ -277,9 +266,7 @@ public function generalStatistics(Request $request)
 public function latestProperties(Request $request)
 {
     // Ensure the authenticated user is either a super-admin or an admin
-    if ($request->user()->user_type !== UserType::SUPER_ADMIN && $request->user()->user_type !== UserType::ADMIN) {
-        return response()->json(['error' => 'Forbidden. Only super-admins and admins can view latest properties.'], 403);
-    }
+    $this->authorizeAdmin($request);
 
     $latestProperties = Property::with('user')
         ->orderBy('created_at', 'desc')
@@ -453,4 +440,28 @@ public function userActivities(Request $request, $userId = null)
         'activities' => $activities
     ]);
 }
+ // Authorization helpers
+ protected function authorizeSuperAdmin(Request $request): void
+ {
+     if ($request->user()->user_type !== UserType::SUPER_ADMIN) {
+         abort(403, 'Forbidden. Only super-admins can perform this action.');
+     }
+ }
+
+ protected function authorizeAdmin(Request $request): void
+ {
+     if (!in_array($request->user()->user_type, [UserType::SUPER_ADMIN, UserType::ADMIN])) {
+         abort(403, 'Forbidden. Only admins can perform this action.');
+     }
+ }
+
+ protected function authorizeAdminOrSelf(Request $request, int $userId): void
+ {
+     $user = $request->user();
+     if (!in_array($user->user_type, [UserType::SUPER_ADMIN, UserType::ADMIN]) && $user->id !== $userId) {
+         abort(403, 'Forbidden. You can only edit your own profile.');
+     }
+ }
+
+ 
 }

@@ -11,4 +11,10 @@ export class StatsCardsComponent {
   @Input() listedCount: number = 0;
   @Input() bookedCount: number = 0;
   @Input() soldCount: number = 0;
+
+   // البيانات الجديدة الخاصة بالتقييمات
+   @Input() averageRating: string = '0.0';
+   @Input() givenReviews: number = 0;
+   @Input() receivedReviews: number = 0;
+  
 }

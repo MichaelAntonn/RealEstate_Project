@@ -1,13 +1,11 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Chart } from 'chart.js/auto';
 import { DashboardService } from '../../../services/dashboard.service';
-import { AdminDashboardSidebarComponent } from '../admin-dashboard-sidebar/admin-dashboard-sidebar.component';
-import { DashboardNavbarComponent } from '../dashboard-navbar/dashboard-navbar.component';
 import { CommonModule } from '@angular/common';
 import { catchError } from 'rxjs/operators';
-import { throwError, Observable } from 'rxjs';
+import { throwError } from 'rxjs';
 
-// Define interfaces for the API responses
+// Define interfaces inside the component file
 interface Statistics {
   total_commissions: number;
   total_properties: number;
@@ -17,10 +15,13 @@ interface Statistics {
 
 interface MonthlyData {
   month: string;
+  commissions: number;
+  costs: number;
+  profit: number;
+  profit_margin: number;
   properties_sold: number;
-  profit_margin: string;
+  new_listings: number;
   new_users: number;
-  added_properties: number;
 }
 
 interface Property {
@@ -33,7 +34,7 @@ interface Property {
 }
 
 @Component({
-  selector: 'app-admin-dashboard',
+  selector: 'app-admin-statistics',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './admin-statistics.component.html',
@@ -45,13 +46,13 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
   latestProperties: Property[] | string = [];
   private salesChart: Chart | null = null;
   private profitTrendChart: Chart | null = null;
-  private usersPropertiesChart: Chart | null = null;
-  loadingStatistics: boolean = false; // Added loadingStatistics property
+  private usersListingsChart: Chart | null = null;
+  loadingStatistics: boolean = false;
 
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit: Starting to fetch admin dashboard data');
+    console.log('ngOnInit: Starting to fetch admin statistics data');
     this.fetchDashboardData();
   }
 
@@ -59,7 +60,6 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
     console.log('ngAfterViewInit: DOM should be ready, canvas elements should be available');
   }
 
-  // Type guard to check if statistics is a Statistics object
   isStatistics(value: Statistics | string | null): value is Statistics {
     return value !== null && typeof value !== 'string';
   }
@@ -69,20 +69,20 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
   }
 
   fetchDashboardData(): void {
-    this.loadingStatistics = true; // Set loading to true before fetching
+    this.loadingStatistics = true;
     this.dashboardService.getStatistics()
       .pipe(
         catchError(error => {
           console.error('Error fetching statistics:', error);
           this.statistics = 'Error';
-          this.loadingStatistics = false; // Set loading to false on error
+          this.loadingStatistics = false;
           return throwError(() => error);
         })
       )
       .subscribe((data: { statistics: Statistics }) => {
         console.log('Statistics fetched:', data);
         this.statistics = data.statistics;
-        this.loadingStatistics = false; // Set loading to false on success
+        this.loadingStatistics = false;
       });
 
     this.dashboardService.getLatestProperties()
@@ -108,9 +108,9 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
           return throwError(() => error);
         })
       )
-      .subscribe((data: { monthly_data: MonthlyData[] }) => {
+      .subscribe((data: { success: boolean; data: MonthlyData[] }) => {
         console.log('Raw API response for monthly data:', data);
-        this.monthlyData = data.monthly_data || [];
+        this.monthlyData = data.success ? data.data : [];
         console.log('Processed monthlyData:', this.monthlyData);
         this.renderCharts();
       });
@@ -121,28 +121,22 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
       console.log('Rendering charts with monthlyData:', this.monthlyData);
       this.renderSalesChart();
       this.renderProfitTrendChart();
-      this.renderUsersPropertiesChart();
+      this.renderUsersListingsChart();
     }, 100);
   }
 
   renderSalesChart(): void {
     const salesCtx = document.getElementById('myChart') as HTMLCanvasElement;
     if (!salesCtx) {
-      console.error('Sales chart canvas not found - Check if <canvas id="myChart"> exists in the DOM');
+      console.error('Sales chart canvas not found');
       return;
     }
-  
     const existingChart = Chart.getChart('myChart');
-    if (existingChart) {
-      console.log('Destroying existing chart on myChart canvas');
-      existingChart.destroy();
-    }
-  
-    const labels = this.monthlyData.length ? this.monthlyData.map(item => item.month) : ['Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-    const data = this.monthlyData.length ? this.monthlyData.map(item => item.properties_sold) : [0, 0, 0, 0, 0];
-    console.log('Sales Chart - Labels:', labels);
-    console.log('Sales Chart - Data (properties_sold):', data);
-  
+    if (existingChart) existingChart.destroy();
+
+    const labels = this.monthlyData.length ? this.monthlyData.map(item => item.month) : ['Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025'];
+    const data = this.monthlyData.length ? this.monthlyData.map(item => item.properties_sold) : [0, 0, 0, 0, 0, 0];
+
     this.salesChart = new Chart(salesCtx, {
       type: 'bar',
       data: {
@@ -157,35 +151,23 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          }
-        }
+        plugins: { legend: { display: true, position: 'top' } }
       }
     });
-    console.log('Sales chart successfully rendered with data:', data);
   }
-  
+
   renderProfitTrendChart(): void {
     const lineCtx = document.getElementById('lineChart') as HTMLCanvasElement;
     if (!lineCtx) {
-      console.error('Profit trend chart canvas not found - Check if <canvas id="lineChart"> exists in the DOM');
+      console.error('Profit trend chart canvas not found');
       return;
     }
-  
     const existingChart = Chart.getChart('lineChart');
-    if (existingChart) {
-      console.log('Destroying existing chart on lineChart canvas');
-      existingChart.destroy();
-    }
-  
-    const labels = this.monthlyData.length ? this.monthlyData.map(item => item.month) : ['Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-    const data = this.monthlyData.length ? this.monthlyData.map(item => parseFloat(item.profit_margin.replace('%', ''))) : [0, 0, 0, 0, 0];
-    console.log('Profit Trend Chart - Labels:', labels);
-    console.log('Profit Trend Chart - Data (profit_margin):', data);
-  
+    if (existingChart) existingChart.destroy();
+
+    const labels = this.monthlyData.length ? this.monthlyData.map(item => item.month) : ['Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025'];
+    const data = this.monthlyData.length ? this.monthlyData.map(item => item.profit_margin) : [0, 0, 0, 0, 0, 0];
+
     this.profitTrendChart = new Chart(lineCtx, {
       type: 'line',
       data: {
@@ -202,47 +184,26 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Profit Margin (%)'
-            }
-          }
-        }
+        plugins: { legend: { display: true, position: 'top' } },
+        scales: { y: { beginAtZero: true, title: { display: true, text: 'Profit Margin (%)' } } }
       }
     });
-    console.log('Profit trend chart successfully rendered with data:', data);
   }
 
-  renderUsersPropertiesChart(): void {
-    const usersPropertiesCtx = document.getElementById('usersPropertiesChart') as HTMLCanvasElement;
-    if (!usersPropertiesCtx) {
-      console.error('Users vs Properties chart canvas not found - Check if <canvas id="usersPropertiesChart"> exists in the DOM');
+  renderUsersListingsChart(): void {
+    const usersListingsCtx = document.getElementById('usersListingsChart') as HTMLCanvasElement;
+    if (!usersListingsCtx) {
+      console.error('Users vs Listings chart canvas not found');
       return;
     }
+    const existingChart = Chart.getChart('usersListingsChart');
+    if (existingChart) existingChart.destroy();
 
-    const existingChart = Chart.getChart('usersPropertiesChart');
-    if (existingChart) {
-      console.log('Destroying existing chart on usersPropertiesChart canvas');
-      existingChart.destroy();
-    }
+    const labels = this.monthlyData.length ? this.monthlyData.map(item => item.month) : ['Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025'];
+    const newUsersData = this.monthlyData.length ? this.monthlyData.map(item => item.new_users) : [0, 0, 0, 0, 0, 0];
+    const newListingsData = this.monthlyData.length ? this.monthlyData.map(item => item.new_listings) : [0, 0, 0, 0, 0, 0];
 
-    const labels = this.monthlyData.length ? this.monthlyData.map(item => item.month) : ['Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-    const newUsersData = this.monthlyData.length ? this.monthlyData.map(item => item.new_users) : [0, 0, 0, 0, 0];
-    const addedPropertiesData = this.monthlyData.length ? this.monthlyData.map(item => item.added_properties) : [0, 0, 0, 0, 0];
-    console.log('Users vs Properties Chart - Labels:', labels);
-    console.log('Users vs Properties Chart - New Users Data:', newUsersData);
-    console.log('Users vs Properties Chart - Added Properties Data:', addedPropertiesData);
-
-    this.usersPropertiesChart = new Chart(usersPropertiesCtx, {
+    this.usersListingsChart = new Chart(usersListingsCtx, {
       type: 'line',
       data: {
         labels: labels,
@@ -261,8 +222,8 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
             pointBorderWidth: 2
           },
           {
-            label: 'Added Properties',
-            data: addedPropertiesData,
+            label: 'New Listings',
+            data: newListingsData,
             borderColor: '#6B5B95',
             backgroundColor: 'rgba(107, 91, 149, 0.2)',
             borderWidth: 3,
@@ -278,78 +239,14 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: {
-              font: {
-                size: 14
-              },
-              color: '#333'
-            }
-          },
-          title: {
-            display: true,
-            text: 'New Users vs Added Properties Over Time',
-            font: {
-              size: 16
-            },
-            color: '#333'
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            titleFont: {
-              size: 14
-            },
-            bodyFont: {
-              size: 12
-            },
-            callbacks: {
-              label: function(context) {
-                const datasetLabel = context.dataset.label || '';
-                const value = context.raw;
-                return `${datasetLabel}: ${value}`;
-              }
-            }
-          }
+          legend: { display: true, position: 'top', labels: { font: { size: 14 }, color: '#333' } },
+          title: { display: true, text: 'New Users vs New Listings Over Time', font: { size: 16 }, color: '#333' }
         },
         scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Count',
-              font: {
-                size: 14
-              },
-              color: '#333'
-            },
-            grid: {
-              color: 'rgba(0, 0, 0, 0.1)'
-            },
-            ticks: {
-              color: '#333'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Month',
-              font: {
-                size: 14
-              },
-              color: '#333'
-            },
-            grid: {
-              display: false
-            },
-            ticks: {
-              color: '#333'
-            }
-          }
+          y: { beginAtZero: true, title: { display: true, text: 'Count', font: { size: 14 }, color: '#333' } },
+          x: { title: { display: true, text: 'Month', font: { size: 14 }, color: '#333' } }
         }
       }
     });
-    console.log('Users vs Properties chart successfully rendered with data - New Users:', newUsersData, 'Added Properties:', addedPropertiesData);
   }
 }
