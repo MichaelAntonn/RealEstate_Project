@@ -11,6 +11,7 @@ import { PropertyCardComponent } from '../property-card/property-card.component'
 
 @Component({
   selector: 'app-properties',
+  standalone: true,
   imports: [
     CommonModule,
     PropertyCardComponent,
@@ -21,7 +22,7 @@ import { PropertyCardComponent } from '../property-card/property-card.component'
     IconsComponent,
   ],
   templateUrl: './properties.component.html',
-  styleUrl: './properties.component.css',
+  styleUrls: ['./properties.component.css'],
 })
 export class PropertiesComponent implements OnInit {
   properties: Property[] = [];

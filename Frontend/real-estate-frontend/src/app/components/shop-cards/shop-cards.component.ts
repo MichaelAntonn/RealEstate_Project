@@ -1,49 +1,114 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PropertyService } from '../../services/property.service';
-import { Property } from '../../models/property';
-import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { PropertyCardComponent } from '../property-card/property-card.component';
+import { PropertyFilters, PropertySearchResponse } from '../../models/property';
+import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { IconsComponent } from '../icons/icons.component';
 
 @Component({
   selector: 'app-shop-cards',
   standalone: true,
-  imports: [CommonModule, PropertyCardComponent, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PropertyCardComponent,
+    RouterLink,
+    IconsComponent,
+  ],
   templateUrl: './shop-cards.component.html',
   styleUrls: ['./shop-cards.component.css'],
 })
-export class ShopCardsComponent implements OnInit {
-  properties: Property[] = [];
-  currentPage: number = 1;
-  lastPage: number = 1;
-  isLoading: boolean = false;
+export class ShopCardsComponent implements OnInit, OnDestroy {
+  properties: any[] = [];
+  pagination: any = {};
+  pages: number[] = [];
+  isLoading = false;
+
+  filters: PropertyFilters = {
+    keyword: '',
+    type: '',
+    city: '',
+    listing_type: 'for_sale',
+    page: 1,
+  };
+
+  cities: { value: string; label: string }[] = [{ value: '', label: 'All Cities' }];
+
+  private subscription: Subscription = new Subscription();
 
   constructor(private propertyService: PropertyService) {}
 
   ngOnInit(): void {
-    this.loadProperties();
+    this.loadCities();
+
+    this.subscription.add(
+      this.propertyService.filters$.subscribe((filters) => {
+        this.filters = { ...filters };
+      })
+    );
+
+    this.isLoading = true;
+    this.subscription.add(
+      this.propertyService.searchProperties().subscribe({
+        next: (response: PropertySearchResponse) => {
+          this.properties = response.data;
+          this.pagination = response.pagination;
+          this.pages = Array.from(
+            { length: this.pagination.total_pages },
+            (_, i) => i + 1
+          );
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error fetching properties:', error);
+          this.properties = [];
+          this.pagination = { total_pages: 0 };
+          this.pages = [];
+          this.isLoading = false;
+        },
+      })
+    );
   }
 
-  loadProperties(): void {
-    this.isLoading = true;
-    this.propertyService.getProperties(this.currentPage).subscribe({
-      next: (response) => {
-        this.properties = [...this.properties, ...response.data];
-        this.currentPage = response.current_page;
-        this.lastPage = response.last_page;
-        this.isLoading = false;
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  loadCities(): void {
+    this.propertyService.getCities().subscribe({
+      next: (cities) => {
+        this.cities = [
+          { value: '', label: 'All Cities' },
+          ...cities.map((city) => ({ value: city, label: city })),
+        ];
       },
-      error: (err) => {
-        console.error('Error loading properties:', err);
-        this.isLoading = false;
+      error: (error) => {
+        console.error('Error fetching cities:', error);
       },
     });
   }
 
-  loadMore(): void {
-    if (this.currentPage < this.lastPage && !this.isLoading) {
-      this.currentPage++;
-      this.loadProperties();
-    }
+  onSearch(): void {
+    this.propertyService.updateFilters({ keyword: this.filters.keyword, page: 1 });
+  }
+
+  onFilterChange(type: string): void {
+    this.filters.type = type;
+    this.propertyService.updateFilters({
+      type: this.filters.type,
+      city: this.filters.city,
+      page: 1,
+    });
+  }
+
+  onPageChange(page: number): void {
+    this.propertyService.updateFilters({ page });
+  }
+
+  toggleListingType(type: 'for_sale' | 'for_rent'): void {
+    this.propertyService.updateFilters({ listing_type: type, page: 1 });
   }
 }
