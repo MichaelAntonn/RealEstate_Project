@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class PropertyController extends Controller
 {
@@ -455,6 +456,13 @@ class PropertyController extends Controller
 
         if ($request->has('listing_type') && $request->input('listing_type') !== '') {
             $query->where('listing_type', $request->input('listing_type'));
+        }
+
+        if ($request->has('is_new_building') && $request->input('is_new_building') === 'true') {
+            $currentYear = Carbon::now()->year;
+            $newBuildingThreshold = $currentYear - 3;
+            $query->where('building_year', '>=', $newBuildingThreshold)
+                  ->whereNotNull('building_year');
         }
 
         // Pagination

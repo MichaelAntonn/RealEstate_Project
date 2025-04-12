@@ -33,6 +33,7 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
     city: '',
     listing_type: 'for_sale',
     page: 1,
+    is_new_building: false,
   };
 
   cities: { value: string; label: string }[] = [{ value: '', label: 'All Cities' }];
@@ -95,11 +96,15 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
     this.propertyService.updateFilters({ keyword: this.filters.keyword, page: 1 });
   }
 
-  onFilterChange(type: string): void {
-    this.filters.type = type;
+  onFilterChange(event: { type?: string; is_new_building?: boolean }): void {
+    // تحديث الـ type و is_new_building بناءً على الـ event
+    this.filters.type = event.type !== undefined ? event.type : this.filters.type;
+    this.filters.is_new_building = event.is_new_building !== undefined ? event.is_new_building : this.filters.is_new_building;
+
     this.propertyService.updateFilters({
       type: this.filters.type,
       city: this.filters.city,
+      is_new_building: this.filters.is_new_building,
       page: 1,
     });
   }

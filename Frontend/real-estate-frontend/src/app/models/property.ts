@@ -68,10 +68,11 @@ export interface PropertySearchErrorResponse {
 export type PropertySearchApiResponse = PropertySearchResponse | PropertySearchErrorResponse;
 
 export interface PropertyFilters {
-  [x: string]: string | number | undefined;
+  [x: string]: string | number | boolean | undefined;
   keyword: string;
   type: string;
   city: string;
   listing_type: 'for_sale' | 'for_rent' | undefined;
   page: number;
+  is_new_building?: boolean;
 }
