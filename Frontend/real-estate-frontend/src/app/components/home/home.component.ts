@@ -6,9 +6,10 @@ import { PropertyCardsComponent } from '../property-cards/property-cards.compone
 import { FooterComponent } from '../footer/footer.component';
 import { IconsComponent } from '../icons/icons.component';
 import { ShopCardsComponent } from '../shop-cards/shop-cards.component';
+import { StatsCounterComponent } from '../stats-counter/stats-counter.component';
 @Component({
   selector: 'app-home',
-  imports: [NavbarComponent, BannerComponent, ServicesCardsComponent, PropertyCardsComponent,FooterComponent, IconsComponent , ShopCardsComponent],
+  imports: [NavbarComponent, BannerComponent, ServicesCardsComponent, PropertyCardsComponent,FooterComponent, IconsComponent , ShopCardsComponent , StatsCounterComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

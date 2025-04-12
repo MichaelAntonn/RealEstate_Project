@@ -1,0 +1,161 @@
+.counter-section {
+  background-color: var(--background-color);
+  padding: 4rem 0;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  /*  */
+  color: var(--text-color);
+}
+.counter-text .number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary-text);
+  line-height: 1;
+}
+.counter-container {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  flex-wrap: wrap;
+}
+
+.counter-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: auto;
+  text-align: left;
+  animation: countUp 0.6s ease-out forwards;
+  animation-delay: calc(var(--order) * 0.1s);
+}
+
+.icon-progress {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.progress-circle {
+  transform: rotate(-90deg);
+}
+
+.progress-circle-bg {
+  fill: none;
+  stroke: var(--border-color);
+}
+
+.progress-circle-fill {
+  fill: none;
+  stroke: var(--primary-color);
+  stroke-dasharray: 226;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+  /*  */
+  stroke-width: 4;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.counter-text {
+  display: flex;
+  flex-direction: column;
+  /*  */
+  color: var(--text-color);
+}
+
+.counter-value {
+  display: flex;
+  align-items: flex-end;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.counter-value .suffix {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+  color: var(--primary-color);
+}
+
+.counter-title {
+  font-size: 0.875rem;
+  color: var(--secondary-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.25rem;
+}
+
+.divider {
+  width: 50px;
+  height: 2px;
+  background-color: var(--primary-color);
+  margin: 0.5rem 0;
+}
+
+.counter-item:hover .counter-value,
+.counter-item:hover .counter-value .suffix,
+.counter-item:hover .icon {
+  color: var(--hover-color);
+}
+
+.counter-item:hover .divider {
+  background-color: var(--hover-color);
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .counter-container {
+    gap: 2rem;
+  }
+
+  .counter-item {
+    flex-direction: column;
+    text-align: center;
+    width: 140px;
+  }
+
+  .counter-text {
+    align-items: center;
+  }
+
+  .counter-value {
+    font-size: 2rem;
+  justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .counter-container {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .counter-item {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+.progress-circle-fill {
+  fill: none;
+  stroke: url(#progressGradient); /* استخدام التدرج هنا */
+  stroke-dasharray: 226;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
