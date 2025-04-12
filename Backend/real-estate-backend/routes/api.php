@@ -216,4 +216,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 // routes/Company
 Route::post('/company/register', [CompanyController::class, 'store']);
-
+Route::get('/company/{company_id}', [CompanyController::class, 'show']);
+Route::put('/company/{company_id}', [CompanyController::class, 'update']);
+Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);

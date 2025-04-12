@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
+    protected $table = 'companies'; // تحديد اسم الجدول صراحةً
+
     protected $primaryKey = 'company_id';
 
     protected $fillable = [
@@ -27,6 +29,18 @@ class Company extends Model
     ];
 
     protected $hidden = [
-        'password', 
+        'password',
+    ];
+
+    protected $casts = [
+        'accept_terms' => 'boolean', // التعامل مع accept_terms كـ boolean
+        'date_of_establishment' => 'date', // التعامل مع date_of_establishment كتاريخ
+        'verification_status' => 'string', // التأكد من أن verification_status يُعامل كنص
+    ];
+
+    protected $dates = [
+        'date_of_establishment', // التأكد من تحويل التاريخ بشكل صحيح
+        'created_at',
+        'updated_at',
     ];
 }
