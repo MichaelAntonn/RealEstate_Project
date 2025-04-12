@@ -1,0 +1,26 @@
+.stats-container {
+    padding: 20px;
+    background-color: #F2F4F3;
+    min-height: 100vh;
+}
+
+/* Dark Mode Support */
+.dark-mode .stats-container {
+    background-color: #1a1a2e;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .stats-container {
+        padding: 10px;
+    }
+    
+    .row {
+        flex-direction: column;
+    }
+    
+    .col-md-4, .col-md-8 {
+        width: 100%;
+        max-width: 100%;
+    }
+}
