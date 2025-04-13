@@ -27,13 +27,14 @@ import { StatisticsComponent } from './statistics/statistics.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
-
+import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
 export const routes: Routes = [
   // Default route
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 
   // Public routes
   { path: 'login', component: LoginComponent },
+  {path: 'signupaandlogin', component: SignupaandloginComponent},
   { path: 'sign-up', component: SignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
