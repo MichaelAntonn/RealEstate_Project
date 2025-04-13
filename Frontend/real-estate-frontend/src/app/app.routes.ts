@@ -18,6 +18,7 @@ import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
+import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
 import { PropertiesComponent } from './components/properties/properties.component';
 export const routes: Routes = [
 
@@ -28,6 +29,7 @@ export const routes: Routes = [
 
   // User routes
   { path: 'login', component: LoginComponent },
+  {path: 'signupaandlogin', component: SignupaandloginComponent},
   { path: 'sign-up', component: SignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'properties', component: PropertiesComponent },

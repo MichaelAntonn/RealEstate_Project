@@ -1,1 +1,35 @@
-<p>statistics works!</p>
+<!-- Stats Section -->
+<div class="stats-container">
+    <!-- Stats Cards -->
+    <app-stats-cards 
+        [listedCount]="listedCount" 
+        [bookedCount]="bookedCount" 
+        [soldCount]="soldCount"
+        [averageRating]="averageRating"
+        [givenReviews]="givenReviews"
+        [receivedReviews]="receivedReviews">
+    </app-stats-cards>
+
+    <!-- Charts Section -->
+    <div class="row mt-5">
+        <!-- Dashboard Chart (Left Side) -->
+        <div class="col-md-4">
+            <app-dashboard-chart 
+                [listed]="listedCount" 
+                [booked]="bookedCount" 
+                [sold]="soldCount">
+            </app-dashboard-chart>
+        </div>
+    
+        <!-- Stats Chart (Right Side) -->
+        <div class="col-md-8">
+            <app-stats-chart
+                [listedCount]="listedCount"
+                [bookedCount]="bookedCount"
+                [soldCount]="soldCount"
+                [givenReviews]="givenReviews"
+                [receivedReviews]="receivedReviews">
+            </app-stats-chart>
+        </div>
+    </div>
+</div>
