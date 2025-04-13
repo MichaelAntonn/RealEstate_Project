@@ -1,67 +1,7 @@
-
-<!-- shop cards  -->
 <div class="container">
-    <h3 class="listings-title">Top Offers</h3>
-    <div class="grid-container">
-        <div class="property-card">
-            <img src="assets/w991x660.jpg" alt="Apartment">
-            <div class="property-card-body">
-                <span class="property-badge badge-verified">Verified</span>
-                <span class="property-badge badge-new">New</span>
-                <h6 class="property-title">3-bed Apartment | 67 sq.m</h6>
-                <p class="property-location">3011 Ditmars Blvd, Astoria Queens, NY</p>
-                <h5 class="property-price">$1,629</h5>
-                <div class="property-details">
-                    <span><i class="fa fa-house"></i> 3</span>
-                    <span><i class="fa fa-bath"></i> 2</span>
-                    <span><i class="fa fa-car"></i> 1</span>
-                </div>
-            </div>
-        </div>
-        <div class="property-card">
-            <img src="assets/house-is-designed-by-architect-is-located-beautiful-greek-island_1086760-69172.avif" alt="Family Home">
-            <div class="property-card-body">
-                <span class="property-badge badge-verified">Verified</span>
-                <span class="property-badge badge-featured">Featured</span>
-                <h6 class="property-title">Family Home | 120 sq.m</h6>
-                <p class="property-location">67-40 Myrtle Ave, Glendale, Queens, NY</p>
-                <h5 class="property-price">$84,000</h5>
-                <div class="property-details">
-                    <span><i class="fa fa-house"></i> 4</span>
-                    <span><i class="fa fa-bath"></i> 2</span>
-                    <span><i class="fa fa-car"></i> 2</span>
-                </div>
-            </div>
-        </div>
-        <div class="property-card">
-            <img src="assets\image (1).jpg" alt="Greenpoint Rentals">
-            <div class="property-card-body">
-                <span class="property-badge badge-verified">Verified</span>
-                <h6 class="property-title">Greenpoint Rentals | 85 sq.m</h6>
-                <p class="property-location">1919 Castle Hill Ave, Bronx, NY</p>
-                <h5 class="property-price">$1,330</h5>
-                <div class="property-details">
-                    <span><i class="fa fa-house"></i> 2</span>
-                    <span><i class="fa fa-bath"></i> 1</span>
-                    <span><i class="fa fa-car"></i> 1</span>
-                </div>
-            </div>
-        </div>
-        <div class="property-card">
-            <img src="assets/cozystudioapartmentwithbedroomlivingspace1716268571.webp" alt="Studio">
-            <div class="property-card-body">
-                <span class="property-badge badge-verified">Verified</span>
-                <span class="property-badge badge-new">New</span>
-                <h6 class="property-title">Studio | 32 sq.m</h6>
-                <p class="property-location">148-80 Beach Ave, Flushing, NY</p>
-                <h5 class="property-price">$65,000</h5>
-                <div class="property-details">
-                    <span><i class="fa fa-house"></i> 1</span>
-                    <span><i class="fa fa-bath"></i> 1</span>
-                    <span><i class="fa fa-car"></i> 1</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> 
-
+  <h3 class="listings-title">Top Offers</h3>
+  <app-property-card [properties]="properties"></app-property-card>
+  <div class="text-center mt-4">
+    <a class="btn btn-primary" routerLink="/properties">Show All</a>
+  </div>
+</div>

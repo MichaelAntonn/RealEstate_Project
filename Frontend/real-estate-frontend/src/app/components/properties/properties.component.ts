@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { IconsComponent } from '../icons/icons.component';
+import { FooterComponent } from '../footer/footer.component';
+import { BannerComponent } from '../banner/banner.component';
 import { CommonModule } from '@angular/common';
 import { PropertyService } from '../../services/property.service';
 import { Property } from '../../models/property';
@@ -6,13 +10,20 @@ import { RouterLink } from '@angular/router';
 import { PropertyCardComponent } from '../property-card/property-card.component';
 
 @Component({
-  selector: 'app-shop-cards',
-  standalone: true,
-  imports: [CommonModule, PropertyCardComponent, RouterLink],
-  templateUrl: './shop-cards.component.html',
-  styleUrls: ['./shop-cards.component.css'],
+  selector: 'app-properties',
+  imports: [
+    CommonModule,
+    PropertyCardComponent,
+    RouterLink,
+    NavbarComponent,
+    BannerComponent,
+    FooterComponent,
+    IconsComponent,
+  ],
+  templateUrl: './properties.component.html',
+  styleUrl: './properties.component.css',
 })
-export class ShopCardsComponent implements OnInit {
+export class PropertiesComponent implements OnInit {
   properties: Property[] = [];
   currentPage: number = 1;
   lastPage: number = 1;
