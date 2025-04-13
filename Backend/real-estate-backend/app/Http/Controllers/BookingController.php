@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Property;
+use App\Notifications\PropertyBooked;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -12,7 +14,7 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         $query = Booking::with(['user', 'property'])
             ->when($user->user_type === 'user', function ($query) use ($user) {
                 // For regular users, only show bookings for properties they own
@@ -21,9 +23,9 @@ class BookingController extends Controller
                 });
             })
             ->latest();
-        
+
         $bookings = $query->paginate(5);
-        
+
         return response()->json([
             'bookings' => $bookings
         ]);
@@ -31,127 +33,138 @@ class BookingController extends Controller
 
     // Get a specific booking by ID (with authorization)
     public function show(Request $request, $id)
-{
-    $user = $request->user();
-    
-    $booking = Booking::with(['user', 'property'])
-        ->findOrFail($id);
-    
-    // Authorization check - Admin or property owner can view
-    if ($user->user_type === 'user' && $booking->property->user_id !== $user->id) {
+    {
+        $user = $request->user();
+
+        $booking = Booking::with(['user', 'property'])
+            ->findOrFail($id);
+
+        // Authorization check - Admin or property owner can view
+        if ($user->user_type === 'user' && $booking->property->user_id !== $user->id) {
+            return response()->json([
+                'message' => 'Unauthorized access to this booking'
+            ], 403);
+        }
+
         return response()->json([
-            'message' => 'Unauthorized access to this booking'
-        ], 403);
+            'booking' => $booking
+        ]);
     }
-    
-    return response()->json([
-        'booking' => $booking
-    ]);
-}
 
     // Update the status of a specific booking (only the property owner can update)
     public function updateStatus(Request $request, $id)
-{
-    $user = $request->user();
-    
-    $validated = $request->validate([
-        'status' => 'required|in:confirmed,canceled'
-    ]);
+    {
+        $user = $request->user();
 
-    $booking = Booking::with(['property'])
-        ->findOrFail($id);
+        $validated = $request->validate([
+            'status' => 'required|in:confirmed,canceled'
+        ]);
 
-    // Authorization - must be property owner
-    if ($booking->property->user_id !== $user->id) {
+        $booking = Booking::with(['property'])
+            ->findOrFail($id);
+
+        // Authorization - must be property owner
+        if ($booking->property->user_id !== $user->id) {
+            return response()->json([
+                'message' => 'Unauthorized: Only the property owner can update this booking'
+            ], 403);
+        }
+
+        $booking->update(['status' => $validated['status']]);
+
         return response()->json([
-            'message' => 'Unauthorized: Only the property owner can update this booking'
-        ], 403);
+            'message' => 'Booking status updated successfully',
+            'booking' => $booking->fresh(['user', 'property'])
+        ]);
     }
-
-    $booking->update(['status' => $validated['status']]);
-
-    return response()->json([
-        'message' => 'Booking status updated successfully',
-        'booking' => $booking->fresh(['user', 'property'])
-    ]);
-}
 
     // Create a new booking
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
+        $validated = $request->validate([
             'property_id' => 'required|exists:properties,id',
             'booking_date' => 'required|date',
             'visit_date' => 'nullable|date',
-            'status' => 'in:pending,confirmed,canceled'
+            'status' => 'in:pending,confirmed,canceled',
         ]);
 
-        $booking = Booking::create($request->all());
-        return response()->json($booking, 201);
+        // إنشاء البوكينج
+        $booking = Booking::create([
+            'user_id' => $request->user()->id, // for more securety
+            'property_id' => $validated['property_id'],
+            'booking_date' => $validated['booking_date'],
+            'visit_date' => $validated['visit_date'] ?? null,
+            'status' => $validated['status'] ?? 'pending',
+        ]);
+
+        $property = Property::findOrFail($validated['property_id']);
+
+        $property->user->notify(new PropertyBooked($booking, $property));
+
+        return response()->json(['message' => 'Booking created successfully', 'booking' => $booking], 201);
     }
 
     // Get only pending bookings (filtered by user or Admin, paginated)
     public function getPending(Request $request)
-{
-    $user = $request->user();
-    
-    $query = Booking::where('status', 'pending')
-        ->with(['user', 'property'])
-        ->when($user->user_type === 'user', function ($query) use ($user) {
-            // For regular users, only show pending bookings for their properties
-            $query->whereHas('property', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        })
-        ->latest();
-    
-    $bookings = $query->paginate(5);
-    
-    return response()->json([
-        'bookings' => $bookings
-    ]);
-}
+    {
+        $user = $request->user();
+
+        $query = Booking::where('status', 'pending')
+            ->with(['user', 'property'])
+            ->when($user->user_type === 'user', function ($query) use ($user) {
+                // For regular users, only show pending bookings for their properties
+                $query->whereHas('property', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            })
+            ->latest();
+
+        $bookings = $query->paginate(5);
+
+        return response()->json([
+            'bookings' => $bookings
+        ]);
+    }
 
     // Get only confirmed bookings (filtered by user or Admin, paginated)
     public function getConfirmed(Request $request)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    $query = Booking::where('status', 'confirmed')
-        ->with(['user', 'property'])
-        ->when($user->user_type === 'user', function ($query) use ($user) {
-            $query->whereHas('property', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        })
-        ->latest();
+        $query = Booking::where('status', 'confirmed')
+            ->with(['user', 'property'])
+            ->when($user->user_type === 'user', function ($query) use ($user) {
+                $query->whereHas('property', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            })
+            ->latest();
 
-    $bookings = $query->paginate(5);
+        $bookings = $query->paginate(5);
 
-    return response()->json([
-        'bookings' => $bookings
-    ]);
-}
+        return response()->json([
+            'bookings' => $bookings
+        ]);
+    }
 
     // Get only canceled bookings (filtered by user or Admin, paginated)
     public function getCanceled(Request $request)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    $query = Booking::where('status', 'canceled')
-        ->with(['user', 'property'])
-        ->when($user->user_type === 'user', function ($query) use ($user) {
-            $query->whereHas('property', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        })
-        ->latest();
+        $query = Booking::where('status', 'canceled')
+            ->with(['user', 'property'])
+            ->when($user->user_type === 'user', function ($query) use ($user) {
+                $query->whereHas('property', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            })
+            ->latest();
 
-    $bookings = $query->paginate(5);
+        $bookings = $query->paginate(5);
 
-    return response()->json([
-        'bookings' => $bookings
-    ]);
-}
+        return response()->json([
+            'bookings' => $bookings
+        ]);
+    }
 }
