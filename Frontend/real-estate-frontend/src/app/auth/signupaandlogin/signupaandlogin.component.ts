@@ -129,7 +129,7 @@ export class SignupaandloginComponent implements AfterViewInit {
         this.authService.saveToken(response.access_token);
         this.authService.saveUser(response.user);
 
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/maindashboard']);
         localStorage.setItem('auth_token', response.access_token);
       },
       (error) => {
