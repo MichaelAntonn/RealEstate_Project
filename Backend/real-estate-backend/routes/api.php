@@ -20,6 +20,7 @@ use App\Http\Controllers\CostController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\FavoriteController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
@@ -67,6 +68,14 @@ Route::prefix('v1')->group(function () {
             Route::put('/{property}', [PropertyController::class, 'update'])->name('update');
             Route::delete('/{property}', [PropertyController::class, 'destroy'])->name('destroy');
             Route::put('/{property}/sell', [CommissionController::class, 'completeSale'])->name('sell');
+
+            Route::prefix('favorites')->group(function (){
+                Route::get('/all', [FavoriteController::class, 'index'])->name('favorites');
+                Route::post('/{property}', [FavoriteController::class, 'store'])->name('add-favorite');
+                Route::delete('/{property}', [FavoriteController::class, 'destroy'])->name('remove-favorite');
+                Route::get('/{property}/is-favorite', [FavoriteController::class, 'check'])->name('check-favorite');
+            });
+     
 
             // Status Routes
             Route::prefix('status')->group(function () {
@@ -212,4 +221,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 // routes/Company
 Route::post('/company/register', [CompanyController::class, 'store']);
-
+Route::get('/company/{company_id}', [CompanyController::class, 'show']);
+Route::put('/company/{company_id}', [CompanyController::class, 'update']);
+Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);

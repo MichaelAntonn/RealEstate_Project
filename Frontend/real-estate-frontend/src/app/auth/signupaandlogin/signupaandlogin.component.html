@@ -1,0 +1,97 @@
+<div class="container" id="container">
+    <!-- Sign Up Form -->
+    <div class="form-container sign-up">
+      <form id="signupForm" (ngSubmit)="onSignupSubmit()">
+        <h1>Create Account</h1>
+        <div class="social-icons">
+          <a href="#" class="icon" (click)="signInWithGoogle()"><i class="fa-brands fa-google-plus-g"></i></a>
+        </div>
+        <span>or use your email for registration</span>
+        
+        <div class="input-container">
+          <i class="fa fa-user"></i>
+          <input type="text" id="first_name" placeholder="First Name" [(ngModel)]="first_name" name="first_name" required>
+        </div>
+        
+        <div class="input-container">
+          <i class="fa fa-user"></i>
+          <input type="text" id="last_name" placeholder="Last Name" [(ngModel)]="last_name" name="last_name" required>
+        </div>
+        
+        <div class="input-container">
+          <i class="fa fa-envelope"></i>
+          <input type="email" id="email" placeholder="Email" [(ngModel)]="email" name="email" required>
+        </div>
+        
+        <div class="input-container">
+          <i class="fa fa-phone"></i>
+          <input type="tel" id="phone_number" placeholder="Phone Number" [(ngModel)]="phone_number" name="phone_number">
+        </div>
+        
+        <select id="country" [(ngModel)]="country" name="country" required>
+          <option value="">Select Country</option>
+          <option value="USA">USA</option>
+          <option value="Canada">Canada</option>
+          <option value="UK">UK</option>
+          <option value="EG">Egypt</option>
+        </select>
+        
+        <div class="input-container">
+          <i class="fa fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="8">
+        </div>
+        
+        <div class="input-container">
+          <i class="fa fa-lock"></i>
+          <input type="password" id="confirmPassword" placeholder="Confirm Password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+        </div>
+        
+        <div class="checkbox-container">
+          <input type="checkbox" id="terms_and_conditions" [(ngModel)]="terms_and_conditions" name="terms_and_conditions">
+          <label for="terms_and_conditions">I accept the terms and conditions</label>
+        </div>
+        
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+  
+    <!-- Sign In Form -->
+    <div class="form-container sign-in">
+      <form id="loginForm" (ngSubmit)="onLoginSubmit()">
+        <h1>Sign In</h1>
+        <div class="social-icons">
+          <a href="#" class="icon" (click)="signInWithGoogle()"><i class="fa-brands fa-google-plus-g"></i></a>
+        </div>
+        <span>or use your email for login</span>
+        
+        <div class="input-container">
+          <i class="fa fa-envelope"></i>
+          <input type="email" id="loginEmail" placeholder="Email" [(ngModel)]="loginEmail" name="loginEmail" required>
+        </div>
+        
+        <div class="input-container">
+          <i class="fa fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Password" [(ngModel)]="loginPassword" name="loginPassword" required>
+        </div>
+        
+        <a (click)="navigateToForgotPassword()">Forgot Your Password?</a>
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+  
+    <!-- Toggle Panel -->
+    <div class="toggle-container">
+      <div class="toggle">
+        <div class="toggle-panel toggle-left">
+          <h1>Welcome Back!</h1>
+          <p>Enter your personal details to stay connected.</p>
+          <button class="hidden" id="login" (click)="toggleForms()">Sign In</button>
+        </div>
+        <div class="toggle-panel toggle-right">
+          <h1>Hello, Friend!</h1>
+          <p>Sign up to start your journey with us.</p>
+          <button class="hidden" id="register" (click)="toggleForms()">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
