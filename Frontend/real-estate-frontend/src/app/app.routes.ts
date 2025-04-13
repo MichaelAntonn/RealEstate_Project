@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './shared/auth.guard';
 
 // Admin imports
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
@@ -62,33 +63,55 @@ export const routes: Routes = [
   { 
     path: 'admin', 
     component: AdminDashboardComponent,
-    // canActivate: [authGuard], // يمكنك تفعيله لاحقًا
-    data: { roles: ['admin', 'super-admin'] }
+    canActivate: [AuthGuard],
+    data: { roles: ['admin', 'super-admin'] } // Both admins and super-admins can access
   },
   {
-    path: 'admin/layout',
+    path: 'admin/layout', // Admin layout with sidebar and navbar
     component: AdminLayoutComponent,
-    // canActivate: [authGuard],
-    data: { roles: ['admin', 'super-admin'] },
+    canActivate: [AuthGuard],
+    data: { roles: ['admin', 'super-admin'] }, // Both admins and super-admins can access the layout
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },
-      { path: 'users', component: AdminUsersComponent },
-      { path: 'properties', component: AdminPropertiesComponent },
-      { path: 'bookings', component: AdminBookingsComponent },
-      { path: 'activities', component: AdminActivitiesComponent },
+      { 
+        path: 'users', 
+        component: AdminUsersComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'properties', 
+        component: AdminPropertiesComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'bookings', 
+        component: AdminBookingsComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
+      { 
+        path: 'activities', 
+        component: AdminActivitiesComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'super-admin'] } // Both can access
+      },
       { 
         path: 'settings', 
         component: AdminSettingsComponent,
-        data: { roles: ['super-admin'] }
+        canActivate: [AuthGuard],
+        data: { roles: ['super-admin'] } // Only super-admins
       },
       { 
         path: 'statistics', 
         component: AdminStatisticsComponent,
-        data: { roles: ['super-admin'] }
-      }
-    ]
+        canActivate: [AuthGuard],
+        data: { roles: ['super-admin'] } // Only super-admins
+      },
+    ],
   },
 
-  // Wildcard route
-  { path: '**', redirectTo: 'home' }
+  // Wildcard route (fallback)
+  { path: '', redirectTo: 'home' } // Default to user home
 ];
