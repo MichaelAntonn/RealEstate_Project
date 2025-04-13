@@ -29,6 +29,7 @@ import { MainDashboardComponent } from './main-dashboard/main-dashboard.componen
 
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { PropertiesComponent } from './components/properties/properties.component';
+import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
 export const routes: Routes = [
 
   // Default route (choose one based on your app's primary audience)
@@ -38,6 +39,7 @@ export const routes: Routes = [
 
   // User routes
   { path: 'login', component: LoginComponent },
+  {path: 'signupaandlogin', component: SignupaandloginComponent},
   { path: 'sign-up', component: SignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'properties', component: PropertiesComponent },
