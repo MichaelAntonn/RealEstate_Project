@@ -21,7 +21,7 @@
 }
 
 #home, .nav-link:hover {
-  color: #F77C34; 
+  color: #F77C34;
 }
 
 .signupandlogin {
@@ -32,7 +32,7 @@
     background-color: #F2F4F3;
     color: #F77C34;
     border: solid 1px #F77C34;
-    transform: skew(-20deg); 
+    transform: skew(-20deg);
     padding: 3px 8px;
     border-radius: 1px;
     transition: all 0.3s ease;
@@ -50,7 +50,7 @@
     color: white;
     border-radius: 1px;
     padding: 3px 8px;
-    transform: skew(-20deg); 
+    transform: skew(-20deg);
     transition: all 0.3s ease;
     font-size: small;
 }
@@ -70,12 +70,4 @@
         margin-left: 0;
         margin-top: 15px;
     }
-}
-
-
-@media (max-width: 768px) {
-  .signupandlogin {
-    margin-left: 0;
-    margin-top: 15px;
-  }
 }
