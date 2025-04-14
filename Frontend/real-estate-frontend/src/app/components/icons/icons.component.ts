@@ -9,10 +9,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./icons.component.css'],
 })
 export class IconsComponent {
-  @Output() filterChange = new EventEmitter<string>();
+  @Output() filterChange = new EventEmitter<{ type?: string; is_new_building?: boolean }>();
 
   selectedType: string = '';
-
 
   iconTypes = [
     { label: 'Houses', type: 'villa', icon: 'fa-house' },
@@ -20,12 +19,13 @@ export class IconsComponent {
     { label: 'Commercial', type: 'office', icon: 'fa-store' },
     { label: 'Daily rental', type: 'land', icon: 'fa-calendar-day' },
     { label: 'New buildings', type: 'new_buildings', icon: 'fa-city' },
-    { label: 'More', type: 'all', icon: 'fa-ellipsis' }
+    { label: 'More', type: 'all', icon: 'fa-ellipsis' },
   ];
 
   onIconClick(type: string) {
     this.selectedType = type;
+    const isNewBuilding = type === 'new_buildings';
     const filterType = type === 'new_buildings' || type === 'all' ? '' : type;
-    this.filterChange.emit(filterType);
+    this.filterChange.emit({ type: filterType, is_new_building: isNewBuilding });
   }
 }
