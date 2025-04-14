@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             BookingSeeder::class,
             CostSeeder::class,
             ReviewSeeder::class,
+            SubscriptionPlansSeeder::class,
         ]);
     }
 }
