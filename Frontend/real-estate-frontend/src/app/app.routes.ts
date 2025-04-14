@@ -60,8 +60,8 @@ export const routes: Routes = [
 
   // Admin routes
   { path: 'admin/login', component: AdminLoginComponent },
-  { 
-    path: 'admin', 
+  {
+    path: 'admin',
     component: AdminDashboardComponent,
     canActivate: [AuthGuard],
     data: { roles: ['admin', 'super-admin'] } // Both admins and super-admins can access
@@ -73,38 +73,38 @@ export const routes: Routes = [
     data: { roles: ['admin', 'super-admin'] }, // Both admins and super-admins can access the layout
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },
-      { 
-        path: 'users', 
+      {
+        path: 'users',
         component: AdminUsersComponent,
         canActivate: [AuthGuard],
         data: { roles: ['admin', 'super-admin'] } // Both can access
       },
-      { 
-        path: 'properties', 
+      {
+        path: 'properties',
         component: AdminPropertiesComponent,
         canActivate: [AuthGuard],
         data: { roles: ['admin', 'super-admin'] } // Both can access
       },
-      { 
-        path: 'bookings', 
+      {
+        path: 'bookings',
         component: AdminBookingsComponent,
         canActivate: [AuthGuard],
         data: { roles: ['admin', 'super-admin'] } // Both can access
       },
-      { 
-        path: 'activities', 
+      {
+        path: 'activities',
         component: AdminActivitiesComponent,
         canActivate: [AuthGuard],
         data: { roles: ['admin', 'super-admin'] } // Both can access
       },
-      { 
-        path: 'settings', 
+      {
+        path: 'settings',
         component: AdminSettingsComponent,
         canActivate: [AuthGuard],
         data: { roles: ['super-admin'] } // Only super-admins
       },
-      { 
-        path: 'statistics', 
+      {
+        path: 'statistics',
         component: AdminStatisticsComponent,
         canActivate: [AuthGuard],
         data: { roles: ['super-admin'] } // Only super-admins
@@ -113,5 +113,5 @@ export const routes: Routes = [
   },
 
   // Wildcard route (fallback)
-  { path: '', redirectTo: 'home' } // Default to user home
+  { path: '**', redirectTo: 'home' } // Default to user home
 ];
