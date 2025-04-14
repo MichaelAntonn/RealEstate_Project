@@ -5,6 +5,7 @@ import { ServicesCardsComponent } from '../services-cards/services-cards.compone
 import { PropertyCardsComponent } from '../property-cards/property-cards.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ShopCardsComponent } from '../shop-cards/shop-cards.component';
+import { StatsCounterComponent } from '../stats-counter/stats-counter.component';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,7 @@ import { ShopCardsComponent } from '../shop-cards/shop-cards.component';
     PropertyCardsComponent,
     FooterComponent,
     ShopCardsComponent,
+    StatsCounterComponent,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],

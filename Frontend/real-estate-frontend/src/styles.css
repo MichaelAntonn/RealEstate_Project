@@ -1,0 +1,11 @@
+/* ./src/app/components/stats-counter/stats-counter.component.css */
+ :root {
+--primary-color: #FFA500; /* برتقالي */
+--secondary-color: #FF4500; /* برتقالي محمر */
+--background-color: #111111; /* خلفية غامقة */
+--text-color: #E0E0E0; /* رمادي فاتح */
+--secondary-text: #AAAAAA; /* رمادي أفتح للعناوين */
+--border-color: #333333; /* حدود داكنة */
+}
+
+
