@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class PropertyController extends Controller
 {
@@ -362,11 +363,11 @@ class PropertyController extends Controller
     {
         $user = $request->user();
         $query = Property::where('approval_status', 'pending');
-    
+
         if ($user->user_type === UserType::USER) {
             $query->where('user_id', $user->id);
         }
-    
+
         // Add search functionality
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -375,23 +376,23 @@ class PropertyController extends Controller
                   ->orWhere('property_code', 'like', "%{$search}%");
             });
         }
-    
+
         $properties = $query->latest()->paginate(5);
-    
+
         return response()->json([
             'properties' => $properties
         ]);
     }
-    
+
     public function getAcceptedProperties(Request $request)
     {
         $user = $request->user();
         $query = Property::where('approval_status', 'accepted');
-    
+
         if ($user->user_type === UserType::USER) {
             $query->where('user_id', $user->id);
         }
-    
+
         // Add search functionality
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -400,23 +401,23 @@ class PropertyController extends Controller
                   ->orWhere('property_code', 'like', "%{$search}%");
             });
         }
-    
+
         $properties = $query->latest()->paginate(5);
-    
+
         return response()->json([
             'properties' => $properties
         ]);
     }
-    
+
     public function getRejectedProperties(Request $request)
     {
         $user = $request->user();
         $query = Property::where('approval_status', 'rejected');
-    
+
         if ($user->user_type === UserType::USER) {
             $query->where('user_id', $user->id);
         }
-    
+
         // Add search functionality
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -425,9 +426,9 @@ class PropertyController extends Controller
                   ->orWhere('property_code', 'like', "%{$search}%");
             });
         }
-    
+
         $properties = $query->latest()->paginate(5);
-    
+
         return response()->json([
             'properties' => $properties
         ]);
@@ -435,86 +436,61 @@ class PropertyController extends Controller
 
     public function search(Request $request)
     {
-        try {
-            $query = Property::query();
+        $query = Property::query();
 
-            // Search by title
-            if ($request->has('title')) {
-                $query->where('title', 'like', '%' . $request->title . '%');
-            }
-
-            // Search by property type
-            if ($request->has('type')) {
-                $query->where('type', $request->type);
-            }
-
-            // Search by price range
-            if ($request->has('price_min')) {
-                $query->where('price', '>=', $request->price_min);
-            }
-            if ($request->has('price_max')) {
-                $query->where('price', '<=', $request->price_max);
-            }
-
-            // Search by city
-            if ($request->has('city')) {
-                $query->where('city', 'like', '%' . $request->city . '%');
-            }
-
-            // Search by district
-            if ($request->has('district')) {
-                $query->where('district', 'like', '%' . $request->district . '%');
-            }
-
-            // Search by area
-            if ($request->has('area_min')) {
-                $query->where('area', '>=', $request->area_min);
-            }
-            if ($request->has('area_max')) {
-                $query->where('area', '<=', $request->area_max);
-            }
-
-            // Search by bedrooms count
-            if ($request->has('bedrooms')) {
-                $query->where('bedrooms', $request->bedrooms);
-            }
-
-            // Search by bathrooms count
-            if ($request->has('bathrooms')) {
-                $query->where('bathrooms', $request->bathrooms);
-            }
-
-            // Search by listing type (sale/rent)
-            if ($request->has('listing_type')) {
-                $query->where('listing_type', $request->listing_type);
-            }
-
-            // Search by construction status
-            if ($request->has('construction_status')) {
-                $query->where('construction_status', $request->construction_status);
-            }
-
-            // Sorting
-            if ($request->has('sort_by')) {
-                $direction = $request->get('sort_direction', 'asc');
-                $query->orderBy($request->sort_by, $direction);
-            }
-
-            // Results per page
-            $perPage = $request->get('per_page', 10);
-            $properties = $query->paginate($perPage);
-
-            return response()->json([
-                'status' => 'success',
-                'data' => $properties
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+        if ($request->has('keyword')) {
+            $keyword = $request->input('keyword');
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('property_code', 'like', "%{$keyword}%");
+            });
         }
+
+        if ($request->has('type') && $request->input('type') !== '') {
+            $query->where('type', $request->input('type'));
+        }
+
+        if ($request->has('city') && $request->input('city') !== '') {
+            $query->where('city', $request->input('city'));
+        }
+
+        if ($request->has('listing_type') && $request->input('listing_type') !== '') {
+            $query->where('listing_type', $request->input('listing_type'));
+        }
+
+        if ($request->has('is_new_building') && $request->input('is_new_building') === 'true') {
+            $currentYear = Carbon::now()->year;
+            $newBuildingThreshold = $currentYear - 3;
+            $query->where('building_year', '>=', $newBuildingThreshold)
+                  ->whereNotNull('building_year');
+        }
+
+        // Pagination
+        $perPage = $request->input('per_page', 5); // Default 5 items per page
+        $properties = $query->latest()->paginate($perPage);
+
+        return response()->json([
+            'data' => $properties->items(),
+            'pagination' => [
+                'current_page' => $properties->currentPage(),
+                'total_pages' => $properties->lastPage(),
+                'total_items' => $properties->total(),
+                'per_page' => $properties->perPage(),
+            ],
+        ]);
     }
+
+    public function getCities()
+    {
+        $cities = Property::where('approval_status', 'accepted')
+            ->distinct()
+            ->pluck('city')
+            ->filter()
+            ->values();
+
+        return response()->json(['cities' => $cities]);
+    }
+
     public function getMedia($propertyId)
     {
         $property = Property::findOrFail($propertyId);

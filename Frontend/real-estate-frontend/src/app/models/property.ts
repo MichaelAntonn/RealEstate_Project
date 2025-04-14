@@ -33,7 +33,7 @@ export interface Property {
   payment_options: string;
   cover_image: string;
   property_code: string;
-  media?: PropertyMedia[]; // أضفنا هذا الحقل هنا
+  media?: PropertyMedia[];
   user_id: number;
   created_at: string;
   updated_at: string;
@@ -43,4 +43,36 @@ export interface PropertyApiResponse {
   data: Property[];
   current_page: number;
   last_page: number;
+  total: number;
+  per_page: number;
+}
+export interface Pagination {
+  current_page: number;
+  total_pages: number;
+  total_items: number;
+  per_page: number;
+}
+
+export interface PropertySearchResponse {
+  data: Property[];
+  pagination: Pagination;
+}
+
+export interface PropertySearchErrorResponse {
+  status: 'error';
+  message: string;
+  data?: never; // or data: [];
+  pagination?: Pagination;
+}
+
+export type PropertySearchApiResponse = PropertySearchResponse | PropertySearchErrorResponse;
+
+export interface PropertyFilters {
+  [x: string]: string | number | boolean | undefined;
+  keyword: string;
+  type: string;
+  city: string;
+  listing_type: 'for_sale' | 'for_rent' | undefined;
+  page: number;
+  is_new_building?: boolean;
 }

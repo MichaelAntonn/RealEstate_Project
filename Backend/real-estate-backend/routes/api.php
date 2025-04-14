@@ -24,7 +24,6 @@ use App\Http\Controllers\FavoriteController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
-Route::get('/search', [PropertyController::class, 'search'])->name('search.properties')->middleware('throttle:search');
 
 Route::prefix('v1')->group(function () {
     // Authentication routes (public)
@@ -48,6 +47,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [PropertyController::class, 'index'])->name('index');
         Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
     });
+
+    // Search Route (public)
+    Route::get('/search', [PropertyController::class, 'search'])->name('search.properties') /*->middleware('throttle:search')*/;
+
+    // Cities Route (public)
+    Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -190,7 +195,7 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{cost}', [CostController::class, 'destroy']); // Delete a cost by ID
             });
 
-            // Settings Routes 
+            // Settings Routes
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
                 Route::post('/financial', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');

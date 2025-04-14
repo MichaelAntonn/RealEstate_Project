@@ -1,41 +1,16 @@
-
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-2">
-            <div class="card">
-                <i class="fa-solid fa-house icon"></i>
-                <h6 class="card-title">Houses</h6>
-            </div>
+  <div class="row justify-content-center">
+    @for (icon of iconTypes; track icon.type) {
+      <div class="col-md-2">
+        <div
+          class="card icon-card"
+          [class.selected]="selectedType === icon.type"
+          (click)="onIconClick(icon.type)"
+        >
+          <i class="fa-solid {{ icon.icon }} icon"></i>
+          <h6 class="card-title">{{ icon.label }}</h6>
         </div>
-        <div class="col-md-2">
-            <div class="card">
-                <i class="fa-solid fa-building icon"></i>
-                <h6 class="card-title">Apartments</h6>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card">
-                <i class="fa-solid fa-store icon"></i>
-                <h6 class="card-title">Commercial</h6>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card">
-                <i class="fa-solid fa-calendar-day icon"></i>
-                <h6 class="card-title">Daily rental</h6>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card">
-                <i class="fa-solid fa-city icon"></i>
-                <h6 class="card-title">New buildings</h6>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card">
-                <i class="fa-solid fa-ellipsis icon"></i>
-                <h6 class="card-title">More</h6>
-            </div>
-        </div>
-    </div>
+      </div>
+    }
+  </div>
 </div>
