@@ -21,6 +21,7 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\SubscriptionController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
@@ -54,6 +55,19 @@ Route::prefix('v1')->group(function () {
     // Cities Route (public)
     Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
 
+    Route::prefix('companies')->group(function () {
+        Route::get('/', [CompanyController::class, 'index']);  // Get all companies
+        Route::post('/', [CompanyController::class, 'store']); // Create a new company
+        Route::get('/{company_id}', [CompanyController::class, 'show']); // Get a specific company
+    });
+    // Subscriptions Routes
+    Route::prefix('subscription')->group(function () {
+        // Public routes (accessible without authentication)
+        Route::get('/plans', [SubscriptionController::class, 'getPlans']);
+        Route::get('/trial-plan', [SubscriptionController::class, 'getTrialPlan']);
+        Route::get('/registration-plans', [SubscriptionController::class, 'getAllPlansForRegistration']);
+    });
+
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
@@ -69,13 +83,13 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{property}', [PropertyController::class, 'destroy'])->name('destroy');
             Route::put('/{property}/sell', [CommissionController::class, 'completeSale'])->name('sell');
 
-            Route::prefix('favorites')->group(function (){
+            Route::prefix('favorites')->group(function () {
                 Route::get('/all', [FavoriteController::class, 'index'])->name('favorites');
                 Route::post('/{property}', [FavoriteController::class, 'store'])->name('add-favorite');
                 Route::delete('/{property}', [FavoriteController::class, 'destroy'])->name('remove-favorite');
                 Route::get('/{property}/is-favorite', [FavoriteController::class, 'check'])->name('check-favorite');
             });
-     
+
 
             // Status Routes
             Route::prefix('status')->group(function () {
@@ -131,6 +145,18 @@ Route::prefix('v1')->group(function () {
                 ->middleware('auth:sanctum');
             Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages'])
                 ->middleware('auth:sanctum');
+        });
+
+        Route::prefix('companies')->name('company.')->group(function () {
+            Route::put('/{company_id}', [CompanyController::class, 'update']); // Update a company
+            Route::delete('/{company_id}', [CompanyController::class, 'destroy']); // Delete a company
+        });
+        Route::prefix('subscriptions')->group(function () {
+            Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
+            Route::post('/subscribe-trial', [SubscriptionController::class, 'subscribeToTrial']);
+            Route::post('/custom-subscribe', [SubscriptionController::class, 'subscribeCompany']);
+            // Subscription info
+            Route::get('/status/{id}', [SubscriptionController::class, 'show']);
         });
     });
 
