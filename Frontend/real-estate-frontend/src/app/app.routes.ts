@@ -54,7 +54,7 @@ export const routes: Routes = [
       { path: 'messages', component: MessagesComponent },
       { path: 'statistics', component: StatisticsComponent },
       { path: 'settings', component: SettingsComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      // { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
 
