@@ -1,1 +1,172 @@
-<p>appointments works!</p>
+<div class="appointments-container">
+    <!-- Header Section -->
+    <div class="appointments-header">
+        <h2 class="section-title">Appointments Management</h2>
+        <p class="section-subtitle">View and manage all your property appointments</p>
+        
+        <div class="header-actions">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search appointments...">
+            </div>
+            <button class="btn-add" (click)="openAddAppointmentModal()" data-bs-toggle="modal" data-bs-target="#appointmentModal">
+                <i class="fas fa-plus"></i> New Appointment
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="stat-card" *ngFor="let stat of statusStats">
+            <div class="stat-value">{{stat.count}}</div>
+            <div class="stat-label">{{stat.status}}</div>
+            <div class="stat-icon" [ngClass]="'bg-' + stat.color">
+                <i [class]="stat.icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="appointments-table">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Date & Time</th>
+                        <th>Property</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let appointment of filteredAppointments">
+                        <td class="client-cell">
+                            <div class="client-avatar">
+                                {{appointment.client.charAt(0)}}
+                            </div>
+                            <div class="client-info">
+                                <div class="client-name">{{appointment.client}}</div>
+                                <div class="client-phone" *ngIf="appointment.phone">{{appointment.phone}}</div>
+                            </div>
+                        </td>
+                        <td class="datetime-cell">
+                            <div class="appointment-date">{{appointment.date | date:'mediumDate'}}</div>
+                            <div class="appointment-time">{{appointment.time}}</div>
+                        </td>
+                        <td class="property-cell">{{appointment.property_title || 'N/A'}}</td>
+                        <td class="purpose-cell">{{appointment.purpose}}</td>
+                        <td class="status-cell">
+                            <span class="status-badge" [ngClass]="'status-' + appointment.status.toLowerCase()">
+                                {{appointment.status}}
+                            </span>
+                        </td>
+                        <td class="actions-cell">
+                            <button class="btn-action btn-edit" (click)="editAppointment(appointment)" data-bs-toggle="modal" data-bs-target="#appointmentModal">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button class="btn-action btn-delete" (click)="deleteAppointment(appointment.id!)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn-action btn-view" [routerLink]="['/appointments', appointment.id]">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="filteredAppointments.length > 0">
+            <button class="page-btn" [disabled]="currentPage === 1" (click)="prevPage()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
+            <button class="page-btn" [disabled]="currentPage === totalPages" (click)="nextPage()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appointmentModalLabel">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        {{ isEditingAppointment ? 'Edit Appointment' : 'New Appointment' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="appointment-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="appointmentDate">Date</label>
+                                <input type="date" class="form-control" id="appointmentDate" 
+                                       [(ngModel)]="currentAppointment.date" name="date" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="appointmentTime">Time</label>
+                                <input type="time" class="form-control" id="appointmentTime" 
+                                       [(ngModel)]="currentAppointment.time" name="time" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="appointmentClient">Client Name</label>
+                            <input type="text" class="form-control" id="appointmentClient" 
+                                   [(ngModel)]="currentAppointment.client" name="client" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="appointmentPhone">Client Phone</label>
+                            <input type="tel" class="form-control" id="appointmentPhone" 
+                                   [(ngModel)]="currentAppointment.phone" name="phone">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="appointmentPurpose">Purpose</label>
+                                <select class="form-control" id="appointmentPurpose" 
+                                        [(ngModel)]="currentAppointment.purpose" name="purpose" required>
+                                    <option value="Property Viewing">Property Viewing</option>
+                                    <option value="Contract Signing">Contract Signing</option>
+                                    <option value="Site Tour">Site Tour</option>
+                                    <option value="Consultation">Consultation</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="appointmentStatus">Status</label>
+                                <select class="form-control" id="appointmentStatus" 
+                                        [(ngModel)]="currentAppointment.status" name="status" required>
+                                    <option value="Scheduled">Scheduled</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="appointmentNotes">Notes</label>
+                            <textarea class="form-control" id="appointmentNotes" rows="3"
+                                      [(ngModel)]="currentAppointment.notes" name="notes"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" (click)="saveAppointment()" data-bs-dismiss="modal">
+                        <i class="fas fa-save me-2"></i>
+                        {{ isEditingAppointment ? 'Update' : 'Save' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

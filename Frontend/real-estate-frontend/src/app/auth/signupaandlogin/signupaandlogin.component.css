@@ -1,0 +1,444 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f2e8f0;
+    background: linear-gradient(to right, #e0d7df, #c2b4a9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 900px;
+    height: 95vh;
+    max-height: 800px;
+    margin: auto;
+    display: flex;
+}
+
+/* باقي الكود يظل كما هو مع بعض التعديلات للتحجيم */
+.container p,
+.container span,
+.container a {
+    color: #333;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 15px 0;
+}
+
+.container a {
+    color: #333;
+    font-size: 13px;
+    text-decoration: none;
+    margin: 10px 0;
+    transition: color 0.3s ease;
+}
+
+.container a:hover {
+    color: #F77C34;
+    text-decoration: underline;
+}
+
+.container button {
+    background-color: #F77C34;
+    color: #fff;
+    font-size: 12px;
+    padding: 10px 30px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: auto;
+}
+
+.container button:hover {
+    background: #E66A2C;
+    transform: scale(1.05);
+}
+
+.container button.hidden {
+    background-color: transparent;
+    border-color: #fff;
+    color: #fff;
+    padding: 10px 20px;
+}
+
+.container button.hidden:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.container form {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.container input, .container select {
+    background-color: #eee;
+    border: none;
+    margin: 0px 0;
+    padding: 10px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.container input:focus, .container select:focus {
+    border-color: #F77C34;
+    box-shadow: 0px 4px 8px rgba(247, 124, 52, 0.3);
+}
+
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+.sign-in {
+    left: 0;
+    z-index: 2;
+}
+
+.container.active .sign-in {
+    transform: translateX(100%);
+}
+
+.sign-up {
+    left: 0;
+    opacity: 0;
+    z-index: 1;
+}
+
+.container.active .sign-up {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: move 0.6s;
+}
+
+@keyframes move {
+    0%, 49.99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100% {
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+/* تحسين أيقونة Google */
+.social-icons {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.social-icons a.icon {
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.social-icons a.icon:hover {
+    background-color: #3578e5;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.social-icons a.icon i {
+    margin-left: 2px; /* تعديل بسيط لمركزية الأيقونة */
+}
+
+.toggle-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    border-radius: 150px 0 0 100px;
+    z-index: 1000;
+}
+
+.container.active .toggle-container {
+    transform: translateX(-100%);
+    border-radius: 0 150px 100px 0;
+}
+
+.toggle {
+    background-color: #F77C34;
+    height: 100%;
+    background: linear-gradient(to right, #f2e8f0, #F77C34);
+    color: #fff;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+    display: flex;
+}
+
+.container.active .toggle {
+    transform: translateX(50%);
+}
+
+.toggle-panel {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px;
+    text-align: center;
+    transition: all 0.6s ease-in-out;
+}
+
+.toggle-left {
+    transform: translateX(-200%);
+}
+
+.container.active .toggle-left {
+    transform: translateX(0);
+}
+
+.toggle-right {
+    right: 0;
+    transform: translateX(0);
+}
+
+.container.active .toggle-right {
+    transform: translateX(200%);
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+    margin: 8px 0;
+}
+
+.input-container i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 14px;
+}
+
+.input-container input {
+    padding-left: 35px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+    width: 100%;
+    font-size: 13px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+.checkbox-container label {
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    visibility: hidden;
+    text-align: left;
+    width: 100%;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+input.error, select.error {
+    border-color: red;
+    background-color: #ffe5e5;
+}
+
+/* Media Queries للشاشات المتوسطة */
+@media (max-width: 992px) {
+    .container {
+        max-width: 90%;
+        height: 90vh;
+    }
+    
+    .form-container {
+        padding: 15px;
+    }
+    
+    .toggle-panel {
+        padding: 0 20px;
+    }
+}
+
+/* Media Queries للشاشات الصغيرة (موبايل) */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+    
+    .container {
+        height: auto;
+        min-height: 95vh;
+        max-height: none;
+        flex-direction: column;
+    }
+    
+    .form-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 30px 20px;
+    }
+    
+    .sign-in {
+        transform: translateX(0);
+    }
+    
+    .container.active .sign-in {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    
+    .sign-up {
+        transform: translateX(100%);
+        opacity: 0;
+        position: absolute;
+    }
+    
+    .container.active .sign-up {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    .toggle-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        left: 0;
+        border-radius: 0;
+        order: -1;
+    }
+    
+    .container.active .toggle-container {
+        transform: none;
+    }
+    
+    .toggle {
+        position: relative;
+        left: 0;
+        width: 100%;
+        height: 150px;
+        flex-direction: column;
+    }
+    
+    .container.active .toggle {
+        transform: none;
+    }
+    
+    .toggle-panel {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+    }
+    
+    .toggle-left, 
+    .toggle-right,
+    .container.active .toggle-left,
+    .container.active .toggle-right {
+        transform: none;
+    }
+    
+    .container.active .sign-up {
+        animation: none;
+    }
+}
+
+/* Media Queries للشاشات الصغيرة جدًا */
+@media (max-width: 480px) {
+    .container {
+        border-radius: 20px;
+    }
+    
+    .form-container {
+        padding: 20px 15px;
+    }
+    
+    .container button {
+        padding: 10px 20px;
+        font-size: 11px;
+    }
+    
+    .container input, .container select {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .input-container i {
+        font-size: 12px;
+        left: 8px;
+    }
+    
+    .checkbox-container {
+        font-size: 12px;
+    }
+}
