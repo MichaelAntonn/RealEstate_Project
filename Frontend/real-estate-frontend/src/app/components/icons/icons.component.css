@@ -36,11 +36,11 @@
 }
 
 .card:hover .icon {
-    /* color: #F2D022; */
+    color: #F2D022;
 }
 
 .card:hover .card-title {
-    /* color: white; */
+    color: white;
 }
 
 .icon {

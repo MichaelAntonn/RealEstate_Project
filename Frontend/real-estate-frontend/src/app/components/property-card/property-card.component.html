@@ -1,66 +1,50 @@
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="cards-container">
   @for (property of properties; track property.id) {
-  <div
-    class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1"
-  >
-    <!-- صورة العقار -->
-    <div class="relative h-48">
+  <div class="card">
+    <!-- Property Image -->
+    <div class="card-image">
       <img
-        [src]="getImageUrl()"
+        src='assets/6fbcaa7c-3dbe-494e-afdf-5896e2e2a090.webp'
         [alt]="property.title"
-        class="object-cover w-full h-full"
+        class="object-cover w-full h-full rounded-[12px]"
       />
-      <div class="absolute top-2 left-2 flex gap-2">
-        @if (property.approval_status === 'accepted') {
-        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-md">
-          Verified
-        </span>
-        } @if (property.created_at && (todayDate === (property.created_at |
-        date: 'shortDate'))) {
-        <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-md">
-          New
-        </span>
-        }
-      </div>
     </div>
 
-    <!-- محتوى الكارد -->
-    <div class="p-4 space-y-2">
-      <!-- العنوان والمساحة -->
-      <h3 class="text-lg font-semibold line-clamp-1">
+    <!-- Card Content -->
+    <div class="card-info">
+      <!-- Title -->
+      <h3 class="text-[16px] font-semibold text-gray-900 line-clamp-1">
         {{ property.title }}
       </h3>
-      <p class="text-sm text-gray-500">
-        {{ property.area }} m² •
+
+      <!-- Features -->
+      <div class="info-line">
+        <span class="flex items-center">
+          <i class="fa fa-bed mr-[5px] text-[#ff7f00]"></i>{{ property.bedrooms ?? "-" }} Beds
+        </span>
+        <span class="flex items-center">
+          <i class="fa fa-bath mr-[5px] text-[#ff7f00]"></i>{{ property.bathrooms ?? "-" }} Baths
+        </span>
+      </div>
+
+      <!-- Price -->
+      <div class="price">
+        ${{ property.price }}<span class="text-[#aaa] font-normal"> /per day</span>
+      </div>
+
+      <!-- Location -->
+      <div class="location">
+        <i class="fa fa-map-marker-alt mr-[5px] text-[#ff7f00]"></i>
         {{ property.full_address || property.city + ", " + property.district }}
-      </p>
-
-      <!-- السعر -->
-      <h4 class="text-xl text-orange-600 font-bold">${{ property.price }}</h4>
-
-      <!-- الميزات -->
-      <div class="flex justify-between text-gray-600 text-sm mt-3">
-        <span class="flex items-center">
-          <i class="fa fa-bed mr-1"></i>{{ property.bedrooms ?? "-" }}
-        </span>
-        <span class="flex items-center">
-          <i class="fa fa-bath mr-1"></i>{{ property.bathrooms ?? "-" }}
-        </span>
-        <span class="flex items-center">
-          <i class="fa fa-couch mr-1"></i>
-          {{ property.furnished ? "Furnished" : "Unfurnished" }}
-        </span>
       </div>
 
-      <!-- زر التفاصيل -->
-      <div class="mt-4">
-        <a
-          [routerLink]="['/property', property.slug]"
-          class="w-full block text-center no-underline! px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition"
-        >
-          View Details
-        </a>
-      </div>
+      <!-- Book Now Link -->
+      <a
+        [routerLink]="['/property', property.slug]"
+        class="book-now"
+      >
+        BOOK NOW <i class="fa fa-arrow-right ml-[6px]"></i>
+      </a>
     </div>
   </div>
   }
