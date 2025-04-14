@@ -9,10 +9,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./icons.component.css'],
 })
 export class IconsComponent {
-  @Output() filterChange = new EventEmitter<{
-    type?: string;
-    is_new_building?: boolean;
-  }>();
+
+  @Output() filterChange = new EventEmitter<{ type?: string; is_new_building?: boolean }>();
+
 
   selectedType: string = '';
 
@@ -33,13 +32,10 @@ export class IconsComponent {
 
   onIconClick(type: string) {
     this.selectedType = type;
+    const isNewBuilding = type === 'new_buildings';
+    const filterType = type === 'new_buildings' || type === 'all' ? '' : type;
+    this.filterChange.emit({ type: filterType, is_new_building: isNewBuilding });
 
-    if (type === 'new_buildings') {
-      this.filterChange.emit({ is_new_building: true });
-    } else if (type === 'all') {
-      this.filterChange.emit({ type: '', is_new_building: false });
-    } else {
-      this.filterChange.emit({ type, is_new_building: false });
-    }
+
   }
 }
