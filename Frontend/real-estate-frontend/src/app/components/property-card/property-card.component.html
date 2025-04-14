@@ -1,25 +1,65 @@
-<div class="grid-container">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
   @for (property of properties; track property.id) {
-  <div class="property-card">
-    <img
-      [src]="property.cover_image"
-      [alt]="property.title"
-      class="property-image"
-    />
-    <div class="property-card-body">
-      <span class="property-badge badge-verified">Verified</span>
-      @if (property.approval_status === 'accepted') {
-      <span class="property-badge badge-new">New</span>
-      }
-      <h6 class="property-title">
-        {{ property.title }} | {{ property.area }} sq.m
-      </h6>
-      <p class="property-location">{{ property.full_address }}</p>
-      <h5 class="property-price">${{ property.price }}</h5>
-      <div class="property-details">
-        <span><i class="fa fa-house"></i> {{ property.bedrooms ?? "-" }}</span>
-        <span><i class="fa fa-bath"></i> {{ property.bathrooms ?? "-" }}</span>
-        <span><i class="fa fa-car"></i> 1</span>
+  <div
+    class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1"
+  >
+    <!-- صورة العقار -->
+    <div class="relative h-48">
+      <img
+        [src]="getImageUrl()"
+        [alt]="property.title"
+        class="object-cover w-full h-full"
+      />
+      <div class="absolute top-2 left-2 flex gap-2">
+        @if (property.approval_status === 'accepted') {
+        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-md">
+          Verified
+        </span>
+        } @if (property.created_at && (todayDate === (property.created_at |
+        date: 'shortDate'))) {
+        <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-md">
+          New
+        </span>
+        }
+      </div>
+    </div>
+
+    <!-- محتوى الكارد -->
+    <div class="p-4 space-y-2">
+      <!-- العنوان والمساحة -->
+      <h3 class="text-lg font-semibold line-clamp-1">
+        {{ property.title }}
+      </h3>
+      <p class="text-sm text-gray-500">
+        {{ property.area }} m² •
+        {{ property.full_address || property.city + ", " + property.district }}
+      </p>
+
+      <!-- السعر -->
+      <h4 class="text-xl text-orange-600 font-bold">${{ property.price }}</h4>
+
+      <!-- الميزات -->
+      <div class="flex justify-between text-gray-600 text-sm mt-3">
+        <span class="flex items-center">
+          <i class="fa fa-bed mr-1"></i>{{ property.bedrooms ?? "-" }}
+        </span>
+        <span class="flex items-center">
+          <i class="fa fa-bath mr-1"></i>{{ property.bathrooms ?? "-" }}
+        </span>
+        <span class="flex items-center">
+          <i class="fa fa-couch mr-1"></i>
+          {{ property.furnished ? "Furnished" : "Unfurnished" }}
+        </span>
+      </div>
+
+      <!-- زر التفاصيل -->
+      <div class="mt-4">
+        <a
+          [routerLink]="['/property', property.slug]"
+          class="w-full block text-center no-underline! px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition"
+        >
+          View Details
+        </a>
       </div>
     </div>
   </div>
