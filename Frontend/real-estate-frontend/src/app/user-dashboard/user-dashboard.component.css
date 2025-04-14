@@ -18,7 +18,7 @@ body {
 }
 /* Main Content */
 .main-content {
-    margin-left: 150px;
+    margin-left: 150px ;
     padding: 60px 20px 20px;
     transition: var(--transition);
 }

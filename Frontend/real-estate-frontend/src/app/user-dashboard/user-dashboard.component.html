@@ -2,46 +2,6 @@
 <div class="main-content" id="mainContent">
     <div class="container-fluid">
 
-        <button class="btn btn-link text-white d-lg-none" (click)="toggleSidebar()">
-             <fa-icon [icon]="faBars"></fa-icon>
-        </button>
-        
-        <a class="navbar-brand" href="#">
-            <fa-icon [icon]="faHome"></fa-icon> Real Estate 
-        </a>
-        
-        <div class="d-flex align-items-center">
-            <div class="dropdown me-3">
-                <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <fa-icon [icon]="faBell"></fa-icon>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        3
-                    </span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
-                    <li><h6 class="dropdown-header">New Notifications</h6></li>
-                    <li><a class="dropdown-item" href="#">New booking for Nile View Apartment</a></li>
-                    <li><a class="dropdown-item" href="#">New message from Ahmed</a></li>
-                    <li><a class="dropdown-item" href="#">Your listing was approved</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-center" href="#">View All</a></li>
-                </ul>
-            </div>
-            
-            <div class="form-check form-switch me-3">
-                <label class="switch">
-                    <input type="checkbox" id="darkModeToggle" (change)="toggleDarkMode()" [checked]="darkMode">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="user-info">
-                <span>Welcome, Mohamed</span>
-                <img src="assets/images/user-avatar.png" alt="User" class="user-avatar">
-            </div>
-
-        </div>
-
         <!-- Search Box -->
         <div class="search-box">
             <fa-icon [icon]="faSearch"></fa-icon>
