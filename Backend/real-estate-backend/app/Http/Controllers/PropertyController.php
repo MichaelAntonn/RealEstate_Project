@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use App\Constants\UserType;
 use App\Models\Property;
 use App\Models\PropertyMedia;
+use App\Models\User;
+use App\Notifications\NewPropertyAdded;
+use App\Notifications\NewPropertySubmitted;
+use App\Notifications\PropertyAccepted;
+use App\Notifications\PropertyRejected;
 use App\Services\PropertyMediaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -126,17 +132,29 @@ class PropertyController extends Controller
                 }
             } catch (\Exception $e) {
                 // If media upload fails, delete the property and return error
-                $property->delete();
+                // $property->delete(); <= no need it's optional any way
                 return response()->json([
-                    'error' => 'Media upload failed: ' . $e->getMessage()
-                ], 500);
+                    'warning' => 'Property created but media upload failed: ' . $e->getMessage()
+                ], 201);
             }
         }
 
         // Load the media relationship for the response
         $property->load('media');
 
+
+        // Notifications
+        $users = User::where('id', '!=', $request->user()->id)
+            ->where('city', $request->user()->city)
+            ->get();
+
+        Notification::send($users, new NewPropertyAdded($property));
+
+        $admins = User::where('user_type', 'admin')->get();
+        Notification::send($admins, new NewPropertySubmitted($property));
+
         return response()->json([
+            'message' => 'Property created successfully',
             'success' => 'Property created successfully',
             'property' => $property,
         ], 201);
@@ -323,6 +341,7 @@ class PropertyController extends Controller
         $property->approval_status = 'accepted';
         $property->save();
 
+        $property->user->notify(new PropertyAccepted($property));
 
         return response()->json([
             'message' => 'Property accepted successfully',
@@ -352,6 +371,8 @@ class PropertyController extends Controller
         $property->approval_status = 'rejected';
         $property->save();
 
+        $property->user->notify(new PropertyRejected($property, $validated['reason'] ?? null));
+
         return response()->json([
             'message' => 'Property rejected successfully',
             'property' => $property,
@@ -373,7 +394,7 @@ class PropertyController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('property_code', 'like', "%{$search}%");
+                    ->orWhere('property_code', 'like', "%{$search}%");
             });
         }
 
@@ -398,7 +419,7 @@ class PropertyController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('property_code', 'like', "%{$search}%");
+                    ->orWhere('property_code', 'like', "%{$search}%");
             });
         }
 
@@ -423,7 +444,7 @@ class PropertyController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('property_code', 'like', "%{$search}%");
+                    ->orWhere('property_code', 'like', "%{$search}%");
             });
         }
 
