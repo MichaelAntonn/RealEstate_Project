@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: #e9ecef;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            height: 600px;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-section {
+            flex: 1;
+            background-color: #f0f7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            margin-left: 0px;
+        }
+        
+        .image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-section img:hover {
+            transform: scale(1.05);
+        }
+        
+        .content-section {
+            flex: 1;
+            padding: 60px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            color: #444;
+            margin-bottom: 30px;
+        }
+        
+        .description {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 100%;
+        }
+        
+        .checklist {
+            margin-bottom: 50px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #444;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: #ff9800;
+            border-radius: 50%;
+
+            
+            
+           
+             appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #fff;
+            border: 2px solid #ff9800;
+            display: inline-block;
+            position: relative; 
+        } 
+        
+        .checklist-item input[type="checkbox"]:checked::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background-color: #ff9800;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .stats {
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-item {
+            margin-right: 40px;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ff9800;
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .image-section {
+                height: 300px;
+            }
+            
+            .content-section {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- قسم المحتوى (الآن على اليسار) -->
+        <div class="content-section">
+            <h1 style="font-size: 15px; color: #ff9800; font-weight: bold;">KHOW ABOUT US</h1>
+            <p class="subtitle" style="font-size: 22px; font-weight: bold;">Buying and selling properties has never been easier - your dream home is just a click away!</p>
+            <p class="description" style="font-size: 18px; ">El purua dels sollicitudin dignissim habitant. Egestas nulla quis venenatis cras sed ou massa eu Eucubus Urna fusce</p>
+            
+            <div class="checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" checked onclick="false;">
+                    <label>Prestige Property Management Your Dream</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" checked onclick="false;">
+                    <label>Real Estate is a vast industry that deals</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" checked onclick="false;">
+                    <label>Property Management Your Dream</label>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">10k+</div>
+                    <div class="stat-label">Complete project</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- قسم الصورة (الآن على اليمين) -->
+        <div class="image-section">
+            <img src="https://i.pinimg.com/736x/9d/98/06/9d9806da020eaf14c2ba4783e69fb2d7.jpg" alt="Real Estate">
+        </div>
+    </div>
+</body>
+</html>
