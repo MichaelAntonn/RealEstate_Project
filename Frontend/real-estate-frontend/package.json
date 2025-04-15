@@ -32,6 +32,7 @@
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "ng2-charts": "^8.0.0",
+    "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "vite": "^6.2.5",
