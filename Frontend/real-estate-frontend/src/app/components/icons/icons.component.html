@@ -1,15 +1,14 @@
 <div class="container py-5">
-  <div class="row justify-content-center">
+  <div class="row justify-content-center button-container">
     @for (icon of iconTypes; track icon.type) {
       <div class="col-md-2">
-        <div
-          class="card icon-card"
+        <button
+          class="btn-custom"
           [class.selected]="selectedType === icon.type"
           (click)="onIconClick(icon.type)"
         >
-          <i class="fa-solid {{ icon.icon }} icon"></i>
-          <h6 class="card-title">{{ icon.label }}</h6>
-        </div>
+          {{ icon.label }}
+        </button>
       </div>
     }
   </div>
