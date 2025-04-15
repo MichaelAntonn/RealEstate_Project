@@ -41,17 +41,6 @@
       </app-stats-chart>
     </div>
   </div>
-        <!-- Recent Properties -->
-        <div class="row mt-5">
-            <div class="col-lg-12 mb-4">
-                <app-recent-properties 
-                    [properties]="properties"
-                    (edit)="editProperty($event)"
-                    (delete)="deleteProperty($event)">
-                </app-recent-properties>
-            </div>
-        </div>
-
 
 
 
@@ -64,81 +53,6 @@
                     (edit)="editAppointment($event)"
                     (delete)="deleteAppointment($event)">
                 </app-appointments>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Property Modal -->
-<div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addPropertyModalLabel">{{ isEditingProperty ? 'Edit Property' : 'Add New Property' }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="propertyTitle" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="propertyTitle" 
-                                   [(ngModel)]="currentProperty.title" name="title" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="propertyPrice" class="form-label">Price (EGP)</label>
-                            <input type="number" class="form-control" id="propertyPrice" 
-                                   [(ngModel)]="currentProperty.price" name="price" required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="propertyBedrooms" class="form-label">Bedrooms</label>
-                            <input type="number" class="form-control" id="propertyBedrooms" 
-                                   [(ngModel)]="currentProperty.bedrooms" name="bedrooms" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="propertyBathrooms" class="form-label">Bathrooms</label>
-                            <input type="number" class="form-control" id="propertyBathrooms" 
-                                   [(ngModel)]="currentProperty.bathrooms" name="bathrooms" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="propertyArea" class="form-label">Area (m²)</label>
-                            <input type="number" class="form-control" id="propertyArea" 
-                                   [(ngModel)]="currentProperty.area" name="area" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="propertyLocation" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="propertyLocation" 
-                               [(ngModel)]="currentProperty.location" name="location" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="propertyImage" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="propertyImage" 
-                               [(ngModel)]="currentProperty.image" name="image" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="propertyStatus" class="form-label">Status</label>
-                        <select class="form-select" id="propertyStatus" 
-                                [(ngModel)]="currentProperty.status" name="status" required>
-                            <option value="Available">Available</option>
-                            <option value="Under Contract">Under Contract</option>
-                            <option value="Sold">Sold</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="propertyDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="propertyDescription" rows="3"
-                                  [(ngModel)]="currentProperty.description" name="description"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" (click)="saveProperty()" data-bs-dismiss="modal">
-                    {{ isEditingProperty ? 'Update Property' : 'Save Property' }}
-                </button>
             </div>
         </div>
     </div>

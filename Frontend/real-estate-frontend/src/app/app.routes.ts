@@ -28,6 +28,7 @@ import { StatisticsComponent } from './statistics/statistics.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
+import { AddPropertyComponent } from './add-property/add-property.component';
 
 export const routes: Routes = [
   // Default route
@@ -40,7 +41,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
 
   // User dashboard routes
-
+   {path: 'add-property', component: AddPropertyComponent }, // Only users can access this route
   {path:'signupandlogin',component:SignupaandloginComponent},
   {
     path: 'maindashboard',
