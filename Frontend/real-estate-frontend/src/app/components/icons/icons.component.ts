@@ -12,8 +12,7 @@ export class IconsComponent {
 
   @Output() filterChange = new EventEmitter<{ type?: string; is_new_building?: boolean }>();
 
-
-  selectedType: string = '';
+  selectedType: string = 'villa'; // Default to "Houses" (villa)
 
   iconTypes = [
     { label: 'Houses', type: 'villa', icon: 'fa-house' },
@@ -24,18 +23,10 @@ export class IconsComponent {
     { label: 'More', type: 'all', icon: 'fa-ellipsis' },
   ];
 
-  // onIconClick(type: string) {
-  //   this.selectedType = type;
-  //   const filterType = type === 'new_buildings' || type === 'all' ? '' : type;
-  //   this.filterChange.emit(filterType);
-  // }
-
   onIconClick(type: string) {
     this.selectedType = type;
     const isNewBuilding = type === 'new_buildings';
     const filterType = type === 'new_buildings' || type === 'all' ? '' : type;
     this.filterChange.emit({ type: filterType, is_new_building: isNewBuilding });
-
-
   }
 }
