@@ -18,6 +18,8 @@ import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
+import { PropertiesComponent } from './components/properties/properties.component';
+
 // Dashboard components
 import { ProfileComponent } from './profile/profile.component';
 import { MyPropertiesComponent } from './my-properties/my-properties.component';
@@ -38,10 +40,11 @@ export const routes: Routes = [
   { path: 'sign-up', component: SignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'properties', component: PropertiesComponent },
 
   // User dashboard routes
 
-  {path:'signupandlogin',component:SignupaandloginComponent},
+  { path: 'signupandlogin', component: SignupaandloginComponent },
   {
     path: 'maindashboard',
     component: MainDashboardComponent,
@@ -54,8 +57,8 @@ export const routes: Routes = [
       { path: 'messages', component: MessagesComponent },
       { path: 'statistics', component: StatisticsComponent },
       { path: 'settings', component: SettingsComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
   },
 
   // Admin routes
@@ -64,7 +67,7 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminDashboardComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin', 'super-admin'] } // Both admins and super-admins can access
+    data: { roles: ['admin', 'super-admin'] }, // Both admins and super-admins can access
   },
   {
     path: 'admin/layout', // Admin layout with sidebar and navbar
@@ -77,41 +80,41 @@ export const routes: Routes = [
         path: 'users',
         component: AdminUsersComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] } // Both can access
+        data: { roles: ['admin', 'super-admin'] }, // Both can access
       },
       {
         path: 'properties',
         component: AdminPropertiesComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] } // Both can access
+        data: { roles: ['admin', 'super-admin'] }, // Both can access
       },
       {
         path: 'bookings',
         component: AdminBookingsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] } // Both can access
+        data: { roles: ['admin', 'super-admin'] }, // Both can access
       },
       {
         path: 'activities',
         component: AdminActivitiesComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] } // Both can access
+        data: { roles: ['admin', 'super-admin'] }, // Both can access
       },
       {
         path: 'settings',
         component: AdminSettingsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['super-admin'] } // Only super-admins
+        data: { roles: ['super-admin'] }, // Only super-admins
       },
       {
         path: 'statistics',
         component: AdminStatisticsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['super-admin'] } // Only super-admins
+        data: { roles: ['super-admin'] }, // Only super-admins
       },
     ],
   },
 
   // Wildcard route (fallback)
-  { path: '**', redirectTo: 'home' } // Default to user home
+  { path: '**', redirectTo: 'home' }, // Default to user home
 ];

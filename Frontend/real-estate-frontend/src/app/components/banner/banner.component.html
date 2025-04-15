@@ -1,76 +1,52 @@
-<div class="banner-container position-relative">
-  <img
-    src="assets/highend-luxury.jpg"
-    class="banner-img img-fluid rounded shadow"
-    alt="Property Banner"
-  />
-  <div class="search-bar text-center w-100">
-    <h2 class="title-home">Find Your Dream Home</h2>
+<!-- Left Section -->
+<div class="left-section">
+  <div class="logo">FUTURE DREAM</div>
 
-    <div class="search-container p-4">
-      <div class="d-flex justify-content-center mb-3">
-        <button
-          (click)="toggleListingType('for_rent')"
-          [class.btn-rent]="true"
-          [class.btn-toggle]="true"
-          [class.active]="filters.listing_type === 'for_rent'"
-          class="btn me-2"
-        >
-          Rent
-        </button>
-        <button
-          (click)="toggleListingType('for_sale')"
-          [class.btn-sale]="true"
-          [class.btn-toggle]="true"
-          [class.active]="filters.listing_type === 'for_sale'"
-          class="btn"
-        >
-          Sale
-        </button>
-      </div>
+  <h1 class="main-heading">
+    Invest today in Your <span class="dream-home">Dream Home</span>
+  </h1>
 
-      <div class="row g-2">
-        <div class="col-md-6">
-          <input
-            type="text"
-            [(ngModel)]="filters.keyword"
-            (ngModelChange)="onSearch()"
-            class="form-control"
-            placeholder="Enter keyword..."
-          />
-        </div>
-        <div class="col-md-3">
-          <select
-            [(ngModel)]="filters.type"
-            (ngModelChange)="onFilterChange()"
-            class="form-select"
-          >
-            @for (type of propertyTypes; track type.value) {
-              <option [value]="type.value">{{ type.label }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-md-2">
-          <select
-            [(ngModel)]="filters.city"
-            (ngModelChange)="onFilterChange()"
-            class="form-select"
-          >
-            @for (city of cities; track city.value) {
-              <option [value]="city.value">{{ city.label }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-md-1">
-          <button (click)="onSearch()" class="search-btn">
-            <svg class="search-icon" viewBox="0 0 24 24">
-              <path
-                d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-              ></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="buttons">
+    <button (click)="toggleListingType('for_sale')" class="btn btn-orange">
+      Buy
+    </button>
+    <button (click)="toggleListingType('for_rent')" class="btn btn-outline">
+      Rent
+    </button>
+  </div>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search for properties..."
+      [(ngModel)]="filters.keyword"
+      (keyup.enter)="onSearch()"
+    />
+    <button class="search-btn" (click)="onSearch()">
+      <span>Search</span>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+          stroke="white"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M21 21L16.65 16.65"
+          stroke="white"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
   </div>
 </div>

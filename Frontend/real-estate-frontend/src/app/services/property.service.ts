@@ -1,8 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpParams,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, catchError, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Property, PropertyApiResponse, PropertySearchResponse, PropertyFilters } from '../models/property';
+import {
+  map,
+  catchError,
+  switchMap,
+  debounceTime,
+  distinctUntilChanged,
+} from 'rxjs/operators';
+import {
+  PropertyApiResponse,
+  PropertySearchResponse,
+  PropertyFilters,
+} from '../models/property';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +29,7 @@ export class PropertyService {
     keyword: '',
     type: '',
     city: '',
-    listing_type: 'for_sale',
+    listing_type: undefined,
     page: 1,
   });
 
@@ -25,25 +39,29 @@ export class PropertyService {
   constructor(private http: HttpClient) {}
 
   getProperties(page: number = 1): Observable<PropertyApiResponse> {
-    return this.http.get<{ properties: PropertyApiResponse }>(`${this.apiUrl}/properties?page=${page}`).pipe(
-      map((response) => ({
-        data: response.properties.data,
-        current_page: response.properties.current_page,
-        last_page: response.properties.last_page,
-        total: response.properties.total,
-        per_page: response.properties.per_page,
-      })),
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error fetching properties:', error);
-        return of({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          total: 0,
-          per_page: 10,
-        });
-      })
-    );
+    return this.http
+      .get<{ properties: PropertyApiResponse }>(
+        `${this.apiUrl}/properties?page=${page}`
+      )
+      .pipe(
+        map((response) => ({
+          data: response.properties.data,
+          current_page: response.properties.current_page,
+          last_page: response.properties.last_page,
+          total: response.properties.total,
+          per_page: response.properties.per_page,
+        })),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching properties:', error);
+          return of({
+            data: [],
+            current_page: 1,
+            last_page: 1,
+            total: 0,
+            per_page: 10,
+          });
+        })
+      );
   }
   // Method لتحديث الـ filters
   updateFilters(newFilters: Partial<PropertyFilters>): void {
@@ -55,7 +73,9 @@ export class PropertyService {
   searchProperties(): Observable<PropertySearchResponse> {
     return this.filters$.pipe(
       debounceTime(500), // انتظري 500ms قبل ما تبعتي طلب جديد
-      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)), // تجنبي الطلبات المتكررة لو الـ filters ما اتغيرتش
+      distinctUntilChanged(
+        (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+      ), // تجنبي الطلبات المتكررة لو الـ filters ما اتغيرتش
       switchMap((filters) => {
         let params = new HttpParams();
         Object.entries(filters).forEach(([key, value]) => {
@@ -63,20 +83,22 @@ export class PropertyService {
             params = params.set(key, value.toString());
           }
         });
-        return this.http.get<PropertySearchResponse>(`${this.apiUrl}/search`, { params }).pipe(
-          catchError((error: HttpErrorResponse) => {
-            console.error('Error searching properties:', error);
-            return of({
-              data: [],
-              pagination: {
-                current_page: 1,
-                total_pages: 1,
-                total_items: 0,
-                per_page: 10,  // تأكد من أن per_page هي رقم
-              },
-            });
-          })
-        );
+        return this.http
+          .get<PropertySearchResponse>(`${this.apiUrl}/search`, { params })
+          .pipe(
+            catchError((error: HttpErrorResponse) => {
+              console.error('Error searching properties:', error);
+              return of({
+                data: [],
+                pagination: {
+                  current_page: 1,
+                  total_pages: 1,
+                  total_items: 0,
+                  per_page: 5,
+                },
+              });
+            })
+          );
       })
     );
   }
