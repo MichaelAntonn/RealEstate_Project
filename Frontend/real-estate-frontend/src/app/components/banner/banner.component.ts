@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { PropertyService } from '../../services/property.service';
 import { PropertyFilters } from '../../models/property';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-banner',
@@ -21,25 +22,21 @@ export class BannerComponent implements OnInit, OnDestroy {
     page: 1,
   };
 
-  propertyTypes = [
-    { value: '', label: 'Property Type' },
-    { value: 'land', label: 'Land' },
-    { value: 'apartment', label: 'Apartment' },
-    { value: 'villa', label: 'Villa' },
-    { value: 'office', label: 'Office' },
+  cities: { value: string; label: string }[] = [
+    { value: '', label: 'Location' },
   ];
-
-  cities: { value: string; label: string }[] = [{ value: '', label: 'Location' }];
 
   private subscription: Subscription = new Subscription();
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // جلب المدن
     this.loadCities();
 
-    // الاشتراك في الـ filters$ لتحديث الـ filters المحلية
+    // مزامنة الـ filters مع الخدمة
     this.subscription.add(
       this.propertyService.filters$.subscribe((filters) => {
         this.filters = { ...filters };
@@ -65,19 +62,28 @@ export class BannerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSearch(): void {
-    this.propertyService.updateFilters({ keyword: this.filters.keyword, page: 1 });
-  }
+  toggleListingType(type: 'for_sale' | 'for_rent'): void {
+    this.propertyService.updateFilters({ listing_type: type, page: 1 });
 
-  onFilterChange(): void {
-    this.propertyService.updateFilters({
-      type: this.filters.type,
-      city: this.filters.city,
-      page: 1,
+    this.router.navigate(['/properties'], {
+      queryParams: { listing_type: type },
     });
   }
 
-  toggleListingType(type: 'for_sale' | 'for_rent'): void {
-    this.propertyService.updateFilters({ listing_type: type, page: 1 });
+  onSearch(): void {
+    this.propertyService.updateFilters({
+      keyword: this.filters.keyword,
+      page: 1,
+    });
+
+    this.router.navigate(['/properties'], {
+      queryParams: {
+        keyword: this.filters.keyword,
+        listing_type: this.filters.listing_type,
+        city: this.filters.city,
+        type: this.filters.type,
+        page: 1,
+      },
+    });
   }
 }
