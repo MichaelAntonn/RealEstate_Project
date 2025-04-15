@@ -1,6 +1,6 @@
 <div class="container py-5">
-    <h6 class="text-center text-muted">SERVICES</h6>
-    <h2 class="text-center mb-4">Our Best Real-Estate Services</h2>
+    <h6 class="text-center gradient-text text-muted">SERVICES</h6>
+    <h2 class="text-center title mb-4">Our Best Real-Estate Services</h2>
     
     <div class="row justify-content-center mt-5">
         <div class="col-md-3">
@@ -15,17 +15,19 @@
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div #card class="card real-estate-card" 
-                 (mouseover)="toggleTilt($event)" 
-                 (mouseleave)="resetTilt()">
-                <div class="card-body">
-                    <i class="fas fa-landmark real-estate-card-icon"></i>
-                    <h5 class="card-title2">Sell a Property</h5>
-                    <p class="card-text2">Get the best market value when selling your property.</p>
-                </div>
+    <!-- services-cards.component.html -->
+    <div class="col-md-3">
+        <div #card class="card real-estate-card" 
+             (mouseover)="toggleTilt($event)" 
+             (mouseleave)="resetTilt()"
+             (click)="navigateToAddProperty()">
+            <div class="card-body">
+                <i class="fas fa-landmark real-estate-card-icon"></i>
+                <h5 class="card-title2">Sell a Property</h5>
+                <p class="card-text2">Get the best market value when selling your property.</p>
             </div>
         </div>
+    </div>
 
         <div class="col-md-3">
             <div #card class="card real-estate-card" 

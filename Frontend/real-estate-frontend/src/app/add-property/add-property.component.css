@@ -1,0 +1,68 @@
+/* add-property.component.css */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    font-weight: 600;
+  }
+  
+  .form-label {
+    font-weight: 500;
+  }
+  
+  .form-control, .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+  }
+  
+  .btn {
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 500;
+  }
+  
+  .btn-primary {
+    background-color: #F77C34;
+    border-color: #F77C34;
+  }
+  
+  .btn-primary:hover {
+    background-color: #e66a22;
+    border-color: #e66a22;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+  
+  .input-group-text {
+    border-radius: 8px;
+  }
+  
+  .img-thumbnail {
+    border-radius: 8px;
+  }
+  
+  .position-relative {
+    transition: all 0.3s ease;
+  }
+  
+  .position-relative:hover {
+    transform: scale(1.02);
+  }
+  
+  .text-danger {
+    font-size: 0.875rem;
+  }
+  
+  .border-bottom {
+    border-color: #dee2e6 !important;
+  }

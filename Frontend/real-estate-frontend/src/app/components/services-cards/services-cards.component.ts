@@ -1,5 +1,7 @@
+// services-cards.component.ts
 import { Component, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-services-cards',
@@ -10,6 +12,8 @@ import { CommonModule } from '@angular/common';
 })
 export class ServicesCardsComponent implements AfterViewInit {
   @ViewChildren('card') cards!: QueryList<ElementRef<HTMLElement>>;
+
+  constructor(private router: Router) {}
 
   ngAfterViewInit() {
     this.setDefaultTiltedCard();
@@ -42,9 +46,12 @@ export class ServicesCardsComponent implements AfterViewInit {
       card.nativeElement.classList.remove('real-estate-tilted-card', 'real-estate-normal-card');
     });
     
-    // Set the second card as tilted by default
     if (this.cards.length >= 2) {
       this.cards.toArray()[1].nativeElement.classList.add('real-estate-tilted-card');
     }
+  }
+
+  navigateToAddProperty() {
+    this.router.navigate(['/add-property']);
   }
 }

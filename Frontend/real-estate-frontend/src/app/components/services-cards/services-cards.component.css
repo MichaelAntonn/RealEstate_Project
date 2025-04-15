@@ -36,3 +36,18 @@
   color: #F9FDFF !important;
   clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
 }
+.title{
+  font-family: 'PlayfairDisplay','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: black;
+}
+.gradient-text {
+  background: linear-gradient(90deg, #FFA500, #FF4500);
+  -webkit-background-clip: text;   /* For Safari/Chrome */
+  background-clip: text;           /* Standard property */
+  -webkit-text-fill-color: transparent; /* For Safari/Chrome */
+  color: transparent;              /* Fallback for other browsers */
+  font-weight: normal;
+  font-family: 'Poppins-Medium','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}

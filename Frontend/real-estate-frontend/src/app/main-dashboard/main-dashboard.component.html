@@ -4,11 +4,11 @@
         <button class="btn btn-link text-white d-lg-none" (click)="toggleSidebar()">
             <fa-icon [icon]="faBars"></fa-icon>
         </button>
-        
-        <a class="navbar-brand" routerLink="/dashboard">
-            <fa-icon [icon]="faHome"></fa-icon> Real Estate 
+
+        <a class="navbar-brand" routerLink="/maindashboard/dashboard">
+            <fa-icon [icon]="faHome"></fa-icon> Real Estate
         </a>
-        
+
         <div class="d-flex align-items-center">
             <div class="dropdown me-3">
                 <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -26,16 +26,16 @@
                     <li><a class="dropdown-item text-center" href="#">View All</a></li>
                 </ul>
             </div>
-            
+
             <div class="form-check form-switch me-3">
                 <label class="switch">
                     <input type="checkbox" id="darkModeToggle" (change)="toggleDarkMode()" [checked]="darkMode">
                     <span class="slider"></span>
                 </label>
             </div>
-            
+
             <div class="user-info">
-                <span>Welcome, {{ username }}</span> 
+                <span>Welcome, {{ username }}</span>
                 <img src="assets/images/user-avatar.png" alt="User" class="user-avatar">
             </div>
         </div>
@@ -47,52 +47,52 @@
     <div class="sidebar" id="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/dashboard" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faHome"></fa-icon>
                     Dashboard
                     <span class="badge bg-primary ms-auto">5</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/profile" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/profile" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faUser"></fa-icon>
                     Profile
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/properties" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/properties" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faBuilding"></fa-icon>
                     My Properties
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/favorites" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/favorites" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faHeart"></fa-icon>
                     Favorites
                     <span class="badge bg-danger ms-auto">2</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/appointments" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/appointments" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faCalendarAlt"></fa-icon>
                     Appointments
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/messages" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/messages" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faEnvelope"></fa-icon>
                     Messages
                     <span class="badge bg-success ms-auto">4</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/statistics" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/statistics" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faChartLine"></fa-icon>
                     Statistics
                 </a>
             </li>
             <li class="nav-item">
-                <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+                <a routerLink="/maindashboard/settings" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faCog"></fa-icon>
                     Settings
                 </a>

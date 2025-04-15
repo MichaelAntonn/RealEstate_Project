@@ -1,3 +1,112 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Custom styles for the property card */
+.cards-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-color: #f3f3f3;
+  padding: 40px;
+}
+
+.card {
+    width: 320px;
+    position: relative;
+    /* Ensure no borders or shadows around the entire card */
+    border: none;
+    box-shadow: none;
+    background-color: #f3f3f3;
+}
+
+.card-image {
+  width: 100%;
+  height: 200px; /* Fixed height for the image */
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.card-info {
+  width: 85%;
+  background-color: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* Add a very light, thin orange border */
+  border: 1px solid rgba(255, 127, 0, 0.3); /* Light orange with reduced opacity */
+  margin-top: -40px; /* Overlap with the image */
+  margin-left: auto; /* Align to the right */
+  position: relative;
+  z-index: 2;
+  font-family: 'Inter', sans-serif;
+  /* No fixed height, allowing it to extend below the card */
+}
+
+.card-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827; /* Equivalent to text-gray-900 */
+  margin-bottom: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Equivalent to line-clamp-1 */
+}
+
+.info-line {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 8px;
+}
+
+.info-line span {
+  display: flex;
+  align-items: center; /* Equivalent to items-center */
+}
+
+.info-line i {
+  color: #ff7f00;
+  margin-right: 5px; /* Equivalent to mr-[5px] */
+}
+
+.price {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.price span {
+  color: #aaa;
+  font-weight: normal;
+}
+
+.location {
+  font-size: 13px;
+  color: #555;
+}
+
+.location i {
+  color: #ff7f00;
+  margin-right: 5px; /* Equivalent to mr-[5px] */
+}
+
+.book-now {
+  display: inline-block;
+  color: #ff7f00;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 10px;
+  text-decoration: none;
+}
+
+.book-now i {
+  color: #ff7f00;
+  margin-left: 6px; /* Equivalent to ml-[6px] */
+}

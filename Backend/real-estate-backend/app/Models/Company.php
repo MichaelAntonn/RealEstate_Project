@@ -36,6 +36,7 @@ class Company extends Model
         'accept_terms' => 'boolean', // التعامل مع accept_terms كـ boolean
         'date_of_establishment' => 'date', // التعامل مع date_of_establishment كتاريخ
         'verification_status' => 'string', // التأكد من أن verification_status يُعامل كنص
+        'has_used_trial' => 'boolean',
     ];
 
     protected $dates = [
@@ -43,4 +44,11 @@ class Company extends Model
         'created_at',
         'updated_at',
     ];
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
+    
+
+
 }

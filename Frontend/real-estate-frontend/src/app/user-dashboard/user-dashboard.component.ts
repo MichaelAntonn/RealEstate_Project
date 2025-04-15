@@ -3,7 +3,6 @@ import { UserDashboardService } from './user-dashboard.service';
 import { Property } from './models/property.model';
 import { Appointment } from './models/appointment.model';
 import { StatsCardsComponent } from './components/stats-cards/stats-cards.component';
-import { RecentPropertiesComponent } from './components/recent-properties/recent-properties.component';
 import { AppointmentsComponent } from './components/appointments/appointments.component';
 import { CommonModule } from '@angular/common';
 import { DashboardChartComponent } from './components/dashboard-chart/dashboard-chart.component';
@@ -26,7 +25,6 @@ import {
     CommonModule,
     FontAwesomeModule,
     StatsCardsComponent,
-    RecentPropertiesComponent,
     AppointmentsComponent,
     FormsModule,
     DashboardChartComponent,
@@ -68,18 +66,26 @@ export class UserDashboardComponent implements OnInit {
   isEditingAppointment: boolean = false;
   showSuccessMessage: boolean = false;
   successMessage: string = '';
-  
-  currentProperty: Property = {
-    title: '',
-    price: 0,
-    bedrooms: 0,
-    bathrooms: 0,
-    area: 0,
-    location: '',
-    image: '',
-    status: 'Available'
-  };
-
+  // user-dashboard.component.ts
+currentProperty: Property = {
+  title: '',
+  slug: '',
+  description: '',
+  type: 'apartment', // default value
+  price: 0,
+  city: '',
+  district: '',
+  area: 0,
+  bedrooms: 0,
+  bathrooms: 0,
+  listing_type: 'for_sale', // default value
+  construction_status: 'available', // default value
+  property_code: '',
+  // Optional properties
+  location: '',
+  status: '',
+  image: ''
+};
   currentAppointment: Appointment = {
     date: '',
     time: '',
@@ -190,69 +196,6 @@ export class UserDashboardComponent implements OnInit {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
-  }
-
-  // Property CRUD Operations
- 
-openAddPropertyModal(): void {
-  this.isEditingProperty = false;
-  this.currentProperty = {
-    title: '',
-    price: 0,
-    bedrooms: 0,
-    bathrooms: 0,
-    area: 0,
-    location: '',
-    image: '',
-    status: 'Available'
-  };
-}
-
-  editProperty(property: Property): void {
-    this.isEditingProperty = true;
-    this.currentProperty = { ...property };
-  }
-
-  saveProperty(): void {
-    const operation = this.isEditingProperty && this.currentProperty.id
-      ? this.dashboardService.updateProperty(this.currentProperty.id, this.currentProperty)
-      : this.dashboardService.createProperty(this.currentProperty);
-
-    operation.subscribe({
-      next: (savedProperty) => {
-        if (this.isEditingProperty) {
-          const index = this.properties.findIndex(p => p.id === savedProperty.id);
-          if (index !== -1) {
-            this.properties[index] = savedProperty;
-          }
-        } else {
-          this.properties.unshift(savedProperty);
-        }
-
-        this.updateStats();
-        this.showSuccess(this.isEditingProperty ? 'تم تحديث العقار بنجاح!' : 'تم إضافة العقار بنجاح!');
-        this.loadProperties();
-        this.loadDashboardData();
-      },
-      error: (err) => {
-        console.error('Error saving property', err);
-      }
-    });
-  }
-
-  deleteProperty(id: number): void {
-    if (confirm('هل أنت متأكد من حذف هذا العقار؟')) {
-      this.dashboardService.deleteProperty(id).subscribe({
-        next: () => {
-          this.properties = this.properties.filter(p => p.id !== id);
-          this.updateStats();
-          this.showSuccess('تم حذف العقار بنجاح');
-          this.loadProperties();
-          this.loadDashboardData();
-        },
-        error: (err) => console.error('Error deleting property', err)
-      });
-    }
   }
 
   // Appointment CRUD Operations

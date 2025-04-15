@@ -13,7 +13,6 @@ import { HeaderComponent } from '../header/header.component';
   imports: [
     NavbarComponent,
     ServicesCardsComponent,
-    PropertyCardsComponent,
     FooterComponent,
     ShopCardsComponent,
     StatsCounterComponent,

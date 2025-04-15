@@ -1,7 +1,12 @@
-/* Property Type Cards Component */
+/* Container and Grid Layout */
 .container.py-5 {
     padding-top: 3rem !important;
     padding-bottom: 3rem !important;
+}
+
+.button-container {
+    max-width: 800px; /* Reduced width so it doesn't take the full page */
+    margin: 0 auto; /* Center the container on the x-axis */
 }
 
 .row.justify-content-center {
@@ -11,58 +16,50 @@
 .col-md-2 {
     padding: 0 0.5rem;
     margin-bottom: 1rem;
-}
-
-.card {
-    border: none;
-    border-radius: 10px;
-    text-align: center;
-    padding: 1.5rem 0.5rem;
-    transition: all 0.3s ease;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    /* background-color: #172940; */
-}
-
-.card:hover .icon {
-    /* color: #F2D022; */
-}
-
-.card:hover .card-title {
-    /* color: white; */
-}
-
-.icon {
-    font-size: 2rem;
-    color: #F77C34;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-.card-title {
+/* Custom Button Styles */
+.btn-custom {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 5px;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #172940;
-    margin-bottom: 0;
+    color: black; /* Default text color */
+    background: white; /* Default background */
+    border: 1px solid #e0e0e0; /* Light border for visibility */
     transition: all 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
 }
 
-/* Responsive adjustments */
+.btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-custom.selected {
+    color: white; /* White text for selected button */
+    background: linear-gradient(90deg, #F77C34 0%, #F2A022 100%); /* Orange gradient for selected */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-custom.selected:hover {
+    background: linear-gradient(90deg, #F2A022 0%, #F77C34 100%); /* Reverse gradient on hover for selected */
+}
+
+/* Responsive Adjustments */
 @media (max-width: 992px) {
     .col-md-2 {
         flex: 0 0 33.333333%;
         max-width: 33.333333%;
+    }
+
+    .button-container {
+        max-width: 600px;
     }
 }
 
@@ -72,16 +69,13 @@
         max-width: 50%;
     }
 
-    .card {
-        padding: 1rem 0.5rem;
-    }
-
-    .icon {
-        font-size: 1.75rem;
-    }
-
-    .card-title {
+    .btn-custom {
+        padding: 10px 15px;
         font-size: 0.85rem;
+    }
+
+    .button-container {
+        max-width: 500px;
     }
 }
 
@@ -95,40 +89,14 @@
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
     }
-}
-.icon-card {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 15px;
-  text-align: center;
-}
 
-.icon-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+    .btn-custom {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
 
-.icon-card.selected {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-}
-
-.icon-card.selected .icon,
-.icon-card.selected .card-title {
-  color: white;
-}
-
-.icon {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: #ff6200; /* اللون البرتقالي بتاع الأيقونات */
-}
-
-.card-title {
-  font-size: 14px;
-  margin: 0;
-  color: #333;
+    .button-container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
 }

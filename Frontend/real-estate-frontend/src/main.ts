@@ -3,10 +3,15 @@ import { provideRouter, withHashLocation } from '@angular/router';
 import { provideHttpClient, withFetch, withXsrfConfiguration } from '@angular/common/http';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
+import { provideToastr } from 'ngx-toastr'; 
+import { provideAnimations } from '@angular/platform-browser/animations';
+
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withHashLocation()),
+    provideAnimations(),
+    provideToastr(),
     provideHttpClient(
       withFetch(),
       withXsrfConfiguration({
