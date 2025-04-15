@@ -14,7 +14,6 @@ import { StatsCounterComponent } from '../stats-counter/stats-counter.component'
     NavbarComponent,
     BannerComponent,
     ServicesCardsComponent,
-    PropertyCardsComponent,
     FooterComponent,
     ShopCardsComponent,
     StatsCounterComponent,
