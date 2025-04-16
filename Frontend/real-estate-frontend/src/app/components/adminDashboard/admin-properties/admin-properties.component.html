@@ -1,201 +1,221 @@
-<div class="container">
+<div class="admin-glass-container">
   <!-- Pending Properties Section -->
-  <h2>Pending Properties</h2>
-  <div class="search-bar">
-    <input
-      type="text"
-      [(ngModel)]="searchQuery"
-      placeholder="Search by title or property code"
-      (keyup)="onPendingSearch(searchQuery)"
-    />
-  </div>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Property Code</th>
-        <th>Price</th>
-        <th>City</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let property of pendingProperties">
-        <td>{{ property.title }}</td>
-        <td>{{ property.property_code }}</td>
-        <td>{{ property.price }}</td>
-        <td>{{ property.city }}</td>
-        <td>
-          <button class="btn btn-info" (click)="viewProperty(property)">View</button>
-          <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
-          <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
-        </td>
-      </tr>
-      <tr *ngIf="pendingProperties.length === 0">
-        <td colspan="5">No pending properties found.</td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="pagination" *ngIf="pendingPagination.total > 0">
-    <button
-      class="btn btn-secondary"
-      [disabled]="pendingPagination.current_page === 1"
-      (click)="setPendingPage(pendingPagination.current_page - 1)"
-    >
-      Previous
-    </button>
-    <span *ngFor="let page of [].constructor(pendingPagination.last_page); let i = index">
-      <button
-        class="btn"
-        [class.btn-primary]="pendingPagination.current_page === i + 1"
-        [class.btn-outline-primary]="pendingPagination.current_page !== i + 1"
-        (click)="setPendingPage(i + 1)"
-      >
-        {{ i + 1 }}
+  <div class="glass-section">
+    <h2 class="glass-title">Pending Properties <span class="glass-badge">{{ pendingProperties.length }}</span></h2>
+    
+    <div class="glass-search">
+      <i class="fas fa-search glass-search-icon"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search by title or property code"
+        (keyup)="onPendingSearch(searchQuery)"
+        class="glass-search-input"
+      />
+    </div>
+    
+    <div class="glass-table-container">
+      <table class="glass-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Property Code</th>
+            <th>Price</th>
+            <th>City</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let property of pendingProperties">
+            <td>{{ property.title }}</td>
+            <td>{{ property.property_code }}</td>
+            <td>{{ property.price | currency:'EGP' }}</td>
+            <td>{{ property.city }}</td>
+            <td>
+              <button class="glass-btn glass-btn-view" (click)="viewProperty(property)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button class="glass-btn glass-btn-accept" (click)="acceptProperty(property.id)">
+                <i class="fas fa-check"></i> Accept
+              </button>
+              <button class="glass-btn glass-btn-reject" (click)="rejectProperty(property.id)">
+                <i class="fas fa-times"></i> Reject
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="pendingProperties.length === 0" class="glass-empty">
+            <td colspan="5">No pending properties found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="glass-pagination" *ngIf="pendingPagination.total > 0">
+      <button class="glass-pagination-arrow" (click)="setPendingPage(pendingPagination.current_page - 1)" [disabled]="pendingPagination.current_page === 1">
+        <i class="fas fa-chevron-left"></i>
       </button>
-    </span>
-    <button
-      class="btn btn-secondary"
-      [disabled]="pendingPagination.current_page === pendingPagination.last_page"
-      (click)="setPendingPage(pendingPagination.current_page + 1)"
-    >
-      Next
-    </button>
+      <div class="glass-pagination-numbers">
+        <button
+          *ngFor="let page of [].constructor(pendingPagination.last_page); let i = index"
+          [class.glass-pagination-active]="pendingPagination.current_page === i + 1"
+          (click)="setPendingPage(i + 1)"
+          class="glass-pagination-number"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+      <button class="glass-pagination-arrow" (click)="setPendingPage(pendingPagination.current_page + 1)" [disabled]="pendingPagination.current_page === pendingPagination.last_page">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
   </div>
 
   <!-- Accepted Properties Section -->
-  <h2>Accepted Properties</h2>
-  <div class="search-bar">
-    <input
-      type="text"
-      [(ngModel)]="acceptedSearchQuery"
-      placeholder="Search by title or property code"
-      (keyup)="onAcceptedSearch(acceptedSearchQuery)"
-    />
-  </div>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Property Code</th>
-        <th>Price</th>
-        <th>City</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let property of acceptedProperties">
-        <td>{{ property.title }}</td>
-        <td>{{ property.property_code }}</td>
-        <td>{{ property.price }}</td>
-        <td>{{ property.city }}</td>
-        <td>
-          <button class="btn btn-info" (click)="viewProperty(property)">View</button>
-          <button class="btn btn-danger" (click)="rejectProperty(property.id)">Reject</button>
-          <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
-        </td>
-      </tr>
-      <tr *ngIf="acceptedProperties.length === 0">
-        <td colspan="5">No accepted properties found.</td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="pagination" *ngIf="acceptedPagination.total > 0">
-    <button
-      class="btn btn-secondary"
-      [disabled]="acceptedPagination.current_page === 1"
-      (click)="setAcceptedPage(acceptedPagination.current_page - 1)"
-    >
-      Previous
-    </button>
-    <span *ngFor="let page of [].constructor(acceptedPagination.last_page); let i = index">
-      <button
-        class="btn"
-        [class.btn-primary]="acceptedPagination.current_page === i + 1"
-        [class.btn-outline-primary]="acceptedPagination.current_page !== i + 1"
-        (click)="setAcceptedPage(i + 1)"
-      >
-        {{ i + 1 }}
+  <div class="glass-section">
+    <h2 class="glass-title">Accepted Properties <span class="glass-badge">{{ acceptedProperties.length }}</span></h2>
+    
+    <div class="glass-search">
+      <i class="fas fa-search glass-search-icon"></i>
+      <input
+        type="text"
+        [(ngModel)]="acceptedSearchQuery"
+        placeholder="Search by title or property code"
+        (keyup)="onAcceptedSearch(acceptedSearchQuery)"
+        class="glass-search-input"
+      />
+    </div>
+    
+    <div class="glass-table-container">
+      <table class="glass-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Property Code</th>
+            <th>Price</th>
+            <th>City</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let property of acceptedProperties">
+            <td>{{ property.title }}</td>
+            <td>{{ property.property_code }}</td>
+            <td>{{ property.price | currency:'EGP' }}</td>
+            <td>{{ property.city }}</td>
+            <td>
+              <button class="glass-btn glass-btn-view" (click)="viewProperty(property)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button class="glass-btn glass-btn-reject" (click)="rejectProperty(property.id)">
+                <i class="fas fa-times"></i> Reject
+              </button>
+              <button class="glass-btn glass-btn-delete" (click)="deleteProperty(property.id)">
+                <i class="fas fa-trash-alt"></i> Delete
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="acceptedProperties.length === 0" class="glass-empty">
+            <td colspan="5">No accepted properties found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="glass-pagination" *ngIf="acceptedPagination.total > 0">
+      <button class="glass-pagination-arrow" (click)="setAcceptedPage(acceptedPagination.current_page - 1)" [disabled]="acceptedPagination.current_page === 1">
+        <i class="fas fa-chevron-left"></i>
       </button>
-    </span>
-    <button
-      class="btn btn-secondary"
-      [disabled]="acceptedPagination.current_page === acceptedPagination.last_page"
-      (click)="setAcceptedPage(acceptedPagination.current_page + 1)"
-    >
-      Next
-    </button>
+      <div class="glass-pagination-numbers">
+        <button
+          *ngFor="let page of [].constructor(acceptedPagination.last_page); let i = index"
+          [class.glass-pagination-active]="acceptedPagination.current_page === i + 1"
+          (click)="setAcceptedPage(i + 1)"
+          class="glass-pagination-number"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+      <button class="glass-pagination-arrow" (click)="setAcceptedPage(acceptedPagination.current_page + 1)" [disabled]="acceptedPagination.current_page === acceptedPagination.last_page">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
   </div>
 
   <!-- Rejected Properties Section -->
-  <h2>Rejected Properties</h2>
-  <div class="search-bar">
-    <input
-      type="text"
-      [(ngModel)]="rejectedSearchQuery"
-      placeholder="Search by title or property code"
-      (keyup)="onRejectedSearch(rejectedSearchQuery)"
-    />
-  </div>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Property Code</th>
-        <th>Price</th>
-        <th>City</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let property of rejectedProperties">
-        <td>{{ property.title }}</td>
-        <td>{{ property.property_code }}</td>
-        <td>{{ property.price }}</td>
-        <td>{{ property.city }}</td>
-        <td>
-          <button class="btn btn-info" (click)="viewProperty(property)">View</button>
-          <button class="btn btn-success" (click)="acceptProperty(property.id)">Accept</button>
-          <button class="btn btn-danger" (click)="deleteProperty(property.id)">Delete</button>
-        </td>
-      </tr>
-      <tr *ngIf="rejectedProperties.length === 0">
-        <td colspan="5">No rejected properties found.</td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="pagination" *ngIf="rejectedPagination.total > 0">
-    <button
-      class="btn btn-secondary"
-      [disabled]="rejectedPagination.current_page === 1"
-      (click)="setRejectedPage(rejectedPagination.current_page - 1)"
-    >
-      Previous
-    </button>
-    <span *ngFor="let page of [].constructor(rejectedPagination.last_page); let i = index">
-      <button
-        class="btn"
-        [class.btn-primary]="rejectedPagination.current_page === i + 1"
-        [class.btn-outline-primary]="rejectedPagination.current_page !== i + 1"
-        (click)="setRejectedPage(i + 1)"
-      >
-        {{ i + 1 }}
+  <div class="glass-section">
+    <h2 class="glass-title">Rejected Properties <span class="glass-badge">{{ rejectedProperties.length }}</span></h2>
+    
+    <div class="glass-search">
+      <i class="fas fa-search glass-search-icon"></i>
+      <input
+        type="text"
+        [(ngModel)]="rejectedSearchQuery"
+        placeholder="Search by title or property code"
+        (keyup)="onRejectedSearch(rejectedSearchQuery)"
+        class="glass-search-input"
+      />
+    </div>
+    
+    <div class="glass-table-container">
+      <table class="glass-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Property Code</th>
+            <th>Price</th>
+            <th>City</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let property of rejectedProperties">
+            <td>{{ property.title }}</td>
+            <td>{{ property.property_code }}</td>
+            <td>{{ property.price | currency:'EGP' }}</td>
+            <td>{{ property.city }}</td>
+            <td>
+              <button class="glass-btn glass-btn-view" (click)="viewProperty(property)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button class="glass-btn glass-btn-accept" (click)="acceptProperty(property.id)">
+                <i class="fas fa-check"></i> Accept
+              </button>
+              <button class="glass-btn glass-btn-delete" (click)="deleteProperty(property.id)">
+                <i class="fas fa-trash-alt"></i> Delete
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="rejectedProperties.length === 0" class="glass-empty">
+            <td colspan="5">No rejected properties found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="glass-pagination" *ngIf="rejectedPagination.total > 0">
+      <button class="glass-pagination-arrow" (click)="setRejectedPage(rejectedPagination.current_page - 1)" [disabled]="rejectedPagination.current_page === 1">
+        <i class="fas fa-chevron-left"></i>
       </button>
-    </span>
-    <button
-      class="btn btn-secondary"
-      [disabled]="rejectedPagination.current_page === rejectedPagination.last_page"
-      (click)="setRejectedPage(rejectedPagination.current_page + 1)"
-    >
-      Next
-    </button>
+      <div class="glass-pagination-numbers">
+        <button
+          *ngFor="let page of [].constructor(rejectedPagination.last_page); let i = index"
+          [class.glass-pagination-active]="rejectedPagination.current_page === i + 1"
+          (click)="setRejectedPage(i + 1)"
+          class="glass-pagination-number"
+        >
+          {{ i + 1 }}
+        </button>
+      </div>
+      <button class="glass-pagination-arrow" (click)="setRejectedPage(rejectedPagination.current_page + 1)" [disabled]="rejectedPagination.current_page === rejectedPagination.last_page">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
   </div>
 
   <!-- Modal for Viewing Property Details -->
-  <div class="modal" *ngIf="selectedProperty">
-    <div class="modal-content">
-      <!-- Image Section -->
-      <div class="property-image">
+  <div class="glass-modal" *ngIf="selectedProperty">
+    <div class="glass-modal-content">
+      <div class="glass-modal-image">
         <img
           [src]="selectedProperty.cover_image ? 'http://localhost:8000/storage/' + selectedProperty.cover_image : 'https://picsum.photos/600/300?blur=2'"
           alt="{{ selectedProperty.title }}"
@@ -203,10 +223,9 @@
         />
       </div>
 
-      <!-- Property Details -->
-      <div class="property-details">
+      <div class="glass-modal-details">
         <h3>{{ selectedProperty.title }}</h3>
-        <div class="details-grid">
+        <div class="glass-details-grid">
           <p><strong>Property Code:</strong> {{ selectedProperty.property_code }}</p>
           <p><strong>Price:</strong> {{ selectedProperty.price | currency:'EGP' }}</p>
           <p><strong>City:</strong> {{ selectedProperty.city }}</p>
@@ -219,67 +238,69 @@
           <p><strong>Bedrooms:</strong> {{ selectedProperty.bedrooms ?? 'N/A' }}</p>
           <p><strong>Bathrooms:</strong> {{ selectedProperty.bathrooms ?? 'N/A' }}</p>
         </div>
-        <p class="description"><strong>Description:</strong> {{ selectedProperty.description || 'No description available' }}</p>
+        <p class="glass-modal-description"><strong>Description:</strong> {{ selectedProperty.description || 'No description available' }}</p>
 
-        <!-- Reviews Section -->
-        <div class="reviews-section">
+        <div class="glass-reviews-section">
           <h4>Reviews</h4>
-          <div class="reviews-list">
-            <div class="review-item" *ngFor="let review of reviews">
-              <div class="review-header">
+          <div class="glass-reviews-list">
+            <div class="glass-review-item" *ngFor="let review of reviews">
+              <div class="glass-review-header">
                 <img
                   [src]="getReviewerImage(review)"
                   alt="Reviewer Image"
-                  class="reviewer-pic"
+                  class="glass-reviewer-pic"
                   (error)="onImageError($event)"
                 />
-                <div class="review-content">
-                  <p class="review-text">{{ review.comment || 'No comment provided' }}</p>
-                  <p class="review-meta">
+                <div class="glass-review-content">
+                  <p class="glass-review-text">{{ review.comment || 'No comment provided' }}</p>
+                  <p class="glass-review-meta">
                     <strong>Rating:</strong> {{ review.rating }} / 5 |
                     <strong>Reviewer:</strong> {{ review.anonymous_review ? 'Anonymous' : (review.user?.first_name + ' ' + review.user?.last_name) || 'Unknown' }} |
                     <strong>Date:</strong> {{ review.review_date | date:'medium' }}
                   </p>
                 </div>
               </div>
-              <button class="btn btn-danger btn-small" (click)="deleteReview(review.id)">Delete</button>
+              <button class="glass-btn glass-btn-delete glass-btn-small" (click)="deleteReview(review.id)">
+                <i class="fas fa-trash-alt"></i> Delete
+              </button>
             </div>
-            <p *ngIf="reviews.length === 0" class="no-reviews">No reviews available for this property.</p>
+            <p *ngIf="reviews.length === 0" class="glass-no-reviews">No reviews available for this property.</p>
           </div>
         </div>
       </div>
 
-      <!-- Actions -->
-      <div class="modal-actions">
+      <div class="glass-modal-actions">
         <button
           *ngIf="selectedProperty.approval_status === 'pending'"
-          class="btn btn-success"
+          class="glass-btn glass-btn-accept"
           (click)="acceptProperty(selectedProperty.id)"
         >
-          Accept
+          <i class="fas fa-check"></i> Accept
         </button>
         <button
           *ngIf="selectedProperty.approval_status === 'pending' || selectedProperty.approval_status === 'accepted'"
-          class="btn btn-danger"
+          class="glass-btn glass-btn-reject"
           (click)="rejectProperty(selectedProperty.id)"
         >
-          Reject
+          <i class="fas fa-times"></i> Reject
         </button>
         <button
           *ngIf="selectedProperty.approval_status === 'rejected'"
-          class="btn btn-success"
+          class="glass-btn glass-btn-accept"
           (click)="acceptProperty(selectedProperty.id)"
         >
-          Accept
+          <i class="fas fa-check"></i> Accept
         </button>
         <button
           *ngIf="selectedProperty.approval_status === 'accepted' || selectedProperty.approval_status === 'rejected'"
-          class="btn btn-danger"
+          class="glass-btn glass-btn-delete"
           (click)="deleteProperty(selectedProperty.id)"
         >
-          Delete
+          <i class="fas fa-trash-alt"></i> Delete
         </button>
-        <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+        <button class="glass-btn glass-btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i> Close
+        </button>
       </div>
     </div>
   </div>

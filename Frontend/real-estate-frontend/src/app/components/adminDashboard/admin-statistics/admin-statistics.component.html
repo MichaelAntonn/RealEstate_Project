@@ -1,131 +1,106 @@
-<div class="dashboard-wrapper">
-  <div class="container-fluid">
-    <!-- Display loading spinner while fetching statistics -->
-    <ng-container *ngIf="loadingStatistics">
-      <div class="col-12 text-center">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
+<div class="admin-glass-container">
+  <!-- Loading Spinner -->
+  <div class="glass-loading" *ngIf="loadingStatistics">
+    <div class="glass-spinner"></div>
+    <span class="glass-loading-text">Loading...</span>
+  </div>
+
+  <!-- Error State -->
+  <div class="glass-error-card" *ngIf="!loadingStatistics && statistics === 'Error'">
+    <i class="fas fa-exclamation-triangle glass-error-icon"></i>
+    <p>Error loading statistics. Please try again later.</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="glass-section" *ngIf="!loadingStatistics && isStatistics(statistics)">
+    <div class="glass-card-group">
+      <div class="glass-card glass-card-income">
+        <i class="fas fa-dollar-sign glass-card-icon"></i>
+        <h3 class="glass-card-title">Income</h3>
+        <p class="glass-card-value">{{ statistics.total_commissions ? '$' + (statistics.total_commissions | number) : 'N/A' }}</p>
       </div>
-    </ng-container>
+      
+      <div class="glass-card glass-card-properties">
+        <i class="fas fa-home glass-card-icon"></i>
+        <h3 class="glass-card-title">Total Properties</h3>
+        <p class="glass-card-value">{{ statistics.total_properties }}</p>
+      </div>
+      
+      <div class="glass-card glass-card-users">
+        <i class="fas fa-users glass-card-icon"></i>
+        <h3 class="glass-card-title">Total Users</h3>
+        <p class="glass-card-value">{{ statistics.total_users }}</p>
+      </div>
+      
+      <div class="glass-card glass-card-profit">
+        <i class="fas fa-chart-line glass-card-icon"></i>
+        <h3 class="glass-card-title">Net Profit</h3>
+        <p class="glass-card-value">{{ statistics.net_profit ? '$' + (statistics.net_profit | number) : 'N/A' }}</p>
+      </div>
+    </div>
+  </div>
 
-    <!-- Display statistics if loaded and not loading -->
-    <ng-container *ngIf="!loadingStatistics && statistics">
-      <!-- Check for error state -->
-      <ng-container *ngIf="statistics === 'Error'">
-        <div class="col-12">
-          <div class="alert alert-danger text-center">
-            Error loading statistics. Please try again later.
-          </div>
-        </div>
-      </ng-container>
-
-      <!-- Display statistics if no error -->
-      <ng-container *ngIf="isStatistics(statistics)">
-        <div class="row mb-4">
-          <div class="col-md-3">
-            <div class="card card-custom card-income text-center p-3">
-              <i class="bi bi-currency-dollar icon-custom"></i>
-              <h6>Income</h6>
-              <h3>{{ statistics.total_commissions ? '$' + (statistics.total_commissions | number) : 'N/A' }}</h3>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card card-custom card-properties text-center p-3">
-              <i class="bi bi-house-door icon-custom"></i>
-              <h6>Total Properties</h6>
-              <h3>{{ statistics.total_properties }}</h3>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card card-custom card-users text-center p-3">
-              <i class="bi bi-people icon-custom"></i>
-              <h6>Total Users</h6>
-              <h3>{{ statistics.total_users }}</h3>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card card-custom card-profit text-center p-3">
-              <i class="bi bi-graph-up icon-custom"></i>
-              <h6>Net Profit</h6>
-              <h3>{{ statistics.net_profit ? '$' + (statistics.net_profit | number) : 'N/A' }}</h3>
-            </div>
-          </div>
-        </div>
-      </ng-container>
-    </ng-container>
-
-    <!-- Charts Section -->
-    <div class="container mt-5">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header bg-primary text-white">
-              Properties Sold Chart
-            </div>
-            <div class="card-body">
-              <canvas id="myChart"></canvas>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header bg-success text-white">
-              Profit Margin Trend
-            </div>
-            <div class="card-body">
-              <canvas id="lineChart"></canvas>
-            </div>
-          </div>
+  <!-- Charts Section -->
+  <div class="glass-section">
+    <div class="glass-chart-group">
+      <div class="glass-chart-card">
+        <h3 class="glass-chart-title">Properties Sold Chart</h3>
+        <div class="glass-chart-container">
+          <canvas id="myChart"></canvas>
         </div>
       </div>
       
-      <div class="row mt-4">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header bg-info text-white">
-              New Users vs New Listings
-            </div>
-            <div class="card-body">
-              <canvas id="usersListingsChart"></canvas> <!-- Updated ID -->
-            </div>
+      <div class="glass-chart-card">
+        <h3 class="glass-chart-title">Profit Margin Trend</h3>
+        <div class="glass-chart-container">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-chart-group">
+      <div class="glass-chart-card">
+        <h3 class="glass-chart-title">New Users vs New Listings</h3>
+        <div class="glass-chart-container">
+          <canvas id="usersListingsChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="glass-table-card">
+        <h3 class="glass-table-title">Latest Properties</h3>
+        <div *ngIf="latestProperties !== 'Error' && isArray(latestProperties); else errorTemplate">
+          <table class="glass-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Price</th>
+                <th>City</th>
+                <th>Listing Type</th>
+                <th>Listed By</th>
+                <th>Added On</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let property of latestProperties">
+                <td>{{ property.title || 'N/A' }}</td>
+                <td>{{ property.price ? '$' + (property.price | number) : 'N/A' }}</td>
+                <td>{{ property.city || 'N/A' }}</td>
+                <td>{{ property.listing_type === 'for_sale' ? 'For Sale' : 'For Rent' }}</td>
+                <td>{{ property.user ? (property.user.first_name + ' ' + property.user.last_name) : 'N/A' }}</td>
+                <td>{{ property.created_at ? (property.created_at | date: 'mediumDate') : 'N/A' }}</td>
+              </tr>
+              <tr *ngIf="latestProperties.length === 0" class="glass-empty-row">
+                <td colspan="6">No properties available.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #errorTemplate>
+          <div class="glass-error-card">
+            <i class="fas fa-exclamation-triangle glass-error-icon"></i>
+            <p>Error loading latest properties. Please try again later.</p>
           </div>
-        </div>
-        <div class="col-md-6">
-          <h5>Latest Properties</h5>
-          <ng-container *ngIf="latestProperties !== 'Error' && isArray(latestProperties); else errorTemplate">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Price</th>
-                  <th>City</th>
-                  <th>Listing Type</th>
-                  <th>Listed By</th>
-                  <th>Added On</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let property of latestProperties">
-                  <td>{{ property.title || 'N/A' }}</td>
-                  <td>{{ property.price ? '$' + (property.price | number) : 'N/A' }}</td>
-                  <td>{{ property.city || 'N/A' }}</td>
-                  <td>{{ property.listing_type === 'for_sale' ? 'For Sale' : 'For Rent' }}</td>
-                  <td>{{ property.user ? (property.user.first_name + ' ' + property.user.last_name) : 'N/A' }}</td>
-                  <td>{{ property.created_at ? (property.created_at | date: 'mediumDate') : 'N/A' }}</td>
-                </tr>
-                <tr *ngIf="latestProperties.length === 0">
-                  <td colspan="6" class="text-center">No properties available.</td>
-                </tr>
-              </tbody>
-            </table>
-          </ng-container>
-          <ng-template #errorTemplate>
-            <div class="alert alert-danger text-center">
-              Error loading latest properties. Please try again later.
-            </div>
-          </ng-template>
-        </div>
+        </ng-template>
       </div>
     </div>
   </div>

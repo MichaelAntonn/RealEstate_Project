@@ -88,7 +88,7 @@ getProperty(id: number): Observable<Property> {
   });
 }
 
-  }
+  
 
   updateProperty(id: number, propertyData: FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, propertyData, {
@@ -141,6 +141,7 @@ getProperty(id: number): Observable<Property> {
           );
       })
     );
+  }
 
   getAcceptedProperties(): Observable<any> {
     return this.http.get(`${this.apiUrl}/status/accepted`, {
@@ -158,8 +159,8 @@ getProperty(id: number): Observable<Property> {
 
 
   // Add these to your PropertyService class
-private filtersSubject = new BehaviorSubject<any>({});
-filters$ = this.filtersSubject.asObservable();
+// private filtersSubject = new BehaviorSubject<any>({});
+// filters$ = this.filtersSubject.asObservable();
 
 getCities(): Observable<string[]> {
   return this.http.get<string[]>(`${this.apiUrl}/cities`, {
@@ -167,12 +168,12 @@ getCities(): Observable<string[]> {
   });
 }
 
-searchProperties(filters?: any): Observable<any> {
-  return this.http.get(`${this.apiUrl}/search`, {
-    params: filters,
-    headers: this.getAuthHeaders()
-  });
-}
+// searchProperties(filters?: any): Observable<any> {
+//   return this.http.get(`${this.apiUrl}/search`, {
+//     params: filters,
+//     headers: this.getAuthHeaders()
+//   });
+// }
 
 updateFilters(filters: any): void {
   this.filtersSubject.next(filters);
