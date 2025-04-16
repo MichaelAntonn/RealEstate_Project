@@ -1,135 +1,260 @@
-/* Container for the entire dashboard content */
-.container-fluid {
-    padding: 30px;
-    background-color: #f5f6fa;
-    min-height: 100vh;
+/* Base Glass Styles */
+.admin-glass-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Loading State */
+.glass-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.glass-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 0.3rem solid rgba(230, 126, 34, 0.3);
+  border-top-color: #e67e22;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.glass-loading-text {
+  color: #e67e22;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Error State */
+.glass-error-card {
+  background: rgba(231, 76, 60, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  margin: 1rem 0;
+}
+
+.glass-error-icon {
+  color: #e74c3c;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.glass-error-card p {
+  color: #e74c3c;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Statistics Cards */
+.glass-card-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.glass-card-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.3);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.glass-card-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.glass-card-value {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Card Colors */
+.glass-card-income {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.8), rgba(230, 126, 34, 0.8));
+}
+
+.glass-card-properties {
+  background: linear-gradient(135deg, rgba(26, 188, 156, 0.8), rgba(22, 160, 133, 0.8));
+}
+
+.glass-card-users {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.8), rgba(142, 68, 173, 0.8));
+}
+
+.glass-card-profit {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.8), rgba(39, 174, 96, 0.8));
+}
+
+/* Charts Section */
+.glass-section {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-chart-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.glass-chart-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.glass-chart-title {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.glass-chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* Table Section */
+.glass-table-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.glass-table-title {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.glass-table th {
+  background: rgba(255, 179, 71, 0.1);
+  color: #e67e22;
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(255, 179, 71, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.glass-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.3);
+  transition: background 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-table tr:hover td {
+  background: rgba(255, 179, 71, 0.05);
+}
+
+.glass-empty-row td {
+  text-align: center;
+  color: rgba(211, 84, 0, 0.5);
+  padding: 1.5rem;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .admin-glass-container {
+    padding: 1rem;
   }
   
-  /* Main content wrapper to account for the sidebar */
-  .main-content {
-    margin-left: 250px;
-    width: calc(100% - 250px);
+  .glass-card-group {
+    grid-template-columns: 1fr;
   }
   
-  /* Row containing the statistics cards */
-  .row.mb-4 {
-    margin-bottom: 2rem !important;
+  .glass-chart-group {
+    grid-template-columns: 1fr;
   }
   
-  /* Base styling for all custom cards */
-  .card-custom {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    padding: 20px;
-    margin-bottom: 20px;
+  .glass-card {
+    padding: 1rem;
   }
   
-  /* Hover effect for all cards */
-  .card-custom:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  }
-  
-  /* Specific styling for each card with colorful gradients */
-  .card-income {
-    background: linear-gradient(135deg, #f39c12, #e67e22);
-  }
-  
-  .card-properties {
-    background: linear-gradient(135deg, #1abc9c, #16a085);
-  }
-  
-  .card-users {
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
-  }
-  
-  .card-profit {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-  }
-  
-  /* Styling for the icons in the cards */
-  .icon-custom {
-    font-size: 2rem;
-    color: #fff;
-    margin-bottom: 10px;
-    display: block;
-  }
-  
-  /* Styling for the card title */
-  .card-custom h6 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #140404;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  /* Styling for the card value */
-  .card-custom h3 {
+  .glass-card-icon {
+    width: 50px;
+    height: 50px;
     font-size: 1.5rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0;
   }
   
-  /* Error message styling */
-  .alert-danger {
-    background-color: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 15px 20px;
-    font-size: 1rem;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    text-align: center;
+  .glass-card-title {
+    font-size: 0.9rem;
   }
   
-  /* Spinner styling */
-  .spinner-border {
-    width: 3rem;
-    height: 3rem;
-    margin: 20px 0;
+  .glass-card-value {
+    font-size: 1.2rem;
   }
   
-  .spinner-border.text-primary {
-    color: #f39c12 !important;
+  .glass-chart-container {
+    height: 250px;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .main-content {
-      margin-left: 0;
-      width: 100%;
-    }
-  
-    .container-fluid {
-      padding: 15px;
-    }
-  
-    .card-custom {
-      padding: 15px;
-    }
-  
-    .card-custom h6 {
-      font-size: 0.9rem;
-    }
-  
-    .card-custom h3 {
-      font-size: 1.2rem;
-    }
-  
-    .icon-custom {
-      font-size: 1.5rem;
-    }
-  
-    .alert-danger {
-      font-size: 0.9rem;
-      padding: 10px 15px;
-    }
-  }
-  
+}

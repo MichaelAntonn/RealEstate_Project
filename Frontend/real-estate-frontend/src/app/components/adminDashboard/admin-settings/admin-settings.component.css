@@ -1,385 +1,421 @@
-.settings-container {
-  padding: 30px;
-  max-width: 1000px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+/* Base Glass Styles */
+.admin-glass-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  padding: 2rem;
+  min-height: 100vh;
 }
 
-h2 {
-  font-size: 32px;
-  color: #2c3e50;
-  margin-bottom: 40px;
-  font-weight: 700;
-  font-family: 'Georgia', serif;
-  text-align: center;
-  letter-spacing: 1px;
-}
-
-.add-admin-section,
-.commission-section,
-.costs-section {
-  margin-bottom: 50px;
-  background: #fff;
-  padding: 25px;
+.glass-section {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 2rem;
+  margin-bottom: 2rem;
 }
 
-.add-admin-section:hover,
-.commission-section:hover,
-.costs-section:hover {
-  transform: translateY(-5px);
-}
-
-.add-admin-section h3,
-.commission-section h3,
-.costs-section h3 {
-  font-size: 22px;
-  color: #34495e;
-  margin-bottom: 20px;
+.glass-title {
+  color: #e67e22;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
   font-weight: 600;
-  font-family: 'Arial', sans-serif;
+  text-align: center;
 }
 
-.btn {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 15px;
+.glass-subsection {
+  margin-bottom: 2.5rem;
+}
+
+.glass-subtitle {
+  color: #d35400;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
 }
 
-.btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.btn-primary {
-  background: #3498db;
-  color: #fff;
-}
-
-.btn-success {
-  background: #27ae60;
-  color: #fff;
-}
-
-.btn-secondary {
-  background: #7f8c8d;
-  color: #fff;
-}
-
-.btn-gold {
-  background: #d4af37;
-  color: #fff;
-}
-
-.btn-info {
-  background: #17a2b8;
-  color: #fff;
-}
-
-.btn-warning {
-  background: #f39c12;
-  color: #fff;
-}
-
-.btn-danger {
-  background: #e74c3c;
-  color: #fff;
-}
-
-.commission-display {
-  padding: 20px;
+.glass-card {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
   border-radius: 10px;
-  background: #f8f9fa;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 1.5rem;
 }
 
-.commission-display p {
-  font-size: 16px;
+.glass-text {
+  font-size: 1rem;
   color: #555;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
-.highlight {
-  font-weight: 700;
+.glass-highlight {
+  color: #e67e22;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Buttons */
+.glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.95rem;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.glass-btn:hover {
+  transform: translateY(-2px);
+}
+
+.glass-btn:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.2),
+    transparent
+  );
+  animation: shine 1.5s;
+}
+
+.glass-btn-primary {
+  background: rgba(52, 152, 219, 0.15);
+  color: #2980b9;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.glass-btn-success {
+  background: rgba(46, 204, 113, 0.15);
+  color: #27ae60;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.glass-btn-gold {
+  background: rgba(212, 175, 55, 0.15);
   color: #d4af37;
-  font-size: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
-.commission-form {
+.glass-btn-info {
+  background: rgba(23, 162, 184, 0.15);
+  color: #17a2b8;
+  border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+.glass-btn-warning {
+  background: rgba(243, 156, 18, 0.15);
+  color: #f39c12;
+  border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+.glass-btn-danger {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.glass-btn-secondary {
+  background: rgba(108, 117, 125, 0.15);
+  color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.glass-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+/* Form Elements */
+.glass-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.glass-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.glass-input-group {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.glass-input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(192, 192, 192, 0.3);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: #e67e22;
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+}
+
+.glass-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.glass-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.glass-form-group.checkbox {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-top: 15px;
+  gap: 0.8rem;
 }
 
-.commission-form label {
-  font-size: 15px;
-  color: #34495e;
-  font-weight: 500;
-}
-
-.commission-input {
-  padding: 10px;
-  width: 150px;
-  border: 1px solid #ddd;
+/* Messages */
+.glass-error {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(231, 76, 60, 0.1);
   border-radius: 6px;
-  font-size: 14px;
-  color: #333;
-  background: #fff;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  border-left: 3px solid #e74c3c;
 }
 
-.commission-input:focus {
-  border-color: #d4af37;
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
-  outline: none;
+.glass-success {
+  color: #27ae60;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(46, 204, 113, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #27ae60;
 }
 
-.costs-actions {
-  display: flex;
-  gap: 15px;
-}
-
-.costs-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.costs-table th,
-.costs-table td {
-  padding: 12px;
-  border: 1px solid #dfe6e9;
-  text-align: left;
-}
-
-.costs-table th {
-  background: #ecf0f1;
-  color: #34495e;
-  font-weight: 600;
-}
-
-.costs-table td {
-  background: #fff;
-  color: #555;
-}
-
-.costs-table tr:nth-child(even) td {
-  background: #f8f9fa;
-}
-
-.modal {
+/* Modal Styles */
+.glass-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-.modal-content {
-  background: #fff;
-  border-radius: 16px;
+.glass-modal-content {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 12px;
   width: 90%;
-  max-width: 650px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  animation: slideIn 0.4s ease-out;
+  max-width: 800px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.modal-header {
-  padding: 20px 30px;
-  background: #ecf0f1;
+.glass-modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #dfe6e9;
 }
 
-.modal-header h3 {
+.glass-modal-header h3 {
   margin: 0;
-  font-size: 24px;
   color: #2c3e50;
-  font-weight: 700;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
-.close-btn {
+.glass-close-btn {
   background: none;
   border: none;
-  font-size: 28px;
-  color: #7f8c8d;
+  font-size: 1.5rem;
   cursor: pointer;
-  transition: color 0.3s;
+  color: #7f8c8d;
+  transition: color 0.2s;
 }
 
-.close-btn:hover {
-  color: #2c3e50;
-}
-
-.modal-body {
-  padding: 30px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-group label {
-  font-size: 15px;
-  color: #34495e;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="password"],
-.form-group input[type="number"],
-.form-group select {
-  padding: 12px;
-  border: 1px solid #dfe6e9;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #333;
-  background: #fff;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
-  outline: none;
-}
-
-.form-group.checkbox {
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-}
-
-.form-group.checkbox input {
-  width: auto;
-}
-
-.form-messages {
-  margin: 20px 0;
-}
-
-.error {
+.glass-close-btn:hover {
   color: #e74c3c;
-  font-size: 15px;
-  margin: 0;
-  font-weight: 500;
 }
 
-.success {
-  color: #2ecc71;
-  font-size: 15px;
-  margin: 0;
-  font-weight: 500;
+.glass-modal-body {
+  padding: 1.5rem;
 }
 
-.modal-actions {
+.glass-modal-actions {
   display: flex;
-  gap: 15px;
   justify-content: flex-end;
-  padding-top: 25px;
-  border-top: 1px solid #dfe6e9;
+  gap: 0.8rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(192, 192, 192, 0.3);
 }
 
-.pagination {
+/* Table Styles */
+.glass-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.5rem;
+}
+
+.glass-table th {
+  background: rgba(255, 179, 71, 0.1);
+  color: #e67e22;
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(255, 179, 71, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.glass-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.3);
+  transition: background 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-table tr:hover td {
+  background: rgba(255, 179, 71, 0.05);
+}
+
+.glass-empty-row {
+  text-align: center;
+  color: rgba(211, 84, 0, 0.7);
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+}
+
+/* Pagination */
+.glass-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
 }
 
-.pagination span {
-  font-size: 15px;
-  color: #34495e;
-  font-weight: 500;
+/* Summary Results */
+.glass-summary-results {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(192, 192, 192, 0.3);
 }
 
-.pagination .btn {
-  padding: 8px 16px;
+.glass-summary-title {
+  color: #d35400;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
-.pagination .btn:disabled {
-  background: #bdc3c7;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+.glass-summary-item {
+  margin: 0.5rem 0;
+  color: #555;
 }
 
-@keyframes slideIn {
+.glass-summary-subtitle {
+  color: #d35400;
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+}
+
+.glass-summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.glass-summary-list-item {
+  padding: 0.3rem 0;
+  color: #555;
+}
+
+/* Animations */
+@keyframes shine {
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-/* أضف ده في آخر الـ CSS */
-.summary-results {
-  margin-top: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
 
-.summary-results h4 {
-  font-size: 18px;
-  color: #34495e;
-  margin-bottom: 15px;
-}
-
-.summary-results p {
-  font-size: 15px;
-  color: #555;
-  margin: 5px 0;
-}
-
-.summary-results h5 {
-  font-size: 16px;
-  color: #34495e;
-  margin-top: 15px;
-  margin-bottom: 10px;
-}
-
-.summary-results ul {
-  list-style: none;
-  padding: 0;
-}
-
-.summary-results li {
-  font-size: 15px;
-  color: #555;
-  margin: 5px 0;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .admin-glass-container {
+    padding: 1rem;
+  }
+  
+  .glass-btn-group {
+    flex-direction: column;
+  }
+  
+  .glass-input-group {
+    flex-direction: column;
+  }
+  
+  .glass-btn {
+    width: 100%;
+  }
+  
+  .glass-form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .glass-modal-content {
+    width: 95%;
+  }
+  
+  .glass-table {
+    display: block;
+    overflow-x: auto;
+  }
 }

@@ -1,18 +1,23 @@
-<div class="activities-container">
-    <h2>Recent User Activities</h2>
-    <div class="activity-list">
-      <div class="activity-item" *ngFor="let activity of activities">
-        <div class="activity-content">
-          <p class="description">{{ activity.description }}</p>
-          <p class="timestamp">{{ formatTimestamp(activity.timestamp) }}</p>
-        </div>
-        <!-- cspell:ignore titlecase -->
-        <div class="activity-type" [ngClass]="getTypeClass(activity.type)">
+<div class="admin-glass-container">
+  <!-- Recent Activities Section -->
+  <div class="glass-section">
+    <h2 class="glass-title">Recent User Activities</h2>
+    
+    <div class="glass-table-container">
+      <div class="activity-list">
+        <div class="activity-item" *ngFor="let activity of activities">
+          <div class="activity-content">
+            <p class="description">{{ activity.description }}</p>
+            <p class="timestamp">{{ formatTimestamp(activity.timestamp) }}</p>
+          </div>
+          <div class="activity-type" [ngClass]="getTypeClass(activity.type)">
             {{ activity.type | replaceUnderscore | titlecase }}
           </div>
-      </div>
-      <div class="no-activities" *ngIf="activities.length === 0">
-        No recent activities found.
+        </div>
+        <div class="glass-empty-row" *ngIf="activities.length === 0">
+          No recent activities found.
+        </div>
       </div>
     </div>
   </div>
+</div>

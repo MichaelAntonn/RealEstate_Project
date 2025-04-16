@@ -1,65 +1,302 @@
-.container {
-    padding: 20px;
-  }
-  
-  .search-bar {
-    margin-bottom: 20px;
-  }
-  
-  .search-bar input {
-    width: 100%;
-    padding: 8px;
-    font-size: 16px;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  .table th, .table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .btn {
-    padding: 6px 12px;
-    margin-right: 5px;
-    cursor: pointer;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-  }
-  
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 40px;
-  }
-  
-  .pagination .btn {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .pagination .btn[disabled] {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-  .pagination .page-btn {
-    min-width: 30px;
-    text-align: center;
-  }
-  
-  .pagination .page-btn.active {
-    background-color: #0056b3;
-    font-weight: bold;
-  }
+/* Base Glass Styles */
+.admin-glass-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sections */
+.glass-section {
+  margin-bottom: 2rem;
+}
+
+.glass-title {
+  color: #e67e22;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+}
+
+.glass-badge {
+  background: rgba(255, 179, 71, 0.2);
+  color: #d35400;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+}
+
+/* Search */
+.glass-search {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-search:hover {
+  box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+}
+
+.glass-search-icon {
+  color: #d35400;
+  font-size: 1rem;
+  margin-right: 0.8rem;
+}
+
+.glass-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #333;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+}
+
+.glass-search-input::placeholder {
+  color: rgba(211, 84, 0, 0.5);
+}
+
+.glass-search-input:focus {
+  outline: none;
+}
+
+/* Tables */
+.glass-table-container {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.glass-table th {
+  background: rgba(255, 179, 71, 0.1);
+  color: #e67e22;
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(255, 179, 71, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.glass-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.3);
+  transition: background 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-table tr:hover td {
+  background: rgba(255, 179, 71, 0.05);
+}
+
+.glass-label {
+  background: rgba(255, 179, 71, 0.1);
+  color: #d35400;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  backdrop-filter: blur(2px);
+}
+
+.glass-empty td {
+  text-align: center;
+  color: rgba(211, 84, 0, 0.5);
+  padding: 1.5rem;
+}
+
+/* Buttons */
+.glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-btn-delete {
+  background: rgba(255, 179, 71, 0.15);
+  color: #d35400;
+  border: 1px solid rgba(255, 179, 71, 0.3);
+}
+
+.glass-btn-delete:hover {
+  background: rgba(255, 179, 71, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 179, 71, 0.1);
+}
+
+.glass-btn:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.2),
+    transparent
+  );
+  animation: shine 1.5s;
+}
+
+/* Pagination */
+.glass-pagination {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-pagination-arrow {
+  background: rgba(255, 179, 71, 0.15);
+  color: #d35400;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-pagination-arrow:hover:not([disabled]) {
+  background: rgba(255, 179, 71, 0.25);
+  transform: scale(1.1);
+}
+
+.glass-pagination-arrow:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.2),
+    transparent
+  );
+  animation: shine 1.5s;
+}
+
+.glass-pagination-arrow[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.glass-pagination-numbers {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.glass-pagination-number {
+  background: rgba(255, 255, 255, 0.5);
+  color: #d35400;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-pagination-number:hover {
+  background: rgba(255, 179, 71, 0.15);
+}
+
+.glass-pagination-number:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.2),
+    transparent
+  );
+  animation: shine 1.5s;
+}
+
+.glass-pagination-active {
+  background: rgba(255, 179, 71, 0.4) !important;
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(255, 179, 71, 0.3);
+}
+
+.glass-pagination-info {
+  margin-left: 1rem;
+  color: #d35400;
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* Shine Animation */
