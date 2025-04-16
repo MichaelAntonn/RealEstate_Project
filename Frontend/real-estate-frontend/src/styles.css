@@ -1,49 +1,55 @@
-/* ./src/app/components/stats-counter/stats-counter.component.css */
- :root {
---primary-color: #FFA500; /* برتقالي */
---secondary-color: #FF4500; /* برتقالي محمر */
---background-color: #111111; /* خلفية غامقة */
---text-color: #E0E0E0; /* رمادي فاتح */
---secondary-text: #AAAAAA; /* رمادي أفتح للعناوين */
---border-color: #333333; /* حدود داكنة */
+:root {
+  --primary-color: #ffa500; /* برتقالي */
+  --secondary-color: #ff4500; /* برتقالي محمر */
+  --background-color: #111111; /* خلفية غامقة */
+  --background-color: #172940; /* خلفية غامقة */
+  --background-color: #0e1024; /* خلفية غامقة */
+  --text-color: #e0e0e0; /* رمادي فاتح */
+  --secondary-text: #aaaaaa; /* رمادي أفتح للعناوين */
+  --border-color: #333333; /* حدود داكنة */
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 @font-face {
-    font-family: 'Bebas Neue';
-    src: url('./assets/fonts/BebasNeue-Regular.ttf') format('truetype-variations');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
+  font-family: "Bebas Neue";
+  src: url("./assets/fonts/BebasNeue-Regular.ttf") format("truetype-variations");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
-    font-family: 'PlayfairDisplay-Italic';
-    src: url('./assets/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype-variations');
-         font-weight: 100 900; /* Range for weight axis */
-         font-stretch: 75% 125%; /* Range for width axis (if supported) */
-    font-style: normal;
-    font-display: swap;
-  }
+  font-family: "PlayfairDisplay-Italic";
+  src: url("./assets/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf")
+    format("truetype-variations");
+  font-weight: 100 900; /* Range for weight axis */
+  font-stretch: 75% 125%; /* Range for width axis (if supported) */
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
-    font-family: 'PlayfairDisplay';
-    src: url('./assets/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype-variations');
-         font-weight: 100 900; /* Range for weight axis */
-         font-stretch: 75% 125%; /* Range for width axis (if supported) */
-    font-style: normal;
-    font-display: swap;
-  }
+  font-family: "PlayfairDisplay";
+  src: url("./assets/fonts/PlayfairDisplay-VariableFont_wght.ttf")
+    format("truetype-variations");
+  font-weight: 100 900; /* Range for weight axis */
+  font-stretch: 75% 125%; /* Range for width axis (if supported) */
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
-    font-family: 'Poppins-Light';
-    src: url('./assets/fonts/Poppins-Light.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
+  font-family: "Poppins-Light";
+  src: url("./assets/fonts/Poppins-Light.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
-    font-family: 'Poppins-Medium';
-    src: url('./assets/fonts/Poppins-Medium.ttf') format('ttf');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
-
-
+  font-family: "Poppins-Medium";
+  src: url("./assets/fonts/Poppins-Medium.ttf") format("ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
