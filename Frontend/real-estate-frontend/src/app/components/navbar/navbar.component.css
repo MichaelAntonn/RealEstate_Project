@@ -1,5 +1,5 @@
 :root {
-    --main-color: #F77C34;
+    --main-color: rgb(255, 123, 37)    ;
     --secondary-color: #F2D022;
     --background-color: #F2F4F3;
     --text-color: #F9FDFF;
@@ -28,25 +28,28 @@
   margin-left: auto;
 }
 /* Login & Signup Buttons */
-.login {
+.login,.btn-custom:hover {
     background-color: #F2F4F3;
-    color: #F77C34;
+    color: rgb(255, 123, 37)    ;
     border: solid 1px #F77C34;
     transform: skew(-20deg);
     padding: 3px 8px;
     border-radius: 1px;
     transition: all 0.3s ease;
+    padding: 6px 13px;
     font-size: small;
+    margin-left: 20px !important;
+    transition: .5s all;
 }
 .login:hover {
-    background-color: #F77C34;
+    background-color: rgb(255, 123, 37)    ;
     color: white;
     transform: skew(-20deg) scale(1.05);
     border-color: #F77C34;
 }
 
 .btn-custom {
-    background-color: var(--main-color);
+    background-color: rgb(255, 123, 37)    ;
     color: white;
     border-radius: 1px;
     padding: 3px 8px;
@@ -55,8 +58,9 @@
     font-size: small;
 }
 .btn-custom{
-    background-color: #e56a2a;
+    background-color: rgb(255, 123, 37)    ;
     color: white;
+    padding: 6px 13px;
     transform: skew(-20deg) scale(1.05);
 }
 

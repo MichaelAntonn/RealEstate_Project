@@ -1,68 +1,194 @@
-/* add-property.component.css */
+/* Base Card Styling */
 .card {
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Style */
+.card-header {
+  background: linear-gradient(135deg, #f77c34, #ffaf61);
+  font-weight: bold;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Form Label */
+.form-label {
+  font-weight: 600;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+/* Form Inputs */
+.form-control, .form-select {
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #f77c34;
+  box-shadow: 0 0 0 0.15rem rgba(247, 124, 52, 0.25);
+}
+
+/* Buttons */
+.btn {
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* Primary Button */
+.btn-primary {
+  background-color: #f77c34;
+  border-color: #f77c34;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #e66a22;
+  border-color: #e66a22;
+}
+
+/* Danger Button */
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+/* Section Headings */
+h5 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  padding-left: 24px;
+}
+
+h5::before {
+  content: '🏡';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  font-size: 1.2rem;
+}
+
+/* Input Group Addon */
+.input-group-text {
+  border-radius: 12px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+}
+
+/* Thumbnail Image Preview */
+.img-thumbnail {
+  border-radius: 12px;
+  object-fit: cover;
+  height: 100px;
+  width: 100%;
+}
+
+/* Media Preview Card */
+.position-relative {
+  transition: transform 0.3s ease;
+}
+
+.position-relative:hover {
+  transform: scale(1.05);
+}
+
+/* Validation Error */
+.text-danger {
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Section Border */
+.border-bottom {
+  border-color: #eee !important;
+  margin-bottom: 16px;
+}
+
+/* File Input Hint */
+.form-text {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* Fancy Divider (Optional) */
+hr {
+  border-top: 2px dashed #ddd;
+}
+
+/* -------------------------- */
+/*      Responsive Styles     */
+/* -------------------------- */
+
+/* Tablets and below */
+@media (max-width: 768px) {
   .card-header {
-    font-weight: 600;
+    font-size: 1.1rem;
+    text-align: center;
   }
-  
-  .form-label {
-    font-weight: 500;
-  }
-  
+
   .form-control, .form-select {
-    border-radius: 8px;
-    padding: 10px 15px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
   }
-  
+
   .btn {
-    border-radius: 8px;
-    padding: 8px 20px;
-    font-weight: 500;
+    width: 100%;
+    margin-bottom: 10px;
   }
-  
-  .btn-primary {
-    background-color: #F77C34;
-    border-color: #F77C34;
-  }
-  
-  .btn-primary:hover {
-    background-color: #e66a22;
-    border-color: #e66a22;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-  }
-  
-  .input-group-text {
-    border-radius: 8px;
-  }
-  
+
   .img-thumbnail {
-    border-radius: 8px;
+    height: auto;
+    width: 100%;
   }
-  
-  .position-relative {
-    transition: all 0.3s ease;
+
+  h5 {
+    font-size: 1rem;
+    padding-left: 20px;
   }
-  
-  .position-relative:hover {
-    transform: scale(1.02);
+
+  h5::before {
+    font-size: 1rem;
+    top: 1px;
   }
-  
-  .text-danger {
-    font-size: 0.875rem;
+}
+
+/* Small devices (phones) */
+@media (max-width: 576px) {
+  .card {
+    padding: 10px;
   }
-  
-  .border-bottom {
-    border-color: #dee2e6 !important;
+
+  .form-control, .form-select {
+    font-size: 0.85rem;
+    padding: 8px 12px;
   }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+
+  h5 {
+    font-size: 0.95rem;
+  }
+
+  .card-header {
+    font-size: 1rem;
+  }
+}

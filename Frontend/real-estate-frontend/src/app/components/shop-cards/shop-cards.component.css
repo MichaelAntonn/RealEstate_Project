@@ -1,6 +1,7 @@
 .container {
-  max-width: 1200px;
-  margin: 5% auto;
+  max-width: 100%;
+  margin: 5% auto; 
+  padding: 0 15px;
 }
 .listings-title {
   font-size: 24px;
@@ -10,7 +11,9 @@
   font-family: 'PlayfairDisplay','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   color: black;
 }
+
 .gradient-text {
+  margin-top: -2%;
   background: linear-gradient(90deg, #FFA500, #FF4500);
   -webkit-background-clip: text;   /* For Safari/Chrome */
   background-clip: text;           /* Standard property */
@@ -18,6 +21,7 @@
   color: transparent;              /* Fallback for other browsers */
   font-weight: normal;
   font-family: 'Poppins-Medium','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.7rem;
+  font-weight: 200;
   letter-spacing: 2px;
 }

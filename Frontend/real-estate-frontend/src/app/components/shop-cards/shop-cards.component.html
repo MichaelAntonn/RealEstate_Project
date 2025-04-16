@@ -10,28 +10,29 @@
     <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
   </div>
   } @else { @if (properties.length > 0) {
-  <app-property-card [properties]="properties"></app-property-card>
+  <app-property-card [properties]="properties" class="property-grid"></app-property-card>
   } @else {
   <p class="text-center text-gray-500">No properties found.</p>
   } }
-
-  <!-- Pagination -->
-  @if (pagination.total_pages > 1) {
+<!-- Pagination -->
+@if (pagination.total_pages > 1) {
   <div class="flex justify-center gap-2 mt-4">
     @for (page of pages; track page) {
-    <button
-      (click)="onPageChange(page)"
-      [class.bg-blue-500]="pagination.current_page === page"
+    <a
+      [routerLink]="['/properties']" 
+      [queryParams]="{ page: page }"
+      [class.bg-blue-600]="pagination.current_page === page"
       [class.text-white]="pagination.current_page === page"
-      class="px-4 py-2 border rounded-lg"
+      [class.font-medium]="pagination.current_page === page"
+      class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors duration-200"
     >
       {{ page }}
-    </button>
+    </a>
     }
   </div>
-  }
-
+}
+<!-- 
   <div class="text-center mt-4">
     <a class="btn btn-primary" routerLink="/properties">Show All</a>
-  </div>
+  </div> -->
 </div>
