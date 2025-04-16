@@ -31,6 +31,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { AddPropertyComponent } from './add-property/add-property.component';
+import { PropertyDetailsComponent } from './components/property-details/property-details.component';
 
 export const routes: Routes = [
   // Default route
@@ -42,11 +43,12 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },
+  { path: 'property-details', component: PropertyDetailsComponent },
 
   // User dashboard routes
 
-   {path: 'add-property', component: AddPropertyComponent }, // Only users can access this route
-  {path:'signupandlogin',component:SignupaandloginComponent},
+  { path: 'add-property', component: AddPropertyComponent }, // Only users can access this route
+  { path: 'signupandlogin', component: SignupaandloginComponent },
 
   {
     path: 'maindashboard',
@@ -63,7 +65,6 @@ export const routes: Routes = [
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
-
   },
 
   // Admin routes

@@ -1,46 +1,53 @@
 <div class="counter-section" #counterSection>
   <div class="counter-container" [@staggerAnimation]>
     @for (stat of stats(); track $index) {
-<div class="counter-item">
-  <div class="icon-progress">
-    <svg class="progress-circle" width="80" height="80">
-      <!--  -->
-      <defs>
-        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#FFA500" />
-          <stop offset="100%" stop-color="#FF4500" />
-        </linearGradient>
-      </defs>
-      <!--  -->
-      <circle
-        class="progress-circle-bg"
-        cx="40"
-        cy="40"
-        r="36"
-        stroke-width="4"
-      />
-      <circle
-        class="progress-circle-fill"
-        cx="40"
-        cy="40"
-        r="36"
-        stroke-width="4"
-        [style.strokeDashoffset]="stat.progressOffset"
-      />
-    </svg>
-    <span
-      class="icon"
-      [@shakeIcon]="stat.isCompleted ? 'completed' : 'notCompleted'"
-      [innerHTML]="stat.icon"
-    ></span>
-  </div>
-  <div class="counter-text" [@spinAndGlow]="stat.isCompleted ? 'completed' : 'notCompleted'">
-    <div class="number">
-      {{ stat.displayValue }}<span class="suffix">{{ stat.suffix }}</span>
+    <div class="counter-item">
+      <div class="icon-progress">
+        <svg class="progress-circle" width="80" height="80">
+          <defs>
+            <linearGradient
+              id="progressGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+            >
+              <stop offset="0%" stop-color="#FFA500" />
+              <stop offset="100%" stop-color="#FF4500" />
+            </linearGradient>
+          </defs>
+          <circle
+            class="progress-circle-bg"
+            cx="40"
+            cy="40"
+            r="36"
+            stroke-width="4"
+          />
+          <circle
+            class="progress-circle-fill"
+            cx="40"
+            cy="40"
+            r="36"
+            stroke-width="4"
+            [style.strokeDashoffset]="stat.progressOffset"
+          />
+        </svg>
+        <span
+          class="icon"
+          [@shakeIcon]="stat.isCompleted ? 'completed' : 'notCompleted'"
+          [innerHTML]="stat.icon"
+        ></span>
+      </div>
+      <div
+        class="counter-text"
+        [@spinAndGlow]="stat.isCompleted ? 'completed' : 'notCompleted'"
+      >
+        <div class="number">
+          {{ stat.displayValue }}<span class="suffix">{{ stat.suffix }}</span>
+        </div>
+        <div class="counter-title">{{ stat.title }}</div>
+      </div>
     </div>
-    <div class="counter-title">{{ stat.title }}</div>
-  </div>
-</div>
     }
   </div>
 </div>

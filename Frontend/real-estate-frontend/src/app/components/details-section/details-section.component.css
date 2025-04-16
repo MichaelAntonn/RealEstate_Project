@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (min-width: 640px) {
+  .gap-x-52 {
+    gap: 13rem; /* 200px is approximately 1/3 of 600px */
+  }
+}
+
+@media (max-width: 639px) {
+  .gap-x-52 {
+    gap: 6.5rem; /* Adjusted for smaller screens, half of 200px */
+  }
+}
