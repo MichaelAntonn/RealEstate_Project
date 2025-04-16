@@ -13,8 +13,8 @@ import { AdminLayoutComponent } from './components/adminDashboard/admin-layout/a
 import { AdminStatisticsComponent } from './components/adminDashboard/admin-statistics/admin-statistics.component';
 
 // User imports
-import { LoginComponent } from './auth/login/login.component';
-import { SignUpComponent } from './auth/sign-up/sign-up.component';
+// import { LoginComponent } from './auth/login/login.component';
+// import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
@@ -37,8 +37,8 @@ export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 
   // Public routes
-  { path: 'login', component: LoginComponent },
-  { path: 'sign-up', component: SignUpComponent },
+  { path: 'login', component: SignupaandloginComponent },
+  { path: 'sign-up', component: SignupaandloginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },

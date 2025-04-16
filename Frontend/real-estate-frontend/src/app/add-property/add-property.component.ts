@@ -228,4 +228,5 @@ export class AddPropertyComponent implements OnInit {
       });
     }
   }
+  
 }
