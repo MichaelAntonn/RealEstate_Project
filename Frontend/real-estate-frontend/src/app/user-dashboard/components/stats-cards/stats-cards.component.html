@@ -1,76 +1,83 @@
-<div class="row">
-    <!-- Listed Properties Card -->
-    <div class="col-xl-4 col-md-6 mb-4">
-      <div class="card stats-card primary h-100">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col me-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                Listed Properties</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ listedCount }}</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-home fa-2x text-gray-300"></i>
-            </div>
+<div class="row g-4">
+  <!-- Listed Properties Card -->
+  <div class="col-xl-3 col-md-6">
+      <div class="stats-card primary h-100">
+          <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="card-subtitle mb-2">Listed Properties</h6>
+                      <h2 class="card-title">{{ listedCount }}</h2>
+                      
+                  </div>
+                  <div class="icon-circle bg-primary-light">
+                      <i class="fas fa-home text-primary"></i>
+                  </div>
+              </div>
           </div>
-        </div>
       </div>
-    </div>
-  
-    <!-- Booked Properties Card -->
-    <div class="col-xl-4 col-md-6 mb-4">
-      <div class="card stats-card success h-100">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col me-2">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                Booked Properties</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ bookedCount }}</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Sold Properties Card -->
-    <div class="col-xl-4 col-md-6 mb-4">
-      <div class="card stats-card info h-100">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col me-2">
-              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                Sold Properties</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ soldCount }}</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-handshake fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
+  <!-- Booked Properties Card -->
+  <div class="col-xl-3 col-md-6">
+      <div class="stats-card success h-100">
+          <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="card-subtitle mb-2">Booked Properties</h6>
+                      <h2 class="card-title">{{ bookedCount }}</h2>
+                      
+                  </div>
+                  <div class="icon-circle bg-success-light">
+                      <i class="fas fa-calendar-check text-success"></i>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Sold Properties Card -->
+  <div class="col-xl-3 col-md-6">
+      <div class="stats-card info h-100">
+          <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="card-subtitle mb-2">Sold Properties</h6>
+                      <h2 class="card-title">{{ soldCount }}</h2>
+                      
+                  </div>
+                  <div class="icon-circle bg-info-light">
+                      <i class="fas fa-handshake text-info"></i>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
 
   <!-- Reviews Card -->
-<div class="col-xl-4 col-md-6 mb-4">
-  <div class="card stats-card warning h-100">
-    <div class="card-body">
-      <div class="row no-gutters align-items-center">
-        <div class="col me-2">
-          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-            Reviews</div>
-          <div class="h5 mb-0 font-weight-bold text-gray-800">
-            Avg Rating: {{ averageRating }} | Given: {{ givenReviews }} | Received: {{ receivedReviews }}
+  <div class="col-xl-3 col-md-6">
+      <div class="stats-card warning h-100">
+          <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="card-subtitle mb-2">Reviews</h6>
+                      <div class="d-flex align-items-center mb-2">
+                          <h2 class="card-title me-2">{{ averageRating }}</h2>
+                          <div class="stars">
+                              <i class="fas fa-star text-warning"></i>
+                              <i class="fas fa-star text-warning"></i>
+                              <i class="fas fa-star text-warning"></i>
+                              <i class="fas fa-star text-warning"></i>
+                              <i class="fas fa-star-half-alt text-warning"></i>
+                          </div>
+                      </div>
+                      <p class="card-text mb-0"><small>Given: {{ givenReviews }}</small></p>
+                      <p class="card-text"><small>Received: {{ receivedReviews }}</small></p>
+                  </div>
+                  <div class="icon-circle bg-warning-light">
+                      <i class="fas fa-star text-warning"></i>
+                  </div>
+              </div>
           </div>
-        </div>
-        <div class="col-auto">
-          <i class="fas fa-star fa-2x text-gray-300"></i>
-        </div>
       </div>
-    </div>
   </div>
 </div>

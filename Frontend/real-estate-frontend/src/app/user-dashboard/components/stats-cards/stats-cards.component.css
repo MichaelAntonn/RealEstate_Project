@@ -1,18 +1,81 @@
 .stats-card {
-    border-left: 4px solid;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
     border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: white;
+    position: relative;
+    margin-bottom: 0;
+    border-left: 4px solid transparent;
 }
 
 .stats-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
 }
 
+.stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.stats-card .card-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #2d3748;
+}
+
+.stats-card .card-subtitle {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #718096;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stats-card .card-text {
+    font-size: 0.8rem;
+    color: #718096;
+    margin-bottom: 0.2rem;
+}
+
+.stats-card .text-success {
+    color: #1cc88a !important;
+}
+
+.stats-card .text-danger {
+    color: #e74a3b !important;
+}
+
+.icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.bg-primary-light {
+    background-color: rgba(78, 115, 223, 0.1);
+}
+
+.bg-success-light {
+    background-color: rgba(28, 200, 138, 0.1);
+}
+
+.bg-info-light {
+    background-color: rgba(54, 185, 204, 0.1);
+}
+
+.bg-warning-light {
+    background-color: rgba(246, 194, 62, 0.1);
+}
+
+/* ألوان الكروت */
 .stats-card.primary {
     border-left-color: #4e73df;
 }
@@ -25,7 +88,26 @@
     border-left-color: #36b9cc;
 }
 
-.stats-card .card-text {
-    font-size: 1.5rem;
-    font-weight: 700;
+.stats-card.warning {
+    border-left-color: #f6c23e;
+}
+
+/* النجوم للتقييم */
+.stars {
+    font-size: 0.9rem;
+}
+
+/* الوضع المظلم */
+.dark-mode .stats-card {
+    background: #2d3748;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .stats-card .card-title {
+    color: #f7fafc;
+}
+
+.dark-mode .stats-card .card-subtitle,
+.dark-mode .stats-card .card-text {
+    color: #cbd5e0;
 }

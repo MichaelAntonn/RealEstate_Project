@@ -293,3 +293,18 @@
   .nav-item:nth-child(7) { animation-delay: 0.7s; }
   .nav-item:nth-child(8) { animation-delay: 0.8s; }
   .nav-item:nth-child(9) { animation-delay: 0.9s; }
+  .d-flex {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 280px;
+    flex-shrink: 0; /* لمنع تضييق الـ sidebar */
+}
+
+.main-content {
+    flex-grow: 1; /* ليملأ المساحة المتبقية */
+    padding: 90px 30px 30px;
+    min-height: calc(100vh - 70px);
+}
