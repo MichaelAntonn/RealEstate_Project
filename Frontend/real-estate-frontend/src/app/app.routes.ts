@@ -22,7 +22,7 @@ import { PropertiesComponent } from './components/properties/properties.componen
 
 // Dashboard components
 import { ProfileComponent } from './profile/profile.component';
-import { MyPropertiesComponent } from './my-properties/my-properties.component';
+// import { MyPropertiesComponent } from './my-properties/my-properties.component';
 import { FavoritesComponent } from './favorites/favorites.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
 import { MessagesComponent } from './messages/messages.component';
@@ -43,7 +43,7 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },
-  { path: 'property-details', component: PropertyDetailsComponent },
+  { path: 'property-details/:{slug}', component: PropertyDetailsComponent },
 
   // User dashboard routes
 
@@ -56,7 +56,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: UserDashboardComponent },
       { path: 'profile', component: ProfileComponent },
-      { path: 'properties', component: MyPropertiesComponent },
+      // { path: 'properties', component: MyPropertiesComponent },
       { path: 'favorites', component: FavoritesComponent },
       { path: 'appointments', component: AppointmentsComponent },
       { path: 'messages', component: MessagesComponent },

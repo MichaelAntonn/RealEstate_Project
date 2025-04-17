@@ -1,0 +1,96 @@
+<div class="max-w-6xl mx-auto px-4">
+  <!-- Filters Section -->
+  <div class="rounded-xl p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Status -->
+      <div class="relative">
+        <select
+          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+        >
+          <option>Status</option>
+          <option>All</option>
+          <option>Buy</option>
+          <option>Rent</option>
+        </select>
+        <i
+          class="fas fa-tag absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+        ></i>
+      </div>
+
+      <!-- Type -->
+      <div class="relative">
+        <select
+          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+        >
+          <option>Type</option>
+          <option>Houses</option>
+          <option>Apartments</option>
+          <option>Office</option>
+        </select>
+        <i
+          class="fas fa-home absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+        ></i>
+      </div>
+
+      <!-- Location -->
+      <div class="relative">
+        <select
+          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+        >
+          <option>Location</option>
+          <option>Bangladesh</option>
+          <option>Japan</option>
+          <option>Korea</option>
+        </select>
+        <i
+          class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+        ></i>
+      </div>
+
+      <!-- Advanced Filter -->
+      <div class="relative">
+        <input
+          type="text"
+          placeholder="Advanced Filter"
+          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+        />
+        <i
+          class="fas fa-sliders-h absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div
+      class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4"
+    >
+      <span class="text-orange-600 text-sm">Showing 1-10 of 23</span>
+
+      <div class="flex items-center gap-4">
+        <!-- View Toggle -->
+        <div class="flex gap-1 bg-orange-50 rounded-lg p-1">
+          <button class="p-2 rounded-md bg-orange-500 text-white">
+            <i class="fas fa-th-large text-xs"></i>
+          </button>
+          <button class="p-2 rounded-md text-orange-400 hover:bg-gray-100">
+            <i class="fas fa-list text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Sort By -->
+        <div class="relative">
+          <select
+            class="pl-8 pr-3 py-1 text-sm rounded-md border border-orange-200 bg-gray-50"
+          >
+            <option>Newest</option>
+            <option>Best Seller</option>
+            <option>Low Price</option>
+          </select>
+          <i
+            class="fas fa-sort-amount-down absolute left-2 top-1/2 -translate-y-1/2 text-orange-400 text-xs"
+          ></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

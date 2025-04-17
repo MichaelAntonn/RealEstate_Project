@@ -36,7 +36,9 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
     is_new_building: false,
   };
 
-  cities: { value: string; label: string }[] = [{ value: '', label: 'All Cities' }];
+  cities: { value: string; label: string }[] = [
+    { value: '', label: 'All Cities' },
+  ];
 
   private subscription: Subscription = new Subscription();
 
@@ -93,13 +95,20 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
   }
 
   onSearch(): void {
-    this.propertyService.updateFilters({ keyword: this.filters.keyword, page: 1 });
+    this.propertyService.updateFilters({
+      keyword: this.filters.keyword,
+      page: 1,
+    });
   }
 
   onFilterChange(event: { type?: string; is_new_building?: boolean }): void {
     // تحديث الـ type و is_new_building بناءً على الـ event
-    this.filters.type = event.type !== undefined ? event.type : this.filters.type;
-    this.filters.is_new_building = event.is_new_building !== undefined ? event.is_new_building : this.filters.is_new_building;
+    this.filters.type =
+      event.type !== undefined ? event.type : this.filters.type;
+    this.filters.is_new_building =
+      event.is_new_building !== undefined
+        ? event.is_new_building
+        : this.filters.is_new_building;
 
     this.propertyService.updateFilters({
       type: this.filters.type,
