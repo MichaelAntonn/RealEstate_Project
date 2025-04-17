@@ -1,19 +1,73 @@
-.table-responsive {
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+.glass-card, .glass-modal-content {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.table {
-    margin-bottom: 0;
+.glass-card-header, .glass-modal-header {
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.table th {
-    background-color: #172940;
-    color: white;
+
+.glass-table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.badge {
-    padding: 5px 10px;
-    font-weight: 500;
+.glass-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.glass-table th {
+  background: rgba(58, 90, 120, 0.15);
+  color: #3a5a78;
+}
+
+.glass-table tr:hover td {
+  background: rgba(58, 90, 120, 0.05);
+}
+
+.glass-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.glass-btn-primary {
+  background: rgba(58, 90, 120, 0.15);
+  color: #3a5a78;
+}
+
+.glass-btn-outline {
+  background: transparent;
+  border-color: rgba(58, 90, 120, 0.3);
+}
+
+
+.glass-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+}
+
+.glass-modal {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+@media (max-width: 768px) {
+  .glass-card, .glass-modal-content {
+    border-radius: 8px;
+  }
+  
+  .glass-table th, .glass-table td {
+    padding: 0.75rem;
+  }
 }
