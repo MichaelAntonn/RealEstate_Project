@@ -4,7 +4,7 @@
     <!-- Property Image -->
     <div class="card-image">
       <img
-        src='assets/6fbcaa7c-3dbe-494e-afdf-5896e2e2a090.webp'
+        src="assets/6fbcaa7c-3dbe-494e-afdf-5896e2e2a090.webp"
         [alt]="property.title"
         class="object-cover w-full h-full rounded-[12px]"
       />
@@ -20,16 +20,19 @@
       <!-- Features -->
       <div class="info-line">
         <span class="flex items-center">
-          <i class="fa fa-bed mr-[5px] text-[#ff7f00]"></i>{{ property.bedrooms ?? "-" }} Beds
+          <i class="fa fa-bed mr-[5px] text-[#ff7f00]"></i
+          >{{ property.bedrooms ?? "-" }} Beds
         </span>
         <span class="flex items-center">
-          <i class="fa fa-bath mr-[5px] text-[#ff7f00]"></i>{{ property.bathrooms ?? "-" }} Baths
+          <i class="fa fa-bath mr-[5px] text-[#ff7f00]"></i
+          >{{ property.bathrooms ?? "-" }} Baths
         </span>
       </div>
 
       <!-- Price -->
       <div class="price">
-        ${{ property.price }}<span class="text-[#aaa] font-normal"> /per day</span>
+        ${{ property.price
+        }}<span class="text-[#aaa] font-normal"> /per day</span>
       </div>
 
       <!-- Location -->
@@ -38,12 +41,8 @@
         {{ property.full_address || property.city + ", " + property.district }}
       </div>
 
-      <!-- Book Now Link -->
-      <a
-        [routerLink]="['/property', property.slug]"
-        class="book-now"
-      >
-        BOOK NOW <i class="fa fa-arrow-right ml-[6px]"></i>
+      <a [routerLink]="['/property-details', property.slug]" class="book-now">
+        Details<i class="fa fa-arrow-right ml-[6px]"></i>
       </a>
     </div>
   </div>

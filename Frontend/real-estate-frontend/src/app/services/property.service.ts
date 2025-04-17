@@ -1,4 +1,3 @@
-// services/property.service.ts
 import { Injectable } from '@angular/core';
 
 import {
@@ -22,92 +21,88 @@ import {
 } from '../models/property';
 import { Property } from '../user-dashboard/models/property.model';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PropertyService {
-private apiUrl = 'http://127.0.0.1:8000/api/v1';
+  private apiUrl = 'http://127.0.0.1:8000/api/v1';
 
-// BehaviorSubject لتخزين الـ filters
-private filtersSubject = new BehaviorSubject<PropertyFilters>({
-  keyword: '',
-  type: '',
-  city: '',
-  listing_type: undefined,
-  page: 1,
-});
-
-// Observable لتتبع التغييرات في الـ filters
-filters$ = this.filtersSubject.asObservable();
-
-constructor(private http: HttpClient) {}
-
-private getAuthHeaders(): HttpHeaders {
-  const token = localStorage.getItem('auth_token') || '';
-  return new HttpHeaders({
-    'Authorization': `Bearer ${token}`
+  // BehaviorSubject لتخزين الـ filters
+  private filtersSubject = new BehaviorSubject<PropertyFilters>({
+    keyword: '',
+    type: '',
+    city: '',
+    listing_type: undefined,
+    page: 1,
   });
-}
 
-getProperties(page: number = 1): Observable<PropertyApiResponse> {
-  return this.http
-    .get<{ properties: PropertyApiResponse }>(
-      `${this.apiUrl}/properties?page=${page}`
-    )
-    .pipe(
-      map((response) => ({
-        data: response.properties.data,
-        current_page: response.properties.current_page,
-        last_page: response.properties.last_page,
-        total: response.properties.total,
-        per_page: response.properties.per_page,
-      })),
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error fetching properties:', error);
-        return of({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          total: 0,
-          per_page: 10,
-        });
-      })
-    );
-}
+  // Observable لتتبع التغييرات في الـ filters
+  filters$ = this.filtersSubject.asObservable();
 
-createProperty(propertyData: FormData): Observable<any> {
-  return this.http.post(`${this.apiUrl}/properties`, propertyData, {
-    headers: this.getAuthHeaders()
-  });
-}
+  constructor(private http: HttpClient) {}
 
-getProperty(id: number): Observable<Property> {
-  return this.http.get<Property>(`${this.apiUrl}/properties/${id}`, {
-    headers: this.getAuthHeaders()
-  });
-}
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('auth_token') || '';
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+  }
 
-  
+  getProperties(page: number = 1): Observable<PropertyApiResponse> {
+    return this.http
+      .get<{ properties: PropertyApiResponse }>(
+        `${this.apiUrl}/properties?page=${page}`
+      )
+      .pipe(
+        map((response) => ({
+          data: response.properties.data,
+          current_page: response.properties.current_page,
+          last_page: response.properties.last_page,
+          total: response.properties.total,
+          per_page: response.properties.per_page,
+        })),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching properties:', error);
+          return of({
+            data: [],
+            current_page: 1,
+            last_page: 1,
+            total: 0,
+            per_page: 10,
+          });
+        })
+      );
+  }
+
+  createProperty(propertyData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/properties`, propertyData, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  getProperty(id: number): Observable<Property> {
+    return this.http.get<Property>(`${this.apiUrl}/properties/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 
   updateProperty(id: number, propertyData: FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, propertyData, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
   }
 
   deleteProperty(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
   }
 
   getPendingProperties(): Observable<any> {
     return this.http.get(`${this.apiUrl}/status/pending`, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
   }
-
 
   // Method لجلب العقارات بناءً على الـ filters
   searchProperties(): Observable<PropertySearchResponse> {
@@ -145,38 +140,40 @@ getProperty(id: number): Observable<Property> {
 
   getAcceptedProperties(): Observable<any> {
     return this.http.get(`${this.apiUrl}/status/accepted`, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
-
   }
 
   getRejectedProperties(): Observable<any> {
     return this.http.get(`${this.apiUrl}/status/rejected`, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
   }
 
-
-
   // Add these to your PropertyService class
-// private filtersSubject = new BehaviorSubject<any>({});
-// filters$ = this.filtersSubject.asObservable();
+  // private filtersSubject = new BehaviorSubject<any>({});
+  // filters$ = this.filtersSubject.asObservable();
 
-getCities(): Observable<string[]> {
-  return this.http.get<string[]>(`${this.apiUrl}/cities`, {
-    headers: this.getAuthHeaders()
-  });
+  getCities(): Observable<string[]> {
+    return this.http
+      .get<{ cities: string[] }>(`${this.apiUrl}/cities`, {
+        // <-- تحديد نوع الاستجابة الصحيح
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        map((response) => response.cities || []), // <-- الوصول إلى خاصية `cities`
+        catchError(() => of([])) // التعامل مع الأخطاء
+      );
+  }
+
+  // searchProperties(filters?: any): Observable<any> {
+  //   return this.http.get(`${this.apiUrl}/search`, {
+  //     params: filters,
+  //     headers: this.getAuthHeaders()
+  //   });
+  // }
+
+  updateFilters(filters: any): void {
+    this.filtersSubject.next(filters);
+  }
 }
-
-// searchProperties(filters?: any): Observable<any> {
-//   return this.http.get(`${this.apiUrl}/search`, {
-//     params: filters,
-//     headers: this.getAuthHeaders()
-//   });
-// }
-
-updateFilters(filters: any): void {
-  this.filtersSubject.next(filters);
-}
-  
-} 

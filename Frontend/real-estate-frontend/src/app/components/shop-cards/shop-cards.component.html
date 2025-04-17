@@ -1,25 +1,30 @@
 <div class="container">
   <h6 class="gradient-text text-center">PROPERTIES</h6>
-  <h2 class="text-center title text-2xl font-bold mb-4">Real estate Investing in made it lot easy</h2>
+  <h2 class="text-center title text-2xl font-bold mb-4">
+    Real estate Investing in made it lot easy
+  </h2>
   <app-icons (filterChange)="onFilterChange($event)"></app-icons>
 
   <!-- Properties Section -->
-  
+
   @if (isLoading) {
   <div class="text-center py-4">
     <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
   </div>
   } @else { @if (properties.length > 0) {
-  <app-property-card [properties]="properties" class="property-grid"></app-property-card>
+  <app-property-card
+    [properties]="properties"
+    class="property-grid"
+  ></app-property-card>
   } @else {
   <p class="text-center text-gray-500">No properties found.</p>
   } }
-<!-- Pagination -->
-@if (pagination.total_pages > 1) {
+  <!-- Pagination -->
+  @if (pagination.total_pages > 1) {
   <div class="flex justify-center gap-2 mt-4">
     @for (page of pages; track page) {
     <a
-      [routerLink]="['/properties']" 
+      [routerLink]="['/properties']"
       [queryParams]="{ page: page }"
       [class.bg-blue-600]="pagination.current_page === page"
       [class.text-white]="pagination.current_page === page"
@@ -30,9 +35,5 @@
     </a>
     }
   </div>
-}
-<!-- 
-  <div class="text-center mt-4">
-    <a class="btn btn-primary" routerLink="/properties">Show All</a>
-  </div> -->
+  }
 </div>

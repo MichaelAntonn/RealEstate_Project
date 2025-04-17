@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
-import { BannerComponent } from '../banner/banner.component';
 import { CommonModule } from '@angular/common';
 import { PropertyService } from '../../services/property.service';
 import { Property } from '../../models/property';
 import { ShopCardsComponent } from '../shop-cards/shop-cards.component';
-
+import { PropertyFilterComponent } from '../property-filter/property-filter.component';
 
 @Component({
   selector: 'app-properties',
@@ -14,9 +13,9 @@ import { ShopCardsComponent } from '../shop-cards/shop-cards.component';
   imports: [
     CommonModule,
     NavbarComponent,
-    BannerComponent,
     ShopCardsComponent,
     FooterComponent,
+    PropertyFilterComponent,
   ],
   templateUrl: './properties.component.html',
   styleUrls: ['./properties.component.css'],
