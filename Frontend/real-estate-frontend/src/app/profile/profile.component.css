@@ -1,22 +1,48 @@
 /* src/app/profile/profile.component.css */
-.profile-container {
+
+.admin-glass-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+}
+
+.profile-content-wrapper {
+  padding: 2rem;
 }
 
 .profile-header {
-  margin-bottom: 30px;
+  margin-bottom: 2.5rem;
   text-align: center;
 }
 
-.profile-header h2 {
-  color: var(--main-color);
-  margin-bottom: 10px;
+.glass-title {
+  color: #3a5a78;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.profile-header p {
-  color: #6c757d;
+.glass-subtitle {
+  color: rgba(58, 90, 120, 0.7);
+  font-size: 1.1rem;
 }
 
 .loading-spinner {
@@ -26,9 +52,39 @@
   height: 300px;
 }
 
+/* Glass Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.glass-card-header {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  color: #3a5a78;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.glass-card-body {
+  padding: 1.5rem;
+}
+
+/* Profile Image */
 .profile-image-container {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .profile-image {
@@ -36,77 +92,251 @@
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 5px solid var(--main-color);
+  border: 5px solid rgba(58, 90, 120, 0.3);
+  box-shadow: 0 4px 15px rgba(58, 90, 120, 0.1);
 }
 
-.card {
-  border-radius: 10px;
-  box-shadow: var(--card-shadow);
-  margin-bottom: 20px;
-  border: none;
-}
-
-.card-header {
-  background-color: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-  font-weight: 600;
-}
-
-.form-label {
+/* Form Elements */
+.glass-form-label {
   font-weight: 500;
+  color: #3a5a78;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
-.btn-primary {
-  background-color: var(--main-color);
-  border-color: var(--main-color);
+.glass-form-control {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
-.btn-primary:hover {
-  background-color: #e56b2b;
-  border-color: #e56b2b;
+.glass-form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(58, 90, 120, 0.2);
+  border-color: rgba(58, 90, 120, 0.3);
+  outline: none;
 }
 
-.btn-outline-primary {
-  color: var(--main-color);
-  border-color: var(--main-color);
+.glass-form-control:read-only {
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(58, 90, 120, 0.7);
+  cursor: not-allowed;
 }
 
-.btn-outline-primary:hover {
-  background-color: var(--main-color);
-  color: white;
+select.glass-form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%233a5a78' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
 }
 
+/* Buttons */
+.glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-btn:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(100, 150, 200, 0.2),
+    transparent
+  );
+  animation: shine 1.5s;
+}
+
+.glass-btn-primary {
+  background: rgba(58, 90, 120, 0.15);
+  color: #3a5a78;
+  border: 1px solid rgba(58, 90, 120, 0.3);
+}
+
+.glass-btn-primary:hover {
+  background: rgba(58, 90, 120, 0.25);
+}
+
+.glass-btn-outline {
+  background: transparent;
+  color: #3a5a78;
+  border: 1px solid rgba(58, 90, 120, 0.3);
+}
+
+.glass-btn-outline:hover {
+  background: rgba(58, 90, 120, 0.15);
+  color: #3a5a78;
+}
+
+.glass-btn-accept {
+  background: rgba(40, 167, 69, 0.15);
+  color: #1e7e34;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.glass-btn-accept:hover {
+  background: rgba(40, 167, 69, 0.25);
+}
+
+.glass-btn-close {
+  background: rgba(108, 117, 125, 0.15);
+  color: #5a6268;
+  border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.glass-btn-close:hover {
+  background: rgba(108, 117, 125, 0.25);
+}
+
+.glass-btn-danger {
+  background: rgba(220, 53, 69, 0.15);
+  color: #bd2130;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.glass-btn-danger:hover {
+  background: rgba(220, 53, 69, 0.25);
+}
+
+.glass-btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Special Cards */
 .danger-card {
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid rgba(220, 53, 69, 0.5);
 }
 
 .password-card {
-  border-left: 4px solid #0d6efd;
+  border-left: 4px solid rgba(23, 162, 184, 0.5);
 }
 
 .profile-card {
-  border-left: 4px solid var(--main-color);
+  border-left: 4px solid rgba(58, 90, 120, 0.5);
 }
 
-/* Dark mode styles */
-.dark-mode .card,
-.dark-mode .card-header {
-  background-color: #1a1a2e;
+/* Alerts */
+.glass-alert {
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.glass-alert-success {
+  background: rgba(40, 167, 69, 0.15);
+  color: #1e7e34;
+  border-color: rgba(40, 167, 69, 0.3);
+}
+
+.glass-alert-danger {
+  background: rgba(220, 53, 69, 0.15);
+  color: #bd2130;
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Error Messages */
+.glass-error-message {
+  color: #bd2130;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Animations */
+@keyframes shine {
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-glass-container {
+    padding: 1rem;
+  }
+  
+  .profile-content-wrapper {
+    padding: 1rem;
+  }
+  
+  .profile-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .glass-card-body {
+    padding: 1rem;
+  }
+  
+  .row {
+    flex-direction: column;
+  }
+  
+  .col-md-4, .col-md-6, .col-md-8 {
+    width: 100%;
+  }
+}
+
+/* Dark Mode Adjustments */
+.dark-mode .admin-glass-container {
+  background-color: #121212;
+}
+
+.dark-mode .glass-effect,
+.dark-mode .glass-card {
+  background: rgba(26, 32, 44, 0.7);
   color: #f8f9fa;
 }
 
-.dark-mode .form-control,
-.dark-mode .form-select {
-  background-color: #16213e;
-  color: #f8f9fa;
-  border-color: #0f3460;
+.dark-mode .glass-card-header {
+  background: rgba(15, 23, 42, 0.7);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
 }
 
-.dark-mode .form-control:read-only {
-  background-color: #16213e;
+.dark-mode .glass-form-control {
+  background: rgba(15, 23, 42, 0.7);
+  color: #f8f9fa;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .glass-form-control:read-only {
+  background: rgba(15, 23, 42, 0.5);
   color: #adb5bd;
 }
 
-.dark-mode .card-header {
-  border-bottom-color: #0f3460;
+.dark-mode .glass-form-label,
+.dark-mode .glass-title {
+  color: #e2e8f0;
+}
+
+.dark-mode .glass-subtitle {
+  color: rgba(226, 232, 240, 0.7);
 }

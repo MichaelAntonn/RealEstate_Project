@@ -3,7 +3,7 @@
     <div class="container-fluid">
 
         <!-- Search Box -->
-        <div class="search-box">
+        <div class="search-box col-md-8">
             <fa-icon [icon]="faSearch"></fa-icon>
             <input type="text" class="form-control" placeholder="Search properties or clients...">
         </div>
@@ -20,9 +20,9 @@
 
         <!-- charts -->
   <!-- Stats Charts Section -->
-<div class="row mt-5" >
+<div class="row  mt-5" >
     <!-- Dashboard Chart (Left Side) -->
-    <div class="col-md-4">
+    <div class="col-md-3">
       <app-dashboard-chart 
         [listed]="listedCount" 
         [booked]="bookedCount" 
@@ -31,7 +31,7 @@
     </div>
   
     <!-- Stats Chart (Right Side) -->
-    <div class="col-md-8">
+    <div class="col-md-6">
       <app-stats-chart
         [listedCount]="listedCount"
         [bookedCount]="bookedCount"
