@@ -460,10 +460,12 @@ class PropertyController extends Controller
         $query = Property::query();
 
         if ($request->has('keyword')) {
-            $keyword = $request->input('keyword');
+            $keyword = strtolower($request->input('keyword'));
             $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%{$keyword}%")
-                  ->orWhere('property_code', 'like', "%{$keyword}%");
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(city) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(type) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$keyword}%"]);
             });
         }
 
@@ -479,11 +481,11 @@ class PropertyController extends Controller
             $query->where('listing_type', $request->input('listing_type'));
         }
 
-        if ($request->has('is_new_building') && $request->input('is_new_building') === 'true') {
+        if ($request->has('is_new_building') && filter_var($request->input('is_new_building'), FILTER_VALIDATE_BOOLEAN)) {
             $currentYear = Carbon::now()->year;
             $newBuildingThreshold = $currentYear - 3;
             $query->where('building_year', '>=', $newBuildingThreshold)
-                  ->whereNotNull('building_year');
+                ->whereNotNull('building_year');
         }
 
         // Pagination

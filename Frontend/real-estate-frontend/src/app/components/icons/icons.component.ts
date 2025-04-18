@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FilterService } from '../../services/filter.service';
 
 @Component({
   selector: 'app-icons',
@@ -9,10 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./icons.component.css'],
 })
 export class IconsComponent {
-
-  @Output() filterChange = new EventEmitter<{ type?: string; is_new_building?: boolean }>();
-
-  selectedType: string = 'villa'; // Default to "Houses" (villa)
+  selectedType: string = 'villa';
 
   iconTypes = [
     { label: 'Houses', type: 'villa', icon: 'fa-house' },
@@ -23,10 +21,12 @@ export class IconsComponent {
     { label: 'More', type: 'all', icon: 'fa-ellipsis' },
   ];
 
-  onIconClick(type: string) {
+  constructor(private filterService: FilterService) {}
+
+  onIconClick(type: string): void {
     this.selectedType = type;
     const isNewBuilding = type === 'new_buildings';
     const filterType = type === 'new_buildings' || type === 'all' ? '' : type;
-    this.filterChange.emit({ type: filterType, is_new_building: isNewBuilding });
+    this.filterService.applyFilters(filterType, '', isNewBuilding);
   }
 }
