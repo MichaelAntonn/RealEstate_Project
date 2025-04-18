@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-
 import {
   HttpClient,
   HttpParams,
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   map,
   catchError,
@@ -16,10 +15,12 @@ import {
 } from 'rxjs/operators';
 import {
   PropertyApiResponse,
+  PropertySearchApiResponse,
   PropertySearchResponse,
-  PropertyFilters,
+  Property,
+  PropertySearchErrorResponse,
 } from '../models/property';
-import { Property } from '../user-dashboard/models/property.model';
+import { FilterService } from './filter.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,19 +28,13 @@ import { Property } from '../user-dashboard/models/property.model';
 export class PropertyService {
   private apiUrl = 'http://127.0.0.1:8000/api/v1';
 
-  // BehaviorSubject لتخزين الـ filters
-  private filtersSubject = new BehaviorSubject<PropertyFilters>({
-    keyword: '',
-    type: '',
-    city: '',
-    listing_type: undefined,
-    page: 1,
-  });
-
-  // Observable لتتبع التغييرات في الـ filters
-  filters$ = this.filtersSubject.asObservable();
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private filterService: FilterService) {
+    // Fetch cities on service initialization and store in FilterService
+    this.getCities().subscribe({
+      next: (cities) => this.filterService.setCities(cities),
+      error: (error) => console.error('Error fetching cities:', error),
+    });
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('auth_token') || '';
@@ -87,13 +82,13 @@ export class PropertyService {
   }
 
   updateProperty(id: number, propertyData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, propertyData, {
+    return this.http.put(`${this.apiUrl}/properties/${id}`, propertyData, {
       headers: this.getAuthHeaders(),
     });
   }
 
   deleteProperty(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, {
+    return this.http.delete(`${this.apiUrl}/properties/${id}`, {
       headers: this.getAuthHeaders(),
     });
   }
@@ -102,40 +97,6 @@ export class PropertyService {
     return this.http.get(`${this.apiUrl}/status/pending`, {
       headers: this.getAuthHeaders(),
     });
-  }
-
-  // Method لجلب العقارات بناءً على الـ filters
-  searchProperties(): Observable<PropertySearchResponse> {
-    return this.filters$.pipe(
-      debounceTime(500), // انتظري 500ms قبل ما تبعتي طلب جديد
-      distinctUntilChanged(
-        (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
-      ), // تجنبي الطلبات المتكررة لو الـ filters ما اتغيرتش
-      switchMap((filters) => {
-        let params = new HttpParams();
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== '') {
-            params = params.set(key, value.toString());
-          }
-        });
-        return this.http
-          .get<PropertySearchResponse>(`${this.apiUrl}/search`, { params })
-          .pipe(
-            catchError((error: HttpErrorResponse) => {
-              console.error('Error searching properties:', error);
-              return of({
-                data: [],
-                pagination: {
-                  current_page: 1,
-                  total_pages: 1,
-                  total_items: 0,
-                  per_page: 5,
-                },
-              });
-            })
-          );
-      })
-    );
   }
 
   getAcceptedProperties(): Observable<any> {
@@ -150,30 +111,50 @@ export class PropertyService {
     });
   }
 
-  // Add these to your PropertyService class
-  // private filtersSubject = new BehaviorSubject<any>({});
-  // filters$ = this.filtersSubject.asObservable();
-
   getCities(): Observable<string[]> {
-    return this.http
-      .get<{ cities: string[] }>(`${this.apiUrl}/cities`, {
-        // <-- تحديد نوع الاستجابة الصحيح
-        headers: this.getAuthHeaders(),
-      })
-      .pipe(
-        map((response) => response.cities || []), // <-- الوصول إلى خاصية `cities`
-        catchError(() => of([])) // التعامل مع الأخطاء
-      );
+    return this.http.get<{ cities: string[] }>(`${this.apiUrl}/cities`).pipe(
+      map((response) => response.cities || []),
+      catchError(() => of([]))
+    );
   }
 
-  // searchProperties(filters?: any): Observable<any> {
-  //   return this.http.get(`${this.apiUrl}/search`, {
-  //     params: filters,
-  //     headers: this.getAuthHeaders()
-  //   });
-  // }
-
-  updateFilters(filters: any): void {
-    this.filtersSubject.next(filters);
+  searchProperties(): Observable<PropertySearchApiResponse> {
+    return this.filterService.filters$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(
+        (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+      ),
+      switchMap((filters) => {
+        let params = new HttpParams();
+        Object.entries(filters).forEach(([key, value]) => {
+          if (key === 'is_new_building') {
+            if (value === true) {
+              params = params.set(key, 'true');
+            }
+          } else if (value !== undefined && value !== null && value !== '') {
+            params = params.set(key, value.toString());
+          }
+        });
+        return this.http
+          .get<PropertySearchResponse>(`${this.apiUrl}/search`, { params })
+          .pipe(
+            map((response) => response),
+            catchError((error: HttpErrorResponse) => {
+              console.error('Error searching properties:', error);
+              return of({
+                status: 'error',
+                message: error.message || 'Failed to fetch properties',
+                data: undefined,
+                pagination: {
+                  current_page: 1,
+                  total_pages: 1,
+                  total_items: 0,
+                  per_page: 5,
+                },
+              } as PropertySearchErrorResponse);
+            })
+          );
+      })
+    );
   }
 }

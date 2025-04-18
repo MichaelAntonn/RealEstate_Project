@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { PropertyService } from '../services/property.service';
 import { Property } from '../user-dashboard/models/property.model';
 import { CommonModule } from '@angular/common';
@@ -11,7 +16,7 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-property.component.html',
-  styleUrls: ['./add-property.component.css']
+  styleUrls: ['./add-property.component.css'],
 })
 export class AddPropertyComponent implements OnInit {
   propertyForm!: FormGroup;
@@ -63,12 +68,12 @@ export class AddPropertyComponent implements OnInit {
       amenities: [''],
       payment_options: [''],
       property_code: ['', Validators.required],
-      cover_image: ['']
+      cover_image: [''],
     });
   }
 
   checkEditMode(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       if (params['id']) {
         this.isEditMode = true;
         this.propertyId = +params['id'];
@@ -80,9 +85,11 @@ export class AddPropertyComponent implements OnInit {
   loadPropertyData(id: number): void {
     this.propertyService.getProperty(id).subscribe({
       next: (property) => {
+        const amenitiesText = property.amenities;
+        const paymentOptionsText = property.payment_options;
         // تحويل المصفوفات إلى نص مفصول بفواصل
-        const amenitiesText = property.amenities?.join(', ') || '';
-        const paymentOptionsText = property.payment_options?.join(', ') || '';
+        // const amenitiesText = property.amenities?.join(', ') || '';
+        // const paymentOptionsText = property.payment_options?.join(', ') || '';
 
         this.propertyForm.patchValue({
           title: property.title,
@@ -104,7 +111,7 @@ export class AddPropertyComponent implements OnInit {
           amenities: amenitiesText,
           payment_options: paymentOptionsText,
           property_code: property.property_code,
-          cover_image: property.cover_image
+          cover_image: property.cover_image,
         });
 
         if (property.media) {
@@ -114,7 +121,7 @@ export class AddPropertyComponent implements OnInit {
       error: (err) => {
         this.toastr.error('Failed to load property data');
         console.error(err);
-      }
+      },
     });
   }
 
@@ -124,7 +131,7 @@ export class AddPropertyComponent implements OnInit {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         this.selectedFiles.push(file);
-        
+
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.previewUrls.push(e.target.result);
@@ -154,21 +161,24 @@ export class AddPropertyComponent implements OnInit {
     const formValue = this.propertyForm.value;
 
     // Append all form fields
-    Object.keys(formValue).forEach(key => {
+    Object.keys(formValue).forEach((key) => {
       if (key === 'amenities' || key === 'payment_options') {
-        const items = formValue[key] 
-          ? formValue[key].split(',').map((item: string) => item.trim()).filter((item: string) => item !== '')
+        const items = formValue[key]
+          ? formValue[key]
+              .split(',')
+              .map((item: string) => item.trim())
+              .filter((item: string) => item !== '')
           : [];
         formData.append(key, JSON.stringify(items));
       } else if (key === 'furnished') {
-        formData.append(key, formValue[key] ? '1' : '0'); 
+        formData.append(key, formValue[key] ? '1' : '0');
       } else {
         formData.append(key, formValue[key]);
       }
     });
-    
+
     // Append new files
-    this.selectedFiles.forEach(file => {
+    this.selectedFiles.forEach((file) => {
       formData.append('media[]', file);
     });
 
@@ -193,7 +203,7 @@ export class AddPropertyComponent implements OnInit {
       error: (err) => {
         this.toastr.error('Failed to create property');
         console.error(err);
-      }
+      },
     });
   }
 
@@ -208,7 +218,7 @@ export class AddPropertyComponent implements OnInit {
       error: (err) => {
         this.toastr.error('Failed to update property');
         console.error(err);
-      }
+      },
     });
   }
 
@@ -224,9 +234,8 @@ export class AddPropertyComponent implements OnInit {
         error: (err) => {
           this.toastr.error('Failed to delete property');
           console.error(err);
-        }
+        },
       });
     }
   }
-  
 }

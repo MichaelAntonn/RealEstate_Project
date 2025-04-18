@@ -29,8 +29,8 @@ export interface Property {
   building_year: string;
   legal_status: string;
   furnished: boolean;
-  amenities: string;
-  payment_options: string;
+  amenities: object;
+  payment_options: object;
   cover_image: string;
   property_code: string;
   media?: PropertyMedia[];
@@ -65,7 +65,9 @@ export interface PropertySearchErrorResponse {
   pagination?: Pagination;
 }
 
-export type PropertySearchApiResponse = PropertySearchResponse | PropertySearchErrorResponse;
+export type PropertySearchApiResponse =
+  | PropertySearchResponse
+  | PropertySearchErrorResponse;
 
 export interface PropertyFilters {
   [x: string]: string | number | boolean | undefined;
