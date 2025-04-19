@@ -47,6 +47,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('properties')->name('properties.')->group(function () {
         Route::get('/', [PropertyController::class, 'index'])->name('index');
         Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
+        Route::get('/slug/{slug}', [PropertyController::class, 'showBySlug'])->name('showBySlug');
     });
 
     // Search Route (public)
@@ -184,10 +185,10 @@ Route::prefix('v1')->group(function () {
 
             // Bookings Routes
             Route::prefix('bookings')->name('bookings.')->group(function () {
-            Route::get('/pending', [BookingController::class, 'getPending'])->name('pending');
-            Route::get('/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
-            Route::get('/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
-            Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('update.status');
+                Route::get('/pending', [BookingController::class, 'getPending'])->name('pending');
+                Route::get('/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
+                Route::get('/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
+                Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('update.status');
             });
 
             // Commission Routes

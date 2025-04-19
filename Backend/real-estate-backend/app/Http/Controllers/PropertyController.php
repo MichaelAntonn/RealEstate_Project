@@ -177,6 +177,20 @@ class PropertyController extends Controller
         ]);
     }
 
+    public function showBySlug(string $slug)
+    {
+        $property = Property::where('slug', $slug)->first();
+
+        if (!$property) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'property' => $property,
+        ]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
