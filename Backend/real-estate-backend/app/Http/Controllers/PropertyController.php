@@ -95,34 +95,45 @@ class PropertyController extends Controller
             'furnished' => 'nullable|boolean',
             'amenities' => 'nullable|json',
             'payment_options' => 'nullable|json',
-            'cover_image' => 'nullable|string',
+            'cover_image' => 'nullable|file|mimes:jpg,jpeg,png|max:20480',
             'property_code' => 'required|string|unique:properties,property_code',
             'media' => 'nullable|array',
             'media.*' => 'file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         // Add the authenticated user's ID to the request data
-        $data = $request->except('media');
+        $data = $request->except(['media', 'cover_image']);
         $data['user_id'] = Auth::id();
-
+    
         // Set the initial status to 'pending' for regular users
         if (Auth::user()->user_type === UserType::USER) {
             $data['approval_status'] = 'pending';
         }
-
+    
         // Create the property
         $property = Property::create($data);
-
+    
+        // Handle cover image upload if present
+        if ($request->hasFile('cover_image')) {
+            $coverImage = $request->file('cover_image');
+            $coverImagePath = $coverImage->store(
+                'property_media/' . $property->id . '/cover_image',   
+                'public');
+            
+            $property->cover_image = $coverImagePath;
+            $property->save();
+        }
+    
         // Handle media uploads if present
         if ($request->hasFile('media')) {
             try {
                 $uploadedMedia = $mediaService->handleUpload($property, $request->file('media'));
-
-                // If no cover image was set during upload but we have images, set the first one
+    
+                // If no cover image was set but we have images, set the first one
                 if (empty($property->cover_image)) {
                     $firstImage = collect($uploadedMedia)->firstWhere('MediaType', 'image');
                     if ($firstImage) {
@@ -131,35 +142,31 @@ class PropertyController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                // If media upload fails, delete the property and return error
-                // $property->delete(); <= no need it's optional any way
                 return response()->json([
                     'warning' => 'Property created but media upload failed: ' . $e->getMessage()
                 ], 201);
             }
         }
-
+    
         // Load the media relationship for the response
         $property->load('media');
-
-
+    
         // Notifications
         $users = User::where('id', '!=', $request->user()->id)
             ->where('city', $request->user()->city)
             ->get();
-
+    
         Notification::send($users, new NewPropertyAdded($property));
-
+    
         $admins = User::where('user_type', 'admin')->get();
         Notification::send($admins, new NewPropertySubmitted($property));
-
+    
         return response()->json([
             'message' => 'Property created successfully',
             'success' => 'Property created successfully',
             'property' => $property,
         ], 201);
     }
-
     /**
      * Display the specified resource.
      */
@@ -202,21 +209,21 @@ class PropertyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id, PropertyMediaService $mediaService)
     {
         // Find the property
         $property = Property::find($id);
-
+    
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
-
+    
         // Check if the authenticated user is the owner, admin, or super-admin
         $user = Auth::user();
         if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
             return response()->json(['error' => 'Forbidden. You do not have permission to update this property.'], 403);
         }
-
+    
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|string|max:255',
@@ -238,26 +245,46 @@ class PropertyController extends Controller
             'furnished' => 'nullable|boolean',
             'amenities' => 'nullable|json',
             'payment_options' => 'nullable|json',
-            'cover_image' => 'nullable|string',
+            'cover_image' => 'nullable|file|mimes:jpg,jpeg,png|max:20480', 
             'property_code' => 'sometimes|string|unique:properties,property_code,' . $property->id,
-            'media' => 'nullable|array', // For multiple media files
-            'media.*' => 'file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480', // 20MB max for each file
-            'media_to_delete' => 'nullable|array', // Array of media IDs to delete
-            'media_to_delete.*' => 'exists:property_media,id', // Ensure IDs exist
+            'media' => 'nullable|array',
+            'media.*' => 'file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480',
+            'media_to_delete' => 'nullable|array',
+            'media_to_delete.*' => 'exists:property_media,id',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
-        // Update the property
-        $property->update($request->except(['media', 'media_to_delete']));
-
+    
+        // Prepare data for update (excluding media fields)
+        $data = $request->except(['media', 'media_to_delete', 'cover_image']);
+    
+        // Handle cover image upload if present
+        if ($request->hasFile('cover_image')) {
+            // Delete old cover image if exists
+            if ($property->cover_image) {
+                Storage::disk('public')->delete($property->cover_image);
+            }
+    
+            // Upload new cover image
+            $coverImage = $request->file('cover_image');
+            $coverImagePath = $coverImage->store(
+                'property_media/' . $property->id . '/cover_image',
+                'public'
+            );
+            
+            $data['cover_image'] = $coverImagePath;
+        }
+    
+        // Update the property data
+        $property->update($data);
+    
         // Handle media deletions if requested
         if ($request->has('media_to_delete')) {
             foreach ($request->input('media_to_delete') as $mediaId) {
                 $media = PropertyMedia::find($mediaId);
-
+    
                 // Verify the media belongs to this property
                 if ($media && $media->PropertyID == $property->id) {
                     // Delete the file from storage
@@ -267,34 +294,30 @@ class PropertyController extends Controller
                 }
             }
         }
-
+    
         // Handle new media uploads if present
         if ($request->hasFile('media')) {
-            foreach ($request->file('media') as $file) {
-                // Store the file and get the path
-                $path = $file->store('property_media', 'public');
-
-                // Determine media type
-                $mediaType = in_array($file->getClientOriginalExtension(), ['mp4', 'mov', 'avi']) ? 'video' : 'image';
-
-                // Create media record
-                PropertyMedia::create([
-                    'PropertyID' => $property->id,
-                    'MediaURL' => $path,
-                    'MediaType' => $mediaType,
-                ]);
-
-                // If no cover image is set and this is an image, set it as cover
-                if ($mediaType === 'image' && empty($property->cover_image)) {
-                    $property->cover_image = $path;
-                    $property->save();
+            try {
+                $uploadedMedia = $mediaService->handleUpload($property, $request->file('media'));
+    
+                // If no cover image was set but we have images, set the first one
+                if (empty($property->cover_image)) {
+                    $firstImage = collect($uploadedMedia)->firstWhere('MediaType', 'image');
+                    if ($firstImage) {
+                        $property->cover_image = $firstImage->MediaURL;
+                        $property->save();
+                    }
                 }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'warning' => 'Property updated but media upload failed: ' . $e->getMessage()
+                ], 200);
             }
         }
-
+    
         // Refresh the property with its relationships
         $property->load('media');
-
+    
         return response()->json([
             'success' => 'Property updated successfully',
             'property' => $property,
