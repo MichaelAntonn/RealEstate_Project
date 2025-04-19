@@ -22,6 +22,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\SubscriptionPlanController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
@@ -64,9 +65,9 @@ Route::prefix('v1')->group(function () {
     // Subscriptions Routes
     Route::prefix('subscription')->group(function () {
         // Public routes (accessible without authentication)
-        Route::get('/plans', [SubscriptionController::class, 'getPlans']);
-        Route::get('/trial-plan', [SubscriptionController::class, 'getTrialPlan']);
-        Route::get('/registration-plans', [SubscriptionController::class, 'getAllPlansForRegistration']);
+        Route::get('/plans', [SubscriptionController::class, 'getPlans'])->name('subscription.plans'); // Get all available subscription plans except trial
+        Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan'); // Get the trial subscription plan
+        Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
     });
 
     // Authenticated user routes
@@ -148,12 +149,15 @@ Route::prefix('v1')->group(function () {
             Route::put('/{company_id}', [CompanyController::class, 'update']); // Update a company
             Route::delete('/{company_id}', [CompanyController::class, 'destroy']); // Delete a company
         });
-        Route::prefix('subscriptions')->group(function () {
-            Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
-            Route::post('/subscribe-trial', [SubscriptionController::class, 'subscribeToTrial']);
-            Route::post('/custom-subscribe', [SubscriptionController::class, 'subscribeCompany']);
-            // Subscription info
-            Route::get('/status/{id}', [SubscriptionController::class, 'show']);
+        Route::prefix('subscription')->group(function () {
+            Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe'); // Subscribe a company to a plan
+            Route::post('/subscribe/trial', [SubscriptionController::class, 'subscribeToTrial'])->name('subscription.subscribeTrial'); // Subscribe a company to a trial plan
+            Route::get('/company/{id}/subscription', [SubscriptionController::class, 'show'])->name('subscription.show'); // Get a company's subscription details by company ID
+            Route::post('/cancel', [SubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel'); // Cancel the subscription for the authenticated company
+            Route::put('/{id}', [SubscriptionController::class, 'updateSubscription'])->name('subscription.update'); // Update subscription details by subscription ID
+            Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations']); // get upcoming subscription expirations within a specific number of days
+            Route::get('/current-subscription-status', [SubscriptionController::class, 'getCurrentSubscriptionStatus']); // get the current subscription status of the authenticated company
+
         });
     });
 
@@ -238,6 +242,16 @@ Route::prefix('v1')->group(function () {
                     Route::put('/monthly/{goalId}', [SettingController::class, 'updateMonthlyGoal'])->name('monthly-goal'); // Update a monthly goal
                     Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly-goal'); // Update a yearly goal
                     Route::delete('/{goal}', [SettingController::class, 'deleteGoal']); // Delete a Goal
+                });
+                Route::prefix('subscription')->group(function () {
+                    Route::get('/plan/{id}', [SubscriptionPlanController::class, 'show'])->name('settings.subscriptions.plan.show'); // Get details of a specific subscription plan by ID
+                    Route::get('/plans', [SubscriptionPlanController::class, 'index'])->name('settings.subscriptions.index'); // Get all subscription plans
+                    Route::post('/plan', [SubscriptionPlanController::class, 'store'])->name('settings.subscriptions.store'); // Create a new subscription plan
+                    Route::put('/plan/{id}', [SubscriptionPlanController::class, 'update'])->name('settings.subscriptions.update'); // Update an existing subscription plan by ID
+                    Route::delete('/plan/{id}', [SubscriptionPlanController::class, 'destroy'])->name('settings.subscriptions.destroy'); // Delete a subscription plan by ID
+                    Route::get('/check-expired-subscriptions', [SubscriptionController::class, 'checkExpiredSubscriptions']);  // check expired subscriptions and update their status
+                    Route::get('/subscription-reports', [SubscriptionController::class, 'getSubscriptionReports']);  // get subscription reports (total, active, expired, canceled, etc.)
+
                 });
             });
         });

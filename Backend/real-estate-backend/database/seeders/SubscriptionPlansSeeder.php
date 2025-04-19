@@ -23,6 +23,7 @@ class SubscriptionPlansSeeder extends Seeder
                     'Basic analytics',
                     'Email support'
                 ]),
+                'max_properties_allowed' => 10,
                 'is_trial' => false
             ],
             [
@@ -36,6 +37,7 @@ class SubscriptionPlansSeeder extends Seeder
                     'Priority support',
                     'Featured listings'
                 ]),
+                'max_properties_allowed' => 15,
                 'is_trial' => false
             ],
             [
@@ -50,6 +52,7 @@ class SubscriptionPlansSeeder extends Seeder
                     'Featured listings priority',
                     'API access'
                 ]),
+                'max_properties_allowed' => -1,
                 'is_trial' => false
             ],
             [

@@ -19,11 +19,11 @@ class Subscription extends Model
 {
     return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
 }
-public function getStatusAttribute()
+public function getStatusLabelAttribute()
 {
     if ($this->ends_at < now()) {
         return 'expired';
     }
-    return $this->attributes['status'];
+    return $this->status;
 }
 }
