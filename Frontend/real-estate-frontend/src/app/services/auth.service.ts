@@ -57,6 +57,13 @@ export class AuthService {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
+// أضف هذه الدالة إلى AuthService الحالي
+
+registerCompany(companyData: FormData): Observable<any> {
+  return this.http.post(`${this.apiUrl}/company/register`, companyData).pipe(
+    catchError(this.handleError)
+  );
+}
   // جلب بيانات المستخدم
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);

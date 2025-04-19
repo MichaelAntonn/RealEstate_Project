@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./signupaandlogin.component.css']
 })
 export class SignupaandloginComponent implements AfterViewInit {
-  // Signup form fields
+  // User Signup form fields
   first_name: string = '';
   last_name: string = '';
   email: string = '';
@@ -27,7 +27,32 @@ export class SignupaandloginComponent implements AfterViewInit {
   loginEmail: string = '';
   loginPassword: string = '';
 
+  // Company Signup form fields
+  isCompanySignup: boolean = false;
+  company: any = {
+    company_name: '',
+    commercial_registration_number: '',
+    company_email: '',
+    company_phone_number: '',
+    company_address: '',
+    commercial_registration_doc: null,
+    tax_card_doc: null,
+    proof_of_address_doc: null,
+    real_estate_license_doc: null,
+    years_in_real_estate: null,
+    company_website: '',
+    date_of_establishment: '',
+    password: '',
+    password_confirmation: '',
+    accept_terms: false
+  };
+
   constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+
+  // Toggle between user and company signup forms
+  toggleSignupMode() {
+    this.isCompanySignup = !this.isCompanySignup;
+  }
 
   // Toggle between login and signup forms
   toggleForms() {
@@ -35,7 +60,100 @@ export class SignupaandloginComponent implements AfterViewInit {
     container?.classList.toggle("active");
   }
 
-  // Handle signup form submission
+  // Handle file selection for company documents
+  onFileSelected(event: any, field: string) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.company[field] = file;
+    }
+  }
+
+  // Handle company signup form submission
+  onCompanySignupSubmit() {
+    // Validate required fields
+    if (!this.company.company_name || 
+        !this.company.commercial_registration_number || 
+        !this.company.company_email || 
+        !this.company.company_phone_number || 
+        !this.company.company_address || 
+        !this.company.commercial_registration_doc || 
+        !this.company.tax_card_doc || 
+        !this.company.proof_of_address_doc || 
+        !this.company.password || 
+        !this.company.password_confirmation || 
+        !this.company.accept_terms) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    if (this.company.password !== this.company.password_confirmation) {
+      alert('Passwords do not match');
+      return;
+    }
+
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('company_name', this.company.company_name);
+    formData.append('commercial_registration_number', this.company.commercial_registration_number);
+    formData.append('company_email', this.company.company_email);
+    formData.append('company_phone_number', this.company.company_phone_number);
+    formData.append('company_address', this.company.company_address);
+    formData.append('commercial_registration_doc', this.company.commercial_registration_doc);
+    formData.append('tax_card_doc', this.company.tax_card_doc);
+    formData.append('proof_of_address_doc', this.company.proof_of_address_doc);
+    if (this.company.real_estate_license_doc) {
+      formData.append('real_estate_license_doc', this.company.real_estate_license_doc);
+    }
+    if (this.company.years_in_real_estate) {
+      formData.append('years_in_real_estate', this.company.years_in_real_estate);
+    }
+    if (this.company.company_website) {
+      formData.append('company_website', this.company.company_website);
+    }
+    if (this.company.date_of_establishment) {
+      formData.append('date_of_establishment', this.company.date_of_establishment);
+    }
+    formData.append('password', this.company.password);
+    formData.append('password_confirmation', this.company.password_confirmation);
+    formData.append('accept_terms', this.company.accept_terms ? '1' : '0');
+
+    // Send to backend
+    this.http.post('http://localhost:8000/api/company/register', formData).subscribe({
+      next: (response: any) => {
+        alert('Company registration successful! Awaiting verification.');
+        this.toggleForms(); // Switch to login form
+        this.resetCompanyForm();
+      },
+      error: (error) => {
+        console.error('Company registration failed:', error);
+        alert('Company registration failed: ' + (error.error?.message || 'Unknown error'));
+      }
+    });
+  }
+
+  // Reset company form
+  resetCompanyForm() {
+    this.company = {
+      company_name: '',
+      commercial_registration_number: '',
+      company_email: '',
+      company_phone_number: '',
+      company_address: '',
+      commercial_registration_doc: null,
+      tax_card_doc: null,
+      proof_of_address_doc: null,
+      real_estate_license_doc: null,
+      years_in_real_estate: null,
+      company_website: '',
+      date_of_establishment: '',
+      password: '',
+      password_confirmation: '',
+      accept_terms: false
+    };
+  }
+
+  // باقي الدوال الموجودة لديك تبقى كما هي (onSignupSubmit, onLoginSubmit, resetSignupForm, signInWithGoogle, navigateToForgotPassword, ngAfterViewInit)
+  // Handle user signup form submission
   onSignupSubmit() {
     let isValid = true;
 
@@ -139,7 +257,7 @@ export class SignupaandloginComponent implements AfterViewInit {
     );
   }
 
-  // Reset signup form
+  // Reset user signup form
   resetSignupForm() {
     this.first_name = '';
     this.last_name = '';
