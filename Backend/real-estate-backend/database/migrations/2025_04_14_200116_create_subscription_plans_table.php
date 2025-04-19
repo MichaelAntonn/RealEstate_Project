@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->json('features')->nullable();
             $table->boolean('is_trial')->default(false);
+            $table->integer('max_properties_allowed')->default(0);
             $table->timestamps();
         });
     }
