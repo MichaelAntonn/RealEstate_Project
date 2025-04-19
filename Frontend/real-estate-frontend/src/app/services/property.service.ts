@@ -19,6 +19,7 @@ import {
   PropertySearchResponse,
   Property,
   PropertySearchErrorResponse,
+  PropertyMedia,
 } from '../models/property';
 import { FilterService } from './filter.service';
 
@@ -29,7 +30,6 @@ export class PropertyService {
   private apiUrl = 'http://127.0.0.1:8000/api/v1';
 
   constructor(private http: HttpClient, private filterService: FilterService) {
-    // Fetch cities on service initialization and store in FilterService
     this.getCities().subscribe({
       next: (cities) => this.filterService.setCities(cities),
       error: (error) => console.error('Error fetching cities:', error),
@@ -76,9 +76,37 @@ export class PropertyService {
   }
 
   getProperty(id: number): Observable<Property> {
-    return this.http.get<Property>(`${this.apiUrl}/properties/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http
+      .get<{ success: boolean; property: Property }>(
+        `${this.apiUrl}/properties/${id}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      )
+      .pipe(
+        map((response) => response.property),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching property by id:', error);
+          throw error;
+        })
+      );
+  }
+
+  getPropertyBySlug(slug: string): Observable<Property> {
+    return this.http
+      .get<{ success: boolean; property: Property }>(
+        `${this.apiUrl}/properties/slug/${slug}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      )
+      .pipe(
+        map((response) => response.property),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching property by slug:', error);
+          throw error;
+        })
+      );
   }
 
   updateProperty(id: number, propertyData: FormData): Observable<any> {
@@ -156,5 +184,22 @@ export class PropertyService {
           );
       })
     );
+  }
+
+  getPropertyMedia(propertyId: number): Observable<PropertyMedia[]> {
+    return this.http
+      .get<{ media: PropertyMedia[] }>(
+        `${this.apiUrl}/properties/${propertyId}/media`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      )
+      .pipe(
+        map((response) => response.media || []),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching property media:', error);
+          return of([]);
+        })
+      );
   }
 }

@@ -43,7 +43,7 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },
-  { path: 'property-details/:{slug}', component: PropertyDetailsComponent },
+  { path: 'property-details/:slug', component: PropertyDetailsComponent },
 
   // User dashboard routes
 

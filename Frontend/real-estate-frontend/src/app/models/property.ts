@@ -3,7 +3,7 @@ export interface PropertyMedia {
   id: number;
   PropertyID: number;
   MediaURL: string;
-  MediaType: string;
+  MediaType: 'image' | 'video';
   created_at: string;
   updated_at: string;
 }
@@ -29,8 +29,8 @@ export interface Property {
   building_year: string;
   legal_status: string;
   furnished: boolean;
-  amenities: object;
-  payment_options: object;
+  amenities: string | string[] | { [key: string]: string };
+  payment_options: string | string[] | { [key: string]: string };
   cover_image: string;
   property_code: string;
   media?: PropertyMedia[];
