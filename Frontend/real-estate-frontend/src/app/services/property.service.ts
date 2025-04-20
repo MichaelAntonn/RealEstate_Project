@@ -5,7 +5,7 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import {
   map,
   catchError,
@@ -68,11 +68,31 @@ export class PropertyService {
         })
       );
   }
+  createProperty(
+    propertyData: FormData
+  ): Observable<{ success: boolean; property: Property }> {
+    const authHeader = this.getAuthHeaders();
 
-  createProperty(propertyData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/properties`, propertyData, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http
+      .post<{ success: boolean; property: Property }>(
+        `${this.apiUrl}/properties`,
+        propertyData,
+        {
+          headers: authHeader,
+        }
+      )
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(
+            () =>
+              new Error(
+                error.error?.error?.['media.0']?.[0] ||
+                  error.error?.warning ||
+                  'Failed to create property'
+              )
+          );
+        })
+      );
   }
 
   getProperty(id: number): Observable<Property> {

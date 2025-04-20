@@ -1,257 +1,527 @@
-
 <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">{{ isEditMode ? 'Edit Property' : 'Add New Property' }}</h4>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm">
+        <!-- Card Header -->
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            @if (isEditMode) { Edit Property } @else { Add New Property }
+          </h4>
+        </div>
+
+        <div class="card-body">
+          <!-- Loading Spinner -->
+          @if (isLoading) {
+          <div class="text-center my-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
-          
-          <div class="card-body">
-            <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
-              <!-- Basic Information Section -->
-              <div class="mb-5">
-                <h5 class="border-bottom pb-2 mb-4">Basic Information</h5>
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label for="title" class="form-label">Title*</label>
-                    <input type="text" class="form-control" id="title" formControlName="title">
-                    <div *ngIf="propertyForm.get('title')?.invalid && propertyForm.get('title')?.touched" class="text-danger">
-                      Title is required
-                    </div>
+          }
+
+          <!-- Property Form -->
+          <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
+            <!-- Basic Information -->
+            <div class="mb-5">
+              <h5 class="border-bottom pb-2 mb-4">Basic Information</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="title" class="form-label">Title*</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    formControlName="title"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('title')?.invalid &&
+                      propertyForm.get('title')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Title is required
                   </div>
-                  
-                  <div class="col-md-6">
-                    <label for="slug" class="form-label">Slug*</label>
-                    <input type="text" class="form-control" id="slug" formControlName="slug">
-                    <div *ngIf="propertyForm.get('slug')?.invalid && propertyForm.get('slug')?.touched" class="text-danger">
-                      Slug is required
-                    </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="slug" class="form-label">Slug*</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="slug"
+                    formControlName="slug"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('slug')?.invalid &&
+                      propertyForm.get('slug')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Slug is required
                   </div>
-                  
-                  <div class="col-12">
-                    <label for="description" class="form-label">Description*</label>
-                    <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
-                    <div *ngIf="propertyForm.get('description')?.invalid && propertyForm.get('description')?.touched" class="text-danger">
-                      Description is required
-                    </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="description" class="form-label"
+                    >Description*</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    rows="3"
+                    formControlName="description"
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      propertyForm.get('description')?.invalid &&
+                      propertyForm.get('description')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Description is required
                   </div>
-                  
-                  <div class="col-md-4">
-                    <label for="type" class="form-label">Property Type*</label>
-                    <select class="form-select" id="type" formControlName="type">
-                      <option value="">Select Type</option>
-                      <option *ngFor="let type of propertyTypes" [value]="type">{{ type | titlecase }}</option>
-                    </select>
-                    <div *ngIf="propertyForm.get('type')?.invalid && propertyForm.get('type')?.touched" class="text-danger">
-                      Property type is required
-                    </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="type" class="form-label">Property Type*</label>
+                  <select class="form-select" id="type" formControlName="type">
+                    <option value="">Select Type</option>
+                    @for (type of propertyTypes; track type) {
+                    <option [value]="type">{{ type | titlecase }}</option>
+                    }
+                  </select>
+                  <div
+                    *ngIf="
+                      propertyForm.get('type')?.invalid &&
+                      propertyForm.get('type')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Property type is required
                   </div>
-                  
-                  <div class="col-md-4">
-                    <label for="listing_type" class="form-label">Listing Type*</label>
-                    <select class="form-select" id="listing_type" formControlName="listing_type">
-                      <option value="">Select Listing Type</option>
-                      <option *ngFor="let type of listingTypes" [value]="type">{{ type | titlecase }}</option>
-                    </select>
-                    <div *ngIf="propertyForm.get('listing_type')?.invalid && propertyForm.get('listing_type')?.touched" class="text-danger">
-                      Listing type is required
-                    </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="listing_type" class="form-label"
+                    >Listing Type*</label
+                  >
+                  <select
+                    class="form-select"
+                    id="listing_type"
+                    formControlName="listing_type"
+                  >
+                    <option value="">Select Listing Type</option>
+                    @for (type of listingTypes; track type) {
+                    <option [value]="type">{{ type | titlecase }}</option>
+                    }
+                  </select>
+                  <div
+                    *ngIf="
+                      propertyForm.get('listing_type')?.invalid &&
+                      propertyForm.get('listing_type')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Listing type is required
                   </div>
-                  
-                  <div class="col-md-4">
-                    <label for="construction_status" class="form-label">Construction Status*</label>
-                    <select class="form-select" id="construction_status" formControlName="construction_status">
-                      <option value="">Select Status</option>
-                      <option *ngFor="let status of constructionStatuses" [value]="status">{{ status | titlecase }}</option>
-                    </select>
-                    <div *ngIf="propertyForm.get('construction_status')?.invalid && propertyForm.get('construction_status')?.touched" class="text-danger">
-                      Construction status is required
-                    </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="construction_status" class="form-label"
+                    >Construction Status*</label
+                  >
+                  <select
+                    class="form-select"
+                    id="construction_status"
+                    formControlName="construction_status"
+                  >
+                    <option value="">Select Status</option>
+                    @for (status of constructionStatuses; track status) {
+                    <option [value]="status">{{ status | titlecase }}</option>
+                    }
+                  </select>
+                  <div
+                    *ngIf="
+                      propertyForm.get('construction_status')?.invalid &&
+                      propertyForm.get('construction_status')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Construction status is required
                   </div>
                 </div>
               </div>
-              
-              <!-- Location Information Section -->
-              <div class="mb-5">
-                <h5 class="border-bottom pb-2 mb-4">Location Information</h5>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label for="city" class="form-label">City*</label>
-                    <input type="text" class="form-control" id="city" formControlName="city">
-                    <div *ngIf="propertyForm.get('city')?.invalid && propertyForm.get('city')?.touched" class="text-danger">
-                      City is required
-                    </div>
+            </div>
+
+            <!-- Location Information -->
+            <div class="mb-5">
+              <h5 class="border-bottom pb-2 mb-4">Location Information</h5>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="city" class="form-label">City*</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="city"
+                    formControlName="city"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('city')?.invalid &&
+                      propertyForm.get('city')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    City is required
                   </div>
-                  
-                  <div class="col-md-4">
-                    <label for="district" class="form-label">District*</label>
-                    <input type="text" class="form-control" id="district" formControlName="district">
-                    <div *ngIf="propertyForm.get('district')?.invalid && propertyForm.get('district')?.touched" class="text-danger">
-                      District is required
-                    </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="district" class="form-label">District*</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="district"
+                    formControlName="district"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('district')?.invalid &&
+                      propertyForm.get('district')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    District is required
                   </div>
-                  
-                  <div class="col-md-4">
-                    <label for="full_address" class="form-label">Full Address</label>
-                    <input type="text" class="form-control" id="full_address" formControlName="full_address">
+                </div>
+
+                <div class="col-md-4">
+                  <label for="full_address" class="form-label"
+                    >Full Address</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="full_address"
+                    formControlName="full_address"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing & Details -->
+            <div class="mb-5">
+              <h5 class="border-bottom pb-2 mb-4">Pricing & Details</h5>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="price" class="form-label">Price*</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="price"
+                      formControlName="price"
+                      min="0"
+                    />
+                  </div>
+                  <div
+                    *ngIf="
+                      propertyForm.get('price')?.invalid &&
+                      propertyForm.get('price')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Valid price is required
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="area" class="form-label">Area (sq ft)*</label>
+                  <div class="input-group">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="area"
+                      formControlName="area"
+                      min="0"
+                    />
+                    <span class="input-group-text">sq ft</span>
+                  </div>
+                  <div
+                    *ngIf="
+                      propertyForm.get('area')?.invalid &&
+                      propertyForm.get('area')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Area is required
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="property_code" class="form-label"
+                    >Property Code*</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="property_code"
+                    formControlName="property_code"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('property_code')?.invalid &&
+                      propertyForm.get('property_code')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Property code is required
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <label for="bedrooms" class="form-label">Bedrooms</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="bedrooms"
+                    formControlName="bedrooms"
+                    min="0"
+                  />
+                </div>
+
+                <div class="col-md-3">
+                  <label for="bathrooms" class="form-label">Bathrooms</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="bathrooms"
+                    formControlName="bathrooms"
+                    min="0"
+                  />
+                </div>
+
+                <div class="col-md-3">
+                  <label for="building_year" class="form-label"
+                    >Building Year</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="building_year"
+                    formControlName="building_year"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('building_year')?.invalid &&
+                      propertyForm.get('building_year')?.touched
+                    "
+                    class="text-danger"
+                  >
+                    Valid year (1900-{{ currentYear }}) is required
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <label for="legal_status" class="form-label"
+                    >Legal Status</label
+                  >
+                  <select
+                    class="form-select"
+                    id="legal_status"
+                    formControlName="legal_status"
+                  >
+                    <option value="">Select Status</option>
+                    @for (status of legalStatuses; track status) {
+                    <option [value]="status">{{ status | titlecase }}</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="amenities" class="form-label"
+                    >Amenities (comma separated)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="amenities"
+                    formControlName="amenities"
+                    placeholder="pool, gym, parking"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label for="payment_options" class="form-label"
+                    >Payment Options (comma separated)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="payment_options"
+                    formControlName="payment_options"
+                    placeholder="cash, installments"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="furnished"
+                      formControlName="furnished"
+                    />
+                    <label class="form-check-label" for="furnished"
+                      >Furnished</label
+                    >
                   </div>
                 </div>
               </div>
-              
-              <!-- Pricing & Details Section -->
-              <div class="mb-5">
-                <h5 class="border-bottom pb-2 mb-4">Pricing & Details</h5>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label for="price" class="form-label">Price*</label>
-                    <div class="input-group">
-                      <span class="input-group-text">$</span>
-                      <input type="number" class="form-control" id="price" formControlName="price" min="0">
-                    </div>
-                    <div *ngIf="propertyForm.get('price')?.invalid && propertyForm.get('price')?.touched" class="text-danger">
-                      Valid price is required
-                    </div>
-                  </div>
-                  
-                  <div class="col-md-4">
-                    <label for="area" class="form-label">Area (sq ft)*</label>
-                    <div class="input-group">
-                      <input type="number" class="form-control" id="area" formControlName="area" min="0">
-                      <span class="input-group-text">sq ft</span>
-                    </div>
-                    <div *ngIf="propertyForm.get('area')?.invalid && propertyForm.get('area')?.touched" class="text-danger">
-                      Area is required
-                    </div>
-                  </div>
-                  
-                  <div class="col-md-4">
-                    <label for="property_code" class="form-label">Property Code*</label>
-                    <input type="text" class="form-control" id="property_code" formControlName="property_code">
-                    <div *ngIf="propertyForm.get('property_code')?.invalid && propertyForm.get('property_code')?.touched" class="text-danger">
-                      Property code is required
-                    </div>
-                  </div>
-                  
-                  <div class="col-md-3">
-                    <label for="bedrooms" class="form-label">Bedrooms</label>
-                    <input type="number" class="form-control" id="bedrooms" formControlName="bedrooms" min="0">
-                  </div>
-                  
-                  <div class="col-md-3">
-                    <label for="bathrooms" class="form-label">Bathrooms</label>
-                    <input type="number" class="form-control" id="bathrooms" formControlName="bathrooms" min="0">
-                  </div>
-                  
-                  <div class="col-md-3">
-                    <label for="building_year" class="form-label">Building Year</label>
-                    <input type="number" class="form-control" id="building_year" formControlName="building_year">
-                  </div>
-                  
-                  <div class="col-md-3">
-                    <label for="legal_status" class="form-label">Legal Status</label>
-                    <select class="form-select" id="legal_status" formControlName="legal_status">
-                      <option value="">Select Status</option>
-                      <option *ngFor="let status of legalStatuses" [value]="status">{{ status | titlecase }}</option>
-                    </select>
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <label for="amenities" class="form-label">Amenities (comma separated)</label>
-                    <input type="text" class="form-control" id="amenities" formControlName="amenities" placeholder="pool, gym, parking">
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <label for="payment_options" class="form-label">Payment Options (comma separated)</label>
-                    <input type="text" class="form-control" id="payment_options" formControlName="payment_options" placeholder="cash, installments">
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="furnished" formControlName="furnished">
-                      <label class="form-check-label" for="furnished">
-                        Furnished
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Media Section -->
+            </div>
+
+            <!-- Media Section -->
+            <div class="mb-4">
+              <h5 class="border-bottom pb-2 mb-4">Media</h5>
+
+              @if (existingMedia.length > 0) {
               <div class="mb-4">
-                <h5 class="border-bottom pb-2 mb-4">Media</h5>
-                
-                <!-- Existing Media -->
-                <div *ngIf="existingMedia.length > 0" class="mb-4">
-                  <h6>Existing Media</h6>
-                  <div class="row g-3">
-                    <div *ngFor="let media of existingMedia; let i = index" class="col-md-3">
-                      <div class="card">
-                        <div class="position-relative">
-                          <img *ngIf="media.MediaType === 'image'" [src]="media.MediaURL" class="card-img-top" alt="Property media">
-                          <div *ngIf="media.MediaType === 'video'" class="bg-dark text-white p-3 text-center">
-                            <i class="fas fa-video fa-3x"></i>
-                          </div>
-                          <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" 
-                                  (click)="removeExistingMedia(media.id, i)">
-                            <i class="fas fa-times"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- New Media Upload -->
-                <div class="mb-3">
-                  <label for="media" class="form-label">Upload New Media</label>
-                  <input type="file" class="form-control" id="media" multiple (change)="onFileSelected($event)" accept="image/*,video/*">
-                  <div class="form-text">Upload images or videos (max 20MB each)</div>
-                </div>
-                
-                <!-- Preview of Selected Files -->
-                <div *ngIf="previewUrls.length > 0" class="mb-3">
-                  <h6>Selected Files</h6>
-                  <div class="row g-2">
-                    <div *ngFor="let url of previewUrls; let i = index" class="col-md-2">
+                <h6>Existing Media</h6>
+                <div class="row g-3">
+                  @for (media of existingMedia; let i = $index; track media.id)
+                  {
+                  <div class="col-md-3">
+                    <div class="card">
                       <div class="position-relative">
-                        <img [src]="url" class="img-thumbnail" style="height: 100px; width: 100%; object-fit: cover;">
-                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" 
-                                (click)="removeSelectedFile(i)">
+                        @if (media.MediaType === 'image') {
+                        <img
+                          [src]="media.MediaURL"
+                          class="card-img-top"
+                          alt="Property media"
+                        />
+                        } @else {
+                        <div class="bg-dark text-white p-3 text-center">
+                          <i class="fas fa-video fa-3x"></i>
+                        </div>
+                        }
+
+                        <button
+                          type="button"
+                          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                          (click)="removeExistingMedia(media.id, i)"
+                          [attr.aria-label]="'Remove media'"
+                        >
                           <i class="fas fa-times"></i>
                         </button>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <!-- Cover Image Selection -->
-                <div class="mb-3">
-                  <label for="cover_image" class="form-label">Cover Image URL</label>
-                  <input type="text" class="form-control" id="cover_image" formControlName="cover_image">
-                  <div class="form-text">Leave empty to use the first uploaded image</div>
+                  }
                 </div>
               </div>
-              
-              <!-- Form Actions -->
-              <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary" (click)="router.navigate(['/properties'])">
-                  <i class="fas fa-arrow-left me-1"></i> Cancel
+              }
+
+              <div class="mb-3">
+                <label for="media" class="form-label">Upload New Media</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="media"
+                  multiple
+                  (change)="onFileSelected($event)"
+                  accept="image/jpeg,image/jpg,image/png,video/mp4,video/mov,video/avi"
+                />
+                <div class="form-text">
+                  Upload images or videos (max 20MB each, allowed: jpg, jpeg,
+                  png, mp4, mov, avi)
+                </div>
+              </div>
+
+              @if (previewUrls.length > 0) {
+              <div class="mb-3">
+                <h6>Selected Files</h6>
+                <div class="row g-2">
+                  @for (url of previewUrls; let i = $index; track i) {
+                  <div class="col-md-2">
+                    <div class="position-relative">
+                      <img
+                        [src]="url"
+                        class="img-thumbnail"
+                        style="height: 100px; width: 100%; object-fit: cover"
+                        alt="Selected media"
+                      />
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                        (click)="removeSelectedFile(i)"
+                        [attr.aria-label]="'Remove selected file'"
+                      >
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+
+              <div class="mb-3">
+                <label for="cover_image" class="form-label"
+                  >Cover Image URL</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cover_image"
+                  formControlName="cover_image"
+                />
+                <div class="form-text">
+                  Leave empty to use the first uploaded image
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="router.navigate(['/properties'])"
+                [attr.aria-label]="'Cancel'"
+              >
+                <i class="fas fa-arrow-left me-1"></i> Cancel
+              </button>
+
+              <div>
+                @if (isEditMode) {
+                <button
+                  type="button"
+                  class="btn btn-danger me-2"
+                  (click)="deleteProperty()"
+                  [attr.aria-label]="'Delete property'"
+                >
+                  <i class="fas fa-trash me-1"></i> Delete
                 </button>
-                
-                <div>
-                  <button *ngIf="isEditMode" type="button" class="btn btn-danger me-2" (click)="deleteProperty()">
-                    <i class="fas fa-trash me-1"></i> Delete
-                  </button>
-                  
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-1"></i> {{ isEditMode ? 'Update' : 'Save' }}
-                  </button>
-                </div>
+                }
+
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [attr.aria-label]="
+                    isEditMode ? 'Update property' : 'Save property'
+                  "
+                >
+                  <i class="fas fa-save me-1"></i>
+                  {{ isEditMode ? "Update" : "Save" }}
+                </button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+</div>
