@@ -30,6 +30,8 @@ return new class extends Migration
             $table->boolean('has_used_trial')->default(false);
             $table->enum('verification_status', ['Pending', 'Verified', 'Rejected'])->default('Pending'); 
             $table->timestamps(); // إضافة عمود created_at و updated_at
+            $table->string('logo')->nullable()->after('verification_status');
+
         });
     }
 
