@@ -269,3 +269,12 @@ Route::post('/company/register', [CompanyController::class, 'store']);
 Route::get('/company/{company_id}', [CompanyController::class, 'show']);
 Route::put('/company/{company_id}', [CompanyController::class, 'update']);
 Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);
+
+
+    
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('admin')->group(function () {
+        Route::get('/companies/pending', [CompanyController::class, 'getPendingCompanies'])->middleware('admin');
+        Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany'])->middleware('admin');
+    });
+});
