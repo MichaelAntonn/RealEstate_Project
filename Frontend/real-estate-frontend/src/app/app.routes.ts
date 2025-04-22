@@ -19,7 +19,8 @@ import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.
 import { HomeComponent } from './components/home/home.component';
 import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
 import { PropertiesComponent } from './components/properties/properties.component';
-
+//BOOKING
+import { BookingComponent } from './components/booking/booking.component';
 // Dashboard components
 import { ProfileComponent } from './profile/profile.component';
 // import { MyPropertiesComponent } from './my-properties/my-properties.component';
@@ -34,6 +35,7 @@ import { AddPropertyComponent } from './add-property/add-property.component';
 import { PropertyDetailsComponent } from './components/property-details/property-details.component';
 import { propertyOwnerGuard } from './guards/property-owner.guard';
 
+
 export const routes: Routes = [
   // Default route
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -45,6 +47,8 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },
+  // booking route
+  {path: 'booking/:id', component: BookingComponent},
 
   // User dashboard routes
 
@@ -54,6 +58,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard, propertyOwnerGuard]}, // Only property Owner can access this route
 
   { path: 'signupandlogin', component: SignupaandloginComponent },
+  
 
   {
     path: 'maindashboard',

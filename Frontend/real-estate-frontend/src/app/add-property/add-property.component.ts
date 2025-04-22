@@ -31,6 +31,7 @@ export class AddPropertyComponent implements OnInit {
   selectedFiles: File[] = [];
   existingMedia: PropertyMedia[] = [];
   mediaToDelete: number[] = [];
+
   coverSelectedFile: File | null = null;
   coverPreviewUrl: string | null = null;
   previewUrls: { url: string; type: string }[] = [];
@@ -58,6 +59,7 @@ export class AddPropertyComponent implements OnInit {
   @ViewChild('mediaInput') mediaInput!: ElementRef<HTMLInputElement>;
   @ViewChild('coverInput') coverInput!: ElementRef<HTMLInputElement>;
 
+
   constructor(
     private fb: FormBuilder,
     private propertyService: PropertyService,
@@ -74,6 +76,7 @@ export class AddPropertyComponent implements OnInit {
 
   initForm(): void {
     this.propertyForm = this.fb.group({
+
       title: ['', [Validators.required, Validators.maxLength(255)]],
       slug: ['', [Validators.required], [this.uniqueSlugValidator()]],
       description: ['', Validators.required],
@@ -181,6 +184,7 @@ export class AddPropertyComponent implements OnInit {
       }
     }
     return invalid;
+
   }
 
   checkEditMode(): void {
@@ -194,7 +198,9 @@ export class AddPropertyComponent implements OnInit {
   }
 
   loadPropertyData(id: number): void {
+    this.setLoadingState(true);
     this.propertyService.getProperty(id).subscribe({
+
       next: (property: Property) => {
         const safeProperty = {
           title: property.title || '',
@@ -243,6 +249,7 @@ export class AddPropertyComponent implements OnInit {
 
         this.propertyForm.patchValue(safeProperty);
 
+
         if (property.media) {
           this.existingMedia = property.media;
         }
@@ -251,11 +258,13 @@ export class AddPropertyComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.setLoadingState(false);
         this.toastr.error('Failed to load property data');
         console.error('Error loading property:', err);
       },
     });
   }
+
 
   onDragOver(event: DragEvent, type: 'media' | 'cover'): void {
     event.preventDefault();
@@ -291,6 +300,7 @@ export class AddPropertyComponent implements OnInit {
       const files = event.dataTransfer?.files;
       if (files && files.length > 0) {
         this.handleCoverFile(files[0]);
+
       }
     }
   }
@@ -367,16 +377,20 @@ export class AddPropertyComponent implements OnInit {
   onSubmit(): void {
     this.submitted = true;
     if (this.propertyForm.invalid) {
+
       this.toastr.warning('Please fill all required fields correctly');
       this.propertyForm.markAllAsTouched();
+
       return;
     }
     this.submitted = false;
 
+    this.setLoadingState(true);
     const formData = new FormData();
     const formValue = this.propertyForm.value;
 
     Object.keys(formValue).forEach((key) => {
+
       if (key === 'amenities' || key === 'payment_options') {
         const items = formValue[key]
           ? formValue[key]
@@ -402,9 +416,11 @@ export class AddPropertyComponent implements OnInit {
       formData.append('cover_image', this.coverSelectedFile);
     }
 
+
     if (this.mediaToDelete.length > 0) {
       formData.append('media_to_delete', JSON.stringify(this.mediaToDelete));
     }
+
 
     if (this.isEditMode && this.propertyId) {
       this.updateProperty(formData);
@@ -426,11 +442,21 @@ export class AddPropertyComponent implements OnInit {
   updateProperty(formData: FormData): void {
     if (!this.propertyId) return;
 
-    this.propertyService.updateProperty(this.propertyId, formData).subscribe({
+
+        // for (const pair of formData.entries()) {
+        //   console.log(pair[0], pair[1]);
+        // }
+    request.subscribe({
       next: () => {
-        this.toastr.success('Property updated successfully!');
+        this.setLoadingState(false);
+        this.toastr.success(
+          this.isEditMode
+            ? 'Property updated successfully!'
+            : 'Property created successfully!'
+        );
         this.router.navigate(['/properties']);
       },
+
       error: (err) => this.handleError(err),
     });
   }
@@ -444,6 +470,7 @@ export class AddPropertyComponent implements OnInit {
           control.setErrors({ serverError: errors[field].join(', ') });
         }
         this.toastr.error(errors[field].join(', '), `Error in ${field}`);
+
       });
     } else {
       const errorMessage = err.error?.message || err.message || 'Unknown error';

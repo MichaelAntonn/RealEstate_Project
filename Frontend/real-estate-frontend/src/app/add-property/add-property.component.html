@@ -1,3 +1,4 @@
+
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-6xl mx-auto px-4">
     <div class="bg-white rounded-xl shadow-md overflow-hidden">
@@ -170,10 +171,12 @@
                     } @else if (propertyForm.get('construction_status')?.errors?.['serverError']) {
                       {{ propertyForm.get('construction_status')?.errors?.['serverError'] }}
                     }
+
                   </div>
                 }
               </div>
             </div>
+
           </div>
 
           <!-- Location Information -->
@@ -259,6 +262,7 @@
                 <div class="relative rounded-md shadow-sm">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500 sm:text-sm">$</span>
+
                   </div>
                   <input
                     type="number"
@@ -269,6 +273,7 @@
                     [class.border-red-500]="propertyForm.get('price')?.invalid && (propertyForm.get('price')?.touched || submitted)"
                   />
                 </div>
+
                 @if (propertyForm.get('price')?.invalid && (propertyForm.get('price')?.touched || submitted)) {
                   <div class="text-red-600 text-sm mt-1">
                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -424,6 +429,7 @@
                     } @else if (propertyForm.get('building_year')?.errors?.['serverError']) {
                       {{ propertyForm.get('building_year')?.errors?.['serverError'] }}
                     }
+
                   </div>
                 }
               </div>
@@ -441,6 +447,7 @@
                   <i class="fas fa-couch text-orange-500 mr-1"></i> Furnished
                 </label>
               </div>
+
               <!-- Amenities -->
               <div class="md:col-span-2">
                 <label for="amenities" class="block text-sm font-medium text-gray-700 mb-1">
@@ -585,8 +592,11 @@
                         </button>
                       </div>
                     }
+
                   </div>
+                  }
                 </div>
+
               }
             </div>
           </div>
@@ -611,6 +621,7 @@
             </div>
           </div>
         </form>
+
       </div>
     </div>
   </div>

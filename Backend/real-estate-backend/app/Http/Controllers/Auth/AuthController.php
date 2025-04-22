@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Constants\UserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
 use App\Models\User;
@@ -52,7 +53,11 @@ class AuthController extends Controller
             'error' => 'Invalid email or password',
         ], 401);
     }
-
+    if ($user->user_type !== UserType::USER) {
+        return response()->json([
+            'error' => 'You are not authorized to login from this portal.',
+        ], 403);
+    }
     // Create a token for the user
     $token = $user->createToken('auth_token')->plainTextToken;
 

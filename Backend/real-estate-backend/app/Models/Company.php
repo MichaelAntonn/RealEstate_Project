@@ -26,6 +26,8 @@ class Company extends Model
         'password',
         'accept_terms',
         'verification_status',
+        'logo',
+        'rejection_reason',
     ];
 
     protected $hidden = [

@@ -7,17 +7,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ResetPasswordNotification extends Notification
+class ResetPasswordNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $token;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct($token)
+{
+    $this->token = $token;
+}
 
     /**
      * Get the notification's delivery channels.
@@ -34,7 +34,8 @@ class ResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable)
     {
-        $resetUrl = url("/reset-password/{$this->token}");
+        // $resetUrl = route('password.reset.token', ['token' => $this->token]);
+        $resetUrl = 'https://RealEstate.com/reset-password/' . $this->token;
     
         return (new MailMessage)
             ->subject('Reset Password')

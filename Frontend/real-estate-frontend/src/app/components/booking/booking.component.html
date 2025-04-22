@@ -1,0 +1,96 @@
+<div class="booking-card">
+    <div class="booking-header">
+      <h3>
+        <i class="fas fa-calendar-check"></i>
+        Schedule a Visit
+      </h3>
+      <p>Book an appointment to visit this property</p>
+    </div>
+  
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="booking-form">
+      <div class="form-group">
+        <label for="booking_date">
+          <i class="fas fa-calendar-day"></i> Preferred Date *
+        </label>
+        <div class="input-group">
+          <input
+            class="form-control"
+            placeholder="Select a date"
+            formControlName="booking_date"
+            ngbDatepicker
+            #d="ngbDatepicker"
+            [minDate]="minDate"
+            [maxDate]="maxDate"
+            [dayTemplate]="customDayTemplate"
+            [autoClose]="'outside'"
+            required
+          />
+          <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+            <i class="fas fa-calendar-alt"></i>
+          </button>
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="visit_date">
+          <i class="fas fa-clock"></i> Alternative Date (Optional)
+        </label>
+        <div class="input-group">
+          <input
+            class="form-control"
+            placeholder="Select an alternative date"
+            formControlName="visit_date"
+            ngbDatepicker
+            #d2="ngbDatepicker"
+            [minDate]="minDate"
+            [maxDate]="maxDate"
+            [autoClose]="'outside'"
+          />
+          <button class="btn btn-outline-secondary" (click)="d2.toggle()" type="button">
+            <i class="fas fa-calendar-alt"></i>
+          </button>
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="notes">
+          <i class="fas fa-comment-alt"></i> Special Requests
+        </label>
+        <textarea
+          class="form-control"
+          formControlName="notes"
+          placeholder="Any special requirements or notes"
+          rows="3"
+        ></textarea>
+      </div>
+  
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="bookingForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">
+            <i class="fas fa-paper-plane"></i> Book Now
+          </span>
+          <span *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i> Processing...
+          </span>
+        </button>
+      </div>
+    </form>
+  
+    <div class="booking-footer">
+      <p><i class="fas fa-info-circle"></i> Our agent will contact you to confirm the appointment</p>
+    </div>
+  </div>
+  
+  <ng-template #customDay let-date let-currentMonth="currentMonth" let-selected="selected" let-disabled="disabled">
+    <span class="custom-day"
+      [class.weekend]="isWeekend(date)"
+      [class.hidden]="date.month !== currentMonth"
+      [class.selected]="selected"
+      [class.disabled]="disabled">
+      {{ date.day }}
+    </span>
+  </ng-template>
