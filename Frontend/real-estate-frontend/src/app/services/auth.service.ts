@@ -29,6 +29,7 @@ export class AuthService {
         this.saveToken(response.token);
         if (response.user) {
           this.saveUser(response.user);
+          this.router.navigate(['/dashboard']);
         }
       }),
       catchError(this.handleError)

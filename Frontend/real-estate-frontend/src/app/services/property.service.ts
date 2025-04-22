@@ -86,7 +86,7 @@ export class PropertyService {
       .pipe(
         map((response) => response.property),
         catchError((error: HttpErrorResponse) => {
-          console.error('Error fetching property by id:', error);
+          console.error('Error fetching property:', error);
           throw error;
         })
       );
@@ -199,6 +199,36 @@ export class PropertyService {
         catchError((error: HttpErrorResponse) => {
           console.error('Error fetching property media:', error);
           return of([]);
+        })
+      );
+  }
+
+  checkSlugAvailability(slug: string): Observable<boolean> {
+    return this.http
+      .get<{ available: boolean }>(`${this.apiUrl}/properties/check-slug`, {
+        headers: this.getAuthHeaders(),
+        params: { slug },
+      })
+      .pipe(
+        map((response) => response.available),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error checking slug availability:', error);
+          return of(true);
+        })
+      );
+  }
+
+  checkPropertyCodeAvailability(property_code: string): Observable<boolean> {
+    return this.http
+      .get<{ available: boolean }>(`${this.apiUrl}/properties/check-property-code`, {
+        headers: this.getAuthHeaders(),
+        params: { property_code },
+      })
+      .pipe(
+        map((response) => response.available),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error checking property code availability:', error);
+          return of(true);
         })
       );
   }

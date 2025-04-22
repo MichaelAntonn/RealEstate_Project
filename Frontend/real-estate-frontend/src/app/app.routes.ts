@@ -32,6 +32,7 @@ import { MainDashboardComponent } from './main-dashboard/main-dashboard.componen
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { AddPropertyComponent } from './add-property/add-property.component';
 import { PropertyDetailsComponent } from './components/property-details/property-details.component';
+import { propertyOwnerGuard } from './guards/property-owner.guard';
 
 export const routes: Routes = [
   // Default route
@@ -47,7 +48,11 @@ export const routes: Routes = [
 
   // User dashboard routes
 
-  { path: 'add-property', component: AddPropertyComponent }, // Only users can access this route
+  { path: 'add-property', component: AddPropertyComponent ,
+    canActivate: [AuthGuard]}, // users can access this route
+  { path: 'edit-property/:id', component: AddPropertyComponent ,
+    canActivate: [AuthGuard, propertyOwnerGuard]}, // Only property Owner can access this route
+
   { path: 'signupandlogin', component: SignupaandloginComponent },
 
   {

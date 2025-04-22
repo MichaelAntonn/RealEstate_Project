@@ -1,3 +1,4 @@
+//src/app/pipes/json-parse.pipe.ts
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({

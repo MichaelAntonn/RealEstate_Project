@@ -47,8 +47,10 @@ Route::prefix('v1')->group(function () {
     // Property Routes (public)
     Route::prefix('properties')->name('properties.')->group(function () {
         Route::get('/', [PropertyController::class, 'index'])->name('index');
-        Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
+        Route::get('/check-slug', [PropertyController::class, 'checkSlug'])->name('check-slug');
+        Route::get('check-property-code', [PropertyController::class, 'checkPropertyCode'])->name('check-property-code');
         Route::get('/slug/{slug}', [PropertyController::class, 'showBySlug'])->name('showBySlug');
+        Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
     });
 
     // Search Route (public)
@@ -74,7 +76,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
-        })->name('user.profile');
+        })->name('user.get-profile'); // two //user.profile
 
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
@@ -128,7 +130,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('user')->name('user.')->group(function () {
             Route::get('/dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
             Route::get('/statistics', [UserDashboardController::class, 'userStatistics'])->name('statistics');
-            Route::get('/profile', [UserDashboardController::class, 'getProfile'])->name('profile');
+            Route::get('/profile', [UserDashboardController::class, 'getProfile'])->name('profile'); // one
             Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
             Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('change.password');
             Route::delete('/account', [UserDashboardController::class, 'deleteAccount'])->name('account.delete');
@@ -235,13 +237,13 @@ Route::prefix('v1')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
                 Route::post('/financial', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');
                 Route::prefix('goals')->name('goals.')->group(function () {
-                    Route::post('/monthly', [SettingController::class, 'createMonthlyGoal'])->name('monthly-goal'); // Create a monthly goal
-                    Route::get('/monthly/target', [SettingController::class, 'getMonthlyTarget'])->name('monthly-goal'); // Get a monthly goal
-                    Route::post('/yearly', [SettingController::class, 'createYearlyGoal'])->name('yearly-goal');  // Create a yearly goal
-                    Route::get('/yearly/target', [SettingController::class, 'getYearlyTarget'])->name('yearly-goal'); // Get a yearly goal
-                    Route::put('/monthly/{goalId}', [SettingController::class, 'updateMonthlyGoal'])->name('monthly-goal'); // Update a monthly goal
-                    Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly-goal'); // Update a yearly goal
-                    Route::delete('/{goal}', [SettingController::class, 'deleteGoal']); // Delete a Goal
+                    Route::post('/monthly', [SettingController::class, 'createMonthlyGoal'])->name('monthly.create'); // Create a monthly goal
+                    Route::get('/monthly/target', [SettingController::class, 'getMonthlyTarget'])->name('monthly.target'); // Get a monthly goal
+                    Route::put('/monthly/{goalId}', [SettingController::class, 'updateMonthlyGoal'])->name('monthly.update'); // Update a monthly goal
+                    Route::post('/yearly', [SettingController::class, 'createYearlyGoal'])->name('yearly.create');  // Create a yearly goal
+                    Route::get('/yearly/target', [SettingController::class, 'getYearlyTarget'])->name('yearly.target'); // Get a yearly goal
+                    Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly.update'); // Update a yearly goal
+                    Route::delete('/{goal}', [SettingController::class, 'deleteGoal'])->name('delete'); // Delete a Goal
                 });
                 Route::prefix('subscription')->group(function () {
                     Route::get('/plan/{id}', [SubscriptionPlanController::class, 'show'])->name('settings.subscriptions.plan.show'); // Get details of a specific subscription plan by ID
