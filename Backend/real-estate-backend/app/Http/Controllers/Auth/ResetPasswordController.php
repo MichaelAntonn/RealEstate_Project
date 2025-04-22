@@ -29,7 +29,7 @@ class ResetPasswordController extends Controller
         // Insert the new token into the database
         DB::table('password_reset_tokens')->insert([
             'email' => $request->email,
-            'token' => $token,
+            'token' => Hash::make($token),
             'created_at' => Carbon::now(),
         ]);
 
@@ -62,10 +62,14 @@ class ResetPasswordController extends Controller
             ->first();
 
         // If the token is invalid, return a JSON error response
-        if (!$tokenData) {
+        if (!$tokenData || !Hash::check($request->token, $tokenData->token)) {
             return response()->json(['error' => 'Invalid token!'], 400);
         }
 
+        $tokenExpired = Carbon::parse($tokenData->created_at)->addMinutes(30)->isPast();
+        if ($tokenExpired) {
+            return response()->json(['error' => 'Token has expired!'], 400);
+        }
         // Update the user's password
         User::where('email', $request->email)
             ->update(['password' => Hash::make($request->password)]);
