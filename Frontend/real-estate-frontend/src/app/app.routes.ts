@@ -53,12 +53,14 @@ export const routes: Routes = [
   // User dashboard routes
 
   { path: 'add-property', component: AddPropertyComponent ,
-    canActivate: [AuthGuard]}, // users can access this route
+   // canActivate: [AuthGuard]
+  }, // users can access this route
   { path: 'edit-property/:id', component: AddPropertyComponent ,
-    canActivate: [AuthGuard, propertyOwnerGuard]}, // Only property Owner can access this route
+  //  canActivate: [AuthGuard, propertyOwnerGuard]
+  }, // Only property Owner can access this route
 
   { path: 'signupandlogin', component: SignupaandloginComponent },
-  
+
 
   {
     path: 'maindashboard',
