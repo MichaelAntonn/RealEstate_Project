@@ -1,19 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+  AsyncValidatorFn,
 } from '@angular/forms';
 import { PropertyService } from '../services/property.service';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Observable, of } from 'rxjs';
+import { map, catchError, debounceTime } from 'rxjs/operators';
+import { Property, PropertyMedia } from '../models/property';
+import { JsonParsePipe } from '../pipes/json-parse.pipe';
 
 @Component({
   selector: 'app-add-property',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, JsonParsePipe],
   templateUrl: './add-property.component.html',
   styleUrls: ['./add-property.component.css'],
 })
@@ -22,16 +29,36 @@ export class AddPropertyComponent implements OnInit {
   isEditMode = false;
   propertyId: number | null = null;
   selectedFiles: File[] = [];
-  previewUrls: string[] = [];
-  existingMedia: any[] = [];
+  existingMedia: PropertyMedia[] = [];
   mediaToDelete: number[] = [];
-  isLoading = false;
-  propertyTypes = ['land', 'apartment', 'villa', 'office'];
-  listingTypes = ['for_sale', 'for_rent'];
-  constructionStatuses = ['available', 'under_construction'];
-  legalStatuses = ['licensed', 'unlicensed', 'pending'];
-  cities: string[] = [];
-  currentYear: number = new Date().getFullYear();
+
+  coverSelectedFile: File | null = null;
+  coverPreviewUrl: string | null = null;
+  previewUrls: { url: string; type: string }[] = [];
+  isDraggingMedia = false;
+  isDraggingCover = false;
+  currentYear = new Date().getFullYear();
+  submitted = false;
+
+  propertyTypes = ['land', 'apartment', 'villa', 'office'] as const;
+  listingTypes = ['for_sale', 'for_rent'] as const;
+  constructionStatuses = ['available', 'under_construction'] as const;
+  legalStatuses = ['licensed', 'unlicensed', 'pending'] as const;
+  transactionStatuses = ['pending', 'completed'] as const;
+
+  readonly MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+  readonly VALID_IMAGE_TYPES = ['image/jpeg', 'image/png'];
+  readonly VALID_MEDIA_TYPES = [
+    'image/jpeg',
+    'image/png',
+    'video/mp4',
+    'video/quicktime',
+    'video/avi',
+  ];
+
+  @ViewChild('mediaInput') mediaInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('coverInput') coverInput!: ElementRef<HTMLInputElement>;
+
 
   constructor(
     private fb: FormBuilder,
@@ -44,68 +71,120 @@ export class AddPropertyComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.checkEditMode();
+    this.propertyForm.statusChanges.subscribe((status) => {});
   }
 
   initForm(): void {
     this.propertyForm = this.fb.group({
-      title: [{ value: '', disabled: this.isLoading }, Validators.required],
-      slug: [
-        { value: '', disabled: this.isLoading },
-        [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)],
-      ],
-      description: [
-        { value: '', disabled: this.isLoading },
-        Validators.required,
-      ],
-      type: [{ value: '', disabled: this.isLoading }, Validators.required],
-      price: [
-        { value: '', disabled: this.isLoading },
-        [Validators.required, Validators.min(0)],
-      ],
-      city: [{ value: '', disabled: this.isLoading }, Validators.required],
-      district: [{ value: '', disabled: this.isLoading }, Validators.required],
-      full_address: [{ value: '', disabled: this.isLoading }],
-      area: [
-        { value: '', disabled: this.isLoading },
-        [Validators.required, Validators.min(0)],
-      ],
-      bedrooms: [{ value: '', disabled: this.isLoading }, [Validators.min(0)]],
-      bathrooms: [{ value: '', disabled: this.isLoading }, [Validators.min(0)]],
-      listing_type: [
-        { value: '', disabled: this.isLoading },
-        Validators.required,
-      ],
-      construction_status: [
-        { value: '', disabled: this.isLoading },
-        Validators.required,
-      ],
-      building_year: [
-        { value: '', disabled: this.isLoading },
+
+      title: ['', [Validators.required, Validators.maxLength(255)]],
+      slug: ['', [Validators.required], [this.uniqueSlugValidator()]],
+      description: ['', Validators.required],
+      type: [
+        '',
         [
-          Validators.pattern(/^\d{4}$/),
-          Validators.min(1900),
-          Validators.max(new Date().getFullYear()),
+          Validators.required,
+          Validators.pattern('^(land|apartment|villa|office)$'),
         ],
       ],
-      legal_status: [{ value: '', disabled: this.isLoading }],
-      furnished: [{ value: false, disabled: this.isLoading }],
-      amenities: [{ value: '', disabled: this.isLoading }],
-      payment_options: [{ value: '', disabled: this.isLoading }],
-      property_code: [
-        { value: '', disabled: this.isLoading },
-        Validators.required,
+      price: ['', [Validators.required, Validators.min(0)]],
+      city: ['', Validators.required],
+      district: ['', Validators.required],
+      full_address: [''],
+      area: ['', [Validators.required, Validators.min(0)]],
+      bedrooms: [null, [Validators.min(0)]],
+      bathrooms: [null, [Validators.min(0)]],
+      listing_type: [
+        '',
+        [Validators.required, Validators.pattern('^(for_sale|for_rent)$')],
       ],
-      cover_image: [{ value: '', disabled: this.isLoading }],
+      construction_status: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^(available|under_construction)$'),
+        ],
+      ],
+      transaction_status: [
+        null,
+        [Validators.pattern('^(pending|completed)?$')],
+      ],
+      building_year: [null, [this.buildingYearValidator()]],
+      legal_status: [
+        null,
+        [Validators.pattern('^(licensed|unlicensed|pending)?$')],
+      ],
+      furnished: [false],
+      amenities: [''],
+      payment_options: [''],
+      property_code: [
+        '',
+        [Validators.required],
+        [this.uniquePropertyCodeValidator()],
+      ],
     });
   }
 
-  setLoadingState(loading: boolean): void {
-    this.isLoading = loading;
-    if (loading) {
-      this.propertyForm.disable();
-    } else {
-      this.propertyForm.enable();
+  buildingYearValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const year = new Date(value).getFullYear();
+      if (year < 1900 || year > this.currentYear) {
+        return { invalidYear: true };
+      }
+      return null;
+    };
+  }
+
+  uniqueSlugValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (
+        !control.value ||
+        (this.isEditMode &&
+          this.propertyForm.get('slug')?.value === control.value)
+      ) {
+        return of(null);
+      }
+      return this.propertyService.checkSlugAvailability(control.value).pipe(
+        debounceTime(500),
+        map((isAvailable) => (isAvailable ? null : { slugTaken: true })),
+        catchError(() => of(null))
+      );
+    };
+  }
+
+  uniquePropertyCodeValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (
+        !control.value ||
+        (this.isEditMode &&
+          this.propertyForm.get('property_code')?.value === control.value)
+      ) {
+        return of(null);
+      }
+      return this.propertyService
+        .checkPropertyCodeAvailability(control.value)
+        .pipe(
+          debounceTime(500),
+          map((isAvailable) =>
+            isAvailable ? null : { propertyCodeTaken: true }
+          ),
+          catchError(() => of(null))
+        );
+    };
+  }
+
+  getInvalidControls(): string[] {
+    const invalid = [];
+    const controls = this.propertyForm.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalid.push(name);
+      }
     }
+    return invalid;
+
   }
 
   checkEditMode(): void {
@@ -121,131 +200,248 @@ export class AddPropertyComponent implements OnInit {
   loadPropertyData(id: number): void {
     this.setLoadingState(true);
     this.propertyService.getProperty(id).subscribe({
-      next: (property) => {
-        this.setLoadingState(false);
 
-        const amenitiesText = property.amenities || '';
-        const paymentOptionsText = property.payment_options || '';
+      next: (property: Property) => {
+        const safeProperty = {
+          title: property.title || '',
+          slug: property.slug || '',
+          description: property.description || '',
+          type: this.propertyTypes.includes(property.type as any)
+            ? property.type
+            : '',
+          price: property.price ?? 0,
+          city: property.city || '',
+          district: property.district || '',
+          full_address: property.full_address || '',
+          area: property.area ?? 0,
+          bedrooms: property.bedrooms ?? null,
+          bathrooms: property.bathrooms ?? null,
+          listing_type: this.listingTypes.includes(property.listing_type as any)
+            ? property.listing_type
+            : '',
+          construction_status: this.constructionStatuses.includes(
+            property.construction_status as any
+          )
+            ? property.construction_status
+            : '',
+          transaction_status: this.transactionStatuses.includes(
+            property.transaction_status as any
+          )
+            ? property.transaction_status
+            : null,
+          building_year: property.building_year
+            ? new Date(property.building_year, 0, 1).toISOString().split('T')[0]
+            : null,
+          legal_status: this.legalStatuses.includes(
+            property.legal_status as any
+          )
+            ? property.legal_status
+            : null,
+          furnished: property.furnished ?? false,
+          amenities: Array.isArray(property.amenities)
+            ? property.amenities.join(', ')
+            : property.amenities || '',
+          payment_options: Array.isArray(property.payment_options)
+            ? property.payment_options.join(', ')
+            : property.payment_options || '',
+          property_code: property.property_code || '',
+        };
 
-        this.propertyForm.patchValue({
-          title: property.title,
-          slug: property.slug,
-          description: property.description,
-          type: property.type,
-          price: property.price,
-          city: property.city,
-          district: property.district,
-          full_address: property.full_address,
-          area: property.area,
-          bedrooms: property.bedrooms,
-          bathrooms: property.bathrooms,
-          listing_type: property.listing_type,
-          construction_status: property.construction_status,
-          building_year: property.building_year,
-          legal_status: property.legal_status,
-          furnished: property.furnished,
-          amenities: amenitiesText,
-          payment_options: paymentOptionsText,
-          property_code: property.property_code,
-          cover_image: property.cover_image,
-        });
+        this.propertyForm.patchValue(safeProperty);
+
 
         if (property.media) {
           this.existingMedia = property.media;
+        }
+        if (property.cover_image) {
+          this.coverPreviewUrl = property.cover_image;
         }
       },
       error: (err) => {
         this.setLoadingState(false);
         this.toastr.error('Failed to load property data');
-        console.error(err);
+        console.error('Error loading property:', err);
       },
     });
   }
 
-  onFileSelected(event: any): void {
-    const files = event.target.files;
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
 
-        if (file.size > 20 * 1024 * 1024) {
-          this.toastr.error(`${file.name} is too large. Maximum size is 20MB.`);
-          continue;
-        }
+  onDragOver(event: DragEvent, type: 'media' | 'cover'): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (type === 'media') {
+      this.isDraggingMedia = true;
+    } else {
+      this.isDraggingCover = true;
+    }
+  }
 
-        const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        const validVideoTypes = ['video/mp4', 'video/mov', 'video/avi'];
-        if (
-          !validImageTypes.includes(file.type) &&
-          !validVideoTypes.includes(file.type)
-        ) {
-          this.toastr.error(
-            `${file.name} has an invalid file type. Allowed types: jpg, jpeg, png, mp4, mov, avi.`
-          );
-          continue;
-        }
+  onDragLeave(event: DragEvent, type: 'media' | 'cover'): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (type === 'media') {
+      this.isDraggingMedia = false;
+    } else {
+      this.isDraggingCover = false;
+    }
+  }
 
-        this.selectedFiles.push(file);
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.previewUrls.push(e.target.result);
-        };
-        reader.readAsDataURL(file);
+  onDrop(event: DragEvent, type: 'media' | 'cover'): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (type === 'media') {
+      this.isDraggingMedia = false;
+      const files = event.dataTransfer?.files;
+      if (files) {
+        this.handleMediaFiles(files);
+      }
+    } else {
+      this.isDraggingCover = false;
+      const files = event.dataTransfer?.files;
+      if (files && files.length > 0) {
+        this.handleCoverFile(files[0]);
+
       }
     }
   }
 
-  removeSelectedFile(index: number): void {
-    this.selectedFiles.splice(index, 1);
-    this.previewUrls.splice(index, 1);
+  onMediaSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.handleMediaFiles(input.files);
+      input.value = '';
+    }
   }
 
-  removeExistingMedia(mediaId: number, index: number): void {
-    this.mediaToDelete.push(mediaId);
-    this.existingMedia.splice(index, 1);
+  onCoverImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.handleCoverFile(input.files[0]);
+      input.value = '';
+    }
+  }
+
+  handleMediaFiles(files: FileList): void {
+    Array.from(files).forEach((file) => {
+      if (!this.VALID_MEDIA_TYPES.includes(file.type)) {
+        this.toastr.warning(`Unsupported file type: ${file.name}`);
+        return;
+      }
+      if (file.size > this.MAX_FILE_SIZE) {
+        this.toastr.warning(`File ${file.name} exceeds 20MB limit`);
+        return;
+      }
+      this.selectedFiles.push(file);
+      const url = URL.createObjectURL(file);
+      this.previewUrls.push({ url, type: file.type });
+    });
+  }
+
+  handleCoverFile(file: File): void {
+    if (!this.VALID_IMAGE_TYPES.includes(file.type)) {
+      this.toastr.warning(
+        `Unsupported file type for cover image: ${file.name}`
+      );
+      return;
+    }
+    if (file.size > this.MAX_FILE_SIZE) {
+      this.toastr.warning(`Cover image ${file.name} exceeds 20MB limit`);
+      return;
+    }
+    this.coverSelectedFile = file;
+    this.coverPreviewUrl = URL.createObjectURL(file);
+  }
+
+  removeMedia(url: string): void {
+    const index = this.previewUrls.findIndex((preview) => preview.url === url);
+    if (index !== -1) {
+      this.previewUrls.splice(index, 1);
+      this.selectedFiles.splice(index, 1);
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  removeCoverImage(): void {
+    if (this.coverPreviewUrl) {
+      URL.revokeObjectURL(this.coverPreviewUrl);
+    }
+    this.coverSelectedFile = null;
+    this.coverPreviewUrl = null;
+  }
+
+  markMediaForDeletion(id: number): void {
+    this.mediaToDelete.push(id);
+    this.existingMedia = this.existingMedia.filter((media) => media.id !== id);
   }
 
   onSubmit(): void {
+    this.submitted = true;
     if (this.propertyForm.invalid) {
+
+      this.toastr.warning('Please fill all required fields correctly');
       this.propertyForm.markAllAsTouched();
-      this.toastr.warning('Please fill all required fields');
+
       return;
     }
+    this.submitted = false;
 
     this.setLoadingState(true);
     const formData = new FormData();
     const formValue = this.propertyForm.value;
 
     Object.keys(formValue).forEach((key) => {
-      if (formValue[key] !== null && formValue[key] !== undefined) {
-        if (key === 'amenities' || key === 'payment_options') {
-          const items = formValue[key]
-            ? formValue[key]
-                .split(',')
-                .map((item: string) => item.trim())
-                .filter((item: string) => item !== '')
-            : [];
-          formData.append(key, JSON.stringify(items));
-        } else if (key === 'furnished') {
-          formData.append(key, formValue[key] ? '1' : '0');
-        } else {
-          formData.append(key, formValue[key].toString());
-        }
+
+      if (key === 'amenities' || key === 'payment_options') {
+        const items = formValue[key]
+          ? formValue[key]
+              .split(',')
+              .map((item: string) => item.trim())
+              .filter((item: string) => item)
+          : [];
+        formData.append(key, JSON.stringify(items));
+      } else if (key === 'furnished') {
+        formData.append(key, formValue[key] ? '1' : '0');
+      } else if (key === 'building_year' && formValue[key]) {
+        formData.append(key, new Date(formValue[key]).getFullYear().toString());
+      } else if (formValue[key] != null && formValue[key] !== '') {
+        formData.append(key, formValue[key]);
       }
     });
 
-    this.selectedFiles.forEach((file, index) => {
-      formData.append(`media[${index}]`, file, file.name);
+    this.selectedFiles.forEach((file) => {
+      formData.append(`media[]`, file, file.name);
     });
+
+    if (this.coverSelectedFile) {
+      formData.append('cover_image', this.coverSelectedFile);
+    }
+
 
     if (this.mediaToDelete.length > 0) {
       formData.append('media_to_delete', JSON.stringify(this.mediaToDelete));
     }
 
-    const request =
-      this.isEditMode && this.propertyId
-        ? this.propertyService.updateProperty(this.propertyId, formData)
-        : this.propertyService.createProperty(formData);
+
+    if (this.isEditMode && this.propertyId) {
+      this.updateProperty(formData);
+    } else {
+      this.createProperty(formData);
+    }
+  }
+
+  createProperty(formData: FormData): void {
+    this.propertyService.createProperty(formData).subscribe({
+      next: () => {
+        this.toastr.success('Property created successfully!');
+        this.router.navigate(['/properties']);
+      },
+      error: (err) => this.handleError(err),
+    });
+  }
+
+  updateProperty(formData: FormData): void {
+    if (!this.propertyId) return;
+
 
         // for (const pair of formData.entries()) {
         //   console.log(pair[0], pair[1]);
@@ -260,35 +456,26 @@ export class AddPropertyComponent implements OnInit {
         );
         this.router.navigate(['/properties']);
       },
-      error: (err) => {
-        this.setLoadingState(false);
-        const errorMessage =
-          err.error?.error?.['media.0']?.[0] ||
-          err.error?.warning ||
-          'Failed to save property';
-        this.toastr.error(errorMessage);
-        console.error('Error saving property:', err);
-      },
+
+      error: (err) => this.handleError(err),
     });
   }
 
-  deleteProperty(): void {
-    if (!this.propertyId) return;
+  private handleError(err: any): void {
+    if (err.status === 422 && err.error?.errors) {
+      const errors = err.error.errors;
+      Object.keys(errors).forEach((field) => {
+        const control = this.propertyForm.get(field);
+        if (control) {
+          control.setErrors({ serverError: errors[field].join(', ') });
+        }
+        this.toastr.error(errors[field].join(', '), `Error in ${field}`);
 
-    if (confirm('Are you sure you want to delete this property?')) {
-      this.setLoadingState(true);
-      this.propertyService.deleteProperty(this.propertyId).subscribe({
-        next: () => {
-          this.setLoadingState(false);
-          this.toastr.success('Property deleted successfully!');
-          this.router.navigate(['/properties']);
-        },
-        error: (err) => {
-          this.setLoadingState(false);
-          this.toastr.error('Failed to delete property');
-          console.error(err);
-        },
       });
+    } else {
+      const errorMessage = err.error?.message || err.message || 'Unknown error';
+      this.toastr.error(`Operation failed: ${errorMessage}`);
     }
+    console.error('Error:', err);
   }
 }
