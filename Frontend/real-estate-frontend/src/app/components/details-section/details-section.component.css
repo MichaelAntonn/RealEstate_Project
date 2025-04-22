@@ -13,3 +13,18 @@
     gap: 6.5rem; /* Adjusted for smaller screens, half of 200px */
   }
 }
+
+.relative {
+  position: relative;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .grid img {
+    height: 150px;
+  }
+}

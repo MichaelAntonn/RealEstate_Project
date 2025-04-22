@@ -3,6 +3,7 @@ import { PropertyService } from '../../services/property.service';
 import { Property, PropertyMedia } from '../../models/property';
 import { CommonModule } from '@angular/common';
 import { JsonParsePipe } from '../../pipes/json-parse.pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-details-section',
@@ -17,8 +18,15 @@ export class DetailsSectionComponent implements OnInit {
   media: PropertyMedia[] = [];
   loading = false;
   error: string | null = null;
+  showImageModal = false;
+  selectedImage: string | null = null;
+  currentPage = 0;
+  itemsPerPage = 3;
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     if (this.propertyId) {
@@ -58,7 +66,51 @@ export class DetailsSectionComponent implements OnInit {
     });
   }
 
+  get displayedMedia(): PropertyMedia[] {
+    const start = this.currentPage * this.itemsPerPage;
+    return this.media.slice(start, start + this.itemsPerPage);
+  }
+
+  get isLastPage(): boolean {
+    return (
+      this.currentPage >= Math.ceil(this.media.length / this.itemsPerPage) - 1
+    );
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (!this.isLastPage) {
+      this.currentPage++;
+    }
+  }
+
   bookNow(): void {
-    console.log('Book Now clicked for property:', this.propertyId);
+    if (this.propertyId) {
+      this.router.navigate(['/booking', this.propertyId]);
+    } else {
+      console.error('No property ID available');
+    }
+  }
+
+  openImageModal(mediaURL: string): void {
+    this.selectedImage = `http://127.0.0.1:8000/storage/${mediaURL}`;
+    this.showImageModal = true;
+  }
+
+  closeImageModal(): void {
+    this.showImageModal = false;
+    this.selectedImage = null;
+  }
+
+  closeImageModalOnBackground(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('bg-black')) {
+      this.closeImageModal();
+    }
   }
 }

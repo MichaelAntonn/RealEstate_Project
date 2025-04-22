@@ -6,9 +6,8 @@
 
     <div>
       @if (property && property.cover_image) {
-        <!-- [src]="property.cover_image" -->
-        <img
-        [src]="'http://127.0.0.1:8000/api/v1/storage/' + property.cover_image"
+      <img
+        [src]="'http://127.0.0.1:8000/storage/' + property.cover_image"
         alt="{{ property.title || 'Property' }}"
         class="w-full h-[400px] object-cover rounded-lg shadow-md"
       />
@@ -20,22 +19,37 @@
       />
       }
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-        @for (item of media | slice:0:3; track item.id) { @if (item.MediaType
-        === 'image') {
-        <img
-          [src]="item.MediaURL"
-          alt="Property Media"
-          class="w-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform"
-        />
-        } } @if (media.length < 3) { @for (i of [1,2,3] | slice:media.length:3;
-        track i) {
-        <img
-          src="https://placehold.co/200x150"
-          alt="Placeholder"
-          class="w-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform"
-        />
-        } }
+      <div class="my-4 relative">
+        @if (media && media.length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          @for (item of displayedMedia; track item.id) { @if (item.MediaType ===
+          'image') {
+          <img
+            [src]="'http://127.0.0.1:8000/storage/' + item.MediaURL"
+            alt="Property Media"
+            class="w-full h-[150px] object-cover rounded-md shadow-sm hover:scale-105 transition-transform cursor-pointer"
+            (click)="openImageModal(item.MediaURL)"
+          />
+          } }
+        </div>
+        @if (media.length > 3) {
+        <button
+          (click)="prevPage()"
+          [disabled]="currentPage === 0"
+          class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-orange-600 disabled:opacity-50"
+        >
+          <i class="fa fa-chevron-left"></i>
+        </button>
+        <button
+          (click)="nextPage()"
+          [disabled]="isLastPage"
+          class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-orange-600 disabled:opacity-50"
+        >
+          <i class="fa fa-chevron-right"></i>
+        </button>
+        } } @else {
+        <p class="text-gray-500">No media available.</p>
+        }
       </div>
     </div>
 
@@ -48,7 +62,7 @@
       </p>
       <button
         (click)="bookNow()"
-        class="mt-2 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+        class="w-full mt-2 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
         [disabled]="!property"
       >
         Book Now
@@ -91,6 +105,25 @@
           <i class="fa fa-check-circle text-orange-500 mr-2"></i> {{ amenity }}
         </p>
         }
+      </div>
+    </div>
+    } @if (showImageModal) {
+    <div
+      class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+      (click)="closeImageModalOnBackground($event)"
+    >
+      <div class="relative max-w-2xl w-full">
+        <img
+          [src]="selectedImage"
+          alt="Selected Media"
+          class="w-full h-auto max-h-[70vh] object-contain rounded-lg"
+        />
+        <button
+          (click)="closeImageModal()"
+          class="absolute top-2 right-2 text-white bg-orange-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-orange-600"
+        >
+          <i class="fa fa-times"></i>
+        </button>
       </div>
     </div>
     }
