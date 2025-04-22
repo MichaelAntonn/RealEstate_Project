@@ -222,18 +222,15 @@ class CompanyController extends Controller
 
 public function verifyCompany(Request $request, $id)
 {
-    // ✅ التحقق من تسجيل الدخول
     if (!Auth::guard('sanctum')->check()) {
         return response()->json(['error' => 'Unauthorized. Please log in.'], 401);
     }
 
-    // ✅ التحقق من نوع المستخدم
     $user = Auth::guard('sanctum')->user();
     if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin') {
         return response()->json(['error' => 'Forbidden. Admin access only.'], 403);
     }
 
-    // ✅ كمل الكود بتاعك عادي
     $company = Company::find($id);
     if (!$company) {
         return response()->json(['message' => 'Company not found.'], 404);
@@ -255,6 +252,41 @@ public function verifyCompany(Request $request, $id)
     return response()->json([
         'message' => 'Company verification status updated successfully.',
         'data' => $company
+    ], 200);
+}
+
+public function login(Request $request)
+{
+    $request->validate([
+        'company_email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $company = Company::where('company_email', $request->company_email)->first();
+
+    if (!$company || !Hash::check($request->password, $company->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    if ($company->verification_status === 'Pending') {
+        return response()->json([
+            'message' => 'تم استلام أوراقك وهي تحت المراجعة حالياً. سنقوم بالرد عليك قريباً.'
+        ], 403);
+    }
+
+    if ($company->verification_status === 'Rejected') {
+        return response()->json([
+            'message' => 'تم رفض طلب تسجيل شركتك.',
+            'reason' => $company->rejection_reason
+        ], 403);
+    }
+
+    $token = $company->createToken('company-token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login successful',
+        'token' => $token,
+        'company' => $company
     ], 200);
 }
 }
