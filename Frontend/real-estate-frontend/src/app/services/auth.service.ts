@@ -14,14 +14,14 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // تسجيل مستخدم جديد
+  // Register a new user
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData).pipe(
       catchError(this.handleError)
     );
   }
 
-  // تسجيل الدخول
+  // Login
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: any) => {
@@ -36,53 +36,53 @@ export class AuthService {
     );
   }
 
-  // إعادة تعيين كلمة المرور
+  // Reset password
   forgotPassword(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/password/forgot-password`, { email }).pipe(
       catchError(this.handleError)
     );
   }
 
-  // حفظ التوكن
+  // Save token
   saveToken(token: string): void {
     localStorage.setItem(this.AUTH_KEY, token);
   }
 
-  // جلب التوكن
+  // Get token
   getToken(): string | null {
     return localStorage.getItem(this.AUTH_KEY);
   }
 
-  // حفظ بيانات المستخدم
+  // Save user data
   saveUser(user: any): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
-// أضف هذه الدالة إلى AuthService الحالي
+  // Add this function to the existing AuthService
+  registerCompany(companyData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/company/register`, companyData).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-registerCompany(companyData: FormData): Observable<any> {
-  return this.http.post(`${this.apiUrl}/company/register`, companyData).pipe(
-    catchError(this.handleError)
-  );
-}
-  // جلب بيانات المستخدم
+  // Get user data
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
     return user ? JSON.parse(user) : null;
   }
 
-  // تسجيل الخروج
+  // Logout
   logout(): void {
     this.clearAllTokens();
     this.router.navigate(['/login']);
   }
 
-  // التحقق من حالة المصادقة
+  // Check authentication status
   isLoggedIn(): boolean {
     return this.isTokenValid();
   }
 
-  // إنشاء رؤوس المصادقة
+  // Create authentication headers
   getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
@@ -91,7 +91,7 @@ registerCompany(companyData: FormData): Observable<any> {
     });
   }
 
-  // التحقق من صلاحية التوكن
+  // Check token validity
   isTokenValid(): boolean {
     const token = this.getToken();
     if (!token) return false;
@@ -104,18 +104,18 @@ registerCompany(companyData: FormData): Observable<any> {
     }
   }
 
-  // معالجة الأخطاء المركزية
+  // Central error handling
   private handleError(error: any): Observable<never> {
     console.error('An error occurred:', error);
     return throwError(() => new Error(error.message || 'Server error'));
   }
 
-  // تنظيف التوكنات القديمة
+  // Clean up stale tokens
   private clearStaleTokens(): void {
     ['access_token', 'token'].forEach(key => localStorage.removeItem(key));
   }
 
-  // مسح جميع التوكنات والبيانات
+  // Clear all tokens and data
   private clearAllTokens(): void {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.USER_KEY);

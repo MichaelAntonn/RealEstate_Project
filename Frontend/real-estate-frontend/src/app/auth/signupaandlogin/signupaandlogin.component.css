@@ -28,9 +28,66 @@ body {
     max-width: 900px;
     min-height: 600px;
     height: auto;
-    margin: auto;
+    margin: 5% auto;
     display: flex;
     flex-direction: column;
+}
+
+/* Notification Styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 350px;
+}
+
+.notification {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+    transition: all 0.3s ease;
+}
+
+.notification.error {
+    background-color: #f44336;
+}
+
+.notification i {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 18px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.notification i:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+form h1 {
+    margin: 20px;
 }
 
 .container p,
@@ -111,11 +168,24 @@ body {
     width: 100%;
     outline: none;
     transition: all 0.3s;
+    border: 1px solid transparent;
 }
 
 .container input:focus, .container select:focus {
     border-color: #F77C34;
     box-shadow: 0px 4px 8px rgba(247, 124, 52, 0.3);
+}
+
+.container input.error, .container select.error {
+    border-color: #f44336 !important;
+    background-color: #ffebee;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
 }
 
 .form-container {
@@ -149,6 +219,12 @@ body {
     opacity: 1;
     z-index: 5;
     animation: move 0.6s;
+}
+
+#company {
+    color: #E66A2C !important;
+    padding-bottom: 20px;
+    text-align: center;
 }
 
 @keyframes move {
@@ -310,11 +386,6 @@ body {
     margin-bottom: 5px;
 }
 
-input.error, select.error {
-    border-color: red;
-    background-color: #ffe5e5;
-}
-
 /* Switch Mode */
 .switch-mode {
     margin: 10px 0;
@@ -326,18 +397,19 @@ input.error, select.error {
     flex-wrap: wrap;
 }
 
-.switch-btn {
+.switch-a {
     background: none;
     border: none;
-    color: #F77C34;
+    color: #F77C34 !important;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: underline !important;
     padding: 0;
     margin-left: 5px;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 500 !important;
 }
 
-.switch-btn:hover {
+.switch-a:hover {
     color: #E66A2C;
 }
 
@@ -394,6 +466,10 @@ input.error, select.error {
     
     .toggle-panel {
         padding: 0 20px;
+    }
+
+    .notification-container {
+        width: 300px;
     }
 }
 
@@ -478,6 +554,11 @@ input.error, select.error {
     .container.active .sign-up {
         animation: none;
     }
+
+    .notification-container {
+        width: 250px;
+        right: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -512,11 +593,16 @@ input.error, select.error {
         font-size: 12px;
     }
     
-    .switch-btn {
+    .switch-a {
         font-size: 12px;
     }
     
     .file-input-container label {
         font-size: 12px;
+    }
+
+    .notification-container {
+        width: 90%;
+        right: 5%;
     }
 }

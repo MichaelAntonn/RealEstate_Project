@@ -47,7 +47,68 @@ export class SignupaandloginComponent implements AfterViewInit {
     accept_terms: false
   };
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  // Notification system
+  notification = {
+    show: false,
+    message: '',
+    isError: false
+  };
+
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {
+    // Check for Google OAuth callback
+    this.checkForGoogleCallback();
+  }
+
+  // Check if this is a Google OAuth callback
+  private checkForGoogleCallback() {
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+    
+    if (code && state) {
+      this.handleGoogleCallback(code, state);
+    }
+  }
+
+  // Handle Google OAuth callback
+  private handleGoogleCallback(code: string, state: string) {
+    this.http.post('http://localhost:8000/auth/google/callback', { code, state })
+      .subscribe({
+        next: (response: any) => {
+          if (response.access_token) {
+            this.authService.saveToken(response.access_token);
+            this.authService.saveUser(response.user);
+            this.router.navigate(['/maindashboard']);
+            this.showNotification('Login with Google successful!', false);
+          } else {
+            this.showNotification('Google authentication failed. Please try again.', true);
+          }
+        },
+        error: (error) => {
+          console.error('Google authentication error:', error);
+          this.showNotification('Error during Google authentication. Please try again.', true);
+        }
+      });
+  }
+
+  // Show notification
+  showNotification(message: string, isError: boolean = false) {
+    this.notification = {
+      show: true,
+      message: message,
+      isError: isError
+    };
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      this.hideNotification();
+    }, 5000);
+  }
+
+  // Hide notification
+  hideNotification() {
+    this.notification.show = false;
+  }
 
   // Toggle between user and company signup forms
   toggleSignupMode() {
@@ -82,12 +143,12 @@ export class SignupaandloginComponent implements AfterViewInit {
         !this.company.password || 
         !this.company.password_confirmation || 
         !this.company.accept_terms) {
-      alert('Please fill all required fields');
+      this.showNotification('Please fill all required fields', true);
       return;
     }
 
     if (this.company.password !== this.company.password_confirmation) {
-      alert('Passwords do not match');
+      this.showNotification('Passwords do not match', true);
       return;
     }
 
@@ -120,13 +181,13 @@ export class SignupaandloginComponent implements AfterViewInit {
     // Send to backend
     this.http.post('http://localhost:8000/api/company/register', formData).subscribe({
       next: (response: any) => {
-        alert('Company registration successful! Awaiting verification.');
+        this.showNotification('Company registration successful! Awaiting verification.', false);
         this.toggleForms(); // Switch to login form
         this.resetCompanyForm();
       },
       error: (error) => {
         console.error('Company registration failed:', error);
-        alert('Company registration failed: ' + (error.error?.message || 'Unknown error'));
+        this.showNotification('Company registration failed: ' + (error.error?.message || 'Unknown error'), true);
       }
     });
   }
@@ -152,7 +213,6 @@ export class SignupaandloginComponent implements AfterViewInit {
     };
   }
 
-  // باقي الدوال الموجودة لديك تبقى كما هي (onSignupSubmit, onLoginSubmit, resetSignupForm, signInWithGoogle, navigateToForgotPassword, ngAfterViewInit)
   // Handle user signup form submission
   onSignupSubmit() {
     let isValid = true;
@@ -167,7 +227,7 @@ export class SignupaandloginComponent implements AfterViewInit {
         (input.id === 'last_name' && input.value.length < 3)
       ) {
         input.classList.add('error');
-        (input as HTMLInputElement).placeholder = message;
+        this.showNotification(message, true);
         isValid = false;
       } else {
         input.classList.remove('error');
@@ -193,14 +253,19 @@ export class SignupaandloginComponent implements AfterViewInit {
     // Check password match
     if (passwordInput.value !== confirmPasswordInput.value) {
       confirmPasswordInput.classList.add('error');
-      confirmPasswordInput.placeholder = 'Passwords must match';
+      this.showNotification('Passwords must match', true);
       isValid = false;
+    } else {
+      confirmPasswordInput.classList.remove('error');
     }
 
     // Check terms acceptance
     if (!termsInput.checked) {
       termsInput.classList.add('error');
+      this.showNotification('You must accept the terms and conditions', true);
       isValid = false;
+    } else {
+      termsInput.classList.remove('error');
     }
 
     if (isValid) {
@@ -222,12 +287,13 @@ export class SignupaandloginComponent implements AfterViewInit {
 
       this.http.post('http://localhost:8000/api/v1/register', userData, { headers }).subscribe({
         next: () => {
-          alert('Registration successful!');
+          this.showNotification('Registration successful!', false);
           this.toggleForms(); // Switch to login form
           this.resetSignupForm();
         },
         error: (error) => {
-          alert('Registration failed: ' + JSON.stringify(error.error));
+          const errorMessage = error.error?.message || 'Registration failed';
+          this.showNotification(errorMessage, true);
         },
       });
     }
@@ -252,7 +318,7 @@ export class SignupaandloginComponent implements AfterViewInit {
       },
       (error) => {
         console.error('Login failed:', error);
-        alert('Login failed. Please check your credentials.');
+        this.showNotification('Login failed. Please check your credentials.', true);
       }
     );
   }
@@ -271,7 +337,7 @@ export class SignupaandloginComponent implements AfterViewInit {
 
   // Google sign in
   signInWithGoogle() {
-    window.location.href = 'http://localhost:8000/api/v1/social/auth/google';
+    window.location.href = 'http://localhost:8000/auth/google/redirect';
   }
 
   // Navigate to forgot password
