@@ -1,256 +1,616 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Card Header -->
+      <div class="bg-orange-500 px-6 py-4">
+        <h2 class="text-2xl font-bold text-white flex items-center">
+          <i class="fas fa-home mr-2"></i>
+          {{ isEditMode ? 'Edit Property' : 'Add New Property' }}
+        </h2>
+      </div>
 
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">{{ isEditMode ? 'Edit Property' : 'Add New Property' }}</h4>
-        </div>
-
-        <div class="card-body">
-          <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()">
-            <!-- Basic Information Section -->
-            <div class="mb-5">
-              <h5 class="border-bottom pb-2 mb-4">Basic Information</h5>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label for="title" class="form-label">Title*</label>
-                  <input type="text" class="form-control" id="title" formControlName="title">
-                  <div *ngIf="propertyForm.get('title')?.invalid && propertyForm.get('title')?.touched" class="text-danger">
-                    Title is required
+      <!-- Card Body -->
+      <div class="p-6">
+        <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()" class="space-y-8" enctype="multipart/form-data">
+          <!-- Basic Information -->
+          <div class="space-y-4">
+            <div class="flex items-center border-b border-orange-200 pb-2">
+              <i class="fas fa-info-circle text-orange-500 mr-2"></i>
+              <h3 class="text-lg font-semibold text-gray-800">Basic Information</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Title -->
+              <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-heading text-orange-500 mr-1"></i> Title*
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  formControlName="title"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('title')?.invalid && (propertyForm.get('title')?.touched || submitted)"
+                />
+                @if (propertyForm.get('title')?.invalid && (propertyForm.get('title')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('title')?.errors?.['required']) {
+                      Title is required
+                    } @else if (propertyForm.get('title')?.errors?.['maxlength']) {
+                      Title must not exceed 255 characters
+                    } @else if (propertyForm.get('title')?.errors?.['serverError']) {
+                      {{ propertyForm.get('title')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="slug" class="form-label">Slug*</label>
-                  <input type="text" class="form-control" id="slug" formControlName="slug">
-                  <div *ngIf="propertyForm.get('slug')?.invalid && propertyForm.get('slug')?.touched" class="text-danger">
-                    Slug is required
+                }
+              </div>
+              <!-- Slug -->
+              <div>
+                <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-link text-orange-500 mr-1"></i> Slug*
+                </label>
+                <input
+                  type="text"
+                  id="slug"
+                  formControlName="slug"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('slug')?.invalid && (propertyForm.get('slug')?.touched || submitted)"
+                />
+                @if (propertyForm.get('slug')?.invalid && (propertyForm.get('slug')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('slug')?.errors?.['required']) {
+                      Slug is required
+                    } @else if (propertyForm.get('slug')?.errors?.['slugTaken']) {
+                      This slug is already taken
+                    } @else if (propertyForm.get('slug')?.errors?.['serverError']) {
+                      {{ propertyForm.get('slug')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-12">
-                  <label for="description" class="form-label">Description*</label>
-                  <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
-                  <div *ngIf="propertyForm.get('description')?.invalid && propertyForm.get('description')?.touched" class="text-danger">
-                    Description is required
+                }
+              </div>
+              <!-- Description -->
+              <div class="md:col-span-2">
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-align-left text-orange-500 mr-1"></i> Description*
+                </label>
+                <textarea
+                  id="description"
+                  rows="3"
+                  formControlName="description"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('description')?.invalid && (propertyForm.get('description')?.touched || submitted)"
+                ></textarea>
+                @if (propertyForm.get('description')?.invalid && (propertyForm.get('description')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('description')?.errors?.['required']) {
+                      Description is required
+                    } @else if (propertyForm.get('description')?.errors?.['serverError']) {
+                      {{ propertyForm.get('description')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="type" class="form-label">Property Type*</label>
-                  <select class="form-select" id="type" formControlName="type">
-                    <option value="">Select Type</option>
-                    <option *ngFor="let type of propertyTypes" [value]="type">{{ type | titlecase }}</option>
-                  </select>
-                  <div *ngIf="propertyForm.get('type')?.invalid && propertyForm.get('type')?.touched" class="text-danger">
-                    Property type is required
+                }
+              </div>
+              <!-- Property Type -->
+              <div>
+                <label for="type" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-building text-orange-500 mr-1"></i> Property Type*
+                </label>
+                <select
+                  id="type"
+                  formControlName="type"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('type')?.invalid && (propertyForm.get('type')?.touched || submitted)"
+                >
+                  <option value="" disabled>Select Type</option>
+                  @for (type of propertyTypes; track type) {
+                    <option [value]="type">{{ type | titlecase }}</option>
+                  }
+                </select>
+                @if (propertyForm.get('type')?.invalid && (propertyForm.get('type')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('type')?.errors?.['required']) {
+                      Property type is required
+                    } @else if (propertyForm.get('type')?.errors?.['serverError']) {
+                      {{ propertyForm.get('type')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="listing_type" class="form-label">Listing Type*</label>
-                  <select class="form-select" id="listing_type" formControlName="listing_type">
-                    <option value="">Select Listing Type</option>
-                    <option *ngFor="let type of listingTypes" [value]="type">{{ type | titlecase }}</option>
-                  </select>
-                  <div *ngIf="propertyForm.get('listing_type')?.invalid && propertyForm.get('listing_type')?.touched" class="text-danger">
-                    Listing type is required
+                }
+              </div>
+              <!-- Listing Type -->
+              <div>
+                <label for="listing_type" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-tag text-orange-500 mr-1"></i> Listing Type*
+                </label>
+                <select
+                  id="listing_type"
+                  formControlName="listing_type"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('listing_type')?.invalid && (propertyForm.get('listing_type')?.touched || submitted)"
+                >
+                  <option value="" disabled>Select Listing Type</option>
+                  @for (type of listingTypes; track type) {
+                    <option [value]="type">{{ type | titlecase }}</option>
+                  }
+                </select>
+                @if (propertyForm.get('listing_type')?.invalid && (propertyForm.get('listing_type')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('listing_type')?.errors?.['required']) {
+                      Listing type is required
+                    } @else if (propertyForm.get('listing_type')?.errors?.['serverError']) {
+                      {{ propertyForm.get('listing_type')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="construction_status" class="form-label">Construction Status*</label>
-                  <select class="form-select" id="construction_status" formControlName="construction_status">
-                    <option value="">Select Status</option>
-                    <option *ngFor="let status of constructionStatuses" [value]="status">{{ status | titlecase }}</option>
-                  </select>
-                  <div *ngIf="propertyForm.get('construction_status')?.invalid && propertyForm.get('construction_status')?.touched" class="text-danger">
-                    Construction status is required
+                }
+              </div>
+              <!-- Construction Status -->
+              <div>
+                <label for="construction_status" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-hard-hat text-orange-500 mr-1"></i> Construction Status*
+                </label>
+                <select
+                  id="construction_status"
+                  formControlName="construction_status"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('construction_status')?.invalid && (propertyForm.get('construction_status')?.touched || submitted)"
+                >
+                  <option value="" disabled>Select Status</option>
+                  @for (status of constructionStatuses; track status) {
+                    <option [value]="status">{{ status | titlecase }}</option>
+                  }
+                </select>
+                @if (propertyForm.get('construction_status')?.invalid && (propertyForm.get('construction_status')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('construction_status')?.errors?.['required']) {
+                      Construction status is required
+                    } @else if (propertyForm.get('construction_status')?.errors?.['serverError']) {
+                      {{ propertyForm.get('construction_status')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
+                }
               </div>
             </div>
+          </div>
 
-            <!-- Location Information Section -->
-            <div class="mb-5">
-              <h5 class="border-bottom pb-2 mb-4">Location Information</h5>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label for="city" class="form-label">City*</label>
-                  <input type="text" class="form-control" id="city" formControlName="city">
-                  <div *ngIf="propertyForm.get('city')?.invalid && propertyForm.get('city')?.touched" class="text-danger">
-                    City is required
+          <!-- Location Information -->
+          <div class="space-y-4">
+            <div class="flex items-center border-b border-orange-200 pb-2">
+              <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
+              <h3 class="text-lg font-semibold text-gray-800">Location Information</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- City -->
+              <div>
+                <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-city text-orange-500 mr-1"></i> City*
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  formControlName="city"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('city')?.invalid && (propertyForm.get('city')?.touched || submitted)"
+                />
+                @if (propertyForm.get('city')?.invalid && (propertyForm.get('city')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('city')?.errors?.['required']) {
+                      City is required
+                    } @else if (propertyForm.get('city')?.errors?.['serverError']) {
+                      {{ propertyForm.get('city')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="district" class="form-label">District*</label>
-                  <input type="text" class="form-control" id="district" formControlName="district">
-                  <div *ngIf="propertyForm.get('district')?.invalid && propertyForm.get('district')?.touched" class="text-danger">
-                    District is required
+                }
+              </div>
+              <!-- District -->
+              <div>
+                <label for="district" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-map-marked-alt text-orange-500 mr-1"></i> District*
+                </label>
+                <input
+                  type="text"
+                  id="district"
+                  formControlName="district"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('district')?.invalid && (propertyForm.get('district')?.touched || submitted)"
+                />
+                @if (propertyForm.get('district')?.invalid && (propertyForm.get('district')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('district')?.errors?.['required']) {
+                      District is required
+                    } @else if (propertyForm.get('district')?.errors?.['serverError']) {
+                      {{ propertyForm.get('district')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="full_address" class="form-label">Full Address</label>
-                  <input type="text" class="form-control" id="full_address" formControlName="full_address">
-                </div>
+                }
+              </div>
+              <!-- Full Address -->
+              <div>
+                <label for="full_address" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-address-card text-orange-500 mr-1"></i> Full Address
+                </label>
+                <input
+                  type="text"
+                  id="full_address"
+                  formControlName="full_address"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                />
               </div>
             </div>
+          </div>
 
-            <!-- Pricing & Details Section -->
-            <div class="mb-5">
-              <h5 class="border-bottom pb-2 mb-4">Pricing & Details</h5>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label for="price" class="form-label">Price*</label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" class="form-control" id="price" formControlName="price" min="0">
+          <!-- Pricing & Details -->
+          <div class="space-y-4">
+            <div class="flex items-center border-b border-orange-200 pb-2">
+              <i class="fas fa-dollar-sign text-orange-500 mr-2"></i>
+              <h3 class="text-lg font-semibold text-gray-800">Pricing & Details</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <!-- Price -->
+              <div>
+                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-money-bill-wave text-orange-500 mr-1"></i> Price*
+                </label>
+                <div class="relative rounded-md shadow-sm">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">$</span>
                   </div>
-                  <div *ngIf="propertyForm.get('price')?.invalid && propertyForm.get('price')?.touched" class="text-danger">
-                    Valid price is required
+                  <input
+                    type="number"
+                    id="price"
+                    formControlName="price"
+                    min="0"
+                    class="block w-full pl-7 pr-12 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                    [class.border-red-500]="propertyForm.get('price')?.invalid && (propertyForm.get('price')?.touched || submitted)"
+                  />
+                </div>
+                @if (propertyForm.get('price')?.invalid && (propertyForm.get('price')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('price')?.errors?.['required']) {
+                      Price is required
+                    } @else if (propertyForm.get('price')?.errors?.['min']) {
+                      Price must be 0 or greater
+                    } @else if (propertyForm.get('price')?.errors?.['serverError']) {
+                      {{ propertyForm.get('price')?.errors?.['serverError'] }}
+                    }
                   </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="area" class="form-label">Area (sq ft)*</label>
-                  <div class="input-group">
-                    <input type="number" class="form-control" id="area" formControlName="area" min="0">
-                    <span class="input-group-text">sq ft</span>
-                  </div>
-                  <div *ngIf="propertyForm.get('area')?.invalid && propertyForm.get('area')?.touched" class="text-danger">
-                    Area is required
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="property_code" class="form-label">Property Code*</label>
-                  <input type="text" class="form-control" id="property_code" formControlName="property_code">
-                  <div *ngIf="propertyForm.get('property_code')?.invalid && propertyForm.get('property_code')?.touched" class="text-danger">
-                    Property code is required
-                  </div>
-                </div>
-
-                <div class="col-md-3">
-                  <label for="bedrooms" class="form-label">Bedrooms</label>
-                  <input type="number" class="form-control" id="bedrooms" formControlName="bedrooms" min="0">
-                </div>
-
-                <div class="col-md-3">
-                  <label for="bathrooms" class="form-label">Bathrooms</label>
-                  <input type="number" class="form-control" id="bathrooms" formControlName="bathrooms" min="0">
-                </div>
-
-                <div class="col-md-3">
-                  <label for="building_year" class="form-label">Building Year</label>
-                  <input type="number" class="form-control" id="building_year" formControlName="building_year">
-                </div>
-
-                <div class="col-md-3">
-                  <label for="legal_status" class="form-label">Legal Status</label>
-                  <select class="form-select" id="legal_status" formControlName="legal_status">
-                    <option value="">Select Status</option>
-                    <option *ngFor="let status of legalStatuses" [value]="status">{{ status | titlecase }}</option>
-                  </select>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="amenities" class="form-label">Amenities (comma separated)</label>
-                  <input type="text" class="form-control" id="amenities" formControlName="amenities" placeholder="pool, gym, parking">
-                </div>
-
-                <div class="col-md-6">
-                  <label for="payment_options" class="form-label">Payment Options (comma separated)</label>
-                  <input type="text" class="form-control" id="payment_options" formControlName="payment_options" placeholder="cash, installments">
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="furnished" formControlName="furnished">
-                    <label class="form-check-label" for="furnished">
-                      Furnished
-                    </label>
+                }
+              </div>
+              <!-- Area -->
+              <div>
+                <label for="area" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-ruler-combined text-orange-500 mr-1"></i> Area (sq ft)*
+                </label>
+                <div class="relative rounded-md shadow-sm">
+                  <input
+                    type="number"
+                    id="area"
+                    formControlName="area"
+                    min="0"
+                    class="block w-full pl-4 pr-12 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                    [class.border-red-500]="propertyForm.get('area')?.invalid && (propertyForm.get('area')?.touched || submitted)"
+                  />
+                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">sq ft</span>
                   </div>
                 </div>
+                @if (propertyForm.get('area')?.invalid && (propertyForm.get('area')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('area')?.errors?.['required']) {
+                      Area is required
+                    } @else if (propertyForm.get('area')?.errors?.['min']) {
+                      Area must be 0 or greater
+                    } @else if (propertyForm.get('area')?.errors?.['serverError']) {
+                      {{ propertyForm.get('area')?.errors?.['serverError'] }}
+                    }
+                  </div>
+                }
+              </div>
+              <!-- Property Code -->
+              <div>
+                <label for="property_code" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-barcode text-orange-500 mr-1"></i> Property Code*
+                </label>
+                <input
+                  type="text"
+                  id="property_code"
+                  formControlName="property_code"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('property_code')?.invalid && (propertyForm.get('property_code')?.touched || submitted)"
+                />
+                @if (propertyForm.get('property_code')?.invalid && (propertyForm.get('property_code')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('property_code')?.errors?.['required']) {
+                      Property code is required
+                    } @else if (propertyForm.get('property_code')?.errors?.['propertyCodeTaken']) {
+                      This property code is already taken
+                    } @else if (propertyForm.get('property_code')?.errors?.['serverError']) {
+                      {{ propertyForm.get('property_code')?.errors?.['serverError'] }}
+                    }
+                  </div>
+                }
+              </div>
+              <!-- Legal Status -->
+              <div>
+                <label for="legal_status" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-gavel text-orange-500 mr-1"></i> Legal Status
+                </label>
+                <select
+                  id="legal_status"
+                  formControlName="legal_status"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                >
+                  <option value="">Select Status</option>
+                  @for (status of legalStatuses; track status) {
+                    <option [value]="status">{{ status | titlecase }}</option>
+                  }
+                </select>
+              </div>
+              <!-- Bedrooms -->
+              <div>
+                <label for="bedrooms" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-bed text-orange-500 mr-1"></i> Bedrooms
+                </label>
+                <input
+                  type="number"
+                  id="bedrooms"
+                  formControlName="bedrooms"
+                  min="0"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('bedrooms')?.invalid && (propertyForm.get('bedrooms')?.touched || submitted)"
+                />
+                @if (propertyForm.get('bedrooms')?.invalid && (propertyForm.get('bedrooms')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('bedrooms')?.errors?.['min']) {
+                      Bedrooms must be 0 or greater
+                    } @else if (propertyForm.get('bedrooms')?.errors?.['serverError']) {
+                      {{ propertyForm.get('bedrooms')?.errors?.['serverError'] }}
+                    }
+                  </div>
+                }
+              </div>
+              <!-- Bathrooms -->
+              <div>
+                <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-bath text-orange-500 mr-1"></i> Bathrooms
+                </label>
+                <input
+                  type="number"
+                  id="bathrooms"
+                  formControlName="bathrooms"
+                  min="0"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="propertyForm.get('bathrooms')?.invalid && (propertyForm.get('bathrooms')?.touched || submitted)"
+                />
+                @if (propertyForm.get('bathrooms')?.invalid && (propertyForm.get('bathrooms')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('bathrooms')?.errors?.['min']) {
+                      Bathrooms must be 0 or greater
+                    } @else if (propertyForm.get('bathrooms')?.errors?.['serverError']) {
+                      {{ propertyForm.get('bathrooms')?.errors?.['serverError'] }}
+                    }
+                  </div>
+                }
+              </div>
+              <!-- Building Year -->
+              <div>
+                <label for="building_year" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-calendar-alt text-orange-500 mr-1"></i> Building Year
+                </label>
+                <input
+                  type="date"
+                  id="building_year"
+                  formControlName="building_year"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [max]="currentYear + '-12-31'"
+                  [min]="'1900-01-01'"
+                  [class.border-red-500]="propertyForm.get('building_year')?.invalid && (propertyForm.get('building_year')?.touched || submitted)"
+                />
+                @if (propertyForm.get('building_year')?.invalid && (propertyForm.get('building_year')?.touched || submitted)) {
+                  <div class="text-red-600 text-sm mt-1">
+                    <i class="fas fa-exclamation-circle mr-1"></i>
+                    @if (propertyForm.get('building_year')?.errors?.['invalidYear']) {
+                      Building year must be between 1900 and {{ currentYear }}
+                    } @else if (propertyForm.get('building_year')?.errors?.['serverError']) {
+                      {{ propertyForm.get('building_year')?.errors?.['serverError'] }}
+                    }
+                  </div>
+                }
+              </div>
+              <!-- Furnished -->
+              <div class="flex items-end">
+                <div class="flex items-center h-5">
+                  <input
+                    id="furnished"
+                    type="checkbox"
+                    formControlName="furnished"
+                    class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                </div>
+                <label for="furnished" class="ml-2 block text-sm text-gray-700">
+                  <i class="fas fa-couch text-orange-500 mr-1"></i> Furnished
+                </label>
+              </div>
+              <!-- Amenities -->
+              <div class="md:col-span-2">
+                <label for="amenities" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-swimming-pool text-orange-500 mr-1"></i> Amenities (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  id="amenities"
+                  formControlName="amenities"
+                  placeholder="Pool, Gym, Parking"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+              <!-- Payment Options -->
+              <div class="md:col-span-2">
+                <label for="payment_options" class="block text-sm font-medium text-gray-700 mb-1">
+                  <i class="fas fa-credit-card text-orange-500 mr-1"></i> Payment Options (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  id="payment_options"
+                  formControlName="payment_options"
+                  placeholder="Cash, Installments"
+                  class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                />
               </div>
             </div>
+          </div>
 
-            <!-- Media Section -->
-            <div class="mb-4">
-              <h5 class="border-bottom pb-2 mb-4">Media</h5>
-
-              <!-- Existing Media -->
-              <div *ngIf="existingMedia.length > 0" class="mb-4">
-                <h6>Existing Media</h6>
-                <div class="row g-3">
-                  <div *ngFor="let media of existingMedia; let i = index" class="col-md-3">
-                    <div class="card">
-                      <div class="position-relative">
-                        <img *ngIf="media.MediaType === 'image'" [src]="media.MediaURL" class="card-img-top" alt="Property media">
-                        <div *ngIf="media.MediaType === 'video'" class="bg-dark text-white p-3 text-center">
-                          <i class="fas fa-video fa-3x"></i>
-                        </div>
-                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
-                                (click)="removeExistingMedia(media.id, i)">
-                          <i class="fas fa-times"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+          <!-- Media Upload -->
+          <div class="space-y-4">
+            <div class="flex items-center border-b border-orange-200 pb-2">
+              <i class="fas fa-camera text-orange-500 mr-2"></i>
+              <h3 class="text-lg font-semibold text-gray-800">Media Upload</h3>
+            </div>
+            <!-- Cover Image -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-image text-orange-500 mr-1"></i> Cover Image
+              </label>
+              <div
+                class="border-2 border-dashed rounded-md p-4 text-center"
+                [class.border-orange-500]="isDraggingCover"
+                (dragover)="onDragOver($event, 'cover')"
+                (dragleave)="onDragLeave($event, 'cover')"
+                (drop)="onDrop($event, 'cover')"
+              >
+                <input
+                  type="file"
+                  id="cover_image"
+                  accept="image/*"
+                  class="hidden"
+                  (change)="onCoverImageSelected($event)"
+                  #coverInput
+                />
+                <p class="text-gray-500">
+                  Drag and drop image here or
+                  <label for="cover_image" class="text-orange-500 cursor-pointer hover:underline">
+                    browse
+                  </label>
+                </p>
+              </div>
+              @if (coverPreviewUrl) {
+                <div class="relative mt-2">
+                  <img [src]="coverPreviewUrl" class="h-32 w-auto rounded-md" alt="Cover Image Preview" />
+                  <button
+                    type="button"
+                    class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                    (click)="removeCoverImage()"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
+              }
+            </div>
+            <!-- Additional Media -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-images text-orange-500 mr-1"></i> Additional Media
+              </label>
+              <div
+                class="border-2 border-dashed rounded-md p-4 text-center"
+                [class.border-orange-500]="isDraggingMedia"
+                (dragover)="onDragOver($event, 'media')"
+                (dragleave)="onDragLeave($event, 'media')"
+                (drop)="onDrop($event, 'media')"
+              >
+                <input
+                  type="file"
+                  id="media_files"
+                  accept="image/*,video/*"
+                  multiple
+                  class="hidden"
+                  (change)="onMediaSelected($event)"
+                  #mediaInput
+                />
+                <p class="text-gray-500">
+                  Drag and drop images/videos here or
+                  <label for="media_files" class="text-orange-500 cursor-pointer hover:underline">
+                    browse
+                  </label>
+                </p>
               </div>
-
-              <!-- New Media Upload -->
-              <div class="mb-3">
-                <label for="media" class="form-label">Upload New Media</label>
-                <input type="file" class="form-control" id="media" multiple (change)="onFileSelected($event)" accept="image/*,video/*">
-                <div class="form-text">Upload images or videos (max 20MB each)</div>
-              </div>
-
-              <!-- Preview of Selected Files -->
-              <div *ngIf="previewUrls.length > 0" class="mb-3">
-                <h6>Selected Files</h6>
-                <div class="row g-2">
-                  <div *ngFor="let url of previewUrls; let i = index" class="col-md-2">
-                    <div class="position-relative">
-                      <img [src]="url" class="img-thumbnail" style="height: 100px; width: 100%; object-fit: cover;">
-                      <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
-                              (click)="removeSelectedFile(i)">
+              @if (previewUrls.length > 0) {
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  @for (preview of previewUrls; track preview.url) {
+                    <div class="relative">
+                      @if (preview.type.startsWith('image')) {
+                        <img [src]="preview.url" class="h-32 w-full object-cover rounded-md" alt="Media Preview" />
+                      } @else {
+                        <video [src]="preview.url" controls class="h-32 w-full object-cover rounded-md"></video>
+                      }
+                      <button
+                        type="button"
+                        class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                        (click)="removeMedia(preview.url)"
+                      >
                         <i class="fas fa-times"></i>
                       </button>
                     </div>
+                  }
+                </div>
+              }
+              <!-- Existing Media -->
+              @if (existingMedia.length > 0) {
+                <div class="mt-4">
+                  <h4 class="text-sm font-medium text-gray-700 mb-2">Existing Media</h4>
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    @for (media of existingMedia; track media.id) {
+                      <div class="relative">
+                        @if (media.MediaType === 'image') {
+                          <img [src]="media.MediaURL" class="h-32 w-full object-cover rounded-md" alt="Existing Media" />
+                        } @else {
+                          <video [src]="media.MediaURL" controls class="h-32 w-full object-cover rounded-md"></video>
+                        }
+                        <button
+                          type="button"
+                          class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                          (click)="markMediaForDeletion(media.id)"
+                        >
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    }
                   </div>
                 </div>
-              </div>
-
-              <!-- Cover Image Selection -->
-              <div class="mb-3">
-                <label for="cover_image" class="form-label">Cover Image URL</label>
-                <input type="text" class="form-control" id="cover_image" formControlName="cover_image">
-                <div class="form-text">Leave empty to use the first uploaded image</div>
-              </div>
+              }
             </div>
+          </div>
 
-            <!-- Form Actions -->
-            <div class="d-flex justify-content-between">
-              <button type="button" class="btn btn-secondary" (click)="router.navigate(['/properties'])">
-                <i class="fas fa-arrow-left me-1"></i> Cancel
+          <!-- Form Actions -->
+          <div class="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="router.navigate(['/properties'])"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              <i class="fas fa-arrow-left mr-2"></i> Cancel
+            </button>
+            <div class="flex gap-3">
+              <button
+                type="submit"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              >
+                <i class="fas fa-save mr-2"></i>
+                {{ isEditMode ? 'Update' : 'Save' }}
               </button>
-
-              <div>
-                <button *ngIf="isEditMode" type="button" class="btn btn-danger me-2" (click)="deleteProperty()">
-                  <i class="fas fa-trash me-1"></i> Delete
-                </button>
-
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save me-1"></i> {{ isEditMode ? 'Update' : 'Save' }}
-                </button>
-              </div>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
