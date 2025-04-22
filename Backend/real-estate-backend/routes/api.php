@@ -36,6 +36,9 @@ Route::prefix('v1')->group(function () {
     Route::prefix('password')->name('password.')->group(function () {
         Route::post('/forgot-password', [ResetPasswordController::class, 'submitForgetPasswordForm'])->name('forgot');
         Route::post('/reset-password', [ResetPasswordController::class, 'submitResetPasswordForm'])->name('reset');
+        // Route::get('/reset-password/{token}', function ($token) {
+        //     return response()->json(['token' => $token], 200);
+        // })->name('reset.token');
     });
 
     // Social Login Routes (public)
