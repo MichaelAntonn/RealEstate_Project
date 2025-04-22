@@ -1,9 +1,21 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BookingService } from '../../services/booking.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { NgbDateStruct, NgbCalendar, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDateStruct,
+  NgbCalendar,
+  NgbDatepickerConfig,
+} from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,15 +24,21 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgbDatepickerModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgbDatepickerModule,
+  ],
   templateUrl: './booking.component.html',
-  styleUrls: ['./booking.component.css']
+  styleUrls: ['./booking.component.css'],
 })
 export class BookingComponent implements OnInit {
   @Input() propertyId!: string;
   @Output() bookingSubmitted = new EventEmitter<boolean>();
-  @ViewChild('customDay', { static: true }) customDayTemplate!: TemplateRef<any>;
-  
+  @ViewChild('customDay', { static: true })
+  customDayTemplate!: TemplateRef<any>;
+
   bookingForm!: FormGroup;
   minDate: NgbDateStruct;
   maxDate: NgbDateStruct;
@@ -39,15 +57,15 @@ export class BookingComponent implements OnInit {
     // Initialize dates after constructor
     this.today = this.calendar.getToday();
     const currentDate = new Date();
-    this.minDate = { 
-      year: currentDate.getFullYear(), 
-      month: currentDate.getMonth() + 1, 
-      day: currentDate.getDate() 
+    this.minDate = {
+      year: currentDate.getFullYear(),
+      month: currentDate.getMonth() + 1,
+      day: currentDate.getDate(),
     };
-    this.maxDate = { 
-      year: currentDate.getFullYear() + 1, 
-      month: 12, 
-      day: 31 
+    this.maxDate = {
+      year: currentDate.getFullYear() + 1,
+      month: 12,
+      day: 31,
     };
 
     // Configure datepicker
@@ -66,7 +84,7 @@ export class BookingComponent implements OnInit {
       property_id: [this.propertyId, Validators.required],
       booking_date: [null, Validators.required],
       visit_date: [null],
-      notes: ['']
+      notes: [''],
     });
   }
 
@@ -76,6 +94,9 @@ export class BookingComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.propertyId);
+    console.log(`this.propertyId`);
+
     if (!this.authService.isLoggedIn()) {
       this.toastr.warning('Please login to book a property');
       this.router.navigate(['/login']);
@@ -93,7 +114,9 @@ export class BookingComponent implements OnInit {
     const formValue = {
       ...this.bookingForm.value,
       booking_date: this.formatDate(this.bookingForm.value.booking_date),
-      visit_date: this.bookingForm.value.visit_date ? this.formatDate(this.bookingForm.value.visit_date) : null
+      visit_date: this.bookingForm.value.visit_date
+        ? this.formatDate(this.bookingForm.value.visit_date)
+        : null,
     };
 
     this.bookingService.createBooking(formValue).subscribe({
@@ -110,13 +133,15 @@ export class BookingComponent implements OnInit {
       },
       complete: () => {
         this.isLoading = false;
-      }
+      },
     });
   }
 
   private formatDate(dateObj: NgbDateStruct): string {
     if (!dateObj) return '';
-    return `${dateObj.year}-${this.padNumber(dateObj.month)}-${this.padNumber(dateObj.day)}`;
+    return `${dateObj.year}-${this.padNumber(dateObj.month)}-${this.padNumber(
+      dateObj.day
+    )}`;
   }
 
   private padNumber(num: number): string {

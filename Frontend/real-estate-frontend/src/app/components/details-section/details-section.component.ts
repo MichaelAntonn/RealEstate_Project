@@ -3,6 +3,7 @@ import { PropertyService } from '../../services/property.service';
 import { Property, PropertyMedia } from '../../models/property';
 import { CommonModule } from '@angular/common';
 import { JsonParsePipe } from '../../pipes/json-parse.pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-details-section',
@@ -22,7 +23,10 @@ export class DetailsSectionComponent implements OnInit {
   currentPage = 0;
   itemsPerPage = 3;
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     if (this.propertyId) {
@@ -86,7 +90,11 @@ export class DetailsSectionComponent implements OnInit {
   }
 
   bookNow(): void {
-    console.log('Book Now clicked for property:', this.propertyId);
+    if (this.propertyId) {
+      this.router.navigate(['/booking', this.propertyId]);
+    } else {
+      console.error('No property ID available');
+    }
   }
 
   openImageModal(mediaURL: string): void {

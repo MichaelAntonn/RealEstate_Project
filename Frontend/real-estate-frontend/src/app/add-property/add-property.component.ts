@@ -15,12 +15,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
 import { map, catchError, debounceTime } from 'rxjs/operators';
 import { Property, PropertyMedia } from '../models/property';
-import { JsonParsePipe } from '../pipes/json-parse.pipe';
 
 @Component({
   selector: 'app-add-property',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, JsonParsePipe],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-property.component.html',
   styleUrls: ['./add-property.component.css'],
 })

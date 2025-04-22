@@ -13,6 +13,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // provideExperimentalZonelessChangeDetection(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withHashLocation()),
     provideAnimations(),

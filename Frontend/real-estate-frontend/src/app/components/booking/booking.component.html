@@ -1,20 +1,29 @@
-<div class="booking-card">
-    <div class="booking-header">
-      <h3>
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div
+    class="max-w-lg mx-auto p-6 rounded-xl shadow-md bg-white border border-orange-200"
+  >
+    <div class="booking-header mb-4">
+      <h3 class="text-xl font-semibold text-orange-500 flex items-center gap-2">
         <i class="fas fa-calendar-check"></i>
         Schedule a Visit
       </h3>
-      <p>Book an appointment to visit this property</p>
+      <p class="text-sm text-gray-600">
+        Book an appointment to visit this property
+      </p>
     </div>
-  
-    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="booking-form">
-      <div class="form-group">
-        <label for="booking_date">
+
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label
+          for="booking_date"
+          class="block text-sm font-medium text-orange-600 mb-1"
+        >
           <i class="fas fa-calendar-day"></i> Preferred Date *
         </label>
-        <div class="input-group">
+        <div class="flex items-center gap-2">
           <input
-            class="form-control"
+            id="booking_date"
+            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
             placeholder="Select a date"
             formControlName="booking_date"
             ngbDatepicker
@@ -25,19 +34,27 @@
             [autoClose]="'outside'"
             required
           />
-          <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+          <button
+            type="button"
+            class="border rounded-md px-3 py-2 text-orange-500 hover:bg-orange-100"
+            (click)="d.toggle()"
+          >
             <i class="fas fa-calendar-alt"></i>
           </button>
         </div>
       </div>
-  
-      <div class="form-group">
-        <label for="visit_date">
+
+      <div>
+        <label
+          for="visit_date"
+          class="block text-sm font-medium text-orange-600 mb-1"
+        >
           <i class="fas fa-clock"></i> Alternative Date (Optional)
         </label>
-        <div class="input-group">
+        <div class="flex items-center gap-2">
           <input
-            class="form-control"
+            id="visit_date"
+            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
             placeholder="Select an alternative date"
             formControlName="visit_date"
             ngbDatepicker
@@ -46,51 +63,74 @@
             [maxDate]="maxDate"
             [autoClose]="'outside'"
           />
-          <button class="btn btn-outline-secondary" (click)="d2.toggle()" type="button">
+          <button
+            type="button"
+            class="border rounded-md px-3 py-2 text-orange-500 hover:bg-orange-100"
+            (click)="d2.toggle()"
+          >
             <i class="fas fa-calendar-alt"></i>
           </button>
         </div>
       </div>
-  
-      <div class="form-group">
-        <label for="notes">
+
+      <div>
+        <label
+          for="notes"
+          class="block text-sm font-medium text-orange-600 mb-1"
+        >
           <i class="fas fa-comment-alt"></i> Special Requests
         </label>
         <textarea
-          class="form-control"
+          id="notes"
+          class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
           formControlName="notes"
           placeholder="Any special requirements or notes"
           rows="3"
         ></textarea>
       </div>
-  
-      <div class="form-actions">
+
+      <div>
         <button
           type="submit"
-          class="btn btn-primary"
+          class="w-full bg-orange-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-orange-600 transition"
           [disabled]="bookingForm.invalid || isLoading"
         >
-          <span *ngIf="!isLoading">
-            <i class="fas fa-paper-plane"></i> Book Now
-          </span>
-          <span *ngIf="isLoading">
-            <i class="fas fa-spinner fa-spin"></i> Processing...
-          </span>
+          @if (!isLoading) {
+          <span><i class="fas fa-paper-plane"></i> Book Now</span>
+          } @else {
+          <span><i class="fas fa-spinner fa-spin"></i> Processing...</span>
+          }
         </button>
       </div>
     </form>
-  
-    <div class="booking-footer">
-      <p><i class="fas fa-info-circle"></i> Our agent will contact you to confirm the appointment</p>
+
+    <div class="booking-footer mt-4 text-sm text-gray-500">
+      <p>
+        <i class="fas fa-info-circle text-orange-400"></i> Our agent will
+        contact you to confirm the appointment
+      </p>
     </div>
   </div>
-  
-  <ng-template #customDay let-date let-currentMonth="currentMonth" let-selected="selected" let-disabled="disabled">
-    <span class="custom-day"
-      [class.weekend]="isWeekend(date)"
-      [class.hidden]="date.month !== currentMonth"
-      [class.selected]="selected"
-      [class.disabled]="disabled">
+
+  <ng-template
+    #customDay
+    let-date
+    let-currentMonth="currentMonth"
+    let-selected="selected"
+    let-disabled="disabled"
+  >
+    <span
+      class="custom-day text-sm leading-6 w-8 h-8 inline-flex items-center justify-center rounded-full"
+      [ngClass]="{
+        'text-orange-500 font-semibold':
+          date.month === currentMonth && !disabled,
+        'opacity-0': date.month !== currentMonth,
+        'bg-orange-400 text-white': selected,
+        'text-gray-400': disabled,
+        'bg-gray-100': isWeekend(date)
+      }"
+    >
       {{ date.day }}
     </span>
   </ng-template>
+</div>
