@@ -6,6 +6,7 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -221,8 +222,19 @@ class CompanyController extends Controller
 
 public function verifyCompany(Request $request, $id)
 {
-    $company = Company::find($id);
+    // ✅ التحقق من تسجيل الدخول
+    if (!Auth::guard('sanctum')->check()) {
+        return response()->json(['error' => 'Unauthorized. Please log in.'], 401);
+    }
 
+    // ✅ التحقق من نوع المستخدم
+    $user = Auth::guard('sanctum')->user();
+    if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin') {
+        return response()->json(['error' => 'Forbidden. Admin access only.'], 403);
+    }
+
+    // ✅ كمل الكود بتاعك عادي
+    $company = Company::find($id);
     if (!$company) {
         return response()->json(['message' => 'Company not found.'], 404);
     }
@@ -233,7 +245,7 @@ public function verifyCompany(Request $request, $id)
     ]);
 
     $company->verification_status = $validated['status'];
-    
+
     if ($validated['status'] === 'Rejected' && isset($validated['rejection_reason'])) {
         $company->rejection_reason = $validated['rejection_reason'];
     }
