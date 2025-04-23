@@ -4,15 +4,16 @@
   >
     <div class="booking-header mb-4">
       <h3 class="text-xl font-semibold text-orange-500 flex items-center gap-2">
-        <i class="fas fa-calendar-check"></i>
-        Schedule a Visit
+        <i class="fas fa-calendar-check"></i> Schedule a Visit
       </h3>
       <p class="text-sm text-gray-600">
         Book an appointment to visit this property
       </p>
+      <h3>Property ID: {{ propertyId | uppercase }}</h3>
     </div>
 
     <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <!-- Preferred Date -->
       <div>
         <label
           for="booking_date"
@@ -20,30 +21,38 @@
         >
           <i class="fas fa-calendar-day"></i> Preferred Date *
         </label>
-        <div class="flex items-center gap-2">
+        <div class="relative">
           <input
             id="booking_date"
-            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="Select a date"
+            class="border rounded-md px-3 py-2 w-full pr-10 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            placeholder="YYYY-MM-DD"
             formControlName="booking_date"
             ngbDatepicker
             #d="ngbDatepicker"
             [minDate]="minDate"
             [maxDate]="maxDate"
-            [dayTemplate]="customDayTemplate"
             [autoClose]="'outside'"
+            inputFormat="'yyyy-MM-dd'"
             required
           />
-          <button
-            type="button"
-            class="border rounded-md px-3 py-2 text-orange-500 hover:bg-orange-100"
+          <i
+            class="fas fa-calendar-alt absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-500 cursor-pointer"
             (click)="d.toggle()"
-          >
-            <i class="fas fa-calendar-alt"></i>
-          </button>
+            aria-label="Open datepicker"
+          ></i>
+        </div>
+        <div
+          *ngIf="
+            bookingForm.get('booking_date')?.invalid &&
+            bookingForm.get('booking_date')?.touched
+          "
+          class="text-red-500 text-sm mt-1"
+        >
+          Please enter a valid date
         </div>
       </div>
 
+      <!-- Alternative Date -->
       <div>
         <label
           for="visit_date"
@@ -51,28 +60,28 @@
         >
           <i class="fas fa-clock"></i> Alternative Date (Optional)
         </label>
-        <div class="flex items-center gap-2">
+        <div class="relative">
           <input
             id="visit_date"
-            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="Select an alternative date"
+            class="border rounded-md px-3 py-2 w-full pr-10 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            placeholder="YYYY-MM-DD"
             formControlName="visit_date"
             ngbDatepicker
             #d2="ngbDatepicker"
             [minDate]="minDate"
             [maxDate]="maxDate"
             [autoClose]="'outside'"
+            inputFormat="'yyyy-MM-dd'"
           />
-          <button
-            type="button"
-            class="border rounded-md px-3 py-2 text-orange-500 hover:bg-orange-100"
+          <i
+            class="fas fa-calendar-alt absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-500 cursor-pointer"
             (click)="d2.toggle()"
-          >
-            <i class="fas fa-calendar-alt"></i>
-          </button>
+            aria-label="Open datepicker"
+          ></i>
         </div>
       </div>
 
+      <!-- Notes -->
       <div>
         <label
           for="notes"
@@ -89,6 +98,7 @@
         ></textarea>
       </div>
 
+      <!-- Submit Button -->
       <div>
         <button
           type="submit"
@@ -104,6 +114,7 @@
       </div>
     </form>
 
+    <!-- Footer -->
     <div class="booking-footer mt-4 text-sm text-gray-500">
       <p>
         <i class="fas fa-info-circle text-orange-400"></i> Our agent will
@@ -111,26 +122,4 @@
       </p>
     </div>
   </div>
-
-  <ng-template
-    #customDay
-    let-date
-    let-currentMonth="currentMonth"
-    let-selected="selected"
-    let-disabled="disabled"
-  >
-    <span
-      class="custom-day text-sm leading-6 w-8 h-8 inline-flex items-center justify-center rounded-full"
-      [ngClass]="{
-        'text-orange-500 font-semibold':
-          date.month === currentMonth && !disabled,
-        'opacity-0': date.month !== currentMonth,
-        'bg-orange-400 text-white': selected,
-        'text-gray-400': disabled,
-        'bg-gray-100': isWeekend(date)
-      }"
-    >
-      {{ date.day }}
-    </span>
-  </ng-template>
 </div>
