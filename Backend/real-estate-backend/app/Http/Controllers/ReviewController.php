@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -25,12 +26,28 @@ class ReviewController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|exists:properties,id',
+            // 'property_id' => 'required|exists:properties,id',
+            'property_id' => [
+                'required_if:review_type,property',
+                'nullable',
+                'exists:properties,id'
+            ],
             'review_type' => 'required|in:property,agent,location',
             'rating' => 'required|integer|between:1,5',
             'comment' => 'nullable|string',
             'anonymous_review' => 'boolean'
         ]);
+
+        // Check if user already reviewed this property
+        $existingReview = Review::where('user_id', auth('api')->id())
+            ->where('property_id', $request->property_id)
+            ->first();
+
+        if ($existingReview) {
+            return response()->json([
+                'message' => 'You have already submitted a review for this property.'
+            ], 422);
+        }
 
         $review = Review::create([
             'user_id' => auth('api')->id(), // Current authenticated user
@@ -38,7 +55,7 @@ class ReviewController extends Controller
             'review_type' => $request->review_type,
             'rating' => $request->rating,
             'comment' => $request->comment,
-            'anonymous_review' => $request->anonymous_review ?? 0
+            'anonymous_review' => $request->anonymous_review ?? false
         ]);
 
         return response()->json($review, 201);

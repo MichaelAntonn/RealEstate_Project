@@ -1,6 +1,20 @@
 <div class="flex flex-col gap-6">
   <div class="bg-gray-50 rounded-lg p-6 shadow-sm relative">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Reviews</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-semibold text-gray-900">Reviews</h2>
+      @if (isLoggedIn && !hasReviewed) {
+      <button
+        (click)="openReviewModal()"
+        class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-sm flex items-center"
+      >
+        <i class="fa fa-plus mr-2"></i> Add Review
+      </button>
+      } @else if (isLoggedIn && hasReviewed) {
+      <span class="text-gray-600 text-sm"
+        >You have already reviewed this property.</span
+      >
+      }
+    </div>
 
     @if (loading) {
     <div class="text-center py-4">
@@ -18,7 +32,7 @@
         <div class="flex items-center justify-between mb-3">
           <div>
             <p class="text-lg font-semibold text-gray-900">
-              {{ review.user_name }}
+              {{ review.anonymous_review ? "Anonymous" : review.user_name }}
             </p>
             <div class="flex items-center mt-1">
               <i class="fa fa-star text-orange-500 text-sm mr-1"></i>
@@ -29,7 +43,12 @@
             review.created_at | date : "medium"
           }}</small>
         </div>
-        <p class="text-gray-700">{{ review.comment }}</p>
+        <p class="text-gray-700">
+          {{ review.comment || "No comment provided." }}
+        </p>
+        <p class="text-sm text-gray-600 mt-1">
+          Type: {{ review.review_type | titlecase }}
+        </p>
       </div>
       }
     </div>
@@ -56,4 +75,133 @@
     </div>
     }
   </div>
+
+  <!-- Review Modal -->
+  @if (showReviewModal) {
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300"
+  >
+    <div class="bg-white rounded-xl p-8 shadow-2xl max-w-lg w-full mx-4">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-2xl font-bold text-gray-900">Add Your Review</h3>
+        <button
+          (click)="closeReviewModal()"
+          class="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+        >
+          <i class="fa fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="submitReview()">
+        <div class="grid grid-cols-1 gap-6">
+          <!-- Review Type -->
+          <div>
+            <label
+              for="review_type"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Review Type</label
+            >
+            <select
+              id="review_type"
+              [(ngModel)]="review_type"
+              name="review_type"
+              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-colors duration-200 text-sm py-2 px-3"
+              required
+            >
+              <option value="property">Property</option>
+              <option value="agent">Agent</option>
+              <option value="location">Location</option>
+            </select>
+          </div>
+
+          <!-- Rating (Interactive Stars) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Rating</label
+            >
+            <div class="flex items-center mt-2">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+              <i
+                class="fa fa-star text-2xl cursor-pointer mr-2 transition-colors duration-200"
+                [ngClass]="
+                  star <= rating
+                    ? 'text-orange-500'
+                    : 'text-gray-300 hover:text-orange-400'
+                "
+                (click)="setRating(star)"
+              ></i>
+              }
+            </div>
+          </div>
+
+          <!-- Comment -->
+          <div>
+            <label
+              for="comment"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Comment (optional)</label
+            >
+            <textarea
+              id="comment"
+              [(ngModel)]="comment"
+              name="comment"
+              rows="4"
+              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-colors duration-200 text-sm py-2 px-3 resize-none"
+              placeholder="Share your thoughts..."
+            ></textarea>
+          </div>
+
+          <!-- Anonymous Review -->
+          <div class="flex items-center">
+            <input
+              id="anonymous_review"
+              [(ngModel)]="anonymous_review"
+              name="anonymous_review"
+              type="checkbox"
+              class="h-5 w-5 text-orange-500 focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 border-gray-300 rounded cursor-pointer"
+            />
+            <label
+              for="anonymous_review"
+              class="ml-3 block text-sm font-medium text-gray-700"
+            >
+              Post as anonymous
+            </label>
+          </div>
+        </div>
+
+        <!-- Form Messages -->
+        @if (formError) {
+        <div class="text-red-500 text-sm mt-4 bg-red-50 p-3 rounded-lg">
+          {{ formError }}
+        </div>
+        } @if (formSuccess) {
+        <div class="text-green-500 text-sm mt-4 bg-green-50 p-3 rounded-lg">
+          {{ formSuccess }}
+        </div>
+        }
+
+        <!-- Submit Button -->
+        <div class="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            (click)="closeReviewModal()"
+            class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium flex items-center"
+            [disabled]="formLoading"
+          >
+            @if (formLoading) {
+            <i class="fa fa-spinner fa-spin mr-2"></i>
+            } Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
 </div>
