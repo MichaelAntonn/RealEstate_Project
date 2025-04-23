@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('anonymous_review')->default(false);
             $table->timestamp('review_date')->useCurrent();
             $table->timestamps();
+            $table->unique(['user_id', 'property_id']);
         });
     }
 

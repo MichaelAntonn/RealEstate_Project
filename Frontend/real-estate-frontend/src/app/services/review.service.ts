@@ -10,7 +10,6 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  // جلب التقييمات الخاصة بعقار معين
   getReviewsByProperty(propertyId: number): Observable<any> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
@@ -18,5 +17,20 @@ export class ReviewService {
     return this.http.get(`${this.apiUrl}/by-property/${propertyId}`, {
       headers,
     });
+  }
+
+  addReview(review: {
+    property_id: number;
+    review_type: string;
+    rating: number;
+    comment: string | null;
+    anonymous_review: boolean;
+  }): Observable<any> {
+    const token = localStorage.getItem('auth_token');
+    const headers = new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.post(this.apiUrl, review, { headers });
   }
 }
