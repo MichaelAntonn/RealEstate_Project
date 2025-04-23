@@ -16,9 +16,9 @@ export class AuthService {
 
   // تسجيل مستخدم جديد
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, userData).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post(`${this.apiUrl}/register`, userData)
+      .pipe(catchError(this.handleError));
   }
 
   // تسجيل الدخول
@@ -29,6 +29,7 @@ export class AuthService {
         this.saveToken(response.token);
         if (response.user) {
           this.saveUser(response.user);
+          this.router.navigate(['/dashboard']);
         }
       }),
       catchError(this.handleError)
@@ -37,9 +38,9 @@ export class AuthService {
 
   // إعادة تعيين كلمة المرور
   forgotPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/password/forgot-password`, { email }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post(`${this.apiUrl}/password/forgot-password`, { email })
+      .pipe(catchError(this.handleError));
   }
 
   // حفظ التوكن
@@ -57,13 +58,13 @@ export class AuthService {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
-// أضف هذه الدالة إلى AuthService الحالي
+  // أضف هذه الدالة إلى AuthService الحالي
 
-registerCompany(companyData: FormData): Observable<any> {
-  return this.http.post(`${this.apiUrl}/company/register`, companyData).pipe(
-    catchError(this.handleError)
-  );
-}
+  registerCompany(companyData: FormData): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/company/register`, companyData)
+      .pipe(catchError(this.handleError));
+  }
   // جلب بيانات المستخدم
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
@@ -77,7 +78,7 @@ registerCompany(companyData: FormData): Observable<any> {
   }
 
   // التحقق من حالة المصادقة
-  isLoggedIn(): boolean {
+  isLoggedIn(): boolean | string {
     return this.isTokenValid();
   }
 
@@ -86,18 +87,23 @@ registerCompany(companyData: FormData): Observable<any> {
     const token = this.getToken();
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
   }
 
   // التحقق من صلاحية التوكن
-  isTokenValid(): boolean {
+  isTokenValid(): boolean | string {
     const token = this.getToken();
+    // console.log(token);
     if (!token) return false;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp > Date.now() / 1000;
+      console.log(`token`, token);
+      // const payload = JSON.parse(atob(token.split('.')[1]));
+      // console.log(`payload`, payload);
+      return true;
+      // تعديل لتوافق الوقت بين التوكن والوقت الحالي
+      // return payload.exp > Math.floor(Date.now() / 1000);
     } catch (e) {
       return false;
     }
@@ -111,7 +117,7 @@ registerCompany(companyData: FormData): Observable<any> {
 
   // تنظيف التوكنات القديمة
   private clearStaleTokens(): void {
-    ['access_token', 'token'].forEach(key => localStorage.removeItem(key));
+    ['access_token', 'token'].forEach((key) => localStorage.removeItem(key));
   }
 
   // مسح جميع التوكنات والبيانات

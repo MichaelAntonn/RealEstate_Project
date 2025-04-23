@@ -27,6 +27,7 @@ class Company extends Model
         'accept_terms',
         'verification_status',
         'logo',
+        'rejection_reason',
     ];
 
     protected $hidden = [
