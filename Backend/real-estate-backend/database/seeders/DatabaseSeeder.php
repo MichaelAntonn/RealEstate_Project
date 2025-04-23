@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             CostSeeder::class,
             ReviewSeeder::class,
             SubscriptionPlansSeeder::class,
+            CompanySeeder::class,
         ]);
     }
 }
