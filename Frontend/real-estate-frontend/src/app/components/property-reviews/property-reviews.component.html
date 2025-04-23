@@ -1,0 +1,59 @@
+<div class="flex flex-col gap-6">
+  <div class="bg-gray-50 rounded-lg p-6 shadow-sm relative">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Reviews</h2>
+
+    @if (loading) {
+    <div class="text-center py-4">
+      <div
+        class="animate-spin rounded-full h-6 w-6 border-t-2 border-orange-500 mx-auto"
+      ></div>
+      <p class="mt-2 text-gray-600">Loading reviews...</p>
+    </div>
+    } @if (error) {
+    <div class="text-red-500 text-center py-4">{{ error }}</div>
+    } @if (!loading && !error && reviews.length > 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      @for (review of displayedReviews; track review.id) {
+      <div class="bg-white rounded-lg p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-lg font-semibold text-gray-900">
+              {{ review.user_name }}
+            </p>
+            <div class="flex items-center mt-1">
+              <i class="fa fa-star text-orange-500 text-sm mr-1"></i>
+              <span class="text-gray-600">{{ review.rating }}/5</span>
+            </div>
+          </div>
+          <small class="text-gray-500">{{
+            review.created_at | date : "medium"
+          }}</small>
+        </div>
+        <p class="text-gray-700">{{ review.comment }}</p>
+      </div>
+      }
+    </div>
+
+    @if (reviews.length > reviewsPerPage) {
+    <button
+      (click)="prevReviewPage()"
+      [disabled]="currentReviewPage === 0"
+      class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-orange-600 disabled:opacity-50"
+    >
+      <i class="fa fa-chevron-left"></i>
+    </button>
+
+    <button
+      (click)="nextReviewPage()"
+      [disabled]="isLastReviewPage"
+      class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-orange-600 disabled:opacity-50"
+    >
+      <i class="fa fa-chevron-right"></i>
+    </button>
+    } } @if (!loading && !error && reviews.length === 0) {
+    <div class="text-center py-4">
+      <p class="text-gray-600">No reviews available for this property yet.</p>
+    </div>
+    }
+  </div>
+</div>
