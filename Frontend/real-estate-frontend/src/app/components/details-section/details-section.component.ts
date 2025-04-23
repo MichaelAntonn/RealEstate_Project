@@ -4,11 +4,12 @@ import { Property, PropertyMedia } from '../../models/property';
 import { CommonModule } from '@angular/common';
 import { JsonParsePipe } from '../../pipes/json-parse.pipe';
 import { Router } from '@angular/router';
+import { PropertyReviewsComponent } from '../property-reviews/property-reviews.component';
 
 @Component({
   selector: 'app-details-section',
   standalone: true,
-  imports: [CommonModule, JsonParsePipe],
+  imports: [CommonModule, JsonParsePipe, PropertyReviewsComponent],
   templateUrl: './details-section.component.html',
   styleUrls: ['./details-section.component.css'],
 })
