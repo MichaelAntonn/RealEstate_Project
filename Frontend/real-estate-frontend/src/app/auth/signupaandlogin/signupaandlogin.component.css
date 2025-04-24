@@ -101,7 +101,8 @@ body {
     flex-grow: 1;
 }
 
-.container input, .container select {
+.container input,
+.container select {
     background-color: #eee;
     border: none;
     margin: 5px 0;
@@ -113,7 +114,8 @@ body {
     transition: all 0.3s;
 }
 
-.container input:focus, .container select:focus {
+.container input:focus,
+.container select:focus {
     border-color: #F77C34;
     box-shadow: 0px 4px 8px rgba(247, 124, 52, 0.3);
 }
@@ -310,7 +312,8 @@ body {
     margin-bottom: 5px;
 }
 
-input.error, select.error {
+input.error,
+select.error {
     border-color: red;
     background-color: #ffe5e5;
 }
@@ -324,6 +327,7 @@ input.error, select.error {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    gap: 8px;
 }
 
 .switch-btn {
@@ -339,6 +343,29 @@ input.error, select.error {
 
 .switch-btn:hover {
     color: #E66A2C;
+}
+
+/* Login Buttons */
+.login-btn {
+    background-color: #eee;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #F77C34;
+    color: #fff;
+}
+
+.login-btn.active {
+    background-color: #F77C34;
+    color: #fff;
+    font-weight: 600;
 }
 
 /* File Inputs */
@@ -494,7 +521,8 @@ input.error, select.error {
         font-size: 11px;
     }
     
-    .container input, .container select {
+    .container input,
+    .container select {
         padding: 8px 12px;
         font-size: 12px;
     }
@@ -513,6 +541,11 @@ input.error, select.error {
     }
     
     .switch-btn {
+        font-size: 12px;
+    }
+    
+    .login-btn {
+        padding: 6px 12px;
         font-size: 12px;
     }
     

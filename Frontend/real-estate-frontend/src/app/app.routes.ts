@@ -13,17 +13,12 @@ import { AdminLayoutComponent } from './components/adminDashboard/admin-layout/a
 import { AdminStatisticsComponent } from './components/adminDashboard/admin-statistics/admin-statistics.component';
 
 // User imports
-// import { LoginComponent } from './auth/login/login.component';
-// import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { HomeComponent } from './components/home/home.component';
 import { SignupaandloginComponent } from './auth/signupaandlogin/signupaandlogin.component';
 import { PropertiesComponent } from './components/properties/properties.component';
-//BOOKING
 import { BookingComponent } from './components/booking/booking.component';
-// Dashboard components
 import { ProfileComponent } from './profile/profile.component';
-// import { MyPropertiesComponent } from './my-properties/my-properties.component';
 import { FavoritesComponent } from './favorites/favorites.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
 import { MessagesComponent } from './messages/messages.component';
@@ -34,7 +29,8 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
 import { AddPropertyComponent } from './add-property/add-property.component';
 import { PropertyDetailsComponent } from './components/property-details/property-details.component';
 import { propertyOwnerGuard } from './guards/property-owner.guard';
-// company
+
+// Company imports
 import { CompanyLayoutComponent } from './components/companyDashboard/company-layout/company-layout.component';
 import { CompanyPropertiesComponent } from './components/companyDashboard/company-properties/company-properties.component';
 import { CompanyBookingsComponent } from './components/companyDashboard/company-bookings/company-bookings.component';
@@ -45,41 +41,47 @@ export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 
   // Public routes
-  { path: 'login', component: SignupaandloginComponent },
+  {
+    path: 'login',
+    component: SignupaandloginComponent,
+    data: { log: 'Accessing login route' }
+  },
   { path: 'sign-up', component: SignupaandloginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },
-  // booking route
-  {path: 'booking/:id', component: BookingComponent},
-
-  // User dashboard routes
-
-  { path: 'add-property', component: AddPropertyComponent ,
-   // canActivate: [AuthGuard]
-  }, // users can access this route
-  { path: 'edit-property/:id', component: AddPropertyComponent ,
-  //  canActivate: [AuthGuard, propertyOwnerGuard]
-  }, // Only property Owner can access this route
-
+  { path: 'booking/:id', component: BookingComponent },
+  { path: 'add-property', component: AddPropertyComponent },
+  { path: 'edit-property/:id', component: AddPropertyComponent },
   { path: 'signupandlogin', component: SignupaandloginComponent },
 
-
+  // User dashboard routes
   {
     path: 'maindashboard',
     component: MainDashboardComponent,
     children: [
       { path: 'dashboard', component: UserDashboardComponent },
       { path: 'profile', component: ProfileComponent },
-      // { path: 'properties', component: MyPropertiesComponent },
       { path: 'favorites', component: FavoritesComponent },
       { path: 'appointments', component: AppointmentsComponent },
       { path: 'messages', component: MessagesComponent },
       { path: 'statistics', component: StatisticsComponent },
       { path: 'settings', component: SettingsComponent },
-
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
+
+  // Company routes
+  {
+    path: 'company',
+    component: CompanyLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'properties', component: CompanyPropertiesComponent },
+      { path: 'bookings', component: CompanyBookingsComponent },
+      { path: 'statistics', component: CompanyStatisticsComponent },
+      { path: '', redirectTo: 'statistics', pathMatch: 'full' },
     ],
   },
 
@@ -89,65 +91,54 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminDashboardComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin', 'super-admin'] }, // Both admins and super-admins can access
+    data: { roles: ['admin', 'super-admin'] },
   },
   {
-    path: 'admin/layout', // Admin layout with sidebar and navbar
+    path: 'admin/layout',
     component: AdminLayoutComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin', 'super-admin'] }, // Both admins and super-admins can access the layout
+    data: { roles: ['admin', 'super-admin'] },
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },
       {
         path: 'users',
         component: AdminUsersComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] }, // Both can access
+        data: { roles: ['admin', 'super-admin'] },
       },
       {
         path: 'properties',
         component: AdminPropertiesComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] }, // Both can access
+        data: { roles: ['admin', 'super-admin'] },
       },
       {
         path: 'bookings',
         component: AdminBookingsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] }, // Both can access
+        data: { roles: ['admin', 'super-admin'] },
       },
       {
         path: 'activities',
         component: AdminActivitiesComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'super-admin'] }, // Both can access
+        data: { roles: ['admin', 'super-admin'] },
       },
       {
         path: 'settings',
         component: AdminSettingsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['super-admin'] }, // Only super-admins
+        data: { roles: ['super-admin'] },
       },
       {
         path: 'statistics',
         component: AdminStatisticsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['super-admin'] }, // Only super-admins
+        data: { roles: ['super-admin'] },
       },
     ],
   },
 
   // Wildcard route (fallback)
-  { path: '**', redirectTo: 'home' }, // Default to user home
-
-  {
-    path: 'company',
-    component: CompanyLayoutComponent,
-    children: [
-      { path: 'properties', component:CompanyPropertiesComponent },
-      { path: 'bookings', component: CompanyBookingsComponent},
-      { path: 'statistics', component:CompanyStatisticsComponent},
-      { path: '', redirectTo: 'statistics', pathMatch: 'full' }
-    ]
-  }
+  { path: '**', redirectTo: 'home' },
 ];

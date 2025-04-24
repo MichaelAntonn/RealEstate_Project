@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { CompanyAuthService } from '../../services/company-auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -26,6 +27,7 @@ export class SignupaandloginComponent implements AfterViewInit {
   // Login form fields
   loginEmail: string = '';
   loginPassword: string = '';
+  userType: string = 'user'; // Default to user login
 
   // Company Signup form fields
   isCompanySignup: boolean = false;
@@ -47,7 +49,18 @@ export class SignupaandloginComponent implements AfterViewInit {
     accept_terms: false
   };
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService,
+    private companyAuthService: CompanyAuthService
+  ) {}
+
+  // Toggle between user and company login
+  toggleLoginType() {
+    this.userType = this.userType === 'user' ? 'company' : 'user';
+    console.log('Login type toggled to:', this.userType);
+  }
 
   // Toggle between user and company signup forms
   toggleSignupMode() {
@@ -57,7 +70,7 @@ export class SignupaandloginComponent implements AfterViewInit {
   // Toggle between login and signup forms
   toggleForms() {
     const container = document.getElementById('container');
-    container?.classList.toggle("active");
+    container?.classList.toggle('active');
   }
 
   // Handle file selection for company documents
@@ -71,17 +84,19 @@ export class SignupaandloginComponent implements AfterViewInit {
   // Handle company signup form submission
   onCompanySignupSubmit() {
     // Validate required fields
-    if (!this.company.company_name || 
-        !this.company.commercial_registration_number || 
-        !this.company.company_email || 
-        !this.company.company_phone_number || 
-        !this.company.company_address || 
-        !this.company.commercial_registration_doc || 
-        !this.company.tax_card_doc || 
-        !this.company.proof_of_address_doc || 
-        !this.company.password || 
-        !this.company.password_confirmation || 
-        !this.company.accept_terms) {
+    if (
+      !this.company.company_name ||
+      !this.company.commercial_registration_number ||
+      !this.company.company_email ||
+      !this.company.company_phone_number ||
+      !this.company.company_address ||
+      !this.company.commercial_registration_doc ||
+      !this.company.tax_card_doc ||
+      !this.company.proof_of_address_doc ||
+      !this.company.password ||
+      !this.company.password_confirmation ||
+      !this.company.accept_terms
+    ) {
       alert('Please fill all required fields');
       return;
     }
@@ -120,6 +135,7 @@ export class SignupaandloginComponent implements AfterViewInit {
     // Send to backend
     this.http.post('http://localhost:8000/api/company/register', formData).subscribe({
       next: (response: any) => {
+        console.log('Company signup response:', response);
         alert('Company registration successful! Awaiting verification.');
         this.toggleForms(); // Switch to login form
         this.resetCompanyForm();
@@ -152,7 +168,6 @@ export class SignupaandloginComponent implements AfterViewInit {
     };
   }
 
-  // باقي الدوال الموجودة لديك تبقى كما هي (onSignupSubmit, onLoginSubmit, resetSignupForm, signInWithGoogle, navigateToForgotPassword, ngAfterViewInit)
   // Handle user signup form submission
   onSignupSubmit() {
     let isValid = true;
@@ -222,11 +237,13 @@ export class SignupaandloginComponent implements AfterViewInit {
 
       this.http.post('http://localhost:8000/api/v1/register', userData, { headers }).subscribe({
         next: () => {
+          console.log('User signup successful');
           alert('Registration successful!');
           this.toggleForms(); // Switch to login form
           this.resetSignupForm();
         },
         error: (error) => {
+          console.error('User signup failed:', error);
           alert('Registration failed: ' + JSON.stringify(error.error));
         },
       });
@@ -235,26 +252,53 @@ export class SignupaandloginComponent implements AfterViewInit {
 
   // Handle login form submission
   onLoginSubmit() {
-    const credentials = {
-      email: this.loginEmail,
-      password: this.loginPassword
-    };
-
-    this.authService.login(credentials).subscribe(
-      (response: any) => {
-        console.log('Login successful:', response);
-
-        this.authService.saveToken(response.access_token);
-        this.authService.saveUser(response.user);
-
-        this.router.navigate(['/maindashboard']);
-        localStorage.setItem('auth_token', response.access_token);
-      },
-      (error) => {
-        console.error('Login failed:', error);
-        alert('Login failed. Please check your credentials.');
-      }
-    );
+    if (this.userType === 'company') {
+      const credentials = {
+        company_email: this.loginEmail,
+        password: this.loginPassword
+      };
+      console.log('Attempting company login with:', credentials);
+      this.companyAuthService.login(credentials).subscribe({
+        next: (success) => {
+          console.log('Company login result:', success);
+          if (success) {
+            console.log('Company login successful, redirecting to /company');
+            this.router.navigate(['/company']).then(() => {
+              console.log('Navigation to /company completed');
+            });
+          } else {
+            console.error('Company login failed: No token set');
+            alert('Company login failed. Please check your credentials.');
+          }
+        },
+        error: (error) => {
+          console.error('Company login error:', error);
+          alert('Company login failed: ' + (error.error?.message || 'Unknown error'));
+        }
+      });
+    } else {
+      // User login
+      const credentials = {
+        email: this.loginEmail,
+        password: this.loginPassword
+      };
+      console.log('Attempting user login with:', credentials);
+      this.authService.login(credentials).subscribe({
+        next: (response: any) => {
+          console.log('User login successful:', response);
+          this.authService.saveToken(response.access_token);
+          this.authService.saveUser(response.user);
+          localStorage.setItem('auth_token', response.access_token);
+          this.router.navigate(['/maindashboard']).then(() => {
+            console.log('Navigation to /maindashboard completed');
+          });
+        },
+        error: (error) => {
+          console.error('User login failed:', error);
+          alert('User login failed. Please check your credentials.');
+        }
+      });
+    }
   }
 
   // Reset user signup form
@@ -271,11 +315,13 @@ export class SignupaandloginComponent implements AfterViewInit {
 
   // Google sign in
   signInWithGoogle() {
+    console.log('Initiating Google sign-in');
     window.location.href = 'http://localhost:8000/api/v1/social/auth/google';
   }
 
   // Navigate to forgot password
   navigateToForgotPassword() {
+    console.log('Navigating to forgot password');
     this.router.navigate(['/forgot-password']);
   }
 
