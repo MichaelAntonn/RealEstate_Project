@@ -64,8 +64,8 @@ Route::prefix('v1')->group(function () {
     // Cities Route (public)
     Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
 
-    // Reviews Route (public)
-    Route::prefix('reviews')->name('reviews.')->group(function () {
+      // Reviews Route (public)
+      Route::prefix('reviews')->name('reviews.')->group(function () {
         Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty'])->name('by.property');
     });
 
@@ -158,6 +158,7 @@ Route::prefix('v1')->group(function () {
             Route::patch('/{message}/read', [ChatController::class, 'markAsRead']);
             Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
         });
+
 
         Route::prefix('companies')->name('company.')->group(function () {
             Route::put('/{company_id}', [CompanyController::class, 'update']); // Update a company
@@ -298,6 +299,7 @@ Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
+
 });
 
     Route::prefix('admin')->group(function () {
