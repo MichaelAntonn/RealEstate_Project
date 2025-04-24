@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// import { CompanyAuthService } from '../../../services/company-auth.service';
+import { CompanyAuthService } from '../../../services/company-auth.service';
 
 @Component({
   selector: 'app-company-navbar',
@@ -9,44 +9,39 @@ import { CommonModule } from '@angular/common';
   templateUrl: './company-navbar.component.html',
   styleUrls: ['./company-navbar.component.css']
 })
-export class CompanyNavbarComponent  {
+export class CompanyNavbarComponent implements OnInit {
   egyptTime: Date = new Date();
-  userName: string = 'Guest';
-  userImage: string = 'https://www.pngmart.com/files/23/Profile-PNG-Photo.png';
+  companyName: string = 'Guest';
+  companyLogo: string = 'https://www.pngmart.com/files/23/Profile-PNG-Photo.png';
 
-  constructor() {}
+  constructor(private companyAuthService: CompanyAuthService) {}
 
-  // ngOnInit(): void {
-  //   this.updateTime();
-  //   this.fetchUserDetails();
-  // }
+  ngOnInit(): void {
+    console.log('CompanyNavbarComponent loaded');
+    this.updateTime();
+    this.fetchCompanyDetails();
+  }
 
-  // updateTime(): void {
-  //   setInterval(() => {
-  //     this.egyptTime = new Date();
-  //   }, 1000);
-  // }
+  updateTime(): void {
+    setInterval(() => {
+      this.egyptTime = new Date();
+    }, 1000);
+  }
 
-  // fetchUserDetails(): void {
-  //   if (this.companyAuthService.isLoggedIn()) {
-  //     this.companyAuthService.getUserProfile().subscribe({
-  //       next: (profile) => {
-  //         this.userName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Company User';
-  //         this.userImage = profile.profile_image || this.userImage;
-  //         console.log('Company user details fetched:', { name: this.userName, image: this.userImage });
-  //       },
-  //       error: (error) => {
-  //         console.error('Error in fetchUserDetails:', error);
-  //         this.userName = 'Company User';
-  //       }
-  //     });
-  //   } else {
-  //     console.log('Company user not logged in, using default values');
-  //   }
-  // }
+  fetchCompanyDetails(): void {
+    if (this.companyAuthService.isLoggedIn()) {
+      const company = this.companyAuthService.getCompanyData();
+      if (company) {
+        this.companyName = company.company_name || 'Company User';
+        this.companyLogo = company.logo ? `http://localhost:8000/${company.logo}` : this.companyLogo;
+        console.log('Company details fetched:', { name: this.companyName, logo: this.companyLogo });
+      }
+    } else {
+      console.log('No company logged in, using default values');
+    }
+  }
 
-  // logout(): void {
-  //   this.companyAuthService.logout();
-  //   console.log('Company user logged out');
-  // }
+  logout(): void {
+    this.companyAuthService.logout();
+  }
 }

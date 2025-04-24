@@ -1,63 +1,95 @@
 .sidebar-content {
-    padding: 20px;
-    color: #ffffff;
-  }
-  
-  .gold-title {
-    color: #F77C34;
-    font-weight: 600;
-  }
-  
-  .gold-divider {
-    height: 2px;
-    background: #F77C34;
-    margin: 10px 0;
-  }
-  
-  .nav-link {
-    display: flex;
-    align-items: center;
-    padding: 10px 15px;
-    color: #ffffff;
-    border-radius: 6px;
-    position: relative;
-    margin-bottom: 5px;
-  }
-  
-  .nav-link:hover,
-  .nav-link.active {
-    background: #F77C34;
-    color: #ffffff;
-  }
-  
-  .gold-icon {
-    color: #F77C34;
-    margin-right: 10px;
-    font-size: 1.2rem;
-  }
-  
-  .gold-hover-effect {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 20px;
-    background: #F77C34;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  
-  .nav-link:hover .gold-hover-effect,
-  .nav-link.active .gold-hover-effect {
-    opacity: 1;
-  }
-  
-  .support-section {
-    margin-top: 20px;
-  }
-  
-  .support-text p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-  }
+  padding: 20px;
+  color: #ffffff;
+  background-color: #1f1f1f; /* خلفية غامقة فخمة */
+  min-height: 100vh;
+  border-right: 2px solid #F77C34;
+}
+
+.gold-title {
+  color: #F77C34;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.gold-divider {
+  height: 2px;
+  background: #F77C34;
+  margin: 10px 0 20px;
+  border-radius: 1px;
+}
+
+.nav {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: #ffffff;
+  border-radius: 8px;
+  position: relative;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: #F77C34;
+  color: #ffffff;
+  transform: translateX(5px);
+}
+
+.gold-icon {
+  color: #F77C34;
+  margin-right: 12px;
+  font-size: 1.3rem;
+  transition: color 0.3s;
+}
+
+.nav-link:hover .gold-icon,
+.nav-link.active .gold-icon {
+  color: #fff;
+}
+
+.gold-hover-effect {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: #ffffff;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: 2px;
+}
+
+.nav-link:hover .gold-hover-effect,
+.nav-link.active .gold-hover-effect {
+  opacity: 1;
+}
+
+.support-section {
+  margin-top: 40px;
+  padding: 10px;
+  border-top: 1px solid #444;
+}
+
+.support-text {
+  text-align: center;
+  color: #ccc;
+}
+
+.support-text p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+li.nav-item {
+  list-style-type: none; /* يشيل الـ marker */
+}

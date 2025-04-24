@@ -160,19 +160,25 @@
   <div class="form-container sign-in">
     <form id="loginForm" (ngSubmit)="onLoginSubmit()">
       <h1>Sign In</h1>
+      <div class="switch-mode">
+        <button *ngIf="userType === 'user'" type="button" class="login-btn" (click)="toggleLoginType()">Login as Company</button>
+        <button *ngIf="userType === 'company'" type="button" class="login-btn" (click)="toggleLoginType()">Login as User</button>
+      </div>
       <div class="social-icons">
         <a href="#" class="icon" (click)="signInWithGoogle()"><i class="fa-brands fa-google-plus-g"></i></a>
       </div>
-      <span>or use your email for login</span>
+      <span>or use your {{ userType === 'company' ? 'company email' : 'email' }} for login</span>
       
       <div class="input-container">
         <i class="fa fa-envelope"></i>
-        <input type="email" id="loginEmail" placeholder="Email" [(ngModel)]="loginEmail" name="loginEmail" required>
+        <input type="email" id="loginEmail" placeholder="{{ userType === 'company' ? 'Company Email' : 'Email' }}" 
+               [(ngModel)]="loginEmail" name="loginEmail" required>
       </div>
       
       <div class="input-container">
         <i class="fa fa-lock"></i>
-        <input type="password" id="loginPassword" placeholder="Password" [(ngModel)]="loginPassword" name="loginPassword" required>
+        <input type="password" id="loginPassword" placeholder="Password" 
+               [(ngModel)]="loginPassword" name="loginPassword" required>
       </div>
       
       <a (click)="navigateToForgotPassword()">Forgot Your Password?</a>
