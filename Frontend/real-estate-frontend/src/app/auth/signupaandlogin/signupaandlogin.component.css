@@ -330,12 +330,13 @@ select.error {
     gap: 8px;
 }
 
-.switch-btn {
+.switch-a {
     background: none;
     border: none;
-    color: #F77C34;
+    color: #F77C34 !important;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: underline !important;
+    font-weight: 500 !important;
     padding: 0;
     margin-left: 5px;
     font-size: 14px;
@@ -346,20 +347,23 @@ select.error {
 }
 
 /* Login Buttons */
-.login-btn {
-    background-color: #eee;
+.login-a {
+    /* background-color: #eee; */
     border: none;
     padding: 8px 16px;
     font-size: 13px;
     border-radius: 8px;
     cursor: pointer;
-    color: #333;
+    color: #F77C34 !important;
     transition: all 0.3s ease;
+    font-weight: 600;
+
 }
 
-.login-btn:hover {
-    background-color: #F77C34;
-    color: #fff;
+.login-a:hover {
+    /* background-color: #F77C34; */
+    color: #E66A2C;
+    text-shadow: 1px 1px 20px rgb(192, 190, 190);
 }
 
 .login-btn.active {
