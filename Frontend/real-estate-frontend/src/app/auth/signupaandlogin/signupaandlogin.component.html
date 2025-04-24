@@ -3,32 +3,28 @@
   <div class="form-container sign-up">
     <form id="signupForm" (ngSubmit)="onSignupSubmit()" *ngIf="!isCompanySignup">
       <h1>Create Account</h1>
-      <div class="switch-mode">
-        <span>Sign up as a company?</span>
-        <button type="button" class="switch-btn" (click)="toggleSignupMode()">Switch to Company</button>
-      </div>
       <div class="social-icons">
-        <a href="#" class="icon" (click)="signInWithGoogle()"><i class="fa-brands fa-google-plus-g"></i></a>
+        <a href="#" class="icon" (click)="signInWithGoogle()"><i class="bi bi-google"></i></a>
       </div>
       <span>or use your email for registration</span>
       
       <div class="input-container">
-        <i class="fa fa-user"></i>
+        <i class="bi bi-person"></i>
         <input type="text" id="first_name" placeholder="First Name" [(ngModel)]="first_name" name="first_name" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-user"></i>
+        <i class="bi bi-person"></i>
         <input type="text" id="last_name" placeholder="Last Name" [(ngModel)]="last_name" name="last_name" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-envelope"></i>
+        <i class="bi bi-envelope"></i>
         <input type="email" id="email" placeholder="Email" [(ngModel)]="email" name="email" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-phone"></i>
+        <i class="bi bi-telephone"></i>
         <input type="tel" id="phone_number" placeholder="Phone Number" [(ngModel)]="phone_number" name="phone_number">
       </div>
       
@@ -41,12 +37,12 @@
       </select>
       
       <div class="input-container">
-        <i class="fa fa-lock"></i>
+        <i class="bi bi-lock"></i>
         <input type="password" id="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="8">
       </div>
       
       <div class="input-container">
-        <i class="fa fa-lock"></i>
+        <i class="bi bi-lock"></i>
         <input type="password" id="confirmPassword" placeholder="Confirm Password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
       </div>
       
@@ -56,40 +52,40 @@
       </div>
       
       <button type="submit">Sign Up</button>
+      <div class="switch-mode">
+        <span>Sign up as a company?</span>
+        <a type="button" class="switch-a" (click)="toggleSignupMode()">Switch to Company</a>
+      </div>
     </form>
 
     <!-- Company Sign Up Form -->
     <form id="companySignupForm" (ngSubmit)="onCompanySignupSubmit()" *ngIf="isCompanySignup" enctype="multipart/form-data">
       <h1>Register Your Company</h1>
-      <div class="switch-mode">
-        <span>Sign up as an individual?</span>
-        <button type="button" class="switch-btn" (click)="toggleSignupMode()">Switch to Individual</button>
-      </div>
       
       <div class="input-container">
-        <i class="fa fa-building"></i>
+        <i class="bi bi-building"></i>
         <input type="text" id="company_name" placeholder="Company Name" [(ngModel)]="company.company_name" name="company_name" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-id-card"></i>
+        <i class="bi bi-card-text"></i>
         <input type="text" id="commercial_registration_number" placeholder="Commercial Registration Number" 
                [(ngModel)]="company.commercial_registration_number" name="commercial_registration_number" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-envelope"></i>
+        <i class="bi bi-envelope"></i>
         <input type="email" id="company_email" placeholder="Company Email" [(ngModel)]="company.company_email" name="company_email" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-phone"></i>
+        <i class="bi bi-telephone"></i>
         <input type="tel" id="company_phone_number" placeholder="Company Phone Number" 
                [(ngModel)]="company.company_phone_number" name="company_phone_number" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-map-marker"></i>
+        <i class="bi bi-geo-alt"></i>
         <input type="text" id="company_address" placeholder="Company Address" [(ngModel)]="company.company_address" name="company_address" required>
       </div>
       
@@ -118,31 +114,31 @@
       </div>
       
       <div class="input-container">
-        <i class="fa fa-calendar"></i>
+        <i class="bi bi-calendar"></i>
         <input type="date" id="date_of_establishment" placeholder="Date of Establishment" 
                [(ngModel)]="company.date_of_establishment" name="date_of_establishment">
       </div>
       
       <div class="input-container">
-        <i class="fa fa-globe"></i>
+        <i class="bi bi-globe"></i>
         <input type="url" id="company_website" placeholder="Company Website" 
                [(ngModel)]="company.company_website" name="company_website">
       </div>
       
       <div class="input-container">
-        <i class="fa fa-history"></i>
+        <i class="bi bi-clock-history"></i>
         <input type="number" id="years_in_real_estate" placeholder="Years in Real Estate" 
                [(ngModel)]="company.years_in_real_estate" name="years_in_real_estate" min="0">
       </div>
       
       <div class="input-container">
-        <i class="fa fa-lock"></i>
+        <i class="bi bi-lock"></i>
         <input type="password" id="company_password" placeholder="Password" 
                [(ngModel)]="company.password" name="password" required minlength="8">
       </div>
       
       <div class="input-container">
-        <i class="fa fa-lock"></i>
+        <i class="bi bi-lock"></i>
         <input type="password" id="company_confirm_password" placeholder="Confirm Password" 
                [(ngModel)]="company.password_confirmation" name="password_confirmation" required>
       </div>
@@ -153,6 +149,10 @@
       </div>
       
       <button type="submit">Register Company</button>
+      <div class="switch-mode">
+        <span>Sign up as an individual?</span>
+        <a type="button" class="switch-a" (click)="toggleSignupMode()">Switch to Individual</a>
+      </div>
     </form>
   </div>
 
@@ -160,29 +160,29 @@
   <div class="form-container sign-in">
     <form id="loginForm" (ngSubmit)="onLoginSubmit()">
       <h1>Sign In</h1>
-      <div class="switch-mode">
-        <button *ngIf="userType === 'user'" type="button" class="login-btn" (click)="toggleLoginType()">Login as Company</button>
-        <button *ngIf="userType === 'company'" type="button" class="login-btn" (click)="toggleLoginType()">Login as User</button>
-      </div>
       <div class="social-icons">
-        <a href="#" class="icon" (click)="signInWithGoogle()"><i class="fa-brands fa-google-plus-g"></i></a>
+        <a href="#" class="icon" (click)="signInWithGoogle()"><i class="bi bi-google"></i></a>
       </div>
       <span>or use your {{ userType === 'company' ? 'company email' : 'email' }} for login</span>
       
       <div class="input-container">
-        <i class="fa fa-envelope"></i>
+        <i class="bi bi-envelope"></i>
         <input type="email" id="loginEmail" placeholder="{{ userType === 'company' ? 'Company Email' : 'Email' }}" 
                [(ngModel)]="loginEmail" name="loginEmail" required>
       </div>
       
       <div class="input-container">
-        <i class="fa fa-lock"></i>
+        <i class="bi bi-lock"></i>
         <input type="password" id="loginPassword" placeholder="Password" 
                [(ngModel)]="loginPassword" name="loginPassword" required>
       </div>
       
       <a (click)="navigateToForgotPassword()">Forgot Your Password?</a>
       <button type="submit">Sign In</button>
+      <div class="switch-mode">
+        <a *ngIf="userType === 'user'" type="button" class="login-a" (click)="toggleLoginType()">Login as Company</a>
+        <a *ngIf="userType === 'company'" type="button" class="login-a" (click)="toggleLoginType()">Login as User</a>
+      </div>
     </form>
   </div>
 
