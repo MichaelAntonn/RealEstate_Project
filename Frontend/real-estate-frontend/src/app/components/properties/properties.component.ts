@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
 import { PropertyService } from '../../services/property.service';
-import { Property } from '../../models/property';
-import { ShopCardsComponent } from '../shop-cards/shop-cards.component';
+import { FilterService } from '../../services/filter.service';
+import { Property, PropertyApiResponse } from '../../models/property';
+import { PropertyCardComponent } from '../property-card/property-card.component';
 import { PropertyFilterComponent } from '../property-filter/property-filter.component';
+import { PaginationComponent } from '../pagination/pagination.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-properties',
@@ -13,45 +17,90 @@ import { PropertyFilterComponent } from '../property-filter/property-filter.comp
   imports: [
     CommonModule,
     NavbarComponent,
-    ShopCardsComponent,
     FooterComponent,
+    PropertyCardComponent,
     PropertyFilterComponent,
+    PaginationComponent,
   ],
   templateUrl: './properties.component.html',
   styleUrls: ['./properties.component.css'],
 })
-export class PropertiesComponent implements OnInit {
+export class PropertiesComponent implements OnInit, OnDestroy {
   properties: Property[] = [];
   currentPage: number = 1;
   lastPage: number = 1;
+  perPage: number = 8;
+  totalItems: number = 0; // Add totalItems
   isLoading: boolean = false;
+  errorMessage: string | null = null;
+  private subscription: Subscription = new Subscription();
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    private filterService: FilterService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadProperties();
+    this.subscription.add(
+      this.route.queryParams.subscribe((params) => {
+        this.currentPage = parseInt(params['page'] || '1', 10);
+        const filters = {
+          keyword: params['keyword'] || '',
+          type: params['type'] || '',
+          city: params['city'] || '',
+          listing_type: params['listing_type'] || 'for_sale',
+          page: this.currentPage,
+        };
+        this.filterService.updateFilters(filters);
+      })
+    );
+
+    this.subscription.add(
+      this.filterService.filters$.subscribe((filters) => {
+        this.currentPage = filters.page || 1;
+        this.loadProperties(filters);
+      })
+    );
   }
 
-  loadProperties(): void {
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  loadProperties(filters: any): void {
     this.isLoading = true;
-    this.propertyService.getProperties(this.currentPage).subscribe({
+    this.errorMessage = null;
+
+    this.propertyService.getProperties(this.currentPage, this.perPage, filters).subscribe({
       next: (response) => {
-        this.properties = [...this.properties, ...response.data];
+        this.errorMessage = null;
+        this.properties = response.data || [];
         this.currentPage = response.current_page;
         this.lastPage = response.last_page;
+        this.perPage = response.per_page;
+        this.totalItems = response.total; // Set totalItems
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error loading properties:', err);
+      error: (error) => {
+        console.error('Unexpected error:', error);
+        this.errorMessage = 'An unexpected error occurred while fetching properties';
+        this.properties = [];
+        this.currentPage = 1;
+        this.lastPage = 1;
+        this.perPage = 8;
+        this.totalItems = 0;
         this.isLoading = false;
       },
     });
   }
 
-  loadMore(): void {
-    if (this.currentPage < this.lastPage && !this.isLoading) {
-      this.currentPage++;
-      this.loadProperties();
-    }
+  onPageChange(page: number): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page },
+      queryParamsHandling: 'merge',
+    });
   }
 }

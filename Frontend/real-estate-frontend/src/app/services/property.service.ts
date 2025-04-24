@@ -46,18 +46,38 @@ export class PropertyService {
     });
   }
 
-  getProperties(page: number = 1): Observable<PropertyApiResponse> {
+  getProperties(
+    page: number = 1,
+    perPage: number = 10,
+    filters: any = {}
+  ): Observable<PropertyApiResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString());
+
+    // Add filters to query params
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === 'is_new_building') {
+        if (value === true) {
+          params = params.set(key, 'true');
+        }
+      } else if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    });
+
     return this.http
-      .get<{ properties: PropertyApiResponse }>(
-        `${this.apiUrl}/properties?page=${page}`
+      .get<{ data: Property[]; pagination: any }>(
+        `${this.apiUrl}/properties`,
+        { headers: this.getAuthHeaders(), params }
       )
       .pipe(
         map((response) => ({
-          data: response.properties.data,
-          current_page: response.properties.current_page,
-          last_page: response.properties.last_page,
-          total: response.properties.total,
-          per_page: response.properties.per_page,
+          data: response.data,
+          current_page: response.pagination.current_page,
+          last_page: response.pagination.total_pages,
+          total: response.pagination.total_items,
+          per_page: response.pagination.per_page,
         })),
         catchError((error: HttpErrorResponse) => {
           console.error('Error fetching properties:', error);
@@ -66,7 +86,7 @@ export class PropertyService {
             current_page: 1,
             last_page: 1,
             total: 0,
-            per_page: 10,
+            per_page: perPage,
           });
         })
       );
@@ -75,15 +95,11 @@ export class PropertyService {
   createProperty(
     propertyData: FormData
   ): Observable<{ success: boolean; property: Property }> {
-    const authHeader = this.getAuthHeaders();
-
     return this.http
       .post<{ success: boolean; property: Property }>(
         `${this.apiUrl}/properties`,
         propertyData,
-        {
-          headers: authHeader,
-        }
+        { headers: this.getAuthHeaders() }
       )
       .pipe(
         catchError((error: HttpErrorResponse) => {
@@ -103,9 +119,7 @@ export class PropertyService {
     return this.http
       .get<{ success: boolean; property: Property }>(
         `${this.apiUrl}/properties/${id}`,
-        {
-          headers: this.getAuthHeaders(),
-        }
+        { headers: this.getAuthHeaders() }
       )
       .pipe(
         map((response) => response.property),
@@ -120,9 +134,7 @@ export class PropertyService {
     return this.http
       .get<{ success: boolean; property: Property }>(
         `${this.apiUrl}/properties/slug/${slug}`,
-        {
-          headers: this.getAuthHeaders(),
-        }
+        { headers: this.getAuthHeaders() }
       )
       .pipe(
         map((response) => response.property),
@@ -170,7 +182,7 @@ export class PropertyService {
     );
   }
 
-  searchProperties(): Observable<PropertySearchApiResponse> {
+  searchProperties(perPage: number = 8): Observable<PropertySearchApiResponse> {
     return this.filterService.filters$.pipe(
       debounceTime(500),
       distinctUntilChanged(
@@ -178,6 +190,7 @@ export class PropertyService {
       ),
       switchMap((filters) => {
         let params = new HttpParams();
+        params = params.set('per_page', perPage.toString()); // Add perPage to params
         Object.entries(filters).forEach(([key, value]) => {
           if (key === 'is_new_building') {
             if (value === true) {
@@ -188,7 +201,10 @@ export class PropertyService {
           }
         });
         return this.http
-          .get<PropertySearchResponse>(`${this.apiUrl}/search`, { params })
+          .get<PropertySearchResponse>(`${this.apiUrl}/search`, {
+            params,
+            headers: this.getAuthHeaders(),
+          })
           .pipe(
             map((response) => response),
             catchError((error: HttpErrorResponse) => {
@@ -201,7 +217,7 @@ export class PropertyService {
                   current_page: 1,
                   total_pages: 1,
                   total_items: 0,
-                  per_page: 5,
+                  per_page: perPage, // Use the passed perPage value
                 },
               } as PropertySearchErrorResponse);
             })
@@ -214,9 +230,7 @@ export class PropertyService {
     return this.http
       .get<{ media: PropertyMedia[] }>(
         `${this.apiUrl}/properties/${propertyId}/media`,
-        {
-          headers: this.getAuthHeaders(),
-        }
+        { headers: this.getAuthHeaders() }
       )
       .pipe(
         map((response) => response.media || []),

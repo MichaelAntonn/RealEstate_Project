@@ -75,29 +75,11 @@
     <div
       class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4"
     >
-      <span class="text-orange-600 text-sm">Showing 1-10 of 23</span>
+      <span class="text-orange-600 text-sm">
+        Showing {{ (currentPage - 1) * perPage + 1 }}-{{ getEndRange() }} of {{ totalItems }}
+      </span>
 
       <div class="flex items-center gap-4">
-        <!-- View Toggle -->
-        <div class="flex gap-1 bg-orange-50 rounded-lg p-1">
-          <button
-            (click)="toggleViewMode('grid')"
-            [class.bg-orange-500]="viewMode === 'grid'"
-            [class.text-white]="viewMode === 'grid'"
-            class="p-2 rounded-md"
-          >
-            <i class="fas fa-th-large text-xs"></i>
-          </button>
-          <button
-            (click)="toggleViewMode('list')"
-            [class.bg-orange-500]="viewMode === 'list'"
-            [class.text-white]="viewMode === 'list'"
-            class="p-2 rounded-md text-orange-400 hover:bg-gray-100"
-          >
-            <i class="fas fa-list text-xs"></i>
-          </button>
-        </div>
-
         <!-- Sort By -->
         <div class="relative">
           <select

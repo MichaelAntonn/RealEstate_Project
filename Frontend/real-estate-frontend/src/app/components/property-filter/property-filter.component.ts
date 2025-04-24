@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { PropertyService } from '../../services/property.service';
@@ -13,6 +13,10 @@ import { PropertyFilters } from '../../models/property';
   styleUrls: ['./property-filter.component.css'],
 })
 export class PropertyFilterComponent implements OnInit, OnDestroy {
+  @Input() currentPage: number = 1;
+  @Input() perPage: number = 8;
+  @Input() totalItems: number = 0;
+
   filters: PropertyFilters = {
     keyword: '',
     type: '',
@@ -21,8 +25,6 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     page: 1,
     sort_by: 'newest',
   };
-
-  viewMode: 'grid' | 'list' = 'grid';
 
   listingTypes = [
     { value: '', label: 'Status' },
@@ -57,7 +59,6 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadCities();
 
-    // Subscribe to filter changes
     this.subscription.add(
       this.filterService.filters$.subscribe((filters) => {
         this.filters = { ...this.filters, ...filters };
@@ -106,13 +107,13 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleViewMode(mode: 'grid' | 'list'): void {
-    this.viewMode = mode;
-    // Optionally emit viewMode change to other components if needed
-  }
-
   toggleListingType(type: 'for_sale' | 'for_rent'): void {
     this.filters.listing_type = type;
     this.onFilterChange();
+  }
+
+  // Add method to calculate the end range
+  getEndRange(): number {
+    return Math.min(this.currentPage * this.perPage, this.totalItems);
   }
 }

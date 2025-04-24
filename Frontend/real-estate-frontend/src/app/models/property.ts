@@ -1,4 +1,3 @@
-// src/app/models/property
 export interface PropertyMedia {
   id: number;
   PropertyID: number;
@@ -15,25 +14,25 @@ export interface Property {
   description: string;
   type: 'land' | 'apartment' | 'villa' | 'office';
   price: number;
-  commission: number | null;
+  commission?: number | null; // Optional to avoid errors if not returned
   city: string;
   district: string;
-  full_address: string | null;
+  full_address?: string | null;
   area: number;
-  bedrooms: number | null;
-  bathrooms: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
   listing_type: 'for_sale' | 'for_rent';
   construction_status: 'available' | 'under_construction';
-  approval_status: 'pending' | 'accepted' | 'rejected' | null;
-  transaction_status: 'pending' | 'completed' | null;
-  building_year: number | null;
-  legal_status: 'licensed' | 'unlicensed' | 'pending' | null;
-  furnished: boolean;
-  amenities: string[] | null;
-  payment_options: string[] | null;
-  cover_image: string | null;
+  approval_status?: 'pending' | 'accepted' | 'rejected' | null;
+  transaction_status?: 'pending' | 'completed' | null;
+  building_year?: number | null;
+  legal_status?: 'licensed' | 'unlicensed' | 'pending' | null;
+  furnished?: boolean | null;
+  amenities?: string[] | null;
+  payment_options?: string[] | null;
+  cover_image?: string | null;
   property_code: string;
-  media: PropertyMedia[];
+  media?: PropertyMedia[]; // Optional to avoid errors if not loaded
   user_id: number;
   created_at: string;
   updated_at: string;
@@ -46,6 +45,7 @@ export interface PropertyApiResponse {
   total: number;
   per_page: number;
 }
+
 export interface Pagination {
   current_page: number;
   total_pages: number;
@@ -61,7 +61,7 @@ export interface PropertySearchResponse {
 export interface PropertySearchErrorResponse {
   status: 'error';
   message: string;
-  data?: never; // or data: [];
+  data?: never;
   pagination?: Pagination;
 }
 
@@ -70,11 +70,11 @@ export type PropertySearchApiResponse =
   | PropertySearchErrorResponse;
 
 export interface PropertyFilters {
-  [x: string]: string | number | boolean | undefined;
-  keyword: string;
-  type: string;
-  city: string;
-  listing_type: 'for_sale' | 'for_rent' | undefined;
-  page: number;
+  [key: string]: string | number | boolean | undefined;
+  keyword?: string;
+  type?: string;
+  city?: string;
+  listing_type?: 'for_sale' | 'for_rent';
+  page?: number;
   is_new_building?: boolean;
 }
