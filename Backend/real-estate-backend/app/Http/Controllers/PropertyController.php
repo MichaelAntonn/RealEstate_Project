@@ -28,11 +28,24 @@ class PropertyController extends Controller
     {
         $query = Property::query();
 
+        if ($request->has('keyword')) {
+            $keyword = strtolower($request->input('keyword'));
+            $query->where(function ($q) use ($keyword) {
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(city) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(type) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$keyword}%"]);
+            });
+        }
+
         if ($request->has('city')) {
             $query->where('city', $request->input('city'));
         }
         if ($request->has('type')) {
             $query->where('type', $request->input('type'));
+        }
+        if ($request->has('listing_type') && $request->input('listing_type') !== '') {
+            $query->where('listing_type', $request->input('listing_type'));
         }
         if ($request->has('min_price')) {
             $query->where('price', '>=', $request->input('min_price'));
@@ -40,11 +53,48 @@ class PropertyController extends Controller
         if ($request->has('max_price')) {
             $query->where('price', '<=', $request->input('max_price'));
         }
+        if ($request->has('min_area')) {
+            $query->where('area', '>=', $request->input('min_area'));
+        }
+        if ($request->has('max_area')) {
+            $query->where('area', '<=', $request->input('max_area'));
+        }
+        if ($request->has('bedrooms')) {
+            $query->where('bedrooms', $request->input('bedrooms'));
+        }
+        if ($request->has('bathrooms')) {
+            $query->where('bathrooms', $request->input('bathrooms'));
+        }
         if ($request->has('construction_status')) {
             $query->where('construction_status', $request->input('construction_status'));
         }
         if ($request->has('approval_status')) {
             $query->where('approval_status', $request->input('approval_status'));
+        }
+        if ($request->has('is_new_building') && filter_var($request->input('is_new_building'), FILTER_VALIDATE_BOOLEAN)) {
+            $currentYear = Carbon::now()->year;
+            $newBuildingThreshold = $currentYear - 3;
+            $query->where('building_year', '>=', $newBuildingThreshold)
+                ->whereNotNull('building_year');
+        }
+        if ($request->has('sort_by')) {
+            $sortBy = $request->input('sort_by');
+            switch ($sortBy) {
+                case 'newest':
+                    $query->latest();
+                    break;
+                case 'price_low':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high':
+                    $query->orderBy('price', 'desc');
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
         }
 
         $perPage = $request->input('per_page', 10);

@@ -20,7 +20,7 @@
       type="text"
       class="search-input"
       placeholder="Search for properties..."
-      [(ngModel)]="filters.keyword"
+      [(ngModel)]="keyword"
       (keyup.enter)="onSearch()"
     />
     <button class="search-btn" (click)="onSearch()">

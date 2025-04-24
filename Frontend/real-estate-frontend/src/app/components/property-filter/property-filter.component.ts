@@ -4,11 +4,12 @@ import { Subscription } from 'rxjs';
 import { PropertyService } from '../../services/property.service';
 import { FilterService } from '../../services/filter.service';
 import { PropertyFilters } from '../../models/property';
+import { NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 
 @Component({
   selector: 'app-property-filter',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, NgxSliderModule],
   templateUrl: './property-filter.component.html',
   styleUrls: ['./property-filter.component.css'],
 })
@@ -21,32 +22,60 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     keyword: '',
     type: '',
     city: '',
-    listing_type: 'for_sale',
+    listing_type: '',
     page: 1,
     sort_by: 'newest',
+    is_new_building: false,
+    min_price: 0,
+    max_price: 10000000,
+    min_area: 0,
+    max_area: 1000,
+    bedrooms: '',
+    bathrooms: '',
   };
 
-  listingTypes = [
-    { value: '', label: 'Status' },
-    { value: 'for_sale', label: 'Buy' },
-    { value: 'for_rent', label: 'Rent' },
-  ];
+  priceRange = { min: 0, max: 10000000 };
+  areaRange = { min: 0, max: 1000 };
 
-  propertyTypes = [
-    { value: '', label: 'Type' },
-    { value: 'villa', label: 'Houses' },
-    { value: 'apartment', label: 'Apartments' },
-    { value: 'office', label: 'Office' },
-    { value: 'land', label: 'Daily rental' },
-  ];
+  priceSliderOptions: Options = {
+    floor: this.priceRange.min,
+    ceil: this.priceRange.max,
+    step: 1000,
+    showTicks: false,
+    translate: (value: number): string => `$${value}`,
+  };
 
-  cities = [{ value: '', label: 'Location' }];
+  areaSliderOptions: Options = {
+    floor: this.areaRange.min,
+    ceil: this.areaRange.max,
+    step: 10,
+    showTicks: false,
+    translate: (value: number): string => `${value} m²`,
+  };
 
   sortOptions = [
     { value: 'newest', label: 'Newest' },
     { value: 'best_seller', label: 'Best Seller' },
     { value: 'price_low', label: 'Low Price' },
     { value: 'price_high', label: 'High Price' },
+  ];
+
+  bedroomOptions = [
+    { value: '', label: 'Bedrooms' },
+    { value: '1', label: '1' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '5', label: '5+' },
+  ];
+
+  bathroomOptions = [
+    { value: '', label: 'Bathrooms' },
+    { value: '1', label: '1' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '5', label: '5+' },
   ];
 
   private subscription: Subscription = new Subscription();
@@ -57,8 +86,6 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadCities();
-
     this.subscription.add(
       this.filterService.filters$.subscribe((filters) => {
         this.filters = { ...this.filters, ...filters };
@@ -70,32 +97,14 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  loadCities(): void {
-    this.propertyService.getCities().subscribe({
-      next: (cities) => {
-        this.cities = [
-          { value: '', label: 'Location' },
-          ...cities.map((city) => ({ value: city, label: city })),
-        ];
-      },
-      error: (error) => {
-        console.error('Error fetching cities:', error);
-      },
-    });
-  }
-
   onFilterChange(): void {
     this.filterService.updateFilters({
-      type: this.filters.type,
-      city: this.filters.city,
-      listing_type: this.filters.listing_type,
-      page: 1,
-    });
-  }
-
-  onSearch(): void {
-    this.filterService.updateFilters({
-      keyword: this.filters.keyword,
+      min_price: this.filters.min_price,
+      max_price: this.filters.max_price,
+      min_area: this.filters.min_area,
+      max_area: this.filters.max_area,
+      bedrooms: this.filters.bedrooms,
+      bathrooms: this.filters.bathrooms,
       page: 1,
     });
   }
@@ -107,13 +116,18 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleListingType(type: 'for_sale' | 'for_rent'): void {
-    this.filters.listing_type = type;
-    this.onFilterChange();
-  }
-
-  // Add method to calculate the end range
   getEndRange(): number {
     return Math.min(this.currentPage * this.perPage, this.totalItems);
+  }
+
+  resetFilters(): void {
+    this.filters.min_price = this.priceRange.min;
+    this.filters.max_price = this.priceRange.max;
+    this.filters.min_area = this.areaRange.min;
+    this.filters.max_area = this.areaRange.max;
+    this.filters.bedrooms = undefined;
+    this.filters.bathrooms = undefined;
+    this.filters.sort_by = 'newest';
+    this.onFilterChange();
   }
 }
