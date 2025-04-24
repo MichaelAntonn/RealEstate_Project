@@ -1,0 +1,27 @@
+<div class="navbar-container d-flex justify-content-between align-items-center mb-4 px-4 py-3 bg-gradient shadow-elegant">
+    <h2 class="mb-0 text-gold fw-bold fs-3">Company Dashboard</h2>
+    <div class="d-flex align-items-center">
+      <span class="time-display me-4 fw-medium">
+        <i class="bi bi-clock me-1"></i>
+        Cairo: {{ egyptTime | date:'shortTime' }}
+      </span>
+      <div class="dropdown">
+        <div class="user-profile d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+          <img [src]="userImage" 
+               alt="User Profile" 
+               class="profile-img rounded-circle border border-2 border-gold"
+               (error)="userImage = 'https://www.pngmart.com/files/23/Profile-PNG-Photo.png'">
+          <span class="user-name ms-2 me-1 fw-medium">{{ userName }}</span>
+          <i class="bi bi-chevron-down text-muted small"></i>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end shadow-elegant border-0 mt-2">
+          <li>
+            <a class="dropdown-item d-flex align-items-center py-2" href="#" >
+              <i class="bi bi-box-arrow-right me-2 text-danger"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>

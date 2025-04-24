@@ -1,0 +1,40 @@
+.navbar-container {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    border-radius: 8px;
+  }
+  
+  .text-gold {
+    color: #F77C34;
+  }
+  
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+  }
+  
+  .border-gold {
+    border-color: #F77C34 !important;
+  }
+  
+  .shadow-elegant {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .time-display {
+    color: #ffffff;
+  }
+  
+  .user-name {
+    color: #ffffff;
+  }
+  
+  .dropdown-menu {
+    background: #2c2c2c;
+    color: #ffffff;
+  }
+  
+  .dropdown-item:hover {
+    background: #F77C34;
+    color: #ffffff;
+  }

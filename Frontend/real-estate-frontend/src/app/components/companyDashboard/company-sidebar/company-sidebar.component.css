@@ -1,0 +1,63 @@
+.sidebar-content {
+    padding: 20px;
+    color: #ffffff;
+  }
+  
+  .gold-title {
+    color: #F77C34;
+    font-weight: 600;
+  }
+  
+  .gold-divider {
+    height: 2px;
+    background: #F77C34;
+    margin: 10px 0;
+  }
+  
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #ffffff;
+    border-radius: 6px;
+    position: relative;
+    margin-bottom: 5px;
+  }
+  
+  .nav-link:hover,
+  .nav-link.active {
+    background: #F77C34;
+    color: #ffffff;
+  }
+  
+  .gold-icon {
+    color: #F77C34;
+    margin-right: 10px;
+    font-size: 1.2rem;
+  }
+  
+  .gold-hover-effect {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: #F77C34;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .nav-link:hover .gold-hover-effect,
+  .nav-link.active .gold-hover-effect {
+    opacity: 1;
+  }
+  
+  .support-section {
+    margin-top: 20px;
+  }
+  
+  .support-text p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+  }

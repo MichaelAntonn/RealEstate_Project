@@ -34,7 +34,11 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
 import { AddPropertyComponent } from './add-property/add-property.component';
 import { PropertyDetailsComponent } from './components/property-details/property-details.component';
 import { propertyOwnerGuard } from './guards/property-owner.guard';
-
+// company
+import { CompanyLayoutComponent } from './components/companyDashboard/company-layout/company-layout.component';
+import { CompanyPropertiesComponent } from './components/companyDashboard/company-properties/company-properties.component';
+import { CompanyBookingsComponent } from './components/companyDashboard/company-bookings/company-bookings.component';
+import { CompanyStatisticsComponent } from './components/companyDashboard/company-statistics/company-statistics.component';
 
 export const routes: Routes = [
   // Default route
@@ -135,4 +139,15 @@ export const routes: Routes = [
 
   // Wildcard route (fallback)
   { path: '**', redirectTo: 'home' }, // Default to user home
+
+  {
+    path: 'company',
+    component: CompanyLayoutComponent,
+    children: [
+      { path: 'properties', component:CompanyPropertiesComponent },
+      { path: 'bookings', component: CompanyBookingsComponent},
+      { path: 'statistics', component:CompanyStatisticsComponent},
+      { path: '', redirectTo: 'statistics', pathMatch: 'full' }
+    ]
+  }
 ];

@@ -1,0 +1,21 @@
+.company-wrapper {
+    min-height: 100vh;
+  }
+  
+  .sidebar-area {
+    width: 250px;
+    background-color: #1a1a1a;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+  }
+  
+  .content-area {
+    margin-left: 250px;
+    background-color: #f8f9fa;
+  }
+  
+  .content-wrapper {
+    min-height: calc(100vh - 80px);
+  }
