@@ -345,7 +345,70 @@ select.error {
 .switch-btn:hover {
     color: #E66A2C;
 }
-
+/* Notification Styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 350px;
+  }
+  
+  .notification {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+    transition: all 0.3s ease;
+  }
+  
+  .notification.error {
+    background-color: #f44336;
+  }
+  
+  .notification.success {
+    background-color: #4CAF50;
+  }
+  
+  .notification.warning {
+    background-color: #ff9800;
+  }
+  
+  .notification.info {
+    background-color: #2196F3;
+  }
+  
+  .notification i {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 18px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  
+  .notification i:hover {
+    opacity: 1;
+  }
+  
+  @keyframes slideIn {
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
 /* Login Buttons */
 .login-a {
     /* background-color: #eee; */

@@ -1,5 +1,11 @@
 <div class="container" id="container">
-  
+  <!-- Notification Container -->
+<div class="notification-container" *ngIf="notification.show">
+  <div class="notification" [class.error]="notification.isError" [class.success]="!notification.isError">
+    <span>{{ notification.message }}</span>
+    <i class="bi bi-x" (click)="hideNotification()"></i>
+  </div>
+</div>
   <!-- User Sign Up Form -->
   <div class="form-container sign-up">
     <form id="signupForm" (ngSubmit)="onSignupSubmit()" *ngIf="!isCompanySignup">
