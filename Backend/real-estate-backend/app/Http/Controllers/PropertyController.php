@@ -26,11 +26,8 @@ class PropertyController extends Controller
      */
     public function index(Request $request)
     {
-
-        // Start with all properties
         $query = Property::query();
 
-        // Apply filters
         if ($request->has('city')) {
             $query->where('city', $request->input('city'));
         }
@@ -50,13 +47,17 @@ class PropertyController extends Controller
             $query->where('approval_status', $request->input('approval_status'));
         }
 
-        // Paginate the results with dynamic per_page value
-        $perPage = $request->input('per_page', 10); // Default to 10 if not provided
+        $perPage = $request->input('per_page', 10);
         $properties = $query->paginate($perPage);
 
         return response()->json([
-            'success' => true,
-            'properties' => $properties,
+            'data' => $properties->items(),
+            'pagination' => [
+                'current_page' => $properties->currentPage(),
+                'total_pages' => $properties->lastPage(),
+                'total_items' => $properties->total(),
+                'per_page' => $properties->perPage(),
+            ],
         ]);
     }
 

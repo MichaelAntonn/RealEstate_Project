@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PropertyService } from '../../services/property.service';
 import { FilterService } from '../../services/filter.service';
@@ -14,7 +13,7 @@ import {
 @Component({
   selector: 'app-shop-cards',
   standalone: true,
-  imports: [CommonModule, RouterLink, PropertyCardComponent],
+  imports: [CommonModule, PropertyCardComponent],
   templateUrl: './shop-cards.component.html',
   styleUrls: ['./shop-cards.component.css'],
 })
@@ -24,12 +23,11 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
     current_page: 1,
     total_pages: 0,
     total_items: 0,
-    per_page: 10,
+    per_page: 8,
   };
-  pages: number[] = [];
   isLoading = false;
   errorMessage: string | null = null;
-  // viewMode: 'grid' | 'list' = 'grid';
+  private perPage: number = 8;
 
   private subscription: Subscription = new Subscription();
 
@@ -39,18 +37,11 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to filters to update UI when filters change
     this.subscription.add(
-      this.filterService.filters$.subscribe((filters) => {
-        // if (filters['viewMode']) {
-        //   this.viewMode = filters['viewMode'];
-        // }
+      this.filterService.filters$.subscribe(() => {
         this.loadProperties();
       })
     );
-
-    // Initial load of properties
-    this.loadProperties();
   }
 
   ngOnDestroy(): void {
@@ -60,8 +51,9 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
   private loadProperties(): void {
     this.isLoading = true;
     this.errorMessage = null;
+
     this.subscription.add(
-      this.propertyService.searchProperties().subscribe({
+      this.propertyService.searchProperties(this.perPage).subscribe({
         next: (response: PropertySearchApiResponse) => {
           if ('status' in response && response.status === 'error') {
             this.errorMessage = response.message;
@@ -70,9 +62,8 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
               current_page: 1,
               total_pages: 0,
               total_items: 0,
-              per_page: 10,
+              per_page: this.perPage,
             };
-            this.pages = [];
           } else {
             this.errorMessage = null;
             this.properties = response.data || [];
@@ -80,12 +71,8 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
               current_page: 1,
               total_pages: 0,
               total_items: 0,
-              per_page: 10,
+              per_page: this.perPage,
             };
-            this.pages = Array.from(
-              { length: this.pagination.total_pages },
-              (_, i) => i + 1
-            );
           }
           this.isLoading = false;
         },
@@ -97,16 +84,11 @@ export class ShopCardsComponent implements OnInit, OnDestroy {
             current_page: 1,
             total_pages: 0,
             total_items: 0,
-            per_page: 10,
+            per_page: this.perPage,
           };
-          this.pages = [];
           this.isLoading = false;
         },
       })
     );
-  }
-
-  onPageChange(page: number): void {
-    this.filterService.updateFilters({ page });
   }
 }

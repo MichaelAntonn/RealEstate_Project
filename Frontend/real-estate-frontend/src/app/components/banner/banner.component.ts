@@ -19,7 +19,7 @@ export class BannerComponent {
   }
 
   onSearch(): void {
-    this.filterService.search(this.filters.keyword);
+    this.filterService.search(this.filters.keyword  || '');
     this.router.navigate(['/properties']);
   }
 
