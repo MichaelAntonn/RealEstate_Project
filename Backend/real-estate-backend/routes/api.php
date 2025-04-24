@@ -21,6 +21,8 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\Payment\PaymentWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionPlanController;
 
@@ -79,6 +81,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan'); // Get the trial subscription plan
         Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
     });
+    
+      // Payments
+      Route::prefix('payment')->group(function () {
+        Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
+    });
+
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -155,6 +163,8 @@ Route::prefix('v1')->group(function () {
             Route::put('/{company_id}', [CompanyController::class, 'update']); // Update a company
             Route::delete('/{company_id}', [CompanyController::class, 'destroy']); // Delete a company
         });
+
+        //Subscriptions
         Route::prefix('subscription')->group(function () {
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe'); // Subscribe a company to a plan
             Route::post('/subscribe/trial', [SubscriptionController::class, 'subscribeToTrial'])->name('subscription.subscribeTrial'); // Subscribe a company to a trial plan
@@ -164,6 +174,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations']); // get upcoming subscription expirations within a specific number of days
             Route::get('/current-subscription-status', [SubscriptionController::class, 'getCurrentSubscriptionStatus']); // get the current subscription status of the authenticated company
 
+        });
+
+        // Payments
+        Route::prefix('payment')->group(function () {
+            Route::post('/checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout-session');  //  create a Stripe checkout session
         });
     });
 
@@ -236,6 +251,11 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{cost}', [CostController::class, 'destroy']); // Delete a cost by ID
             });
 
+            // Payments
+            Route::prefix('payments')->name('payments.')->group(function () {
+                Route::get('/', [PaymentController::class, 'Payments'])->name('index'); // list all payments (accessible by admin users)
+            });
+
             // Settings Routes
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
@@ -278,7 +298,6 @@ Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
-
 });
 
     Route::prefix('admin')->group(function () {

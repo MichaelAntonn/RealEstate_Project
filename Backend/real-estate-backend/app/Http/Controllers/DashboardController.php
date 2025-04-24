@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Constants\UserType;
 use App\Models\Booking;
 use App\Models\Cost;
+use App\Models\Payment;
 use App\Models\Property;
 use App\Models\Review;
 use App\Models\User;
@@ -440,6 +441,7 @@ public function userActivities(Request $request, $userId = null)
         'activities' => $activities
     ]);
 }
+   
  // Authorization helpers
  protected function authorizeSuperAdmin(Request $request): void
  {
@@ -463,5 +465,6 @@ public function userActivities(Request $request, $userId = null)
      }
  }
 
+ 
  
 }
