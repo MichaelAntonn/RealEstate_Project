@@ -49,6 +49,14 @@ export class SignupaandloginComponent implements AfterViewInit {
     accept_terms: false
   };
 
+  // Notification system
+  notification = {
+    show: false,
+    message: '',
+    isError: false,
+    type: 'success' // 'success' | 'error' | 'warning' | 'info'
+  };
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -59,18 +67,22 @@ export class SignupaandloginComponent implements AfterViewInit {
   // Toggle between user and company login
   toggleLoginType() {
     this.userType = this.userType === 'user' ? 'company' : 'user';
-    console.log('Login type toggled to:', this.userType);
+    this.showInfoNotification(`Switched to ${this.userType} login mode`);
   }
 
   // Toggle between user and company signup forms
   toggleSignupMode() {
     this.isCompanySignup = !this.isCompanySignup;
+    const mode = this.isCompanySignup ? 'Company' : 'Individual';
+    this.showInfoNotification(`Switched to ${mode} signup form`);
   }
 
   // Toggle between login and signup forms
   toggleForms() {
     const container = document.getElementById('container');
     container?.classList.toggle('active');
+    const formType = container?.classList.contains('active') ? 'Sign Up' : 'Sign In';
+    this.showInfoNotification(`${formType} form displayed`);
   }
 
   // Handle file selection for company documents
@@ -78,6 +90,7 @@ export class SignupaandloginComponent implements AfterViewInit {
     const file: File = event.target.files[0];
     if (file) {
       this.company[field] = file;
+      this.showSuccessNotification(`${field.replace('_', ' ')} file selected`);
     }
   }
 
@@ -97,12 +110,12 @@ export class SignupaandloginComponent implements AfterViewInit {
       !this.company.password_confirmation ||
       !this.company.accept_terms
     ) {
-      alert('Please fill all required fields');
+      this.showErrorNotification('Please fill all required fields');
       return;
     }
 
     if (this.company.password !== this.company.password_confirmation) {
-      alert('Passwords do not match');
+      this.showErrorNotification('Passwords do not match');
       return;
     }
 
@@ -132,17 +145,20 @@ export class SignupaandloginComponent implements AfterViewInit {
     formData.append('password_confirmation', this.company.password_confirmation);
     formData.append('accept_terms', this.company.accept_terms ? '1' : '0');
 
+    // Show loading notification
+    this.showInfoNotification('Processing your registration...', 3000);
+
     // Send to backend
     this.http.post('http://localhost:8000/api/company/register', formData).subscribe({
       next: (response: any) => {
-        console.log('Company signup response:', response);
-        alert('Company registration successful! Awaiting verification.');
+        this.showSuccessNotification('Company registration successful! Awaiting verification.');
         this.toggleForms(); // Switch to login form
         this.resetCompanyForm();
       },
       error: (error) => {
         console.error('Company registration failed:', error);
-        alert('Company registration failed: ' + (error.error?.message || 'Unknown error'));
+        const errorMsg = error.error?.message || 'Unknown error occurred';
+        this.showErrorNotification(`Company registration failed: ${errorMsg}`);
       }
     });
   }
@@ -235,18 +251,22 @@ export class SignupaandloginComponent implements AfterViewInit {
         'Accept': 'application/json'
       });
 
+      // Show loading notification
+      this.showInfoNotification('Processing your registration...', 3000);
+
       this.http.post('http://localhost:8000/api/v1/register', userData, { headers }).subscribe({
         next: () => {
-          console.log('User signup successful');
-          alert('Registration successful!');
+          this.showSuccessNotification('Registration successful!');
           this.toggleForms(); // Switch to login form
           this.resetSignupForm();
         },
         error: (error) => {
-          console.error('User signup failed:', error);
-          alert('Registration failed: ' + JSON.stringify(error.error));
+          const errorMsg = error.error?.message || 'Registration failed';
+          this.showErrorNotification(errorMsg);
         },
       });
+    } else {
+      this.showErrorNotification('Please correct the errors in the form');
     }
   }
 
@@ -257,23 +277,22 @@ export class SignupaandloginComponent implements AfterViewInit {
         company_email: this.loginEmail,
         password: this.loginPassword
       };
-      console.log('Attempting company login with:', credentials);
+      
+      // Show loading notification
+      this.showInfoNotification('Logging in...', 3000);
+
       this.companyAuthService.login(credentials).subscribe({
         next: (success) => {
-          console.log('Company login result:', success);
           if (success) {
-            console.log('Company login successful, redirecting to /company');
-            this.router.navigate(['/company']).then(() => {
-              console.log('Navigation to /company completed');
-            });
+            this.showSuccessNotification('Company login successful!');
+            this.router.navigate(['/company']);
           } else {
-            console.error('Company login failed: No token set');
-            alert('Company login failed. Please check your credentials.');
+            this.showErrorNotification('Company login failed. Please check your credentials.');
           }
         },
         error: (error) => {
-          console.error('Company login error:', error);
-          alert('Company login failed: ' + (error.error?.message || 'Unknown error'));
+          const errorMsg = error.error?.message || 'Login failed';
+          this.showErrorNotification(errorMsg);
         }
       });
     } else {
@@ -282,20 +301,21 @@ export class SignupaandloginComponent implements AfterViewInit {
         email: this.loginEmail,
         password: this.loginPassword
       };
-      console.log('Attempting user login with:', credentials);
+
+      // Show loading notification
+      this.showInfoNotification('Logging in...', 3000);
+
       this.authService.login(credentials).subscribe({
         next: (response: any) => {
-          console.log('User login successful:', response);
           this.authService.saveToken(response.access_token);
           this.authService.saveUser(response.user);
           localStorage.setItem('auth_token', response.access_token);
-          this.router.navigate(['/maindashboard']).then(() => {
-            console.log('Navigation to /maindashboard completed');
-          });
+          this.showSuccessNotification('Login successful!');
+          this.router.navigate(['/maindashboard']);
         },
         error: (error) => {
-          console.error('User login failed:', error);
-          alert('User login failed. Please check your credentials.');
+          const errorMsg = error.error?.message || 'Login failed';
+          this.showErrorNotification(errorMsg);
         }
       });
     }
@@ -315,14 +335,84 @@ export class SignupaandloginComponent implements AfterViewInit {
 
   // Google sign in
   signInWithGoogle() {
-    console.log('Initiating Google sign-in');
+    this.showInfoNotification('Redirecting to Google authentication...');
     window.location.href = 'http://localhost:8000/api/v1/social/auth/google';
   }
 
   // Navigate to forgot password
   navigateToForgotPassword() {
-    console.log('Navigating to forgot password');
+    this.showInfoNotification('Redirecting to password recovery...');
     this.router.navigate(['/forgot-password']);
+  }
+
+  // Notification methods
+  showNotification(message: string, isError: boolean = false, duration: number = 5000) {
+    this.notification = {
+      show: true,
+      message: message,
+      isError: isError,
+      type: isError ? 'error' : 'success'
+    };
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, duration);
+  }
+
+  hideNotification() {
+    this.notification.show = false;
+  }
+
+  showSuccessNotification(message: string, duration: number = 5000) {
+    this.notification = {
+      show: true,
+      message: message,
+      isError: false,
+      type: 'success'
+    };
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, duration);
+  }
+
+  showErrorNotification(message: string, duration: number = 5000) {
+    this.notification = {
+      show: true,
+      message: message,
+      isError: true,
+      type: 'error'
+    };
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, duration);
+  }
+
+  showWarningNotification(message: string, duration: number = 5000) {
+    this.notification = {
+      show: true,
+      message: message,
+      isError: false,
+      type: 'warning'
+    };
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, duration);
+  }
+
+  showInfoNotification(message: string, duration: number = 5000) {
+    this.notification = {
+      show: true,
+      message: message,
+      isError: false,
+      type: 'info'
+    };
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, duration);
   }
 
   ngAfterViewInit() {
