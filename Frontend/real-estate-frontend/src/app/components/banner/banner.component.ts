@@ -21,7 +21,9 @@ export class BannerComponent implements OnInit {
 
   onSearch(): void {
     this.filterService.search(this.keyword);
-    this.router.navigate(['/properties']);
+    this.router.navigate(['/properties'], {
+      queryParams: { keyword: this.keyword },
+    });
   }
 
   toggleListingType(type: 'for_sale' | 'for_rent'): void {

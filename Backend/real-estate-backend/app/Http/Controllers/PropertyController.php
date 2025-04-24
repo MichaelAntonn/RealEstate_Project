@@ -28,6 +28,16 @@ class PropertyController extends Controller
     {
         $query = Property::query();
 
+        if ($request->has('keyword')) {
+            $keyword = strtolower($request->input('keyword'));
+            $query->where(function ($q) use ($keyword) {
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(city) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(type) LIKE ?', ["%{$keyword}%"])
+                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$keyword}%"]);
+            });
+        }
+
         if ($request->has('city')) {
             $query->where('city', $request->input('city'));
         }

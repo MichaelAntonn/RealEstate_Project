@@ -81,7 +81,7 @@ export type PropertySearchApiResponse =
     max_price: number; // مش optional دلوقتي
     min_area: number; // مش optional دلوقتي
     max_area: number; // مش optional دلوقتي
-    bedrooms?: number;
-    bathrooms?: number;
+    bedrooms?: number | '';
+    bathrooms?: number | '';
     is_new_building?: boolean;
   }

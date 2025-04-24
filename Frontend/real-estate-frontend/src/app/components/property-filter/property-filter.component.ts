@@ -30,8 +30,8 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     max_price: 10000000,
     min_area: 0,
     max_area: 1000,
-    bedrooms: undefined,
-    bathrooms: undefined,
+    bedrooms: '',
+    bathrooms: '',
   };
 
   priceRange = { min: 0, max: 10000000 };

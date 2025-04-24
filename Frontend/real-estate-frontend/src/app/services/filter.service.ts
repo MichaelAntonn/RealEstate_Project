@@ -12,14 +12,14 @@ export class FilterService {
     city: '',
     listing_type: undefined,
     page: 1,
-    sort_by: undefined,
+    sort_by: "newest",
     is_new_building: false,
     min_price: 0,
     max_price: 10000000,
     min_area: 0,
     max_area: 1000,
-    bedrooms: undefined,
-    bathrooms: undefined,
+    bedrooms: '',
+    bathrooms: '',
   });
 
   filters$: Observable<PropertyFilters> = this.filtersSubject.asObservable();
