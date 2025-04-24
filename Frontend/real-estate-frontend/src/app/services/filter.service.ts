@@ -12,12 +12,12 @@ export class FilterService {
     city: '',
     listing_type: undefined,
     page: 1,
-    sort_by: undefined, // أضفنا sort_by لأنه optional في الـ interface
+    sort_by: undefined,
     is_new_building: false,
-    min_price: 0, // قيمة افتراضية
-    max_price: 10000000, // قيمة افتراضية
-    min_area: 0, // قيمة افتراضية
-    max_area: 1000, // قيمة افتراضية
+    min_price: 0,
+    max_price: 10000000,
+    min_area: 0,
+    max_area: 1000,
     bedrooms: undefined,
     bathrooms: undefined,
   });

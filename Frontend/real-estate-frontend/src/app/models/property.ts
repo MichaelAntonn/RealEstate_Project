@@ -74,7 +74,7 @@ export type PropertySearchApiResponse =
     keyword?: string;
     type?: string;
     city?: string;
-    listing_type?: 'for_sale' | 'for_rent';
+    listing_type?: 'for_sale' | 'for_rent' | '';
     page?: number;
     sort_by?: string;
     min_price: number; // مش optional دلوقتي

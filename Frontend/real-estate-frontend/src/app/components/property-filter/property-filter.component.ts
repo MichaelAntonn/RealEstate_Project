@@ -22,7 +22,7 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     keyword: '',
     type: '',
     city: '',
-    listing_type: 'for_sale',
+    listing_type: '',
     page: 1,
     sort_by: 'newest',
     is_new_building: false,
@@ -37,7 +37,6 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
   priceRange = { min: 0, max: 10000000 };
   areaRange = { min: 0, max: 1000 };
 
-  // Slider options for price
   priceSliderOptions: Options = {
     floor: this.priceRange.min,
     ceil: this.priceRange.max,
@@ -46,7 +45,6 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
     translate: (value: number): string => `$${value}`,
   };
 
-  // Slider options for area
   areaSliderOptions: Options = {
     floor: this.areaRange.min,
     ceil: this.areaRange.max,

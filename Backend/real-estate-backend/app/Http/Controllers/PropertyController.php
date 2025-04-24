@@ -34,6 +34,9 @@ class PropertyController extends Controller
         if ($request->has('type')) {
             $query->where('type', $request->input('type'));
         }
+        if ($request->has('listing_type') && $request->input('listing_type') !== '') {
+            $query->where('listing_type', $request->input('listing_type'));
+        }
         if ($request->has('min_price')) {
             $query->where('price', '>=', $request->input('min_price'));
         }

@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // أضف FormsModule عشان ngModel
+import { FormsModule } from '@angular/forms';
 import { PropertyService } from '../../services/property.service';
 import { FilterService } from '../../services/filter.service';
-import { Property, PropertyApiResponse, PropertyFilters } from '../../models/property';
+import { Property, PropertySearchApiResponse, PropertyFilters } from '../../models/property';
 import { PropertyCardComponent } from '../property-card/property-card.component';
 import { PropertyFilterComponent } from '../property-filter/property-filter.component';
 import { PaginationComponent } from '../pagination/pagination.component';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // أضف FormsModule
+    FormsModule,
     NavbarComponent,
     FooterComponent,
     PropertyCardComponent,
@@ -36,12 +36,11 @@ export class PropertiesComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   errorMessage: string | null = null;
 
-  // Filters state (نقلناه من property-filter.component.ts)
   filters: PropertyFilters = {
     keyword: '',
     type: '',
     city: '',
-    listing_type: 'for_sale',
+    listing_type: '', // بدون قيمة افتراضية
     page: 1,
     sort_by: 'newest',
     is_new_building: false,
@@ -81,25 +80,27 @@ export class PropertiesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadCities();
 
+    // Subscribe to query params to initialize filters
     this.subscription.add(
       this.route.queryParams.subscribe((params) => {
         this.currentPage = parseInt(params['page'] || '1', 10);
-        const filters = {
+        const filtersFromParams = {
           keyword: params['keyword'] || '',
           type: params['type'] || '',
           city: params['city'] || '',
-          listing_type: params['listing_type'] || 'for_sale',
+          listing_type: params['listing_type'] || '', // ناخد الـ listing_type من الـ query params لو موجود
           page: this.currentPage,
         };
-        this.filterService.updateFilters(filters);
+        this.filterService.updateFilters(filtersFromParams);
       })
     );
 
+    // Subscribe to filterService to update filters dynamically
     this.subscription.add(
       this.filterService.filters$.subscribe((filters) => {
         this.filters = { ...this.filters, ...filters };
         this.currentPage = filters.page || 1;
-        this.loadProperties(filters);
+        this.loadProperties();
       })
     );
   }
@@ -122,18 +123,27 @@ export class PropertiesComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadProperties(filters: any): void {
+  loadProperties(): void {
     this.isLoading = true;
     this.errorMessage = null;
 
-    this.propertyService.getProperties(this.currentPage, this.perPage, filters).subscribe({
-      next: (response) => {
-        this.errorMessage = null;
-        this.properties = response.data || [];
-        this.currentPage = response.current_page;
-        this.lastPage = response.last_page;
-        this.perPage = response.per_page;
-        this.totalItems = response.total;
+    this.propertyService.searchProperties(this.perPage).subscribe({
+      next: (response: PropertySearchApiResponse) => {
+        if ('status' in response && response.status === 'error') {
+          this.errorMessage = response.message;
+          this.properties = [];
+          this.currentPage = response.pagination?.current_page ?? 1;
+          this.lastPage = response.pagination?.total_pages ?? 1;
+          this.totalItems = response.pagination?.total_items ?? 0;
+          this.perPage = response.pagination?.per_page ?? this.perPage;
+        } else {
+          this.errorMessage = null;
+          this.properties = response.data || [];
+          this.currentPage = response.pagination?.current_page ?? 1;
+          this.lastPage = response.pagination?.total_pages ?? 1;
+          this.totalItems = response.pagination?.total_items ?? 0;
+          this.perPage = response.pagination?.per_page ?? this.perPage;
+        }
         this.isLoading = false;
       },
       error: (error) => {
@@ -150,6 +160,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(page: number): void {
+    this.filterService.updateFilters({ page });
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { page },
@@ -164,12 +175,32 @@ export class PropertiesComponent implements OnInit, OnDestroy {
       listing_type: this.filters.listing_type,
       page: 1,
     });
+    // تحديث الـ query params عشان نحافظ على الـ listing_type لما نتنقل بين الصفحات
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        type: this.filters.type || undefined,
+        city: this.filters.city || undefined,
+        listing_type: this.filters.listing_type || undefined,
+        page: 1,
+      },
+      queryParamsHandling: 'merge',
+    });
   }
 
   onSearch(): void {
     this.filterService.updateFilters({
       keyword: this.filters.keyword,
       page: 1,
+    });
+    // تحديث الـ query params عشان نحافظ على الـ keyword
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        keyword: this.filters.keyword || undefined,
+        page: 1,
+      },
+      queryParamsHandling: 'merge',
     });
   }
 }
