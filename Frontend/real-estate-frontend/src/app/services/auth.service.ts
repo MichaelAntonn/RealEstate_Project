@@ -1,8 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, catchError, throwError, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +10,21 @@ export class AuthService {
   private apiUrl = 'http://localhost:8000/api/v1';
   private readonly AUTH_KEY = 'auth_token';
   private readonly USER_KEY = 'user';
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    // جلب بيان Chambre des notaires des Yvelines
+    this.loadStoredUser();
+  }
+
+  // تحميل بيانات المستخدم المخزنة عند بدء الخدمة
+  private loadStoredUser(): void {
+    const user = this.getUser();
+    if (user && this.getToken()) {
+      this.currentUserSubject.next(user);
+    }
+  }
 
   // تسجيل مستخدم جديد
   register(userData: any): Observable<any> {
@@ -29,6 +41,7 @@ export class AuthService {
         this.saveToken(response.token);
         if (response.user) {
           this.saveUser(response.user);
+          this.currentUserSubject.next(response.user);
           this.router.navigate(['/dashboard']);
         }
       }),
@@ -40,6 +53,13 @@ export class AuthService {
   forgotPassword(email: string): Observable<any> {
     return this.http
       .post(`${this.apiUrl}/password/forgot-password`, { email })
+      .pipe(catchError(this.handleError));
+  }
+
+  // تسجيل شركة
+  registerCompany(companyData: FormData): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/company/register`, companyData)
       .pipe(catchError(this.handleError));
   }
 
@@ -56,30 +76,46 @@ export class AuthService {
   // حفظ بيانات المستخدم
   saveUser(user: any): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.currentUserSubject.next(user);
   }
 
-  // أضف هذه الدالة إلى AuthService الحالي
-
-  registerCompany(companyData: FormData): Observable<any> {
-    return this.http
-      .post(`${this.apiUrl}/company/register`, companyData)
-      .pipe(catchError(this.handleError));
-  }
   // جلب بيانات المستخدم
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
     return user ? JSON.parse(user) : null;
   }
 
+  // جلب المستخدم الحالي
+  loadCurrentUser(): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token available'));
+    }
+    return this.http
+      .get(`${this.apiUrl}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .pipe(
+        tap((user: any) => {
+          this.saveUser(user);
+        }),
+        catchError((err) => {
+          this.clearAllTokens();
+          return this.handleError(err);
+        })
+      );
+  }
+
   // تسجيل الخروج
   logout(): void {
     this.clearAllTokens();
+    this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
   // التحقق من حالة المصادقة
-  isLoggedIn(): boolean | string {
-    return this.isTokenValid();
+  isLoggedIn(): boolean {
+    return !!this.getToken() && !!this.getUser();
   }
 
   // إنشاء رؤوس المصادقة
@@ -87,26 +123,18 @@ export class AuthService {
     const token = this.getToken();
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: token ? `Bearer ${token}` : '',
     });
   }
 
   // التحقق من صلاحية التوكن
-  isTokenValid(): boolean | string {
-    const token = this.getToken();
-    // console.log(token);
-    if (!token) return false;
-
-    try {
-      console.log(`token`, token);
-      // const payload = JSON.parse(atob(token.split('.')[1]));
-      // console.log(`payload`, payload);
-      return true;
-      // تعديل لتوافق الوقت بين التوكن والوقت الحالي
-      // return payload.exp > Math.floor(Date.now() / 1000);
-    } catch (e) {
-      return false;
-    }
+  isTokenValid(): Observable<boolean> {
+    return this.loadCurrentUser().pipe(
+      tap(() => true),
+      catchError(() => {
+        return throwError(() => false);
+      })
+    );
   }
 
   // معالجة الأخطاء المركزية
@@ -125,5 +153,6 @@ export class AuthService {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.clearStaleTokens();
+    this.currentUserSubject.next(null);
   }
 }

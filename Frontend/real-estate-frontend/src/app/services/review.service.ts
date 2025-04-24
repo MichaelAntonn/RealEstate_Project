@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,15 +9,10 @@ import { Observable } from 'rxjs';
 export class ReviewService {
   private apiUrl = 'http://127.0.0.1:8000/api/v1/reviews';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getReviewsByProperty(propertyId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-    });
-    return this.http.get(`${this.apiUrl}/by-property/${propertyId}`, {
-      headers,
-    });
+    return this.http.get(`${this.apiUrl}/by-property/${propertyId}`);
   }
 
   addReview(review: {
@@ -26,11 +22,14 @@ export class ReviewService {
     comment: string | null;
     anonymous_review: boolean;
   }): Observable<any> {
-    const token = localStorage.getItem('auth_token');
-    const headers = new HttpHeaders({
-      Authorization: token ? `Bearer ${token}` : '',
-      // 'Content-Type': 'application/json',
+    return this.http.post(this.apiUrl, review, {
+      headers: this.authService.getAuthHeaders(),
     });
-    return this.http.post(this.apiUrl, review, { headers });
+  }
+
+  deleteReview(reviewId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${reviewId}`, {
+      headers: this.authService.getAuthHeaders(),
+    });
   }
 }
