@@ -49,6 +49,9 @@ class SocialLoginController extends Controller
  );
 
  $token = $user->createToken('google-token')->plainTextToken;
- return redirect()->away("http://localhost:4200/auth/callback?token=$token");
+ return response()->json([
+    'access_token' => $token,
+    'user' => $user,
+]);
     }
 }
