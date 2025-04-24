@@ -69,12 +69,19 @@ export type PropertySearchApiResponse =
   | PropertySearchResponse
   | PropertySearchErrorResponse;
 
-export interface PropertyFilters {
-  [key: string]: string | number | boolean | undefined;
-  keyword?: string;
-  type?: string;
-  city?: string;
-  listing_type?: 'for_sale' | 'for_rent';
-  page?: number;
-  is_new_building?: boolean;
-}
+  export interface PropertyFilters {
+    [key: string]: string | number | boolean | undefined;
+    keyword?: string;
+    type?: string;
+    city?: string;
+    listing_type?: 'for_sale' | 'for_rent';
+    page?: number;
+    sort_by?: string;
+    min_price: number; // مش optional دلوقتي
+    max_price: number; // مش optional دلوقتي
+    min_area: number; // مش optional دلوقتي
+    max_area: number; // مش optional دلوقتي
+    bedrooms?: number;
+    bathrooms?: number;
+    is_new_building?: boolean;
+  }

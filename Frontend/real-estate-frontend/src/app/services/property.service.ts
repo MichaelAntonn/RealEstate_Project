@@ -201,7 +201,7 @@ export class PropertyService {
           }
         });
         return this.http
-          .get<PropertySearchResponse>(`${this.apiUrl}/search`, {
+          .get<PropertySearchResponse>(`${this.apiUrl}/properties`, {
             params,
             headers: this.getAuthHeaders(),
           })

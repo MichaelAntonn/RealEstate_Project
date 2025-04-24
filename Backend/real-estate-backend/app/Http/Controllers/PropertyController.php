@@ -40,6 +40,18 @@ class PropertyController extends Controller
         if ($request->has('max_price')) {
             $query->where('price', '<=', $request->input('max_price'));
         }
+        if ($request->has('min_area')) {
+            $query->where('area', '>=', $request->input('min_area'));
+        }
+        if ($request->has('max_area')) {
+            $query->where('area', '<=', $request->input('max_area'));
+        }
+        if ($request->has('bedrooms')) {
+            $query->where('bedrooms', $request->input('bedrooms'));
+        }
+        if ($request->has('bathrooms')) {
+            $query->where('bathrooms', $request->input('bathrooms'));
+        }
         if ($request->has('construction_status')) {
             $query->where('construction_status', $request->input('construction_status'));
         }

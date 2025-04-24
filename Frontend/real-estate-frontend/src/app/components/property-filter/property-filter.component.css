@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Style for ngx-slider */
+:host ::ng-deep .ngx-slider .ngx-slider-bar {
+  background: #ddd !important;
+  height: 4px !important;
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-selection {
+  background: #ff7f00 !important; /* Orange color for the selected range */
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-pointer {
+  width: 16px !important;
+  height: 16px !important;
+  background: #ff7f00 !important; /* Orange color for the pointers */
+  border: 2px solid #fff !important;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3) !important;
+  top: -6px !important;
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-pointer:hover {
+  background: #e06c00 !important; /* Darker orange on hover */
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-pointer:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 127, 0, 0.3) !important;
+}
