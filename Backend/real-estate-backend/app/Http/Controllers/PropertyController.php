@@ -71,6 +71,31 @@ class PropertyController extends Controller
         if ($request->has('approval_status')) {
             $query->where('approval_status', $request->input('approval_status'));
         }
+        if ($request->has('is_new_building') && filter_var($request->input('is_new_building'), FILTER_VALIDATE_BOOLEAN)) {
+            $currentYear = Carbon::now()->year;
+            $newBuildingThreshold = $currentYear - 3;
+            $query->where('building_year', '>=', $newBuildingThreshold)
+                ->whereNotNull('building_year');
+        }
+        if ($request->has('sort_by')) {
+            $sortBy = $request->input('sort_by');
+            switch ($sortBy) {
+                case 'newest':
+                    $query->latest();
+                    break;
+                case 'price_low':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high':
+                    $query->orderBy('price', 'desc');
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
+        }
 
         $perPage = $request->input('per_page', 10);
         $properties = $query->paginate($perPage);
