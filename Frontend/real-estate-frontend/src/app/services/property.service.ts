@@ -37,7 +37,10 @@ export class PropertyService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('auth_token') || '';
+    let token = localStorage.getItem('auth_token') || '';
+    if (!token) {
+      token = localStorage.getItem('company_token') || '';
+    }
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -68,6 +71,7 @@ export class PropertyService {
         })
       );
   }
+
   createProperty(
     propertyData: FormData
   ): Observable<{ success: boolean; property: Property }> {
