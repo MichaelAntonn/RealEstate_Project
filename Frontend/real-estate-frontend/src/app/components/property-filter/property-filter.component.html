@@ -1,179 +1,107 @@
-<div class="max-w-6xl mx-auto px-4">
-  <!-- Filters Section -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-    <!-- Status -->
-    <div>
-      <label class="text-sm text-gray-700 mb-2 block">Status</label>
-      <div class="relative">
-        <select
-          [(ngModel)]="filters.listing_type"
-          (ngModelChange)="onFilterChange()"
-          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-        >
-          @for (type of listingTypes; track type.value) {
-          <option [value]="type.value">{{ type.label }}</option>
-          }
-        </select>
-        <i class="fas fa-tag absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-      </div>
-    </div>
+<div class="w-full md:w-80 bg-white p-6 rounded-xl shadow-md">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Properties</h3>
 
-    <!-- Type -->
-    <div>
-      <label class="text-sm text-gray-700 mb-2 block">Type</label>
-      <div class="relative">
-        <select
-          [(ngModel)]="filters.type"
-          (ngModelChange)="onFilterChange()"
-          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-        >
-          @for (type of propertyTypes; track type.value) {
-          <option [value]="type.value">{{ type.label }}</option>
-          }
-        </select>
-        <i class="fas fa-home absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-      </div>
-    </div>
+  <!-- Price Range Slider -->
+  <div class="mb-4">
+    <label class="block text-sm text-gray-700 mb-2">
+      Price Range: ${{ filters.min_price }} - ${{ filters.max_price }}
+    </label>
+    <ngx-slider
+      [(value)]="filters.min_price"
+      [(highValue)]="filters.max_price"
+      [options]="priceSliderOptions"
+      (userChangeEnd)="onFilterChange()"
+    ></ngx-slider>
+  </div>
 
-    <!-- Location -->
-    <div>
-      <label class="text-sm text-gray-700 mb-2 block">Location</label>
-      <div class="relative">
-        <select
-          [(ngModel)]="filters.city"
-          (ngModelChange)="onFilterChange()"
-          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-        >
-          @for (city of cities; track city.value) {
-          <option [value]="city.value">{{ city.label }}</option>
-          }
-        </select>
-        <i class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-      </div>
-    </div>
+  <!-- Area Range Slider -->
+  <div class="mb-4">
+    <label class="block text-sm text-gray-700 mb-2">
+      Area Range: {{ filters.min_area }} - {{ filters.max_area }} m²
+    </label>
+    <ngx-slider
+      [(value)]="filters.min_area"
+      [(highValue)]="filters.max_area"
+      [options]="areaSliderOptions"
+      (userChangeEnd)="onFilterChange()"
+    ></ngx-slider>
+  </div>
 
-    <!-- Advanced Filter -->
-    <div>
-      <label class="text-sm text-gray-700 mb-2 block">Advanced Filter</label>
-      <div class="relative">
-        <input
-          [(ngModel)]="filters.keyword"
-          (keyup.enter)="onSearch()"
-          type="text"
-          placeholder="Advanced Filter"
-          class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-        />
-        <i class="fas fa-sliders-h absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-      </div>
+  <!-- Bedrooms -->
+  <div class="mb-4">
+    <label class="block text-sm text-gray-700 mb-2">Bedrooms</label>
+    <div class="relative">
+      <select
+        [(ngModel)]="filters.bedrooms"
+        (ngModelChange)="onFilterChange()"
+        class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+      >
+        @for (option of bedroomOptions; track option.value) {
+        <option [value]="option.value">
+          {{ option.label }}
+        </option>
+        }
+      </select>
+      <i
+        class="fas fa-bed absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+      ></i>
     </div>
+  </div>
 
-      <!-- Showing Results -->
-  <div class="text-orange-600 text-sm">
-    Showing {{ (currentPage - 1) * perPage + 1 }}-{{ getEndRange() }} of {{ totalItems }}
+  <!-- Bathrooms -->
+  <div class="mb-4">
+    <label class="block text-sm text-gray-700 mb-2">Bathrooms</label>
+    <div class="relative">
+      <select
+        [(ngModel)]="filters.bathrooms"
+        (ngModelChange)="onFilterChange()"
+        class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+      >
+        @for (option of bathroomOptions; track option.value) {
+        <option [value]="option.value">
+          {{ option.label }}
+        </option>
+        }
+      </select>
+      <i
+        class="fas fa-bath absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+      ></i>
+    </div>
+  </div>
+
+  <!-- Sort By -->
+  <div class="mb-4">
+    <label class="block text-sm text-gray-700 mb-2">Sort By</label>
+    <div class="relative">
+      <select
+        [(ngModel)]="filters['sort_by']"
+        (ngModelChange)="onSortChange()"
+        class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+      >
+        @for (sort of sortOptions; track sort.value) {
+        <option [value]="sort.value">
+          {{ sort.label }}
+        </option>
+        }
+      </select>
+      <i
+        class="fas fa-sort-amount-down absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+      ></i>
+    </div>
+  </div>
+
+  <!-- Reset Button -->
+  <div class="mt-4">
+    <button
+      (click)="resetFilters()"
+      class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+    >
+      Reset Filters
+    </button>
   </div>
 </div>
 
-
-  <!-- Content Layout -->
-  <div class="flex flex-col md:flex-row gap-6">
-    <!-- Main Content Placeholder (Left Side) -->
-    <div class="flex-1">
-      <div class="bg-gray-100 p-6 rounded-xl">
-        <p class="text-gray-500">Properties will be displayed here...</p>
-      </div>
-    </div>
-
-    <!-- Filters Column (Right Side) -->
-    <div class="w-full md:w-80 bg-white p-6 rounded-xl shadow-md">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Properties</h3>
-
-      <!-- Price Range Slider -->
-      <div class="mb-4">
-        <label class="block text-sm text-gray-700 mb-2">
-          Price Range: ${{ filters.min_price }} - ${{ filters.max_price }}
-        </label>
-        <ngx-slider
-          [(value)]="filters.min_price"
-          [(highValue)]="filters.max_price"
-          [options]="priceSliderOptions"
-          (userChangeEnd)="onFilterChange()"
-        ></ngx-slider>
-      </div>
-
-      <!-- Area Range Slider -->
-      <div class="mb-4">
-        <label class="block text-sm text-gray-700 mb-2">
-          Area Range: {{ filters.min_area }} - {{ filters.max_area }} m²
-        </label>
-        <ngx-slider
-          [(value)]="filters.min_area"
-          [(highValue)]="filters.max_area"
-          [options]="areaSliderOptions"
-          (userChangeEnd)="onFilterChange()"
-        ></ngx-slider>
-      </div>
-
-      <!-- Bedrooms -->
-      <div class="mb-4">
-        <label class="block text-sm text-gray-700 mb-2">Bedrooms</label>
-        <div class="relative">
-          <select
-            [(ngModel)]="filters.bedrooms"
-            (ngModelChange)="onFilterChange()"
-            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-          >
-            @for (option of bedroomOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
-          <i class="fas fa-bed absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-        </div>
-      </div>
-
-      <!-- Bathrooms -->
-      <div class="mb-4">
-        <label class="block text-sm text-gray-700 mb-2">Bathrooms</label>
-        <div class="relative">
-          <select
-            [(ngModel)]="filters.bathrooms"
-            (ngModelChange)="onFilterChange()"
-            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-          >
-            @for (option of bathroomOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
-          <i class="fas fa-bath absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-        </div>
-      </div>
-
-      <!-- Sort By -->
-      <div class="mb-4">
-        <label class="block text-sm text-gray-700 mb-2">Sort By</label>
-        <div class="relative">
-          <select
-            [(ngModel)]="filters['sort_by']"
-            (ngModelChange)="onSortChange()"
-            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
-          >
-            @for (sort of sortOptions; track sort.value) {
-            <option [value]="sort.value">{{ sort.label }}</option>
-            }
-          </select>
-          <i class="fas fa-sort-amount-down absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"></i>
-        </div>
-      </div>
-
-      <!-- Reset Button -->
-      <div class="mt-4">
-        <button
-          (click)="resetFilters()"
-          class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
-        >
-          Reset Filters
-        </button>
-      </div>
-    </div>
-  </div>
+<!-- Showing Results -->
+<div class="mt-4 text-orange-600 text-sm text-center md:text-left">
+  Showing {{ (currentPage - 1) * perPage + 1 }}-{{ getEndRange() }} of {{ totalItems }}
 </div>
-

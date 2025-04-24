@@ -3,27 +3,112 @@
   <img src="assets/breadcrumb-img.png" alt="breadcrumb-img" class="max-w-full h-auto">
 </div>
 <section class="bg-gray-100 py-8 w-full">
-  <app-property-filter
-    [currentPage]="currentPage"
-    [perPage]="perPage"
-    [totalItems]="totalItems"
-  ></app-property-filter>
-  @if (isLoading) {
-    <div class="text-center py-4">
-      <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+  <div class="max-w-6xl mx-auto px-4">
+    <!-- Horizontal Filters (Status, Type, Location, Advanced Filter) -->
+    <div class="bg-white rounded-xl p-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Status -->
+        <div class="relative">
+          <select
+            [(ngModel)]="filters.listing_type"
+            (ngModelChange)="onFilterChange()"
+            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+          >
+            @for (type of listingTypes; track type.value) {
+            <option [value]="type.value">
+              {{ type.label }}
+            </option>
+            }
+          </select>
+          <i
+            class="fas fa-tag absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+          ></i>
+        </div>
+
+        <!-- Type -->
+        <div class="relative">
+          <select
+            [(ngModel)]="filters.type"
+            (ngModelChange)="onFilterChange()"
+            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+          >
+            @for (type of propertyTypes; track type.value) {
+            <option [value]="type.value">
+              {{ type.label }}
+            </option>
+            }
+          </select>
+          <i
+            class="fas fa-home absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+          ></i>
+        </div>
+
+        <!-- Location -->
+        <div class="relative">
+          <select
+            [(ngModel)]="filters.city"
+            (ngModelChange)="onFilterChange()"
+            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+          >
+            @for (city of cities; track city.value) {
+            <option [value]="city.value">
+              {{ city.label }}
+            </option>
+            }
+          </select>
+          <i
+            class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+          ></i>
+        </div>
+
+        <!-- Advanced Filter -->
+        <div class="relative">
+          <input
+            [(ngModel)]="filters.keyword"
+            (keyup.enter)="onSearch()"
+            type="text"
+            placeholder="Advanced Filter"
+            class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-orange-200 focus:ring-2 focus:ring-orange-500 bg-gray-50"
+          />
+          <i
+            class="fas fa-sliders-h absolute left-3 top-1/2 -translate-y-1/2 text-orange-400 text-sm"
+          ></i>
+        </div>
+      </div>
     </div>
-  } @else { @if (properties.length > 0) {
-    <app-property-card
-      [properties]="properties"
-      class="property-grid"
-    ></app-property-card>
-  } @else {
-    <p class="text-center text-gray-500">No properties found.</p>
-  } }
-  <app-pagination
-    [currentPage]="currentPage"
-    [totalPages]="lastPage"
-    (pageChange)="onPageChange($event)"
-  ></app-pagination>
+
+    <!-- Main Content (Properties + Sidebar Filters) -->
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Properties (Left Side) -->
+      <div class="flex-1">
+        @if (isLoading) {
+          <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+          </div>
+        } @else { @if (properties.length > 0) {
+          <app-property-card
+            [properties]="properties"
+            class="property-grid"
+          ></app-property-card>
+        } @else {
+          <p class="text-center text-gray-500">No properties found.</p>
+        } }
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalPages]="lastPage"
+          (pageChange)="onPageChange($event)"
+        ></app-pagination>
+      </div>
+
+      <!-- Filters Sidebar (Right Side) -->
+      <div class="w-full md:w-80">
+        <app-property-filter
+          [currentPage]="currentPage"
+          [perPage]="perPage"
+          [totalItems]="totalItems"
+        ></app-property-filter>
+      </div>
+    </div>
+  </div>
 </section>
 <app-footer></app-footer>
