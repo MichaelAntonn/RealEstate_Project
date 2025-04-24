@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens; // ✅ ضروري لـ Sanctum
+use Illuminate\Foundation\Auth\User as Authenticatable; // ✅ لازم يمتد من ده علشان التوكن يشتغل
 
-class Company extends Model
+class Company extends Authenticatable // ✅ تغيير من Model إلى Authenticatable
 {
+    use HasApiTokens; // ✅ لتفعيل إنشاء التوكنات
+
     protected $table = 'companies'; // تحديد اسم الجدول صراحةً
 
     protected $primaryKey = 'company_id';
@@ -35,14 +39,14 @@ class Company extends Model
     ];
 
     protected $casts = [
-        'accept_terms' => 'boolean', // التعامل مع accept_terms كـ boolean
-        'date_of_establishment' => 'date', // التعامل مع date_of_establishment كتاريخ
-        'verification_status' => 'string', // التأكد من أن verification_status يُعامل كنص
+        'accept_terms' => 'boolean',
+        'date_of_establishment' => 'date',
+        'verification_status' => 'string',
         'has_used_trial' => 'boolean',
     ];
 
     protected $dates = [
-        'date_of_establishment', // التأكد من تحويل التاريخ بشكل صحيح
+        'date_of_establishment',
         'created_at',
         'updated_at',
     ];
@@ -50,7 +54,4 @@ class Company extends Model
     {
         return $this->hasOne(Subscription::class)->latestOfMany();
     }
-    
-
-
 }
