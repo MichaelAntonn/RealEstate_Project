@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\UserType;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -61,20 +63,47 @@ class ReviewController extends Controller
         return response()->json($review, 201);
     }
 
-    // Delete a review (Admin only)
     public function destroy($id)
     {
-        $review = Review::findOrFail($id);
+        $review = Review::find($id);
+
+        if (!$review) {
+            return response()->json(['message' => 'Review not found.'], 404);
+        }
+
+        $user = Auth::user();
+        $isAdmin = $user->user_type === UserType::ADMIN || $user->user_type === UserType::SUPER_ADMIN;
+
+        if ($review->user_id !== $user->id && !$isAdmin) {
+            return response()->json(['message' => 'You are not authorized to delete this review.'], 403);
+        }
+
         $review->delete();
-        return response()->json(['message' => 'Review deleted successfully']);
+
+        return response()->json(null, 204);
     }
 
     // Get reviews for a specific property (Public)
     public function getByProperty($propertyId)
     {
         $reviews = Review::where('property_id', $propertyId)
-            ->with(['user'])
-            ->get();
-        return response()->json($reviews);
+        ->with(['user'])
+        ->get()
+        ->map(function ($review) {
+            return [
+                'id' => $review->id,
+                'user_id' => $review->user_id,
+                'property_id' => $review->property_id,
+                'review_type' => $review->review_type,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'anonymous_review' => $review->anonymous_review,
+                'created_at' => $review->created_at,
+                'updated_at' => $review->updated_at,
+                'user_name' => $review->anonymous_review ? 'Anonymous' : ($review->user ? $review->user->name : 'Unknown')
+            ];
+        });
+
+    return response()->json($reviews);
     }
 }

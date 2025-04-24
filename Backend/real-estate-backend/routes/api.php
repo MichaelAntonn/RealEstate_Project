@@ -64,6 +64,11 @@ Route::prefix('v1')->group(function () {
     // Cities Route (public)
     Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
 
+    // Reviews Route (public)
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty'])->name('by.property');
+    });
+
     Route::prefix('companies')->group(function () {
         Route::get('/', [CompanyController::class, 'index']);  // Get all companies
         Route::post('/', [CompanyController::class, 'store']); // Create a new company
@@ -132,7 +137,6 @@ Route::prefix('v1')->group(function () {
 
         // Review routes
         Route::prefix('reviews')->name('reviews.')->group(function () {
-            Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty'])->name('by.property');
             Route::post('/', [ReviewController::class, 'store'])->name('store');
             Route::delete('/{id}', [ReviewController::class, 'destroy'])->name('destroy');
         });
@@ -150,12 +154,9 @@ Route::prefix('v1')->group(function () {
 
         // Chat routes
         Route::prefix('messages')->name('messages.')->group(function () {
-            Route::post('/send', [ChatController::class, 'sendMessage'])
-                ->middleware('auth:sanctum');
-            Route::patch('/{message}/read', [ChatController::class, 'markAsRead'])
-                ->middleware('auth:sanctum');
-            Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages'])
-                ->middleware('auth:sanctum');
+            Route::post('/send', [ChatController::class, 'sendMessage']);
+            Route::patch('/{message}/read', [ChatController::class, 'markAsRead']);
+            Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
         });
 
         Route::prefix('companies')->name('company.')->group(function () {
@@ -287,7 +288,7 @@ Route::prefix('v1')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages/send', [ChatController::class, 'sendMessage']);
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
-    Route::post('/conversations', [ChatController::class, 'createConversation'])->middleware('auth:sanctum');
+    Route::post('/conversations', [ChatController::class, 'createConversation']);
 });
 // routes/Company
 Route::post('/company/register', [CompanyController::class, 'store']);
@@ -299,16 +300,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
 });
 
-Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->group(function () {
-        Route::get('/companies/pending', [CompanyController::class, 'getPendingCompanies']);
-        Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany']);
+        Route::get('/companies/pending', [CompanyController::class, 'getPendingCompanies'])->middleware('auth:sanctum');
+        Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany'])->middleware('auth:sanctum');
+        Route::post('/company/login', [CompanyController::class, 'login']);
     });
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('admin')->group(function () {
-        Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany']);
-    });
-    Route::post('/company/login', [CompanyController::class, 'login']);
-});

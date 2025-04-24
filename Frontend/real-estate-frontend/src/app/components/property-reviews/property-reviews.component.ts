@@ -1,7 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReviewService } from '../../services/review.service';
+import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-property-reviews',
@@ -10,7 +12,7 @@ import { ReviewService } from '../../services/review.service';
   templateUrl: './property-reviews.component.html',
   styleUrl: './property-reviews.component.css',
 })
-export class PropertyReviewsComponent implements OnInit {
+export class PropertyReviewsComponent implements OnInit, OnDestroy {
   @Input() propertyId!: number;
 
   reviews: any[] = [];
@@ -24,17 +26,36 @@ export class PropertyReviewsComponent implements OnInit {
   comment: string = '';
   review_type: string = 'property';
   anonymous_review: boolean = false;
-  isLoggedIn: boolean = !!localStorage.getItem('auth_token');
-  hasReviewed: boolean = false; // متغير جديد لتتبع إذا اليوزر أضاف ريفيو
+  isLoggedIn: boolean = false;
+  hasReviewed: boolean = false;
+  showDeleteModal: boolean = false;
+  reviewToDelete: any = null;
+  currentUser: any = null;
+  private userSubscription!: Subscription;
 
-  // Carousel Logic
   reviewsPerPage = 2;
   currentReviewPage = 0;
 
-  constructor(private reviewService: ReviewService) {}
+  constructor(
+    private reviewService: ReviewService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadReviews();
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.userSubscription = this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
+      this.loadReviews();
+    });
+    if (this.isLoggedIn && !this.currentUser) {
+      this.authService.loadCurrentUser().subscribe();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 
   loadReviews(): void {
@@ -45,12 +66,10 @@ export class PropertyReviewsComponent implements OnInit {
     this.reviewService.getReviewsByProperty(this.propertyId).subscribe({
       next: (response) => {
         this.reviews = Array.isArray(response) ? response : response.data || [];
-        // نفترض إن الـ backend بيرجع user_id في كل ريفيو
-        // نتأكد إذا اليوزر الحالي عنده ريفيو
-        const currentUserId = this.getCurrentUserId(); // هنضيف الدالة دي
-        this.hasReviewed = this.reviews.some(
-          (review) => review.user_id === currentUserId
-        );
+        const currentUserId = this.getCurrentUserId();
+        this.hasReviewed = currentUserId
+          ? this.reviews.some((review) => review.user_id === currentUserId)
+          : false;
         this.loading = false;
         this.currentReviewPage = 0;
       },
@@ -62,19 +81,8 @@ export class PropertyReviewsComponent implements OnInit {
     });
   }
 
-  // دالة لجلب user_id من الـ token (افتراضياً)
   private getCurrentUserId(): number | null {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.sub || null; // نفترض إن user_id موجود في payload كـ sub
-      } catch (e) {
-        console.error('Error decoding token:', e);
-        return null;
-      }
-    }
-    return null;
+    return this.currentUser ? this.currentUser.id : null;
   }
 
   get displayedReviews() {
@@ -97,6 +105,10 @@ export class PropertyReviewsComponent implements OnInit {
   }
 
   openReviewModal(): void {
+    if (!this.isLoggedIn) {
+      this.formError = 'Please log in to add a review.';
+      return;
+    }
     if (this.hasReviewed) {
       this.formError = 'You have already submitted a review for this property.';
       return;
@@ -160,6 +172,56 @@ export class PropertyReviewsComponent implements OnInit {
             : 'Failed to add review. Please try again.';
         this.formLoading = false;
         console.error('Error adding review:', err);
+      },
+    });
+  }
+
+  openDeleteModal(review: any): void {
+    if (!this.isLoggedIn) {
+      this.formError = 'Please log in to delete a review.';
+      return;
+    }
+    this.reviewToDelete = review;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.reviewToDelete = null;
+  }
+
+  deleteReview(): void {
+    if (!this.reviewToDelete) return;
+
+    this.formLoading = true;
+    this.formError = null;
+
+    this.reviewService.deleteReview(this.reviewToDelete.id).subscribe({
+      next: () => {
+        this.reviews = this.reviews.filter(
+          (review) => review.id !== this.reviewToDelete.id
+        );
+        const currentUserId = this.getCurrentUserId();
+        this.hasReviewed = currentUserId
+          ? this.reviews.some((review) => review.user_id === currentUserId)
+          : false;
+        this.formSuccess = 'Review deleted successfully!';
+        this.formLoading = false;
+        this.currentReviewPage = 0;
+        this.closeDeleteModal();
+        setTimeout(() => (this.formSuccess = null), 2000);
+      },
+      error: (err) => {
+        this.formError =
+          err.status === 401
+            ? 'Please log in to delete your review.'
+            : err.status === 403
+            ? 'You are not authorized to delete this review.'
+            : err.status === 404
+            ? 'Review not found.'
+            : 'Failed to delete review. Please try again.';
+        this.formLoading = false;
+        console.error('Error deleting review:', err);
       },
     });
   }
