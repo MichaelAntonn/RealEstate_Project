@@ -300,6 +300,17 @@ Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
 
+    // Route  لجلب الشركات المقبولة
+    Route::get('/companies/verified', [CompanyController::class, 'getVerifiedCompanies']);
+
+    // Route لجلب الشركات المرفوضة
+    Route::get('/companies/rejected', [CompanyController::class, 'getRejectedCompanies']);
+
+        // تغيير حالة الشركة من Verified إلى Rejected
+        Route::put('/companies/{id}/reject', [CompanyController::class, 'rejectVerifiedCompany']);
+
+        // تغيير حالة الشركة من Rejected إلى Verified
+        Route::put('/companies/{id}/verify', [CompanyController::class, 'verifyRejectedCompany']);
 });
 
     Route::prefix('admin')->group(function () {
@@ -307,3 +318,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany'])->middleware('auth:sanctum');
         Route::post('/company/login', [CompanyController::class, 'login']);
     });
+
+    Route::prefix('company')->group(function () {
+        Route::post('/register', [CompanyController::class, 'store']);
+        Route::post('/login', [CompanyController::class, 'login']);
+        Route::get('/{company_id}', [CompanyController::class, 'show']);
+        Route::put('/{company_id}', [CompanyController::class, 'update'])->middleware('auth:sanctum');
+        Route::delete('/{company_id}', [CompanyController::class, 'destroy'])->middleware('auth:sanctum');
+    });
+    

@@ -289,4 +289,129 @@ public function login(Request $request)
         'company' => $company
     ], 200);
 }
+/**
+ * Get all verified companies.
+ */
+public function getVerifiedCompanies()
+{
+    $companies = Company::where('verification_status', 'Verified')->get()->map(function ($company) {
+        $company->commercial_registration_doc_url = $company->commercial_registration_doc 
+            ? asset('storage/' . $company->commercial_registration_doc)
+            : null;
+        $company->tax_card_doc_url = $company->tax_card_doc 
+            ? asset('storage/' . $company->tax_card_doc)
+            : null;
+        $company->proof_of_address_doc_url = $company->proof_of_address_doc 
+            ? asset('storage/' . $company->proof_of_address_doc)
+            : null;
+        $company->real_estate_license_doc_url = $company->real_estate_license_doc 
+            ? asset('storage/' . $company->real_estate_license_doc)
+            : null;
+        $company->logo_url = $company->logo 
+            ? asset('storage/' . $company->logo)
+            : null;
+
+        return $company;
+    });
+
+    return response()->json($companies, 200);
+}
+
+/**
+ * Get all rejected companies.
+ */
+public function getRejectedCompanies()
+{
+    $companies = Company::where('verification_status', 'Rejected')->get()->map(function ($company) {
+        $company->commercial_registration_doc_url = $company->commercial_registration_doc 
+            ? asset('storage/' . $company->commercial_registration_doc)
+            : null;
+        $company->tax_card_doc_url = $company->tax_card_doc 
+            ? asset('storage/' . $company->tax_card_doc)
+            : null;
+        $company->proof_of_address_doc_url = $company->proof_of_address_doc 
+            ? asset('storage/' . $company->proof_of_address_doc)
+            : null;
+        $company->real_estate_license_doc_url = $company->real_estate_license_doc 
+            ? asset('storage/' . $company->real_estate_license_doc)
+            : null;
+        $company->logo_url = $company->logo 
+            ? asset('storage/' . $company->logo)
+            : null;
+
+        return $company;
+    });
+
+    return response()->json($companies, 200);
+}
+
+/**
+ * Change a verified company's status to rejected.
+ */
+public function rejectVerifiedCompany(Request $request, $id)
+{
+    if (!Auth::guard('sanctum')->check()) {
+        return response()->json(['error' => 'Unauthorized. Please log in.'], 401);
+    }
+
+    $user = Auth::guard('sanctum')->user();
+    if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin') {
+        return response()->json(['error' => 'Forbidden. Admin access only.'], 403);
+    }
+
+    $company = Company::find($id);
+    if (!$company) {
+        return response()->json(['message' => 'Company not found.'], 404);
+    }
+
+    if ($company->verification_status !== 'Verified') {
+        return response()->json(['message' => 'Company must be verified to reject it.'], 400);
+    }
+
+    $validated = $request->validate([
+        'rejection_reason' => 'required|string',
+    ]);
+
+    $company->verification_status = 'Rejected';
+    $company->rejection_reason = $validated['rejection_reason'];
+    $company->save();
+
+    return response()->json([
+        'message' => 'Company status updated to Rejected successfully.',
+        'data' => $company
+    ], 200);
+}
+
+/**
+ * Change a rejected company's status to verified.
+ */
+public function verifyRejectedCompany(Request $request, $id)
+{
+    if (!Auth::guard('sanctum')->check()) {
+        return response()->json(['error' => 'Unauthorized. Please log in.'], 401);
+    }
+
+    $user = Auth::guard('sanctum')->user();
+    if ($user->user_type !== 'admin' && $user->user_type !== 'super-admin') {
+        return response()->json(['error' => 'Forbidden. Admin access only.'], 403);
+    }
+
+    $company = Company::find($id);
+    if (!$company) {
+        return response()->json(['message' => 'Company not found.'], 404);
+    }
+
+    if ($company->verification_status !== 'Rejected') {
+        return response()->json(['message' => 'Company must be rejected to verify it.'], 400);
+    }
+
+    $company->verification_status = 'Verified';
+    $company->rejection_reason = null; // إزالة سبب الرفض
+    $company->save();
+
+    return response()->json([
+        'message' => 'Company status updated to Verified successfully.',
+        'data' => $company
+    ], 200);
+}
 }
