@@ -27,7 +27,7 @@ export class SignupaandloginComponent implements AfterViewInit {
   // Login form fields
   loginEmail: string = '';
   loginPassword: string = '';
-  userType: string = 'user';
+  userType: string = 'user'; // Default to user login
 
   // Company Signup form fields
   isCompanySignup: boolean = false;
@@ -258,6 +258,22 @@ export class SignupaandloginComponent implements AfterViewInit {
       isValid = false;
     }
 
+    // Validate required documents
+    if (!this.company.commercial_registration_doc) {
+      this.showErrorNotification('Commercial registration document is required');
+      isValid = false;
+    }
+
+    if (!this.company.tax_card_doc) {
+      this.showErrorNotification('Tax card document is required');
+      isValid = false;
+    }
+
+    if (!this.company.proof_of_address_doc) {
+      this.showErrorNotification('Proof of address document is required');
+      isValid = false;
+    }
+
     if (!isValid) {
       this.showErrorNotification('Please correct the form errors');
     }
@@ -285,53 +301,71 @@ export class SignupaandloginComponent implements AfterViewInit {
     return isValid;
   }
 
-  // Form submission methods
-  onSignupSubmit() {
-    if (!this.validateUserForm()) return;
-
-    const userData = {
-      first_name: this.first_name,
-      last_name: this.last_name,
-      email: this.email,
-      phone_number: this.phone_number,
-      country: this.country,
-      password: this.password,
-      password_confirmation: this.confirmPassword,
-      terms_and_conditions: this.terms_and_conditions ? 1 : 0
-    };
-
-    this.showInfoNotification('Creating your account...');
-
-    this.http.post('http://localhost:8000/api/v1/register', userData).subscribe({
-      next: () => {
-        this.showSuccessNotification('Registration successful!');
-        this.resetSignupForm();
-        this.toggleForms();
-      },
-      error: (error) => {
-        const errorMsg = error.error?.message || 'Registration failed';
-        this.showErrorNotification(errorMsg);
-      }
-    });
+  // Toggle between user and company login
+  toggleLoginType() {
+    this.userType = this.userType === 'user' ? 'company' : 'user';
+    this.showInfoNotification(`Switched to ${this.userType} login`);
   }
 
+  // Toggle between user and company signup forms
+  toggleSignupMode() {
+    this.isCompanySignup = !this.isCompanySignup;
+    this.showInfoNotification(`Switched to ${this.isCompanySignup ? 'company' : 'individual'} signup`);
+  }
+
+  // Toggle between login and signup forms
+  toggleForms() {
+    const container = document.getElementById('container');
+    container?.classList.toggle('active');
+  }
+
+  // Handle file selection for company documents
+  onFileSelected(event: any, field: string) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.company[field] = file;
+      this.showSuccessNotification(`${field.replace(/_/g, ' ')} file selected`);
+    }
+  }
+
+  // Handle company signup form submission
   onCompanySignupSubmit() {
     if (!this.validateCompanyForm()) return;
 
-    const formData = new FormData();
-    Object.keys(this.company).forEach(key => {
-      if (this.company[key] !== null) {
-        formData.append(key, this.company[key]);
-      }
-    });
-
     this.showInfoNotification('Registering your company...');
 
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('company_name', this.company.company_name);
+    formData.append('commercial_registration_number', this.company.commercial_registration_number);
+    formData.append('company_email', this.company.company_email);
+    formData.append('company_phone_number', this.company.company_phone_number);
+    formData.append('company_address', this.company.company_address);
+    formData.append('commercial_registration_doc', this.company.commercial_registration_doc);
+    formData.append('tax_card_doc', this.company.tax_card_doc);
+    formData.append('proof_of_address_doc', this.company.proof_of_address_doc);
+    if (this.company.real_estate_license_doc) {
+      formData.append('real_estate_license_doc', this.company.real_estate_license_doc);
+    }
+    if (this.company.years_in_real_estate) {
+      formData.append('years_in_real_estate', this.company.years_in_real_estate.toString());
+    }
+    if (this.company.company_website) {
+      formData.append('company_website', this.company.company_website);
+    }
+    if (this.company.date_of_establishment) {
+      formData.append('date_of_establishment', this.company.date_of_establishment);
+    }
+    formData.append('password', this.company.password);
+    formData.append('password_confirmation', this.company.password_confirmation);
+    formData.append('accept_terms', this.company.accept_terms ? '1' : '0');
+
+    // Send to backend
     this.http.post('http://localhost:8000/api/company/register', formData).subscribe({
-      next: () => {
+      next: (response: any) => {
         this.showSuccessNotification('Company registration successful! Pending verification');
         this.resetCompanyForm();
-        this.toggleForms();
+        this.toggleForms(); // Switch to login form
       },
       error: (error) => {
         const errorMsg = error.error?.message || 'Company registration failed';
@@ -340,6 +374,37 @@ export class SignupaandloginComponent implements AfterViewInit {
     });
   }
 
+  // Handle user signup form submission
+  onSignupSubmit() {
+    if (!this.validateUserForm()) return;
+
+    const userData = {
+      first_name: this.first_name,
+      last_name: this.last_name,
+      email: this.email,
+      phone_number: this.phone_number || null,
+      country: this.country || null,
+      password: this.password,
+      password_confirmation: this.confirmPassword,
+      terms_and_conditions: this.terms_and_conditions ? 1 : 0,
+    };
+
+    this.showInfoNotification('Creating your account...');
+
+    this.http.post('http://localhost:8000/api/v1/register', userData).subscribe({
+      next: () => {
+        this.showSuccessNotification('Registration successful!');
+        this.resetSignupForm();
+        this.toggleForms(); // Switch to login form
+      },
+      error: (error) => {
+        const errorMsg = error.error?.message || 'Registration failed';
+        this.showErrorNotification(errorMsg);
+      }
+    });
+  }
+
+  // Handle login form submission
   onLoginSubmit() {
     if (!this.validateLoginForm()) return;
 
@@ -358,8 +423,9 @@ export class SignupaandloginComponent implements AfterViewInit {
             this.showErrorNotification('Invalid credentials');
           }
         },
-        error: () => {
-          this.showErrorNotification('Login failed');
+        error: (error) => {
+          const errorMsg = error.error?.message || 'Login failed';
+          this.showErrorNotification(errorMsg);
         }
       });
     } else {
@@ -373,37 +439,15 @@ export class SignupaandloginComponent implements AfterViewInit {
           this.authService.saveUser(response.user);
           this.router.navigate(['/maindashboard']);
         },
-        error: () => {
-          this.showErrorNotification('Invalid credentials');
+        error: (error) => {
+          const errorMsg = error.error?.message || 'Login failed';
+          this.showErrorNotification(errorMsg);
         }
       });
     }
   }
 
-  // Other methods
-  toggleLoginType() {
-    this.userType = this.userType === 'user' ? 'company' : 'user';
-    this.showInfoNotification(`Switched to ${this.userType} login`);
-  }
-
-  toggleSignupMode() {
-    this.isCompanySignup = !this.isCompanySignup;
-    this.showInfoNotification(`Switched to ${this.isCompanySignup ? 'company' : 'individual'} signup`);
-  }
-
-  toggleForms() {
-    const container = document.getElementById('container');
-    container?.classList.toggle('active');
-  }
-
-  onFileSelected(event: any, field: string) {
-    const file = event.target.files[0];
-    if (file) {
-      this.company[field] = file;
-      this.showSuccessNotification(`${field.replace('_', ' ')} file selected`);
-    }
-  }
-
+  // Reset user signup form
   resetSignupForm() {
     this.first_name = '';
     this.last_name = '';
@@ -416,6 +460,7 @@ export class SignupaandloginComponent implements AfterViewInit {
     Object.keys(this.errors).forEach(key => this.clearFieldError(key));
   }
 
+  // Reset company form
   resetCompanyForm() {
     this.company = {
       company_name: '',
@@ -437,11 +482,13 @@ export class SignupaandloginComponent implements AfterViewInit {
     Object.keys(this.errors).forEach(key => this.clearFieldError(key));
   }
 
+  // Google sign in
   signInWithGoogle() {
     this.showInfoNotification('Redirecting to Google login...');
     window.location.href = 'http://localhost:8000/api/v1/social/auth/google';
   }
 
+  // Navigate to forgot password
   navigateToForgotPassword() {
     this.showInfoNotification('Redirecting to password recovery...');
     this.router.navigate(['/forgot-password']);

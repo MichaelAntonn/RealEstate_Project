@@ -51,7 +51,6 @@
           <option value="UK">United Kingdom</option>
           <option value="CA">Canada</option>
           <option value="EG">Egypt</option>
-
         </select>
         <div class="error-message">{{ errors.country }}</div>
       </div>
@@ -92,6 +91,12 @@
       </div>
       
       <div class="input-container">
+        <i class="bi bi-card-text"></i>
+        <input type="text" id="commercial_registration_number" placeholder="Commercial Registration Number" 
+               [(ngModel)]="company.commercial_registration_number" name="commercial_registration_number" required>
+      </div>
+      
+      <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="company_email" placeholder="Company Email" [(ngModel)]="company.company_email" name="company_email" required>
         <div class="error-message">{{ errors.company_email }}</div>
@@ -104,10 +109,51 @@
         <div class="error-message">{{ errors.company_phone_number }}</div>
       </div>
       
+      <div class="input-container">
+        <i class="bi bi-geo-alt"></i>
+        <input type="text" id="company_address" placeholder="Company Address" [(ngModel)]="company.company_address" name="company_address" required>
+      </div>
+      
       <div class="file-input-container">
-        <label for="commercial_registration_doc">Commercial Registration (required)</label>
+        <label for="commercial_registration_doc">Commercial Registration Document (required)</label>
         <input type="file" id="commercial_registration_doc" 
                (change)="onFileSelected($event, 'commercial_registration_doc')" accept=".pdf,.jpg,.png" required>
+      </div>
+      
+      <div class="file-input-container">
+        <label for="tax_card_doc">Tax Card Document (required)</label>
+        <input type="file" id="tax_card_doc" 
+               (change)="onFileSelected($event, 'tax_card_doc')" accept=".pdf,.jpg,.png" required>
+      </div>
+      
+      <div class="file-input-container">
+        <label for="proof_of_address_doc">Proof of Address Document (required)</label>
+        <input type="file" id="proof_of_address_doc" 
+               (change)="onFileSelected($event, 'proof_of_address_doc')" accept=".pdf,.jpg,.png" required>
+      </div>
+      
+      <div class="file-input-container">
+        <label for="real_estate_license_doc">Real Estate License Document (optional)</label>
+        <input type="file" id="real_estate_license_doc" 
+               (change)="onFileSelected($event, 'real_estate_license_doc')" accept=".pdf,.jpg,.png">
+      </div>
+      
+      <div class="input-container">
+        <i class="bi bi-calendar"></i>
+        <input type="date" id="date_of_establishment" placeholder="Date of Establishment" 
+               [(ngModel)]="company.date_of_establishment" name="date_of_establishment">
+      </div>
+      
+      <div class="input-container">
+        <i class="bi bi-globe"></i>
+        <input type="url" id="company_website" placeholder="Company Website" 
+               [(ngModel)]="company.company_website" name="company_website">
+      </div>
+      
+      <div class="input-container">
+        <i class="bi bi-clock-history"></i>
+        <input type="number" id="years_in_real_estate" placeholder="Years in Real Estate" 
+               [(ngModel)]="company.years_in_real_estate" name="years_in_real_estate" min="0">
       </div>
       
       <div class="input-container">
@@ -161,7 +207,7 @@
         <div class="error-message">{{ errors.loginPassword }}</div>
       </div>
       
-      <a (click)="navigateToForgotPassword()" >Forgot Password?</a>
+      <a (click)="navigateToForgotPassword()">Forgot Password?</a>
       <button type="submit">Sign In</button>
       <div class="switch-mode">
         <a *ngIf="userType === 'user'" type="button" class="login-a" (click)="toggleLoginType()">Login as Company</a>
