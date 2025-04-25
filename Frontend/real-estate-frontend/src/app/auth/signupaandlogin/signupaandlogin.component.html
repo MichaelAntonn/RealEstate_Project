@@ -1,11 +1,15 @@
 <div class="container" id="container">
   <!-- Notification Container -->
-<div class="notification-container" *ngIf="notification.show">
-  <div class="notification" [class.error]="notification.isError" [class.success]="!notification.isError">
-    <span>{{ notification.message }}</span>
-    <i class="bi bi-x" (click)="hideNotification()"></i>
+  <div class="notification-container" *ngIf="notification.show">
+    <div class="notification" [class.error]="notification.isError" 
+         [class.success]="notification.type === 'success'"
+         [class.warning]="notification.type === 'warning'"
+         [class.info]="notification.type === 'info'">
+      <span>{{ notification.message }}</span>
+      <i class="bi bi-x" (click)="hideNotification()"></i>
+    </div>
   </div>
-</div>
+
   <!-- User Sign Up Form -->
   <div class="form-container sign-up">
     <form id="signupForm" (ngSubmit)="onSignupSubmit()" *ngIf="!isCompanySignup">
@@ -18,147 +22,118 @@
       <div class="input-container">
         <i class="bi bi-person"></i>
         <input type="text" id="first_name" placeholder="First Name" [(ngModel)]="first_name" name="first_name" required>
+        <div class="error-message">{{ errors.first_name }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-person"></i>
         <input type="text" id="last_name" placeholder="Last Name" [(ngModel)]="last_name" name="last_name" required>
+        <div class="error-message">{{ errors.last_name }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="email" placeholder="Email" [(ngModel)]="email" name="email" required>
+        <div class="error-message">{{ errors.email }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-telephone"></i>
-        <input type="tel" id="phone_number" placeholder="Phone Number" [(ngModel)]="phone_number" name="phone_number">
+        <input type="tel" id="phone_number" placeholder="Phone (optional)" [(ngModel)]="phone_number" name="phone_number">
+        <div class="error-message">{{ errors.phone_number }}</div>
       </div>
       
-      <select id="country" [(ngModel)]="country" name="country" required>
-        <option value="">Select Country</option>
-        <option value="USA">USA</option>
-        <option value="Canada">Canada</option>
-        <option value="UK">UK</option>
-        <option value="EG">Egypt</option>
-      </select>
+      <div class="input-container">
+        <i class="bi bi-globe"></i>
+        <select id="country" [(ngModel)]="country" name="country" required>
+          <option value="">Select Country</option>
+          <option value="US">United States</option>
+          <option value="UK">United Kingdom</option>
+          <option value="CA">Canada</option>
+          <option value="EG">Egypt</option>
+
+        </select>
+        <div class="error-message">{{ errors.country }}</div>
+      </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="8">
+        <div class="error-message">{{ errors.password }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="confirmPassword" placeholder="Confirm Password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+        <div class="error-message">{{ errors.confirmPassword }}</div>
       </div>
       
       <div class="checkbox-container">
         <input type="checkbox" id="terms_and_conditions" [(ngModel)]="terms_and_conditions" name="terms_and_conditions">
         <label for="terms_and_conditions">I accept the terms and conditions</label>
+        <div class="error-message">{{ errors.terms_and_conditions }}</div>
       </div>
       
       <button type="submit">Sign Up</button>
       <div class="switch-mode">
-        <span>Sign up as a company?</span>
-        <a type="button" class="switch-a" (click)="toggleSignupMode()">Switch to Company</a>
+        <span>Register </span>
+        <a type="button" class="switch-a" (click)="toggleSignupMode()">as a Company ?</a>
       </div>
     </form>
 
     <!-- Company Sign Up Form -->
     <form id="companySignupForm" (ngSubmit)="onCompanySignupSubmit()" *ngIf="isCompanySignup" enctype="multipart/form-data">
-      <h1>Register Your Company</h1>
+      <h1>Register Company</h1>
       
       <div class="input-container">
         <i class="bi bi-building"></i>
         <input type="text" id="company_name" placeholder="Company Name" [(ngModel)]="company.company_name" name="company_name" required>
-      </div>
-      
-      <div class="input-container">
-        <i class="bi bi-card-text"></i>
-        <input type="text" id="commercial_registration_number" placeholder="Commercial Registration Number" 
-               [(ngModel)]="company.commercial_registration_number" name="commercial_registration_number" required>
+        <div class="error-message">{{ errors.company_name }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="company_email" placeholder="Company Email" [(ngModel)]="company.company_email" name="company_email" required>
+        <div class="error-message">{{ errors.company_email }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-telephone"></i>
-        <input type="tel" id="company_phone_number" placeholder="Company Phone Number" 
+        <input type="tel" id="company_phone_number" placeholder="Company Phone" 
                [(ngModel)]="company.company_phone_number" name="company_phone_number" required>
-      </div>
-      
-      <div class="input-container">
-        <i class="bi bi-geo-alt"></i>
-        <input type="text" id="company_address" placeholder="Company Address" [(ngModel)]="company.company_address" name="company_address" required>
+        <div class="error-message">{{ errors.company_phone_number }}</div>
       </div>
       
       <div class="file-input-container">
-        <label for="commercial_registration_doc">Commercial Registration Document (required)</label>
+        <label for="commercial_registration_doc">Commercial Registration (required)</label>
         <input type="file" id="commercial_registration_doc" 
                (change)="onFileSelected($event, 'commercial_registration_doc')" accept=".pdf,.jpg,.png" required>
-      </div>
-      
-      <div class="file-input-container">
-        <label for="tax_card_doc">Tax Card Document (required)</label>
-        <input type="file" id="tax_card_doc" 
-               (change)="onFileSelected($event, 'tax_card_doc')" accept=".pdf,.jpg,.png" required>
-      </div>
-      
-      <div class="file-input-container">
-        <label for="proof_of_address_doc">Proof of Address Document (required)</label>
-        <input type="file" id="proof_of_address_doc" 
-               (change)="onFileSelected($event, 'proof_of_address_doc')" accept=".pdf,.jpg,.png" required>
-      </div>
-      
-      <div class="file-input-container">
-        <label for="real_estate_license_doc">Real Estate License Document (optional)</label>
-        <input type="file" id="real_estate_license_doc" 
-               (change)="onFileSelected($event, 'real_estate_license_doc')" accept=".pdf,.jpg,.png">
-      </div>
-      
-      <div class="input-container">
-        <i class="bi bi-calendar"></i>
-        <input type="date" id="date_of_establishment" placeholder="Date of Establishment" 
-               [(ngModel)]="company.date_of_establishment" name="date_of_establishment">
-      </div>
-      
-      <div class="input-container">
-        <i class="bi bi-globe"></i>
-        <input type="url" id="company_website" placeholder="Company Website" 
-               [(ngModel)]="company.company_website" name="company_website">
-      </div>
-      
-      <div class="input-container">
-        <i class="bi bi-clock-history"></i>
-        <input type="number" id="years_in_real_estate" placeholder="Years in Real Estate" 
-               [(ngModel)]="company.years_in_real_estate" name="years_in_real_estate" min="0">
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="company_password" placeholder="Password" 
                [(ngModel)]="company.password" name="password" required minlength="8">
+        <div class="error-message">{{ errors.company_password }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="company_confirm_password" placeholder="Confirm Password" 
                [(ngModel)]="company.password_confirmation" name="password_confirmation" required>
+        <div class="error-message">{{ errors.company_confirm_password }}</div>
       </div>
       
       <div class="checkbox-container">
         <input type="checkbox" id="company_accept_terms" [(ngModel)]="company.accept_terms" name="accept_terms" required>
         <label for="company_accept_terms">I accept the terms and conditions</label>
+        <div class="error-message">{{ errors.company_accept_terms }}</div>
       </div>
       
       <button type="submit">Register Company</button>
       <div class="switch-mode">
-        <span>Sign up as an individual?</span>
-        <a type="button" class="switch-a" (click)="toggleSignupMode()">Switch to Individual</a>
+        <span>Register </span>
+        <a type="button" class="switch-a" (click)="toggleSignupMode()">as individual?</a>
       </div>
     </form>
   </div>
@@ -170,21 +145,23 @@
       <div class="social-icons">
         <a href="#" class="icon" (click)="signInWithGoogle()"><i class="bi bi-google"></i></a>
       </div>
-      <span>or use your {{ userType === 'company' ? 'company email' : 'email' }} for login</span>
+      <span>or use your {{ userType === 'company' ? 'company email' : 'email' }}</span>
       
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="loginEmail" placeholder="{{ userType === 'company' ? 'Company Email' : 'Email' }}" 
                [(ngModel)]="loginEmail" name="loginEmail" required>
+        <div class="error-message">{{ errors.loginEmail }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="loginPassword" placeholder="Password" 
                [(ngModel)]="loginPassword" name="loginPassword" required>
+        <div class="error-message">{{ errors.loginPassword }}</div>
       </div>
       
-      <a (click)="navigateToForgotPassword()">Forgot Your Password?</a>
+      <a (click)="navigateToForgotPassword()" >Forgot Password?</a>
       <button type="submit">Sign In</button>
       <div class="switch-mode">
         <a *ngIf="userType === 'user'" type="button" class="login-a" (click)="toggleLoginType()">Login as Company</a>
@@ -198,12 +175,12 @@
     <div class="toggle">
       <div class="toggle-panel toggle-left">
         <h1>Welcome Back!</h1>
-        <p>Enter your personal details to stay connected.</p>
+        <p>Enter your personal details to login</p>
         <button class="hidden" id="login" (click)="toggleForms()">Sign In</button>
       </div>
       <div class="toggle-panel toggle-right">
         <h1>Hello, Friend!</h1>
-        <p>Sign up to start your journey with us.</p>
+        <p>Register to start your journey</p>
         <button class="hidden" id="register" (click)="toggleForms()">Sign Up</button>
       </div>
     </div>
