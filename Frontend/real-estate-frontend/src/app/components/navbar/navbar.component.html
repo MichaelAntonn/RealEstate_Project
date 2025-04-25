@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg">
   <div class="container">
     <a class="navbar-brand" routerLink="/">
       <img src="assets/logoooo.png" alt="Logo">
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link active" id="home" routerLink="/">Home</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="/catalog">Catalog</a></li>
@@ -28,11 +20,17 @@
         </li>
       </ul>
       <div class="signupandlogin">
-        <a routerLink="/sign-up" class="btn btn-custom ms-3">Sign Up</a>
-        <a routerLink="/login" class="btn btn-outline-light ms-2 login">Log In</a>
+        <!-- Show when user is NOT logged in -->
+        <div *ngIf="!authService.isLoggedIn()">
+          <a routerLink="/sign-up" class="btn btn-custom ms-3">Sign Up</a>
+          <a routerLink="/login" class="btn btn-outline-light ms-2 login">Log In</a>
+        </div>
+        
+        <!-- Show when user is logged in -->
+        <div *ngIf="authService.isLoggedIn()">
+          <button (click)="logout()" class="btn btn-outline-light ms-2 logout">Log Out</button>
+        </div>
       </div>
     </div>
   </div>
 </nav>
-</body>
-</html>

@@ -5,11 +5,10 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CompanyAuthService } from '../../services/company-auth.service';
 import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-signupaandlogin',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule ],
   templateUrl: './signupaandlogin.component.html',
   styleUrls: ['./signupaandlogin.component.css']
 })
@@ -437,7 +436,7 @@ export class SignupaandloginComponent implements AfterViewInit {
           this.showSuccessNotification('Login successful');
           this.authService.saveToken(response.access_token);
           this.authService.saveUser(response.user);
-          this.router.navigate(['/maindashboard']);
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           const errorMsg = error.error?.message || 'Login failed';
@@ -485,7 +484,7 @@ export class SignupaandloginComponent implements AfterViewInit {
   // Google sign in
   signInWithGoogle() {
     this.showInfoNotification('Redirecting to Google login...');
-    window.location.href = 'http://localhost:8000/api/v1/social/auth/google';
+    window.location.href = 'http://localhost:8000/auth/google/redirect';
   }
 
   // Navigate to forgot password
