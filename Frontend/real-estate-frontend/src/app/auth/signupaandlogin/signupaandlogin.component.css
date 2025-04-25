@@ -8,6 +8,7 @@
     font-family: 'Montserrat', sans-serif;
 }
 
+
 body {
     background-color: #f2e8f0;
     background: linear-gradient(to right, #e0d7df, #c2b4a9);
@@ -239,8 +240,8 @@ body {
 
 .input-container i {
     position: absolute;
-    left: 10px;
-    top: 50%;
+    left: 8px;
+    top: 38%;
     transform: translateY(-50%);
     color: #aaa;
     font-size: 14px;
