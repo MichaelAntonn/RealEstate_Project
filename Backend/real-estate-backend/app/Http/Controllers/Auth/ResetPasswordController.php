@@ -9,6 +9,7 @@ use App\Notifications\ResetPasswordNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -37,7 +38,9 @@ class ResetPasswordController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Send the notification
-        $user->notify(new ResetPasswordNotification($token));
+        Log::info('Before notifying user: ' . $user->email);
+$user->notify(new ResetPasswordNotification($token));
+Log::info('After notifying user.');
 
         // Return a JSON response
         return response()->json(['success' => 'We have emailed your password reset link!'], 200);
