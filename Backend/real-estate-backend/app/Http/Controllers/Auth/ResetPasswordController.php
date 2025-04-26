@@ -38,9 +38,8 @@ class ResetPasswordController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Send the notification
-        Log::info('Before notifying user: ' . $user->email);
 $user->notify(new ResetPasswordNotification($token));
-Log::info('After notifying user.');
+
 
         // Return a JSON response
         return response()->json(['success' => 'We have emailed your password reset link!'], 200);
