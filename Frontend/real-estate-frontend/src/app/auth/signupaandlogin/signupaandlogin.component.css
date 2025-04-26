@@ -20,7 +20,7 @@ body {
     padding: 20px;
 }
 
-.container {
+.container{
     background-color: #fff;
     border-radius: 30px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
@@ -30,7 +30,8 @@ body {
     max-width: 900px;
     min-height: 600px;
     height: auto;
-    margin: auto;
+    
+    margin: 2% auto;
     display: flex;
     flex-direction: column;
 }
