@@ -1,11 +1,15 @@
 <div class="container" id="container">
   <!-- Notification Container -->
-<div class="notification-container" *ngIf="notification.show">
-  <div class="notification" [class.error]="notification.isError" [class.success]="!notification.isError">
-    <span>{{ notification.message }}</span>
-    <i class="bi bi-x" (click)="hideNotification()"></i>
+  <div class="notification-container" *ngIf="notification.show">
+    <div class="notification" [class.error]="notification.isError" 
+         [class.success]="notification.type === 'success'"
+         [class.warning]="notification.type === 'warning'"
+         [class.info]="notification.type === 'info'">
+      <span>{{ notification.message }}</span>
+      <i class="bi bi-x" (click)="hideNotification()"></i>
+    </div>
   </div>
-</div>
+
   <!-- User Sign Up Form -->
   <div class="form-container sign-up">
     <form id="signupForm" (ngSubmit)="onSignupSubmit()" *ngIf="!isCompanySignup">
@@ -18,60 +22,148 @@
       <div class="input-container">
         <i class="bi bi-person"></i>
         <input type="text" id="first_name" placeholder="First Name" [(ngModel)]="first_name" name="first_name" required>
+        <div class="error-message">{{ errors.first_name }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-person"></i>
         <input type="text" id="last_name" placeholder="Last Name" [(ngModel)]="last_name" name="last_name" required>
+        <div class="error-message">{{ errors.last_name }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="email" placeholder="Email" [(ngModel)]="email" name="email" required>
+        <div class="error-message">{{ errors.email }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-telephone"></i>
-        <input type="tel" id="phone_number" placeholder="Phone Number" [(ngModel)]="phone_number" name="phone_number">
+        <input type="tel" id="phone_number" placeholder="Phone (optional)" [(ngModel)]="phone_number" name="phone_number">
+        <div class="error-message">{{ errors.phone_number }}</div>
       </div>
       
-      <select id="country" [(ngModel)]="country" name="country" required>
-        <option value="">Select Country</option>
-        <option value="USA">USA</option>
-        <option value="Canada">Canada</option>
-        <option value="UK">UK</option>
-        <option value="EG">Egypt</option>
-      </select>
+      <div class="input-container">
+        <select id="country" [(ngModel)]="country" name="country" required>
+          <option value="">Select Country</option>
+          <option value="US">United States</option>
+          <option value="UK">United Kingdom</option>
+          <option value="CA">Canada</option>
+          <option value="EG">Egypt</option>
+          <option value="AF">Afghanistan</option>
+          <option value="AL">Albania</option>
+          <option value="DZ">Algeria</option>
+          <option value="AR">Argentina</option>
+          <option value="AU">Australia</option>
+          <option value="AT">Austria</option>
+          <option value="BH">Bahrain</option>
+          <option value="BD">Bangladesh</option>
+          <option value="BE">Belgium</option>
+          <option value="BR">Brazil</option>
+          <option value="BG">Bulgaria</option>
+          <option value="CM">Cameroon</option>
+          <option value="CA">Canada</option>
+          <option value="CN">China</option>
+          <option value="CO">Colombia</option>
+          <option value="HR">Croatia</option>
+          <option value="CY">Cyprus</option>
+          <option value="CZ">Czech Republic</option>
+          <option value="DK">Denmark</option>
+          <option value="EG">Egypt</option>
+          <option value="EE">Estonia</option>
+          <option value="FI">Finland</option>
+          <option value="FR">France</option>
+          <option value="DE">Germany</option>
+          <option value="GR">Greece</option>
+          <option value="HK">Hong Kong</option>
+          <option value="HU">Hungary</option>
+          <option value="IS">Iceland</option>
+          <option value="IN">India</option>
+          <option value="ID">Indonesia</option>
+          <option value="IR">Iran</option>
+          <option value="IQ">Iraq</option>
+          <option value="IE">Ireland</option>
+          <option value="IL">Israel</option>
+          <option value="IT">Italy</option>
+          <option value="JP">Japan</option>
+          <option value="JO">Jordan</option>
+          <option value="KZ">Kazakhstan</option>
+          <option value="KE">Kenya</option>
+          <option value="KW">Kuwait</option>
+          <option value="LB">Lebanon</option>
+          <option value="LY">Libya</option>
+          <option value="LT">Lithuania</option>
+          <option value="MY">Malaysia</option>
+          <option value="MT">Malta</option>
+          <option value="MX">Mexico</option>
+          <option value="MA">Morocco</option>
+          <option value="NL">Netherlands</option>
+          <option value="NZ">New Zealand</option>
+          <option value="NG">Nigeria</option>
+          <option value="NO">Norway</option>
+          <option value="OM">Oman</option>
+          <option value="PK">Pakistan</option>
+          <option value="PL">Poland</option>
+          <option value="PT">Portugal</option>
+          <option value="QA">Qatar</option>
+          <option value="RO">Romania</option>
+          <option value="RU">Russia</option>
+          <option value="SA">Saudi Arabia</option>
+          <option value="RS">Serbia</option>
+          <option value="SG">Singapore</option>
+          <option value="SK">Slovakia</option>
+          <option value="ZA">South Africa</option>
+          <option value="KR">South Korea</option>
+          <option value="ES">Spain</option>
+          <option value="SE">Sweden</option>
+          <option value="CH">Switzerland</option>
+          <option value="SY">Syria</option>
+          <option value="TH">Thailand</option>
+          <option value="TN">Tunisia</option>
+          <option value="TR">Turkey</option>
+          <option value="UA">Ukraine</option>
+          <option value="AE">United Arab Emirates</option>
+          <option value="UK">United Kingdom</option>
+          <option value="US">United States</option>
+          <option value="VN">Vietnam</option>
+          <option value="YE">Yemen</option>
+        </select>
+        <div class="error-message">{{ errors.country }}</div>
+      </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="8">
+        <div class="error-message">{{ errors.password }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="confirmPassword" placeholder="Confirm Password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+        <div class="error-message">{{ errors.confirmPassword }}</div>
       </div>
       
       <div class="checkbox-container">
         <input type="checkbox" id="terms_and_conditions" [(ngModel)]="terms_and_conditions" name="terms_and_conditions">
         <label for="terms_and_conditions">I accept the terms and conditions</label>
+        <div class="error-message">{{ errors.terms_and_conditions }}</div>
       </div>
       
       <button type="submit">Sign Up</button>
       <div class="switch-mode">
-        <span>Sign up as a company?</span>
-        <a type="button" class="switch-a" (click)="toggleSignupMode()">Switch to Company</a>
+        <span>Register </span>
+        <a type="button" class="switch-a" (click)="toggleSignupMode()">as a Company ?</a>
       </div>
     </form>
 
     <!-- Company Sign Up Form -->
     <form id="companySignupForm" (ngSubmit)="onCompanySignupSubmit()" *ngIf="isCompanySignup" enctype="multipart/form-data">
-      <h1>Register Your Company</h1>
+      <h1>Register Company</h1>
       
       <div class="input-container">
         <i class="bi bi-building"></i>
         <input type="text" id="company_name" placeholder="Company Name" [(ngModel)]="company.company_name" name="company_name" required>
+        <div class="error-message">{{ errors.company_name }}</div>
       </div>
       
       <div class="input-container">
@@ -83,12 +175,14 @@
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="company_email" placeholder="Company Email" [(ngModel)]="company.company_email" name="company_email" required>
+        <div class="error-message">{{ errors.company_email }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-telephone"></i>
-        <input type="tel" id="company_phone_number" placeholder="Company Phone Number" 
+        <input type="tel" id="company_phone_number" placeholder="Company Phone" 
                [(ngModel)]="company.company_phone_number" name="company_phone_number" required>
+        <div class="error-message">{{ errors.company_phone_number }}</div>
       </div>
       
       <div class="input-container">
@@ -142,23 +236,26 @@
         <i class="bi bi-lock"></i>
         <input type="password" id="company_password" placeholder="Password" 
                [(ngModel)]="company.password" name="password" required minlength="8">
+        <div class="error-message">{{ errors.company_password }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="company_confirm_password" placeholder="Confirm Password" 
                [(ngModel)]="company.password_confirmation" name="password_confirmation" required>
+        <div class="error-message">{{ errors.company_confirm_password }}</div>
       </div>
       
       <div class="checkbox-container">
         <input type="checkbox" id="company_accept_terms" [(ngModel)]="company.accept_terms" name="accept_terms" required>
         <label for="company_accept_terms">I accept the terms and conditions</label>
+        <div class="error-message">{{ errors.company_accept_terms }}</div>
       </div>
       
       <button type="submit">Register Company</button>
       <div class="switch-mode">
-        <span>Sign up as an individual?</span>
-        <a type="button" class="switch-a" (click)="toggleSignupMode()">Switch to Individual</a>
+        <span>Register </span>
+        <a type="button" class="switch-a" (click)="toggleSignupMode()">as individual?</a>
       </div>
     </form>
   </div>
@@ -170,21 +267,23 @@
       <div class="social-icons">
         <a href="#" class="icon" (click)="signInWithGoogle()"><i class="bi bi-google"></i></a>
       </div>
-      <span>or use your {{ userType === 'company' ? 'company email' : 'email' }} for login</span>
+      <span>or use your {{ userType === 'company' ? 'company email' : 'email' }}</span>
       
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="loginEmail" placeholder="{{ userType === 'company' ? 'Company Email' : 'Email' }}" 
                [(ngModel)]="loginEmail" name="loginEmail" required>
+        <div class="error-message">{{ errors.loginEmail }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="loginPassword" placeholder="Password" 
                [(ngModel)]="loginPassword" name="loginPassword" required>
+        <div class="error-message">{{ errors.loginPassword }}</div>
       </div>
       
-      <a (click)="navigateToForgotPassword()">Forgot Your Password?</a>
+      <a (click)="navigateToForgotPassword()">Forgot Password?</a>
       <button type="submit">Sign In</button>
       <div class="switch-mode">
         <a *ngIf="userType === 'user'" type="button" class="login-a" (click)="toggleLoginType()">Login as Company</a>
@@ -198,12 +297,12 @@
     <div class="toggle">
       <div class="toggle-panel toggle-left">
         <h1>Welcome Back!</h1>
-        <p>Enter your personal details to stay connected.</p>
+        <p>Enter your personal details to login</p>
         <button class="hidden" id="login" (click)="toggleForms()">Sign In</button>
       </div>
       <div class="toggle-panel toggle-right">
         <h1>Hello, Friend!</h1>
-        <p>Sign up to start your journey with us.</p>
+        <p>Register to start your journey</p>
         <button class="hidden" id="register" (click)="toggleForms()">Sign Up</button>
       </div>
     </div>
