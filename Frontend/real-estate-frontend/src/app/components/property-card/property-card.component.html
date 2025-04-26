@@ -1,5 +1,5 @@
 <div class="cards-container">
-  @for (property of properties; track property.id) {
+  @for (property of properties | slice:0:6; track property.id) {
   <div class="card">
     <!-- Property Image -->
     <div class="card-image">

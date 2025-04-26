@@ -4,24 +4,31 @@
 /* Custom styles for the property card */
 .cards-container {
   display: flex;
-  gap: 25px;
+  gap: 30px;
   justify-content: center;
   flex-wrap: wrap;
   background-color: #f3f3f3;
   padding: 40px;
 }
-
 .card {
-    width: 380px; /* Increased from 320px */
-    position: relative;
-    border: none;
-    box-shadow: none;
-    background-color: #f3f3f3;
+  width: 450px;
+  position: relative;
+  border: none;
+  box-shadow: none;
+  background-color: #f3f3f3;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* <-- أضف هذا */
 }
 
+.card:hover {
+  transform: translateY(-8px); /* <-- حركة خفيفة للأعلى */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* <-- ظل خفيف */
+}
+
+
+/* باقي ستايل الكروت بدون تغيير */
 .card-image {
   width: 100%;
-  height: 250px; /* Increased from 200px */
+  height: 250px;
 }
 
 .card-image img {
@@ -34,7 +41,7 @@
 .card-info {
   width: 85%;
   background-color: white;
-  padding: 20px; /* Increased from 16px */
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 127, 0, 0.3);
@@ -46,10 +53,10 @@
 }
 
 .card-info h3 {
-  font-size: 18px; /* Increased from 16px */
+  font-size: 18px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 12px; /* Increased from 10px */
+  margin-bottom: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -58,9 +65,9 @@
 .info-line {
   display: flex;
   gap: 15px;
-  font-size: 15px; /* Increased from 14px */
+  font-size: 15px;
   color: #777;
-  margin-bottom: 10px; /* Increased from 8px */
+  margin-bottom: 10px;
 }
 
 .info-line span {
@@ -75,8 +82,8 @@
 
 .price {
   font-weight: bold;
-  font-size: 18px; /* Increased from 16px */
-  margin-bottom: 8px; /* Increased from 6px */
+  font-size: 18px;
+  margin-bottom: 8px;
 }
 
 .price span {
@@ -85,7 +92,7 @@
 }
 
 .location {
-  font-size: 14px; /* Increased from 13px */
+  font-size: 14px;
   color: #555;
 }
 
@@ -98,8 +105,8 @@
   display: inline-block;
   color: #ff7f00;
   font-weight: bold;
-  font-size: 15px; /* Increased from 14px */
-  margin-top: 12px; /* Increased from 10px */
+  font-size: 15px;
+  margin-top: 12px;
   text-decoration: none;
 }
 
@@ -107,3 +114,4 @@
   color: #ff7f00;
   margin-left: 6px;
 }
+

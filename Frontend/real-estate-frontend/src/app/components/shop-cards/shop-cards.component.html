@@ -8,6 +8,12 @@
     [properties]="properties"
     class="property-grid"
   ></app-property-card>
+  
+  <div class="show-more-container">
+  <a routerLink="/properties" class="show-more-btn">
+    Show More <i class="fa fa-arrow-right"></i>
+  </a>
+</div>
   } @else {
   <p class="text-center text-gray-500">No properties found.</p>
   } }

@@ -20,7 +20,7 @@
   text-align: center;
   transition: all 0.4s ease-in-out;
   /* margin-right:  !important; */
-
+  cursor: pointer;
 }
 
 .real-estate-card-icon {
