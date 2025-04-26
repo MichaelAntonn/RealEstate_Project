@@ -4,7 +4,7 @@
     <!-- Property Image -->
     <div class="card-image">
       <img
-        src="assets/6fbcaa7c-3dbe-494e-afdf-5896e2e2a090.webp"
+        [src]="getImageUrl(property)"
         [alt]="property.title"
         class="object-cover w-full h-full rounded-[12px]"
       />
@@ -13,26 +13,30 @@
     <!-- Card Content -->
     <div class="card-info">
       <!-- Title -->
-      <h3 class="text-[16px] font-semibold text-gray-900 line-clamp-1">
+      <h3 class="text-[18px] font-semibold text-gray-900 line-clamp-1">
         {{ property.title }}
       </h3>
 
       <!-- Features -->
       <div class="info-line">
         <span class="flex items-center">
-          <i class="fa fa-bed mr-[5px] text-[#ff7f00]"></i
-          >{{ property.bedrooms ?? "-" }} Beds
+          <i class="fa fa-bed mr-[5px] text-[#ff7f00]"></i>
+          {{ property.bedrooms ?? "-" }} Beds
         </span>
         <span class="flex items-center">
-          <i class="fa fa-bath mr-[5px] text-[#ff7f00]"></i
-          >{{ property.bathrooms ?? "-" }} Baths
+          <i class="fa fa-bath mr-[5px] text-[#ff7f00]"></i>
+          {{ property.bathrooms ?? "-" }} Baths
+        </span>
+        <span class="flex items-center">
+          <i class="fa fa-ruler-combined mr-[5px] text-[#ff7f00]"></i>
+          {{ property.area }} m²
         </span>
       </div>
 
       <!-- Price -->
       <div class="price">
-        ${{ property.price
-        }}<span class="text-[#aaa] font-normal"> /per day</span>
+        {{ getPriceDisplay(property) }}
+        <span *ngIf="property.listing_type === 'for_rent'" class="text-[#aaa] font-normal">/month</span>
       </div>
 
       <!-- Location -->
