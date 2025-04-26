@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class ResetPasswordNotification extends Notification implements ShouldQueue
 {
@@ -36,12 +37,13 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
     {
         // $resetUrl = route('password.reset.token', ['token' => $this->token]);
         $resetUrl = 'https://RealEstate.com/reset-password/' . $this->token;
-    
+        Log::info($notifiable);
         return (new MailMessage)
-            ->subject('Reset Password')
-            ->line('You are receiving this email because we received a password reset request for your account.')
-            ->action('Reset Password', $resetUrl)
-            ->line('If you did not request a password reset, no further action is required.');
+    ->subject('Reset Password')
+    ->markdown('emails.reset-password', [
+        'resetUrl' => $resetUrl,
+    ]);
+
     }
 
     /**
