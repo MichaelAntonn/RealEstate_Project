@@ -22,14 +22,15 @@
       <div class="my-4 relative">
         @if (media && media.length > 0) {
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          @for (item of displayedMedia; track item.id) { @if (item.MediaType ===
-          'image') {
-          <img
-            [src]="'http://127.0.0.1:8000/storage/' + item.MediaURL"
-            alt="Property Media"
-            class="w-full h-[150px] object-cover rounded-md shadow-sm hover:scale-105 transition-transform cursor-pointer"
-            (click)="openImageModal(item.MediaURL)"
-          />
+          @for (item of displayedMedia; track item.id) { @if (item.MediaType === 'image') {
+          <div class="media-container">
+            <img
+              [src]="'http://127.0.0.1:8000/storage/' + item.MediaURL"
+              alt="Property Media"
+              class="w-full h-full object-cover rounded-md shadow-sm hover:scale-105 transition-transform cursor-pointer"
+              (click)="openImageModal(item.MediaURL)"
+            />
+          </div>
           } }
         </div>
         @if (media.length > 3) {
