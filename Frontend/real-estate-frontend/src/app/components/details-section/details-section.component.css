@@ -28,3 +28,16 @@ button:disabled {
     height: 150px;
   }
 }
+.media-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3; /* Fixed aspect ratio for consistent image dimensions */
+  overflow: hidden;
+}
+
+.media-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures images cover the container without distortion */
+  object-position: center; /* Centers the image within the container */
+}

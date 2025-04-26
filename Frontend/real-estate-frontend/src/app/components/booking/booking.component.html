@@ -3,13 +3,22 @@
     class="max-w-lg mx-auto p-6 rounded-xl shadow-md bg-white border border-orange-200"
   >
     <div class="booking-header mb-4">
-      <h3 class="text-xl font-semibold text-orange-500 flex items-center gap-2">
-        <i class="fas fa-calendar-check"></i> Schedule a Visit
-      </h3>
+      <div class="flex justify-between items-center">
+        <h3 class="text-xl font-semibold text-orange-500 flex items-center gap-2">
+          <i class="fas fa-calendar-check"></i> Schedule a Visit
+        </h3>
+        <button
+          (click)="goBackToProperty()"
+          class="bg-red-500 text-white font-semibold px-2 py-2 rounded-md hover:bg-red-600 transition"
+          title="Back to Property"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
       <p class="text-sm text-gray-600">
         Book an appointment to visit this property
       </p>
-      <h3>Property ID: {{ propertyId | uppercase }}</h3>
+      <h3>Property: {{ propertyTitle | uppercase }}</h3>
     </div>
 
     <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="space-y-4">

@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BookingService } from '../../services/booking.service';
+import { PropertyService } from '../../services/property.service';
 import { AuthService } from '../../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { Property } from '../../models/property';
 
 @Component({
   selector: 'app-booking',
@@ -35,12 +37,15 @@ export class BookingComponent implements OnInit {
   today: NgbDateStruct;
   isLoading = false;
   propertyId: string | null = null;
+  propertyTitle: string | null = null;
+  propertySlug: string | null = null;
   isBookingDatepickerOpen = false;
   isVisitDatepickerOpen = false;
 
   constructor(
     private fb: FormBuilder,
     private bookingService: BookingService,
+    private propertyService: PropertyService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
@@ -71,6 +76,7 @@ export class BookingComponent implements OnInit {
       return;
     }
     this.initForm();
+    this.loadPropertyDetails();
   }
 
   initForm(): void {
@@ -82,13 +88,32 @@ export class BookingComponent implements OnInit {
     });
   }
 
+  loadPropertyDetails(): void {
+    if (!this.propertyId) return;
+    this.propertyService.getProperty(+this.propertyId).subscribe({
+      next: (property: Property) => {
+        this.propertyTitle = property.title;
+        this.propertySlug = property.slug;
+      },
+      error: (err) => {
+        this.toastr.error('Failed to load property details');
+        console.error(err);
+      },
+    });
+  }
+
+  goBackToProperty(): void {
+    if (this.propertySlug) {
+      this.router.navigate(['/properties', this.propertySlug]);
+    } else {
+      this.toastr.error('Unable to navigate back to property');
+      this.router.navigate(['/properties']);
+    }
+  }
+
   onSubmit(): void {
     if (!this.authService.isLoggedIn()) {
       this.toastr.warning('Please login to book a property');
-      console.log(this.authService.isLoggedIn());
-      console.log(this.authService.isTokenValid());
-
-      // this.router.navigate(['/login']);
       return;
     }
 
@@ -139,7 +164,6 @@ export class BookingComponent implements OnInit {
     return num < 10 ? `0${num}` : num.toString();
   }
 
-  // Toggle datepicker state
   toggleBookingDatepicker(): void {
     this.isBookingDatepickerOpen = !this.isBookingDatepickerOpen;
     if (this.isVisitDatepickerOpen) {
@@ -154,7 +178,6 @@ export class BookingComponent implements OnInit {
     }
   }
 
-  // Close datepicker on outside click
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
