@@ -35,6 +35,7 @@ import { CompanyLayoutComponent } from './components/companyDashboard/company-la
 import { CompanyPropertiesComponent } from './components/companyDashboard/company-properties/company-properties.component';
 import { CompanyBookingsComponent } from './components/companyDashboard/company-bookings/company-bookings.component';
 import { CompanyStatisticsComponent } from './components/companyDashboard/company-statistics/company-statistics.component';
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
   // Default route
@@ -48,6 +49,7 @@ export const routes: Routes = [
   },
   { path: 'sign-up', component: SignupaandloginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },

@@ -49,9 +49,6 @@ class SocialLoginController extends Controller
  );
 
  $token = $user->createToken('google-token')->plainTextToken;
- return response()->json([
-    'access_token' => $token,
-    'user' => $user,
-]);
+ return redirect('http://localhost:4200/#/home')->with('access_token', $token);
     }
 }
