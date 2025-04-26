@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-navyDark{
-  background-color: #0e1024;
+@media (width > 1095px) {
+  .properties-container {
+    max-width: calc(100% - 340px); /* main width  */
+  }
+}
+@media (width > 1325px) {
+  .properties-container {
+    max-width: calc(100% - 200px); /* main width  */
+  }
+}
+
+.cards-container {
+  margin: 0;
+  padding: 0;
 }

@@ -1,9 +1,6 @@
 <app-navbar></app-navbar>
-<div class="bg-navyDark flex justify-center items-center">
-  <img src="assets/breadcrumb-img.png" alt="breadcrumb-img" class="max-w-full h-auto">
-</div>
 <section class="bg-gray-100 py-8 w-full">
-  <div class="max-w-6xl mx-auto px-4">
+  <div class="mx-auto properties-container">
     <!-- Horizontal Filters (Status, Type, Location, Advanced Filter) -->
     <div class="bg-white rounded-xl p-6 mb-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -82,16 +79,16 @@
       <!-- Properties (Left Side) -->
       <div class="flex-1">
         @if (isLoading) {
-          <div class="text-center py-4">
-            <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
-          </div>
+        <div class="text-center py-4">
+          <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+        </div>
         } @else { @if (properties.length > 0) {
-          <app-property-card
-            [properties]="properties"
-            class="property-grid"
-          ></app-property-card>
+        <app-property-card
+          [properties]="properties"
+          class="property-grid cards-container"
+        ></app-property-card>
         } @else {
-          <p class="text-center text-gray-500">No properties found.</p>
+        <p class="text-center text-gray-500">No properties found.</p>
         } }
         <app-pagination
           [currentPage]="currentPage"
