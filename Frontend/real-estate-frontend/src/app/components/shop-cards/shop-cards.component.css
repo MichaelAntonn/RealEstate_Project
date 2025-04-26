@@ -25,3 +25,52 @@
   font-weight: 200;
   letter-spacing: 2px;
 }
+
+/* ستايل الأزرار */
+.show-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-bottom: 40px;
+  background-color: #f9f9f9;
+}
+
+.show-more-btn,
+.show-less-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #ff7f00 0%, #ff9a1f 100%);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 9999px; /* زر دائري أكثر */
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(255, 127, 0, 0.3);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.show-more-btn i,
+.show-less-btn i {
+  transition: transform 0.3s ease;
+}
+
+.show-more-btn:hover,
+.show-less-btn:hover {
+  background: linear-gradient(135deg, #e67000 0%, #ff8415 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.show-more-btn:hover i,
+.show-less-btn:hover i {
+  transform: translateX(4px);
+}
+
+.show-more-btn:active,
+.show-less-btn:active {
+  transform: scale(0.97);
+}

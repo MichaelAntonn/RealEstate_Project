@@ -9,11 +9,12 @@ import {
   Pagination,
   PropertySearchApiResponse,
 } from '../../models/property';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-shop-cards',
   standalone: true,
-  imports: [CommonModule, PropertyCardComponent],
+  imports: [CommonModule, PropertyCardComponent ,RouterLink ],
   templateUrl: './shop-cards.component.html',
   styleUrls: ['./shop-cards.component.css'],
 })
