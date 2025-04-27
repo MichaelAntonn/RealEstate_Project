@@ -179,9 +179,9 @@ Math: any;
     this.modalService.open(document.getElementById('appointmentDetailsModal'), { size: 'lg' });
   }
 
-  openAddAppointmentModal(): void {
-    this.modalService.open(document.getElementById('addAppointmentModal'));
-  }
+  // openAddAppointmentModal(): void {
+  //   this.modalService.open(document.getElementById('addAppointmentModal'));
+  // }
 
   submitAppointment(): void {
     if (this.appointmentForm.invalid) return;
@@ -209,8 +209,8 @@ Math: any;
   cancelAppointment(appointment: Booking): void {
     if (confirm('Are you sure you want to cancel this appointment?')) {
       const headers = this.authService.getAuthHeaders();
-      
-      this.http.patch<Booking>(`http://localhost:8000/api/v1/bookings/${appointment.id}/status`, 
+      // http://localhost:8000/api/v1/bookings/${appointment.id}/status
+      this.http.patch<Booking>(``, 
         { status: 'canceled' }, 
         { headers }
       ).subscribe({
