@@ -42,6 +42,7 @@ import { ConsultationComponent } from './components/consultation/consultation.co
 
 
 import { ConsultationFormComponent } from './components/consultation-form/consultation-form.component';
+import { MyPropertiesComponent } from './my-properties/my-properties.component';
 
 export const routes: Routes = [
   // Default route
@@ -80,6 +81,7 @@ export const routes: Routes = [
       { path: 'messages', component: MessagesComponent },
       { path: 'statistics', component: StatisticsComponent },
       { path: 'settings', component: SettingsComponent },
+      {path:'properties',component:MyPropertiesComponent},
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

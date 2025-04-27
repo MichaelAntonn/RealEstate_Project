@@ -2,7 +2,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white" id="titleh">
                     <h3 class="mb-0">My Appointments</h3>
                     <div *ngIf="paginationInfo" class="text-white-50 small">
                         Showing page {{paginationInfo.current_page}} of {{paginationInfo.total_pages}} ({{paginationInfo.total_items}} total)
@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-4">
                         <div class="btn-group" role="group">
-                            <button class="btn btn-outline-primary" (click)="filterAppointments('all')" [class.active]="currentFilter === 'all'">
+                            <button class="btn btn-outline" (click)="filterAppointments('all')" [class.active]="currentFilter === 'all'">
                                 All Appointments
                             </button>
                             <button class="btn btn-outline-success" (click)="filterAppointments('confirmed')" [class.active]="currentFilter === 'confirmed'">
@@ -24,9 +24,9 @@
                                 Canceled
                             </button>
                         </div>
-                        <button class="btn btn-primary" (click)="openAddAppointmentModal()">
+                        <!-- <button class="btn btn-primary" (click)="openAddAppointmentModal()">
                             <fa-icon [icon]="faPlus"></fa-icon> New Appointment
-                        </button>
+                        </button> -->
                     </div>
 
                     <div class="table-responsive">
@@ -81,9 +81,9 @@
                                             <fa-icon [icon]="faCalendarAlt" class="text-muted mb-2" size="2x"></fa-icon>
                                             <h5 class="text-muted">No appointments found</h5>
                                             <p class="text-muted">You don't have any {{ currentFilter === 'all' ? '' : currentFilter }} appointments yet</p>
-                                            <button class="btn btn-primary mt-2" (click)="openAddAppointmentModal()">
+                                            <!-- <button class="btn btn-primary mt-2" (click)="openAddAppointmentModal()">
                                                 <fa-icon [icon]="faPlus"></fa-icon> Schedule an appointment
-                                            </button>
+                                            </button> -->
                                         </div>
                                     </td>
                                 </tr>
