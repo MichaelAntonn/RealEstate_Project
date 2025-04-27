@@ -1,14 +1,14 @@
-<div class="p-6 bg-gray-50 rounded-lg shadow-md space-y-4">
-  <h2 class="text-2xl font-semibold">Property Location</h2>
+<div class="p-6 bg-white rounded-lg shadow-md space-y-4">
+  <h2 class="text-2xl font-semibold">موقع العقار</h2>
 
   <div
     class="flex flex-col sm:flex-row justify-between gap-4 text-sm text-gray-700"
   >
     <div *ngIf="property?.full_address">
-      <strong>Address:</strong> {{ property?.full_address }}
+      <strong>العنوان:</strong> {{ property?.full_address }}
     </div>
     <div *ngIf="property?.property_code">
-      <strong>Code:</strong> {{ property?.property_code }}
+      <strong>الكود:</strong> {{ property?.property_code }}
     </div>
   </div>
 
@@ -22,12 +22,13 @@
       >
         <map-marker
           [position]="center"
-          [options]="markerOptions"
+          [options]="markerOptions" 
         ></map-marker>
       </google-map>
     </div>
     <ng-template #noLocation>
-      <p class="text-gray-500">The location of this property has not been defined yet.</p>
+      <p class="text-gray-500">لم يتم تحديد موقع هذا العقار بعد.</p>
     </ng-template>
   </div>
+
 </div>
