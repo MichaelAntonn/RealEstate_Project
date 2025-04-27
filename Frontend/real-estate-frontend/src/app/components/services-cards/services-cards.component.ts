@@ -53,5 +53,8 @@ export class ServicesCardsComponent implements AfterViewInit {
 
   navigateToAddProperty() {
     this.router.navigate(['/add-property']);
+    
   }
-}
+  navigateToproperties() {
+    this.router.navigate(['/properties'])
+  }}
