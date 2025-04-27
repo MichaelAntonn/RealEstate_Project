@@ -173,6 +173,25 @@ class BookingController extends Controller
             'bookings' => $bookings
         ]);
     }
+    public function destroy(Request $request, $id)
+{
+    $user = $request->user();
+
+    $booking = Booking::with(['property'])->findOrFail($id);
+
+    if (!in_array($user->user_type, [UserType::ADMIN, UserType::SUPER_ADMIN]) && $user->id !== $booking->property->user_id) {
+        return response()->json([
+            'message' => 'Unauthorized: Only admins, super admins, or property owners can delete this booking.'
+        ], 403);
+    }
+
+    $booking->delete();
+
+    return response()->json([
+        'message' => 'Booking deleted successfully.'
+    ]);
+}
+
     
 protected function authorizeSuperAdmin(Request $request): void
 {

@@ -137,6 +137,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/status/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
             Route::get('/status/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
             Route::get('/status/pending', [BookingController::class, 'getPending'])->name('pending');
+            Route::delete('/{id}', [BookingController::class, 'destroy'])->name('destroy');
         });
 
         // Review routes
