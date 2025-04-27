@@ -14,7 +14,15 @@
     Show More <i class="fa fa-arrow-right"></i>
   </a>
 </div>
-  } @else {
-  <p class="text-center text-gray-500">No properties found.</p>
-  } }
-</div>
+} @else {
+  <div class="no-properties-container">
+    <div class="no-properties-content">
+      <i class="fas fa-home text-3xl text-gray-400 mb-2"></i>
+      <h3 class="no-properties-title">No Properties Found</h3>
+      <p class="no-properties-subtitle">Try adjusting your search or explore our listings.</p>
+      <a routerLink="/properties" class="no-properties-btn">
+        Explore Listings <i class="fa fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+} }
