@@ -7,43 +7,47 @@
 }
 
 .navbar {
-margin-top: -.5%;
+  margin-top: -.5%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .navbar-brand img {
-width: 80px;
-height: auto;
+  width: 80px;
+  height: auto;
 }
 
 .nav-link {
-color:#172940;
-font-weight: 500;
-margin-right: 15px;
+  color: #172940;
+  font-weight: 500;
+  margin-right: 15px;
+  transition: color 0.3s ease;
 }
 
 #home, .nav-link:hover {
-color: #F77C34;
+  color: #F77C34;
 }
 
 .signupandlogin {
-margin-left: auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 
 /* Login & Signup Buttons */
-.login, .btn-custom:hover, .logout {
+.login, .btn-custom:hover {
   background-color: #F2F4F3;
   color: rgb(255, 123, 37);
   border: solid 1px #F77C34;
   transform: skew(-20deg);
-  padding: 3px 8px;
   border-radius: 1px;
   transition: all 0.3s ease;
   padding: 6px 13px;
   font-size: small;
   margin-left: 20px !important;
-  transition: .5s all;
 }
 
-.login:hover, .logout:hover {
+.login:hover {
   background-color: rgb(255, 123, 37);
   color: white;
   transform: skew(-20deg) scale(1.05);
@@ -54,64 +58,134 @@ margin-left: auto;
   background-color: rgb(255, 123, 37);
   color: white;
   border-radius: 1px;
-  padding: 3px 8px;
   transform: skew(-20deg);
   transition: all 0.3s ease;
   font-size: small;
+  padding: 6px 13px;
 }
 
-.btn-custom {
-  background-color: rgb(255, 123, 37);
-  color: white;
-  padding: 6px 13px;
+.btn-custom:hover {
   transform: skew(-20deg) scale(1.05);
 }
 
-/* Adjustments for Navbar Buttons in Small Screens */
-.signupandlogin {
-  margin-left: auto;
+/* User Dropdown Styles */
+.user-dropdown {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
+.user-dropdown:after {
+  display: none;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.user-name {
+  color: #172940;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: var(--main-color);
+}
+
+.logout-item {
+  color: #dc3545;
+}
+
+.logout-item:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+/* Adjustments for Navbar Buttons in Small Screens */
 @media (max-width: 768px) {
   .signupandlogin {
-      margin-left: 0;
-      margin-top: 15px;
+    margin-left: 0;
+    margin-top: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    width: 100%;
+    border: none;
+    box-shadow: none;
   }
 }
 
 .navbar-toggler {
-border: none;
-background: transparent;
+  border: none;
+  background: transparent;
 }
 
 .navbar-toggler:focus {
-outline: none;
-box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .navbar-toggler-icon {
-background-image: none;
-position: relative;
-width: 24px;
-height: 2px;
-background-color: #172940;
-display: block;
+  background-image: none;
+  position: relative;
+  width: 24px;
+  height: 2px;
+  background-color: #172940;
+  display: block;
 }
 
 .navbar-toggler-icon::before,
 .navbar-toggler-icon::after {
-content: '';
-position: absolute;
-width: 24px;
-height: 2px;
-background-color: #172940;
-left: 0;
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background-color: #172940;
+  left: 0;
 }
 
 .navbar-toggler-icon::before {
-top: -6px;
+  top: -6px;
 }
 
 .navbar-toggler-icon::after {
-top: 6px;
+  top: 6px;
 }
