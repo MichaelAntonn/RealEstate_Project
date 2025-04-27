@@ -73,3 +73,63 @@
 .show-less-btn:active {
   transform: scale(0.97);
 }
+.no-properties-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 250px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin: 20px 0;
+  padding: 20px;
+}
+
+.no-properties-content {
+  text-align: center;
+  max-width: 400px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.no-properties-title {
+  font-size: 1.5rem;
+  font-family: 'Poppins-Medium', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.no-properties-subtitle {
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.no-properties-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #ff7f00 0%, #ff9a1f 100%);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.no-properties-btn:hover {
+  background: linear-gradient(135deg, #e67000 0%, #ff8415 100%);
+  transform: translateY(-2px);
+}
+
+.no-properties-btn:hover i {
+  transform: translateX(4px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

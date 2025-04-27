@@ -87,14 +87,23 @@
           [properties]="properties"
           class="property-grid cards-container"
         ></app-property-card>
-        } @else {
-        <p class="text-center text-gray-500">No properties found.</p>
-        } }
-        <app-pagination
-          [currentPage]="currentPage"
-          [totalPages]="lastPage"
-          (pageChange)="onPageChange($event)"
-        ></app-pagination>
+      } @else {
+        <div class="no-properties-container">
+          <div class="no-properties-content">
+            <i class="fas fa-home text-4xl text-gray-400 mb-3"></i>
+            <h3 class="no-properties-title">No Properties Found</h3>
+            <p class="no-properties-subtitle">It seems there are no properties matching your criteria. Try adjusting your search or explore our listings.</p>
+            <a routerLink="/properties" class="no-properties-btn">
+              Explore Listings <i class="fa fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      } }
+      <app-pagination
+        [currentPage]="currentPage"
+        [totalPages]="lastPage"
+        (pageChange)="onPageChange($event)"
+      ></app-pagination>
       </div>
 
       <!-- Filters Sidebar (Right Side) -->
