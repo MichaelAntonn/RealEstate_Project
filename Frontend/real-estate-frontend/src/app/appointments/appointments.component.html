@@ -1,171 +1,280 @@
-<div class="appointments-container">
-    <!-- Header Section -->
-    <div class="appointments-header">
-        <h2 class="section-title">Appointments Management</h2>
-        <p class="section-subtitle">View and manage all your property appointments</p>
-        
-        <div class="header-actions">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search appointments...">
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">My Appointments</h3>
+                    <div *ngIf="paginationInfo" class="text-white-50 small">
+                        Showing page {{paginationInfo.current_page}} of {{paginationInfo.total_pages}} ({{paginationInfo.total_items}} total)
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-4">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-primary" (click)="filterAppointments('all')" [class.active]="currentFilter === 'all'">
+                                All Appointments
+                            </button>
+                            <button class="btn btn-outline-success" (click)="filterAppointments('confirmed')" [class.active]="currentFilter === 'confirmed'">
+                                Confirmed
+                            </button>
+                            <button class="btn btn-outline-warning" (click)="filterAppointments('pending')" [class.active]="currentFilter === 'pending'">
+                                Pending
+                            </button>
+                            <button class="btn btn-outline-danger" (click)="filterAppointments('canceled')" [class.active]="currentFilter === 'canceled'">
+                                Canceled
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" (click)="openAddAppointmentModal()">
+                            <fa-icon [icon]="faPlus"></fa-icon> New Appointment
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Booking Date</th>
+                                    <th>Visit Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let appointment of filteredAppointments | slice: (currentPage-1)*itemsPerPage : currentPage*itemsPerPage">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img [src]="appointment.property?.images?.[0] || 'assets/property-placeholder.jpg'" 
+                                                 alt="Property Image" 
+                                                 class="rounded me-3" 
+                                                 style="width: 60px; height: 45px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0">{{ appointment.property?.title || 'N/A' }}</h6>
+                                                <small class="text-muted">{{ appointment.property?.address || '' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ appointment?.booking_date | date:'mediumDate' }}</td>
+                                    <td>{{ appointment.visit_date ? (appointment.visit_date | date:'mediumDate') : 'Not set' }}</td>
+                                    <td>
+                                        <span class="badge" 
+                                              [ngClass]="{
+                                                'bg-success': appointment.status === 'confirmed',
+                                                'bg-warning': appointment.status === 'pending',
+                                                'bg-danger': appointment.status === 'canceled'
+                                              }">
+                                            {{ appointment.status | titlecase }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-2" (click)="viewAppointmentDetails(appointment)">
+                                            <fa-icon [icon]="faEye"></fa-icon>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" (click)="cancelAppointment(appointment)" *ngIf="appointment.status !== 'canceled'">
+                                            <fa-icon [icon]="faTimes"></fa-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="filteredAppointments.length === 0">
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <fa-icon [icon]="faCalendarAlt" class="text-muted mb-2" size="2x"></fa-icon>
+                                            <h5 class="text-muted">No appointments found</h5>
+                                            <p class="text-muted">You don't have any {{ currentFilter === 'all' ? '' : currentFilter }} appointments yet</p>
+                                            <button class="btn btn-primary mt-2" (click)="openAddAppointmentModal()">
+                                                <fa-icon [icon]="faPlus"></fa-icon> Schedule an appointment
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="filteredAppointments.length > 0">
+                        <div class="text-muted">
+                            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+                            {{ Math.min(currentPage * itemsPerPage, filteredAppointments.length) }} 
+                            of {{ filteredAppointments.length }} entries
+                        </div>
+                        <nav>
+                            <ul class="pagination mb-0">
+                                <li class="page-item" [class.disabled]="currentPage === 1">
+                                    <a class="page-link" (click)="prevPage()">Previous</a>
+                                </li>
+                                <li class="page-item" *ngFor="let page of getPages()" [class.active]="page === currentPage">
+                                    <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+                                </li>
+                                <li class="page-item" [class.disabled]="currentPage * itemsPerPage >= filteredAppointments.length">
+                                    <a class="page-link" (click)="nextPage()">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
-            <button class="btn-add" (click)="openAddAppointmentModal()" data-bs-toggle="modal" data-bs-target="#appointmentModal">
-                <i class="fas fa-plus"></i> New Appointment
-            </button>
         </div>
     </div>
+</div>
 
-    <!-- Stats Cards -->
-    <div class="stats-cards">
-        <div class="stat-card" *ngFor="let stat of statusStats">
-            <div class="stat-value">{{stat.count}}</div>
-            <div class="stat-label">{{stat.status}}</div>
-            <div class="stat-icon" [ngClass]="'bg-' + stat.color">
-                <i [class]="stat.icon"></i>
+<!-- Appointment Details Modal -->
+<div class="modal fade" id="appointmentDetailsModal" tabindex="-1" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appointmentDetailsModalLabel">Appointment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedAppointment">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <h6>Property Information</h6>
+                            <div class="d-flex align-items-start">
+                                <img [src]="selectedAppointment.property?.images?.[0] || 'assets/property-placeholder.jpg'" 
+                                     alt="Property Image" 
+                                     class="rounded me-3" 
+                                     style="width: 120px; height: 90px; object-fit: cover;">
+                                <div>
+                                    <h5>{{ selectedAppointment.property?.title || 'N/A' }}</h5>
+                                    <p class="text-muted mb-1">{{ selectedAppointment.property?.address || '' }}</p>
+                                    <p class="text-muted mb-1">{{ selectedAppointment.property?.city || '' }}, {{ selectedAppointment.property?.state || '' }} {{ selectedAppointment.property?.zip_code || '' }}</p>
+                                    <p class="text-primary fw-bold">{{ selectedAppointment.property?.price | currency:'USD':'symbol':'1.0-0' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6>Appointment Details</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span class="text-muted">Booking Date:</span>
+                                    <span>{{ selectedAppointment.booking_date | date:'mediumDate' }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span class="text-muted">Visit Date:</span>
+                                    <span>{{ selectedAppointment.visit_date ? (selectedAppointment.visit_date | date:'mediumDate') : 'Not set' }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span class="text-muted">Status:</span>
+                                    <span class="badge" 
+                                          [ngClass]="{
+                                            'bg-success': selectedAppointment.status === 'confirmed',
+                                            'bg-warning': selectedAppointment.status === 'pending',
+                                            'bg-danger': selectedAppointment.status === 'canceled'
+                                          }">
+                                        {{ selectedAppointment.status | titlecase }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <h6>Property Description</h6>
+                            <p class="text-muted">{{ selectedAppointment.property?.description || 'No description available' }}</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6>Property Features</h6>
+                            <div class="row">
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <fa-icon [icon]="faBed" class="text-primary me-2"></fa-icon>
+                                            {{ selectedAppointment.property?.bedrooms || 0 }} Bedrooms
+                                        </li>
+                                        <li class="mb-2">
+                                            <fa-icon [icon]="faBath" class="text-primary me-2"></fa-icon>
+                                            {{ selectedAppointment.property?.bathrooms || 0 }} Bathrooms
+                                        </li>
+                                        <li class="mb-2">
+                                            <fa-icon [icon]="faRulerCombined" class="text-primary me-2"></fa-icon>
+                                            {{ selectedAppointment.property?.area || 0 }} sqft
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <fa-icon [icon]="faLayerGroup" class="text-primary me-2"></fa-icon>
+                                            {{ selectedAppointment.property?.floors || 1 }} Floors
+                                        </li>
+                                        <li class="mb-2">
+                                            <fa-icon [icon]="faCar" class="text-primary me-2"></fa-icon>
+                                            {{ selectedAppointment.property?.garage || 0 }} Garage
+                                        </li>
+                                        <li class="mb-2">
+                                            <fa-icon [icon]="faHome" class="text-primary me-2"></fa-icon>
+                                            {{ selectedAppointment.property?.year_built || 'N/A' }} Year Built
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6>Contact Information</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span class="text-muted">Property Owner:</span>
+                                    <span>{{ selectedAppointment.property?.user?.name || 'N/A' }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span class="text-muted">Email:</span>
+                                    <span>{{ selectedAppointment.property?.user?.email || 'N/A' }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span class="text-muted">Phone:</span>
+                                    <span>{{ selectedAppointment.property?.user?.phone || 'N/A' }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" *ngIf="selectedAppointment?.status === 'pending'" (click)="confirmAppointment(selectedAppointment)">
+                    Confirm Appointment
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Appointments Table -->
-    <div class="appointments-table">
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Client</th>
-                        <th>Date & Time</th>
-                        <th>Property</th>
-                        <th>Purpose</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let appointment of filteredAppointments">
-                        <td class="client-cell">
-                            <div class="client-avatar">
-                                {{appointment.client.charAt(0)}}
-                            </div>
-                            <div class="client-info">
-                                <div class="client-name">{{appointment.client}}</div>
-                                <div class="client-phone" *ngIf="appointment.phone">{{appointment.phone}}</div>
-                            </div>
-                        </td>
-                        <td class="datetime-cell">
-                            <div class="appointment-date">{{appointment.date | date:'mediumDate'}}</div>
-                            <div class="appointment-time">{{appointment.time}}</div>
-                        </td>
-                        <td class="property-cell">{{appointment.property_title || 'N/A'}}</td>
-                        <td class="purpose-cell">{{appointment.purpose}}</td>
-                        <td class="status-cell">
-                            <span class="status-badge" [ngClass]="'status-' + appointment.status.toLowerCase()">
-                                {{appointment.status}}
-                            </span>
-                        </td>
-                        <td class="actions-cell">
-                            <button class="btn-action btn-edit" (click)="editAppointment(appointment)" data-bs-toggle="modal" data-bs-target="#appointmentModal">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-                            <button class="btn-action btn-delete" (click)="deleteAppointment(appointment.id!)">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <button class="btn-action btn-view" [routerLink]="['/appointments', appointment.id]">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination" *ngIf="filteredAppointments.length > 0">
-            <button class="page-btn" [disabled]="currentPage === 1" (click)="prevPage()">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
-            <button class="page-btn" [disabled]="currentPage === totalPages" (click)="nextPage()">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Appointment Modal -->
-    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="appointmentModalLabel">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        {{ isEditingAppointment ? 'Edit Appointment' : 'New Appointment' }}
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form class="appointment-form">
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="appointmentDate">Date</label>
-                                <input type="date" class="form-control" id="appointmentDate" 
-                                       [(ngModel)]="currentAppointment.date" name="date" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="appointmentTime">Time</label>
-                                <input type="time" class="form-control" id="appointmentTime" 
-                                       [(ngModel)]="currentAppointment.time" name="time" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="appointmentClient">Client Name</label>
-                            <input type="text" class="form-control" id="appointmentClient" 
-                                   [(ngModel)]="currentAppointment.client" name="client" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="appointmentPhone">Client Phone</label>
-                            <input type="tel" class="form-control" id="appointmentPhone" 
-                                   [(ngModel)]="currentAppointment.phone" name="phone">
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="appointmentPurpose">Purpose</label>
-                                <select class="form-control" id="appointmentPurpose" 
-                                        [(ngModel)]="currentAppointment.purpose" name="purpose" required>
-                                    <option value="Property Viewing">Property Viewing</option>
-                                    <option value="Contract Signing">Contract Signing</option>
-                                    <option value="Site Tour">Site Tour</option>
-                                    <option value="Consultation">Consultation</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="appointmentStatus">Status</label>
-                                <select class="form-control" id="appointmentStatus" 
-                                        [(ngModel)]="currentAppointment.status" name="status" required>
-                                    <option value="Scheduled">Scheduled</option>
-                                    <option value="Confirmed">Confirmed</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                    <option value="Completed">Completed</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="appointmentNotes">Notes</label>
-                            <textarea class="form-control" id="appointmentNotes" rows="3"
-                                      [(ngModel)]="currentAppointment.notes" name="notes"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" (click)="saveAppointment()" data-bs-dismiss="modal">
-                        <i class="fas fa-save me-2"></i>
-                        {{ isEditingAppointment ? 'Update' : 'Save' }}
-                    </button>
-                </div>
+<!-- Add Appointment Modal -->
+<div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAppointmentModalLabel">Schedule New Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="appointmentForm" (ngSubmit)="submitAppointment()">
+                    <div class="mb-3">
+                        <label for="property" class="form-label">Property</label>
+                        <select class="form-select" id="property" formControlName="property_id" required>
+                            <option value="" disabled selected>Select a property</option>
+                            <option *ngFor="let property of properties" [value]="property.id">{{ property.title }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookingDate" class="form-label">Booking Date</label>
+                        <input type="date" class="form-control" id="bookingDate" formControlName="booking_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="visitDate" class="form-label">Visit Date (Optional)</label>
+                        <input type="date" class="form-control" id="visitDate" formControlName="visit_date">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" [disabled]="appointmentForm.invalid || isSubmitting">
+                            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            {{ isSubmitting ? 'Scheduling...' : 'Schedule Appointment' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
