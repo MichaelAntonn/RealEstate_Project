@@ -6,49 +6,89 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Log;
 
 class SocialLoginController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        // Force account selection prompt
+        /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+        $driver = Socialite::driver('google');
+        return $driver->stateless()->with(['prompt' => 'select_account'])->redirect();
     }
 
-    // Handle Google callback
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->user();
- // Extract the first name and last name from the Google user's name
- $nameParts = explode(' ', $googleUser->name, 2);
- $firstName = $nameParts[0] ?? 'Unknown'; // Default to 'Unknown' if first name is missing
- $lastName = $nameParts[1] ?? ''; // Default to empty string if last name is missing
+        try {
+            // Use stateless mode to avoid session-based token caching
+            /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+            $driver = Socialite::driver('google');
+            $googleUser = $driver->stateless()->user();
 
- // Find or create the user
- $user = User::updateOrCreate(
-     [
-         'email' => $googleUser->email, // Use email as a unique identifier
-     ],
-     [
-         'first_name' => $firstName,
-         'last_name' => $lastName,
-         'email' => $googleUser->email,
-         'provider_id' => $googleUser->id, // Store provider ID
-         'provider' => 'google', // Store provider name
-         'password' => null, // No password for OAuth users
-         'profile_image' => $googleUser->avatar, // Use Google's profile image as the avatar
-         'email_verified_at' => now(), // Mark email as verified
-         'terms_and_conditions' => true, // Assume the user agrees to terms and conditions
-         'user_type' => 'user', // Default user type
-         'account_status' => 'active', // Default account status
-         'phone_number' => ' ', // Default to null (or provide a default value if required)
-         'address' => null, // Default to null (or provide a default value if required)
-         'country' => null, // Default to null (or provide a default value if required)
-         'city' => null, // Default to null (or provide a default value if required)
-         'identity_document' => null, // Default to null (or provide a default value if required)
-     ]
- );
+            // Log Google user details for debugging
+            Log::info('Google user data retrieved', [
+                'email' => $googleUser->email,
+                'id' => $googleUser->id,
+                'name' => $googleUser->name,
+                'avatar' => $googleUser->avatar,
+            ]);
 
- $token = $user->createToken('google-token')->plainTextToken;
- return redirect('http://localhost:4200/#/home')->with('access_token', $token);
+            // Extract the first name and last name from the Google user's name
+            $nameParts = explode(' ', $googleUser->name, 2);
+            $firstName = $nameParts[0] ?? 'Unknown';
+            $lastName = $nameParts[1] ?? '';
+
+            // Find or create the user
+            $user = User::updateOrCreate(
+                [
+                    'email' => $googleUser->email,
+                ],
+                [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $googleUser->email,
+                    'provider_id' => $googleUser->id,
+                    'provider' => 'google',
+                    'password' => null,
+                    'profile_image' => $googleUser->avatar,
+                    'email_verified_at' => now(),
+                    'terms_and_conditions' => true,
+                    'user_type' => 'user',
+                    'account_status' => 'active',
+                    'phone_number' => ' ',
+                    'address' => null,
+                    'country' => null,
+                    'city' => null,
+                    'identity_document' => null,
+                ]
+            );
+
+            // Log user creation/update
+            Log::info('User processed', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'provider_id' => $user->provider_id,
+            ]);
+
+            $token = $user->createToken('google-token')->plainTextToken;
+
+            // Log token generation
+            Log::info('Token generated', [
+                'user_id' => $user->id,
+                'token' => $token,
+            ]);
+
+            // Redirect to frontend with token
+            return redirect('http://localhost:4200/#/home?access_token=' . urlencode($token));
+        } catch (\Exception $e) {
+            // Log the exception details
+            Log::error('Google login failed', [
+                'message' => $e->getMessage(),
+                'exception' => get_class($e),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+            return redirect('http://localhost:4200/#/login?error=google_login_failed&message=' . urlencode($e->getMessage()));
+        }
     }
 }

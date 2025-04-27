@@ -15,7 +15,7 @@
     <form id="signupForm" (ngSubmit)="onSignupSubmit()" *ngIf="!isCompanySignup">
       <h1>Create Account</h1>
       <div class="social-icons">
-        <a href="#" class="icon" (click)="signInWithGoogle()"><i class="bi bi-google"></i></a>
+        <a class="icon" (click)="signInWithGoogle($event)"><i class="bi bi-google"></i></a>
       </div>
       <span>or use your email for registration</span>
       
@@ -265,7 +265,7 @@
     <form id="loginForm" (ngSubmit)="onLoginSubmit()">
       <h1>Sign In</h1>
       <div class="social-icons">
-        <a href="#" class="icon" (click)="signInWithGoogle()"><i class="bi bi-google"></i></a>
+        <a class="icon" (click)="signInWithGoogle($event)"><i class="bi bi-google"></i></a>
       </div>
       <span>or use your {{ userType === 'company' ? 'company email' : 'email' }}</span>
       
