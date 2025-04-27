@@ -11,7 +11,7 @@ class Property extends Model
         'city', 'district', 'full_address', 'area', 'bedrooms', 'bathrooms', 
         'listing_type', 'status', 'transaction_status', 'building_year', 
         'legal_status', 'furnished', 'amenities', 'payment_options', 
-        'cover_image', 'property_code', 'user_id'
+        'cover_image', 'property_code', 'user_id','latitude', 'longitude'
     ];
 
     protected $casts = [

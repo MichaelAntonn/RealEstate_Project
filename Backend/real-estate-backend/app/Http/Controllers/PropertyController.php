@@ -150,6 +150,8 @@ class PropertyController extends Controller
             'property_code' => 'required|string|unique:properties,property_code',
             'media' => 'nullable|array',
             'media.*' => 'file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480',
+            'latitude' => 'required|numeric',
+        'longitude' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -334,6 +336,8 @@ class PropertyController extends Controller
             'media.*' => 'file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480',
             'media_to_delete' => 'nullable|array',
             'media_to_delete.*' => 'exists:property_media,id',
+            'latitude' => 'required|numeric',
+        'longitude' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
