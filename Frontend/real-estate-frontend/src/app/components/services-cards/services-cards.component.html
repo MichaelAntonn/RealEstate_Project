@@ -4,16 +4,19 @@
 
     <div class="row justify-content-around mt-5">
         <div class="col-md-3">
-            <div #card class="card real-estate-card" 
-                 (mouseover)="toggleTilt($event)" 
-                 (mouseleave)="resetTilt()">
-                <div class="card-body">
-                    <i class="fas fa-home real-estate-card-icon"></i>
-                    <h5 class="card-title2">Buy a Home</h5>
-                    <p class="card-text2">Find your dream home with our expert real estate services.</p>
-                </div>
+          <div #card class="card real-estate-card" 
+               (mouseover)="toggleTilt($event)" 
+               (mouseleave)="resetTilt()"
+               (click)="navigateToproperties()"
+               style="cursor: pointer;">
+            <div class="card-body">
+              <i class="fas fa-home real-estate-card-icon"></i>
+              <h5 class="card-title2">Buy a Home</h5>
+              <p class="card-text2">Find your dream home with our expert real estate services.</p>
             </div>
+          </div>
         </div>
+     
 
     <!-- services-cards.component.html -->
     <div class="col-md-4">
@@ -32,7 +35,9 @@
         <div class="col-md-3">
             <div #card class="card real-estate-card" 
                  (mouseover)="toggleTilt($event)" 
-                 (mouseleave)="resetTilt()">
+                 (mouseleave)="resetTilt()"
+                 (click)="navigateToconsultation()"
+                 >
                 <div class="card-body">
                     <i class="far fa-handshake real-estate-card-icon"></i>
                     <h5 class="card-title2">Consultation</h5>

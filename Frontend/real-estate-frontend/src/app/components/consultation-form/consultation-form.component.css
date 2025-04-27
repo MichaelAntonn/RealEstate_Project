@@ -1,0 +1,102 @@
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.7;
+    overflow-x: hidden;
+    --primary: #F28C38; /* Orange from the main website */
+--secondary: #1A2526; /* Dark navy from the main website */
+--light: #F5F7FA; /* Light background from the main website */
+--dark: #000000; /* Black for headings */
+--gray: #666666; /* Gray for subtext */
+--white: #FFFFFF; /* White for cards and backgrounds */
+--shadow: 0 5px 30px rgba(0, 0, 0, 0.1); /* Unchanged, matches the website */
+--transition: all 0.3s ease; /* Unchanged */
+}
+
+/* Booking Section */
+.booking {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+    color: var(--white);
+    text-align: center;
+    padding: 120px 0;
+}
+
+.booking .section-title h2,
+.booking .section-title p {
+    color: var(--white);
+}
+
+.booking-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 50px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--white);
+    font-size: 16px;
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group textarea {
+    height: 120px;
+    resize: none;
+}
+.scroll-animation {
+    opacity: 0;
+    transform: translateY(50px); /* الانزلاق من الأسفل */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* الحالة عند الظهور */
+.scroll-animation.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* تأثير إضافي لتأخير العناصر داخل القسم */
+.scroll-animation.delay-1 {
+    transition-delay: 0.2s;
+}
+.scroll-animation.delay-2 {
+    transition-delay: 0.4s;
+}
+.scroll-animation.delay-3 {
+    transition-delay: 0.6s;
+}
