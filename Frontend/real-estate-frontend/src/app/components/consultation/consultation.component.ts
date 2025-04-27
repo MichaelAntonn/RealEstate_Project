@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
@@ -15,27 +15,31 @@ import { Router } from '@angular/router';
   templateUrl: './consultation.component.html',
   styleUrls: ['./consultation.component.css']
 })
-export class ConsultationComponent implements AfterViewInit {
+export class ConsultationComponent implements OnInit, AfterViewInit {
   constructor(private router: Router) {}
 
+  ngOnInit(): void {
+   
+    window.scrollTo(0, 0);
+  }
+
   ngAfterViewInit(): void {
-    // إعداد IntersectionObserver لتفعيل الرسوم المتحركة
+  
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            observer.unobserve(entry.target); // إلغاء المراقبة بعد الظهور
+            observer.unobserve(entry.target); 
           }
         });
       },
       {
-        threshold: 0.1, // تفعيل عند ظهور 10% من العنصر
-        rootMargin: '50px' // هامش للتفعيل المبكر
+        threshold: 0.1, 
+        rootMargin: '50px' 
       }
     );
 
-    // مراقبة جميع العناصر التي تحتوي على scroll-animation
     const elements = document.querySelectorAll('.scroll-animation');
     elements.forEach((element) => {
       observer.observe(element);
