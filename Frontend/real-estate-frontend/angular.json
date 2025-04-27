@@ -34,10 +34,7 @@
               "@fortawesome/fontawesome-free",
               "leaflet",
               "bootstrap"
-            ],
-            "googleMaps": {
-              "apiKey": "AIzaSyAythEZPApXcjyXFXCBgb8_D6EQeVXHmXM"
-            }
+            ]
           },
           "configurations": {
             "production": {
@@ -75,9 +72,7 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "googleMaps": {
-              "apiKey": "AIzaSyAythEZPApXcjyXFXCBgb8_D6EQeVXHmXM"
-            }
+           
           }
         },
         "extract-i18n": {
