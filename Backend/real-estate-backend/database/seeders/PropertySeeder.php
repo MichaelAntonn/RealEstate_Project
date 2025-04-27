@@ -10,6 +10,34 @@ class PropertySeeder extends Seeder
     public function run(): void
     {
         Property::create([
+            'title' => 'Luxury Villa for Sale in New Cairo',
+            'slug' => 'villa-sale-new-cairo',
+            'description' => 'A luxurious villa located in a prime area in New Cairo, featuring 5 bedrooms and 6 bathrooms.',
+            'type' => 'villa',
+            'price' => 5000000,  // Price
+            'city' => 'Cairo',
+            'district' => 'New Cairo',
+            'full_address' => 'Street 123, New Cairo, Egypt',
+            'area' => 350,  // Area in square meters
+            'bedrooms' => 5,
+            'bathrooms' => 6,
+            'listing_type' => 'for_sale',  // For sale
+            'construction_status' => 'available',  // Ready for move-in
+            'approval_status' => 'pending',  // Pending approval
+            'transaction_status' => 'pending',
+            'building_year' => 2020,
+            'legal_status' => 'licensed',  // Licensed
+            'furnished' => true,  // Furnished
+            'amenities' => json_encode(['Swimming Pool', 'Garden', 'Garage']),
+            'payment_options' => json_encode(['cash', 'installments']),
+            'cover_image' => 'villa_cover_image.jpg',  // Cover image
+            'property_code' => 'VILLA-1234',  // Property code
+            'latitude' => 30.033,  // Latitude for the location
+            'longitude' => 31.210,  // Longitude for the location
+            'user_id' => 1,  // Assuming user with ID 1 exists
+        ]);
+    
+        Property::create([
             'title' => 'Luxury Villa in Cairo',
             'slug' => 'luxury-villa-cairo',
             'description' => 'A spacious villa with a pool and garden.',

@@ -64,8 +64,8 @@ Route::prefix('v1')->group(function () {
     // Cities Route (public)
     Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
 
-      // Reviews Route (public)
-      Route::prefix('reviews')->name('reviews.')->group(function () {
+    // Reviews Route (public)
+    Route::prefix('reviews')->name('reviews.')->group(function () {
         Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty'])->name('by.property');
     });
 
@@ -81,9 +81,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan'); // Get the trial subscription plan
         Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
     });
-    
-      // Payments
-      Route::prefix('payment')->group(function () {
+
+    // Payments
+    Route::prefix('payment')->group(function () {
         Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
     });
 
@@ -133,6 +133,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [BookingController::class, 'index'])->name('index');
             Route::get('/{id}', [BookingController::class, 'show'])->name('show');
             Route::post('/', [BookingController::class, 'store'])->name('store');
+            Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('updateStatus');
+            Route::get('/status/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
+            Route::get('/status/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
+            Route::get('/status/pending', [BookingController::class, 'getPending'])->name('pending');
         });
 
         // Review routes
@@ -306,24 +310,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Route لجلب الشركات المرفوضة
     Route::get('/companies/rejected', [CompanyController::class, 'getRejectedCompanies']);
 
-        // تغيير حالة الشركة من Verified إلى Rejected
-        Route::put('/companies/{id}/reject', [CompanyController::class, 'rejectVerifiedCompany']);
+    // تغيير حالة الشركة من Verified إلى Rejected
+    Route::put('/companies/{id}/reject', [CompanyController::class, 'rejectVerifiedCompany']);
 
-        // تغيير حالة الشركة من Rejected إلى Verified
-        Route::put('/companies/{id}/verify', [CompanyController::class, 'verifyRejectedCompany']);
+    // تغيير حالة الشركة من Rejected إلى Verified
+    Route::put('/companies/{id}/verify', [CompanyController::class, 'verifyRejectedCompany']);
 });
 
-    Route::prefix('admin')->group(function () {
-        Route::get('/companies/pending', [CompanyController::class, 'getPendingCompanies'])->middleware('auth:sanctum');
-        Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany'])->middleware('auth:sanctum');
-        Route::post('/company/login', [CompanyController::class, 'login']);
-    });
+Route::prefix('admin')->group(function () {
+    Route::get('/companies/pending', [CompanyController::class, 'getPendingCompanies'])->middleware('auth:sanctum');
+    Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany'])->middleware('auth:sanctum');
+    Route::post('/company/login', [CompanyController::class, 'login']);
+});
 
-    Route::prefix('company')->group(function () {
-        Route::post('/register', [CompanyController::class, 'store']);
-        Route::post('/login', [CompanyController::class, 'login']);
-        Route::get('/{company_id}', [CompanyController::class, 'show']);
-        Route::put('/{company_id}', [CompanyController::class, 'update'])->middleware('auth:sanctum');
-        Route::delete('/{company_id}', [CompanyController::class, 'destroy'])->middleware('auth:sanctum');
-    });
-    
+Route::prefix('company')->group(function () {
+    Route::post('/register', [CompanyController::class, 'store']);
+    Route::post('/login', [CompanyController::class, 'login']);
+    Route::get('/{company_id}', [CompanyController::class, 'show']);
+    Route::put('/{company_id}', [CompanyController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/{company_id}', [CompanyController::class, 'destroy'])->middleware('auth:sanctum');
+});
