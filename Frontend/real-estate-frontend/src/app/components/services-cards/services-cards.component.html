@@ -35,7 +35,9 @@
         <div class="col-md-3">
             <div #card class="card real-estate-card" 
                  (mouseover)="toggleTilt($event)" 
-                 (mouseleave)="resetTilt()">
+                 (mouseleave)="resetTilt()"
+                 (click)="navigateToconsultation()"
+                 >
                 <div class="card-body">
                     <i class="far fa-handshake real-estate-card-icon"></i>
                     <h5 class="card-title2">Consultation</h5>

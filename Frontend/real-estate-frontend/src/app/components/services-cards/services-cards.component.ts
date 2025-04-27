@@ -57,4 +57,7 @@ export class ServicesCardsComponent implements AfterViewInit {
   }
   navigateToproperties() {
     this.router.navigate(['/properties'])
+  }
+  navigateToconsultation() {
+    this.router.navigate(['/consultation'])
   }}

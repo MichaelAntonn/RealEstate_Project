@@ -37,10 +37,15 @@ import { CompanyBookingsComponent } from './components/companyDashboard/company-
 import { CompanyStatisticsComponent } from './components/companyDashboard/company-statistics/company-statistics.component';
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
+import { ConsultationComponent } from './components/consultation/consultation.component';
+
+
+
+import { ConsultationFormComponent } from './components/consultation-form/consultation-form.component';
+
 export const routes: Routes = [
   // Default route
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-
   // Public routes
   {
     path: 'login',
@@ -51,6 +56,11 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'consultation', component: ConsultationComponent },
+
+  { path: 'consultation-form', component: ConsultationFormComponent },
+
+
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },
   { path: 'booking/:id', component: BookingComponent },
