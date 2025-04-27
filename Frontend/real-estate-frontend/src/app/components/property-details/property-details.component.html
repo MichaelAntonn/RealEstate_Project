@@ -4,7 +4,7 @@
     <div class="lg:col-span-2 space-y-8">
       @if (propertyId) {
       <app-details-section [propertyId]="propertyId"></app-details-section>
-      <app-address-section></app-address-section>
+      <app-address-section [property]="propertyDetails"></app-address-section>
       } @else {
       <div class="text-center text-gray-500">Loading property details...</div>
       }
