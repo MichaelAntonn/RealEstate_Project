@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         
@@ -11,11 +12,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         
         body {
-            background-color: #e9ecef;
+            background-color: #f4f6f9;
             padding: 40px;
         }
         
@@ -23,16 +24,16 @@
             max-width: 1200px;
             margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             display: flex;
-            height: 600px;
+            height: 650px;
             transition: box-shadow 0.3s ease;
         }
         
         .container:hover {
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
         }
         
         .image-section {
@@ -43,124 +44,130 @@
             justify-content: center;
             padding: 20px;
             overflow: hidden;
-            margin-left: 0px;
         }
         
         .image-section img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
+            border-radius: 15px;
+            transition: transform 0.4s ease;
         }
         
         .image-section img:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
         
         .content-section {
             flex: 1;
             padding: 60px;
-            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
+            background: linear-gradient(135deg, #ffffff, #f9f9f9);
         }
         
-        h1 {
-            font-size: 48px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 20px;
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ff9800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
         }
         
         .subtitle {
-            font-size: 24px;
-            font-weight: 300;
-            color: #444;
-            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a2526;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
         
         .description {
             font-size: 16px;
             color: #555;
-            line-height: 1.6;
-            margin-bottom: 40px;
-            max-width: 100%;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 90%;
         }
         
         .checklist {
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
         
         .checklist-item {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #444;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #333;
+            transition: transform 0.3s ease;
         }
         
-        .checklist-item input[type="checkbox"] {
-            margin-right: 15px;
-            width: 20px;
-            height: 20px;
-            accent-color: #ff9800;
-            border-radius: 50%;
-
-            
-            
-           
-             appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-color: #fff;
-            border: 2px solid #ff9800;
-            display: inline-block;
-            position: relative; 
-        } 
+        .checklist-item:hover {
+            transform: translateX(10px);
+        }
         
-        .checklist-item input[type="checkbox"]:checked::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 10px;
-            height: 10px;
-            background-color: #ff9800;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
+        .checklist-item i {
+            color: #ff9800;
+            font-size: 20px;
+            margin-right: 15px;
         }
         
         .stats {
             display: flex;
             align-items: center;
+            gap: 40px;
         }
         
         .stat-item {
-            margin-right: 40px;
+            text-align: center;
+            position: relative;
         }
         
         .stat-number {
-            font-size: 36px;
+            font-size: 40px;
             font-weight: 700;
             color: #ff9800;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+        
+        .stat-item:hover .stat-number {
+            color: #e68900;
         }
         
         .stat-label {
-            font-size: 16px;
-            color: #555;
+            font-size: 14px;
+            color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .container {
                 flex-direction: column;
                 height: auto;
+            }
+            
+            .image-section {
+                height: 400px;
+            }
+            
+            .content-section {
+                padding: 40px;
+            }
+            
+            .subtitle {
+                font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
             }
             
             .image-section {
@@ -170,43 +177,65 @@
             .content-section {
                 padding: 30px;
             }
+            
+            .content-title {
+                font-size: 14px;
+            }
+            
+            .subtitle {
+                font-size: 20px;
+            }
+            
+            .description {
+                font-size: 14px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- قسم المحتوى (الآن على اليسار) -->
+        <!-- قسم المحتوى -->
         <div class="content-section">
-            <h1 style="font-size: 15px; color: #ff9800; font-weight: bold;">KHOW ABOUT US</h1>
-            <p class="subtitle" style="font-size: 22px; font-weight: bold;">Buying and selling properties has never been easier - your dream home is just a click away!</p>
-            <p class="description" style="font-size: 18px; ">El purua dels sollicitudin dignissim habitant. Egestas nulla quis venenatis cras sed ou massa eu Eucubus Urna fusce</p>
+            <h1 class="content-title">Know About Us</h1>
+            <p class="subtitle">Your Dream Home is Just a Click Away!</p>
+            <p class="description">At Elite Advisory, we simplify the process of buying and selling properties with expert guidance and innovative solutions. Our team is dedicated to helping you find the perfect property that aligns with your vision and goals.</p>
             
             <div class="checklist">
                 <div class="checklist-item">
-                    <input type="checkbox" checked onclick="false;">
-                    <label>Prestige Property Management Your Dream</label>
+                    <i class="fas fa-check-circle"></i>
+                    <label>Expert Property Management Solutions</label>
                 </div>
                 <div class="checklist-item">
-                    <input type="checkbox" checked onclick="false;">
-                    <label>Real Estate is a vast industry that deals</label>
+                    <i class="fas fa-check-circle"></i>
+                    <label>Comprehensive Real Estate Services</label>
                 </div>
                 <div class="checklist-item">
-                    <input type="checkbox" checked onclick="false;">
-                    <label>Property Management Your Dream</label>
+                    <i class="fas fa-check-circle"></i>
+                    <label>Tailored Strategies for Your Goals</label>
                 </div>
             </div>
             
             <div class="stats">
                 <div class="stat-item">
-                    <div class="stat-number">10k+</div>
-                    <div class="stat-label">Complete project</div>
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Completed Projects</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Client Satisfaction</div>
                 </div>
             </div>
         </div>
         
-        <!-- قسم الصورة (الآن على اليمين) -->
+        <!-- قسم الصورة -->
         <div class="image-section">
-            <img src="https://i.pinimg.com/736x/9d/98/06/9d9806da020eaf14c2ba4783e69fb2d7.jpg" alt="Real Estate">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" alt="Luxury Real Estate">
         </div>
     </div>
 </body>
