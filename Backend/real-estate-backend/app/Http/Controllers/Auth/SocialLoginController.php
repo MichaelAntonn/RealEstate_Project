@@ -17,7 +17,6 @@ class SocialLoginController extends Controller
         $driver = Socialite::driver('google');
         return $driver->stateless()->with(['prompt' => 'select_account'])->redirect();
     }
-
     public function handleGoogleCallback()
     {
         try {
@@ -25,7 +24,12 @@ class SocialLoginController extends Controller
             /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
             $driver = Socialite::driver('google');
             $googleUser = $driver->stateless()->user();
-
+    
+            // Validate Google user data
+            if (!$googleUser || !$googleUser->email) {
+                throw new \Exception('Failed to retrieve valid Google user data.');
+            }
+    
             // Log Google user details for debugging
             Log::info('Google user data retrieved', [
                 'email' => $googleUser->email,
@@ -33,12 +37,12 @@ class SocialLoginController extends Controller
                 'name' => $googleUser->name,
                 'avatar' => $googleUser->avatar,
             ]);
-
+    
             // Extract the first name and last name from the Google user's name
             $nameParts = explode(' ', $googleUser->name, 2);
             $firstName = $nameParts[0] ?? 'Unknown';
             $lastName = $nameParts[1] ?? '';
-
+    
             // Find or create the user
             $user = User::updateOrCreate(
                 [
@@ -56,29 +60,29 @@ class SocialLoginController extends Controller
                     'terms_and_conditions' => true,
                     'user_type' => 'user',
                     'account_status' => 'active',
-                    'phone_number' => ' ',
+                    'phone_number' => null, // Changed to null to avoid unique constraint issues
                     'address' => null,
                     'country' => null,
                     'city' => null,
                     'identity_document' => null,
                 ]
             );
-
+    
             // Log user creation/update
             Log::info('User processed', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'provider_id' => $user->provider_id,
             ]);
-
+    
             $token = $user->createToken('google-token')->plainTextToken;
-
+    
             // Log token generation
             Log::info('Token generated', [
                 'user_id' => $user->id,
                 'token' => $token,
             ]);
-
+    
             // Redirect to frontend with token
             return redirect('http://localhost:4200/#/home?access_token=' . urlencode($token));
         } catch (\Exception $e) {
