@@ -1,18 +1,20 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CompanyAuthService } from '../../services/company-auth.service';
 import { CommonModule } from '@angular/common';
+import { User } from '../../models/user';
+
 @Component({
   selector: 'app-signupaandlogin',
   standalone: true,
-  imports: [FormsModule, CommonModule ],
+  imports: [FormsModule, CommonModule],
   templateUrl: './signupaandlogin.component.html',
   styleUrls: ['./signupaandlogin.component.css']
 })
-export class SignupaandloginComponent implements AfterViewInit {
+export class SignupaandloginComponent implements OnInit, AfterViewInit {
   // User Signup form fields
   first_name: string = '';
   last_name: string = '';
@@ -80,8 +82,41 @@ export class SignupaandloginComponent implements AfterViewInit {
     private http: HttpClient,
     private router: Router,
     private authService: AuthService,
-    private companyAuthService: CompanyAuthService
+    private companyAuthService: CompanyAuthService,
+    private route: ActivatedRoute
   ) {}
+
+  ngOnInit() {
+    // Check for access_token in query parameters
+    this.route.queryParams.subscribe(params => {
+      const token = params['access_token'];
+      const error = params['error'];
+
+      if (error) {
+        this.showErrorNotification('Google login failed. Please try again.');
+        return;
+      }
+
+      if (token) {
+        // Store token in localStorage as auth_token
+        localStorage.setItem('auth_token', token);
+        this.authService.saveToken(token);
+
+        // Fetch user data
+        this.authService.getUser().subscribe({
+          next: (user: User) => {
+            this.authService.saveUser(user);
+            this.showSuccessNotification('Google login successful!');
+            this.router.navigate(['/home']);
+          },
+          error: () => {
+            this.showErrorNotification('Failed to fetch user data.');
+            this.router.navigate(['/home']);
+          }
+        });
+      }
+    });
+  }
 
   // Notification methods
   showNotification(message: string, isError: boolean = false, duration: number = 5000) {
@@ -482,9 +517,10 @@ export class SignupaandloginComponent implements AfterViewInit {
   }
 
   // Google sign in
-  signInWithGoogle() {
+  signInWithGoogle(event: Event) {
+    event.preventDefault(); // Prevent default link behavior
     this.showInfoNotification('Redirecting to Google login...');
-    window.location.href = 'http://localhost:8000/auth/google/redirect';
+    window.location.href = 'http://127.0.0.1:8000/auth/google';
   }
 
   // Navigate to forgot password
