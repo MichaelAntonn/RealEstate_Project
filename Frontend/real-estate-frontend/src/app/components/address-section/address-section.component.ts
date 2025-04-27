@@ -17,14 +17,14 @@ export class AddressSectionComponent implements OnChanges {
   zoom = 16;
   markerOptions: google.maps.MarkerOptions = {
     draggable: false,
-    label: { // label is an object
-      text: '', // We will update this text in ngOnChanges
+    label: { // label هي أوبجكت
+      text: '', // هنحدث النص ده في ngOnChanges
       color: 'white',
       fontSize: '14px',
-      className: 'marker-label' // You can add a CSS class for styling
+      className: 'marker-label' // ممكن تضيف كلاس CSS للتصميم
     },
     icon: {
-      url: 'URL_TO_YOUR_DEFAULT_MARKER_ICON' // You can use any default icon if needed
+      url: 'URL_TO_YOUR_DEFAULT_MARKER_ICON' // ممكن تستخدم أيقونة افتراضية لو عايز
     }
   };
 
@@ -36,11 +36,11 @@ export class AddressSectionComponent implements OnChanges {
         lat: this.latitude,
         lng: this.longitude,
       };
-      // Update the label text here
-      this.markerOptions = { // We need to update the entire object
+      // حدث نص التسمية هنا
+      this.markerOptions = { // لازم نحدث الأوبجكت كله
         ...this.markerOptions,
         label: {
-          text: this.property?.title || 'Property', // Use the property title as label or any default text
+          text: this.property?.title || 'عقار', // استخدم عنوان العقار كتسمية أو أي نص افتراضي
           color: 'white',
           fontSize: '14px',
           className: 'marker-label'
