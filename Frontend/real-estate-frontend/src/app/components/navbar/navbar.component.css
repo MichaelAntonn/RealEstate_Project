@@ -10,10 +10,11 @@
   margin-top: -.5%;
   /* Gradient background زاهي ومبهج */
  
-  padding: 10px 20px; /* زيادة الـ padding عشان يبقى أوسع */
-  position: sticky; /* يفضل ثابت في الأعلى */
+  padding: 0px 20px; /* زيادة الـ padding عشان يبقى أوسع */
+   position: sticky;
   top: 0;
   z-index: 1000;
+  background-color: white; /* لون الخلفية */
 }
 
 .navbar-brand img {
@@ -95,7 +96,7 @@
 
 .login:hover {
   background-color: rgb(255, 123, 37);
-  color: white;
+  color: whitesmoke;
   transform: skew(-20deg) scale(1.05);
   border-color: #F77C34;
 }
@@ -135,8 +136,8 @@
 }
 
 .user-image {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #ddd;
