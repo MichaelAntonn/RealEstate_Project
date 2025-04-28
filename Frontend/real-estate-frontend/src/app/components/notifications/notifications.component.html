@@ -1,0 +1,30 @@
+<ul class="dropdown-menu dropdown-menu-end show" aria-labelledby="notificationsDropdown">
+  <li><h6 class="dropdown-header">New Notifications</h6></li>
+  @if (notifications.length === 0) {
+    <li><a class="dropdown-item" href="#">No new notifications</a></li>
+  }
+  @for (notification of notifications; track notification.id) {
+    <li>
+      <a class="dropdown-item" [ngClass]="{
+        'bg-light': !notification.read_at,
+        'text-muted': notification.read_at
+      }" [href]="notification.data.url">
+        {{ notification.data.message }}
+        @if (notification.data.reason) {
+          <small class="d-block text-muted">Reason: {{ notification.data.reason }}</small>
+        }
+        @if (notification.data.submitted_by) {
+          <small class="d-block text-muted">Submitted by: {{ notification.data.submitted_by }}</small>
+        }
+        @if (notification.data.booking_id) {
+          <small class="d-block text-muted">Booking ID: {{ notification.data.booking_id }}</small>
+        }
+      </a>
+      @if (!notification.read_at) {
+        <button class="btn btn-link btn-sm" (click)="markAsRead(notification.id)">Mark as Read</button>
+      }
+    </li>
+  }
+  <li><hr class="dropdown-divider"></li>
+  <li><a class="dropdown-item text-center" href="#">View All</a></li>
+</ul>

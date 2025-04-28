@@ -1,0 +1,19 @@
+.dropdown-menu {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  white-space: normal;
+  width: 400px;
+}
+
+.dropdown-item.bg-light {
+  background-color: #f8f9fa;
+}
+
+.btn-sm {
+  font-size: 0.8rem;
+  padding: 2px 5px;
+}

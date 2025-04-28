@@ -20,6 +20,7 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\PaymentWebhookController;
 use App\Http\Controllers\SubscriptionController;
@@ -75,9 +76,11 @@ Route::prefix('v1')->group(function () {
 
     // Subscriptions Routes
     Route::prefix('subscription')->group(function () {
+
         Route::get('/plans', [SubscriptionController::class, 'getPlans'])->name('subscription.plans');
         Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan');
         Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration');
+
     });
 
     // Payments
@@ -286,4 +289,61 @@ Route::prefix('v1')->group(function () {
             });
         });
     });
+
 });
+
+// routes/api.php
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/messages/send', [ChatController::class, 'sendMessage']);
+    Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
+    Route::post('/conversations', [ChatController::class, 'createConversation']);
+});
+// routes/Company
+Route::post('/company/register', [CompanyController::class, 'store']);
+Route::get('/company/{company_id}', [CompanyController::class, 'show']);
+Route::put('/company/{company_id}', [CompanyController::class, 'update']);
+Route::delete('/company/{company_id}', [CompanyController::class, 'destroy']);
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
+
+    // Route  لجلب الشركات المقبولة
+    Route::get('/companies/verified', [CompanyController::class, 'getVerifiedCompanies']);
+
+    // Route لجلب الشركات المرفوضة
+    Route::get('/companies/rejected', [CompanyController::class, 'getRejectedCompanies']);
+
+        // تغيير حالة الشركة من Verified إلى Rejected
+        Route::put('/companies/{id}/reject', [CompanyController::class, 'rejectVerifiedCompany']);
+
+        // تغيير حالة الشركة من Rejected إلى Verified
+        Route::put('/companies/{id}/verify', [CompanyController::class, 'verifyRejectedCompany']);
+});
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/companies/pending', [CompanyController::class, 'getPendingCompanies'])->middleware('auth:sanctum');
+        Route::post('/companies/{id}/verify', [CompanyController::class, 'verifyCompany'])->middleware('auth:sanctum');
+        Route::post('/company/login', [CompanyController::class, 'login']);
+    });
+
+    Route::prefix('company')->group(function () {
+        Route::post('/register', [CompanyController::class, 'store']);
+        Route::post('/login', [CompanyController::class, 'login']);
+        Route::get('/{company_id}', [CompanyController::class, 'show']);
+        Route::put('/{company_id}', [CompanyController::class, 'update'])->middleware('auth:sanctum');
+        Route::delete('/{company_id}', [CompanyController::class, 'destroy'])->middleware('auth:sanctum');
+    });
+
+    // Notifications Routes
+    Route::prefix('v1')->group(function () {
+        Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
+            Route::get('/', [NotificationsController::class, 'index'])->name('index'); // Get all notifications
+            Route::put('/{id}/read', [NotificationsController::class, 'markAsRead']);// Mark a notification as read
+            Route::put('/read-all', [NotificationsController::class, 'markAllAsRead']);// Mark all notifications as read
+            Route::delete('/{id}', [NotificationsController::class, 'destroy']); // Delete a notification
+            Route::delete('/', [NotificationsController::class, 'destroyAll']);// Delete all notifications
+        });
+    });
+
+});
+
