@@ -20,6 +20,7 @@ use App\Http\Controllers\CostController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ConsultantController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Payment\PaymentController;
@@ -88,6 +89,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
     });
 
+      // consultants Route (public)
+      Route::prefix('consultants')->group(function () {
+    Route::post('/', [ConsultantController::class, 'store']);
+      });
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -262,6 +267,12 @@ Route::prefix('v1')->group(function () {
             Route::prefix('payments')->name('payments.')->group(function () {
                 Route::get('/', [PaymentController::class, 'Payments'])->name('index'); // list all payments (accessible by admin users)
             });
+
+             // consultants Route 
+      Route::prefix('consultants')->group(function () {
+        Route::get('/', [ConsultantController::class, 'index']);
+        Route::delete('/{id}', [ConsultantController::class, 'destroy']);
+          });
 
             // Settings Routes
             Route::prefix('settings')->name('settings.')->group(function () {
