@@ -52,7 +52,7 @@
             <div class="row">
               <div class="col-md-4 mb-4 text-center">
                 <div class="profile-image-container">
-                  <img [src]="previewImage || profileData?.profile_image || 'assets/images/default-avatar.png'" 
+                  <img [src]="previewImage || profileData?.profile_image || 'assets/1.png'" 
                        alt="Profile Image" class="profile-image">
                   <div *ngIf="isEditing" class="image-upload mt-3">
                     <input type="file" id="profileImage" (change)="onFileChange($event)" accept="image/*" class="d-none">

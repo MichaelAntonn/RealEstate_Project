@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserDashboardService } from './user-dashboard.service';
 import { Property } from './models/property.model';
-import { Appointment } from './models/appointment.model';
 import { StatsCardsComponent } from './components/stats-cards/stats-cards.component';
 import { AppointmentsComponent } from './components/appointments/appointments.component';
 import { CommonModule } from '@angular/common';
@@ -25,7 +24,6 @@ import {
     CommonModule,
     FontAwesomeModule,
     StatsCardsComponent,
-    AppointmentsComponent,
     FormsModule,
     DashboardChartComponent,
     StatsChartComponent
@@ -35,7 +33,7 @@ import {
   encapsulation: ViewEncapsulation.None,
 })
 export class UserDashboardComponent implements OnInit {
-  // Icons
+  // FontAwesome Icons
   faBars = faBars;
   faBell = faBell;
   faHome = faHome;
@@ -50,7 +48,7 @@ export class UserDashboardComponent implements OnInit {
   faSearch = faSearch;
   faPlus = faPlus;
 
-  // Data for stats and dashboard
+  // Dashboard statistics
   listedCount: number = 0;
   bookedCount: number = 0;
   soldCount: number = 0;
@@ -59,52 +57,44 @@ export class UserDashboardComponent implements OnInit {
   receivedReviews: number = 0;
 
   properties: Property[] = [];
-  appointments: Appointment[] = [];
-  darkMode: boolean = false;
   username: string = '';
+  darkMode: boolean = false;
+
+  // UI State
   isEditingProperty: boolean = false;
   isEditingAppointment: boolean = false;
   showSuccessMessage: boolean = false;
   successMessage: string = '';
-  // user-dashboard.component.ts
-currentProperty: Property = {
-  title: '',
-  slug: '',
-  description: '',
-  type: 'apartment', // default value
-  price: 0,
-  city: '',
-  district: '',
-  area: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  listing_type: 'for_sale', // default value
-  construction_status: 'available', // default value
-  property_code: '',
-  // Optional properties
-  location: '',
-  status: '',
-  image: ''
-};
-  currentAppointment: Appointment = {
-    date: '',
-    time: '',
-    client: '',
-    property_id: 0,
-    purpose: 'Property Viewing',
-    status: 'Scheduled'
+  dataLoaded: boolean = false; // ✅ Fix for data disappearance issue
+
+  currentProperty: Property = {
+    title: '',
+    slug: '',
+    description: '',
+    type: 'apartment',
+    price: 0,
+    city: '',
+    district: '',
+    area: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    listing_type: 'for_sale',
+    construction_status: 'available',
+    property_code: '',
+    location: '',
+    status: '',
+    image: ''
   };
 
   constructor(
     private dashboardService: UserDashboardService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.loadDashboardData();
     this.getUsername();
+    this.loadDashboardData();
     this.loadProperties();
-    this.loadAppointments();
   }
 
   getUsername(): void {
@@ -118,7 +108,7 @@ currentProperty: Property = {
       this.router.navigate(['/login']);
       return;
     }
-  
+
     this.dashboardService.getDashboardData().subscribe({
       next: (res) => {
         const data = res.dashboard;
@@ -128,58 +118,41 @@ currentProperty: Property = {
         this.averageRating = data.reviews.average_rating;
         this.givenReviews = data.reviews.given;
         this.receivedReviews = data.reviews.received;
+
+        // ✅ Data is ready to display
+        this.dataLoaded = true;
       },
       error: (error) => {
         console.error('Error fetching dashboard data', error);
       }
     });
-  
-    this.dashboardService.getStatistics().subscribe({
-      next: (stats) => {
-        this.listedCount = stats.properties.total;
-        this.bookedCount = stats.bookings.upcoming;
-        this.soldCount = stats.bookings.completed;
-        this.averageRating = stats.reviews.average_rating;
-        this.givenReviews = stats.reviews.given;
-        this.receivedReviews = stats.reviews.received;
-      },
-      error: (error) => {
-        console.error('Error fetching statistics data', error);
-      }
-    });
+
+    // Note: You may omit this if getDashboardData covers all necessary data
+    // Or you can combine both results
+    // this.dashboardService.getStatistics().subscribe({
+    //   next: (stats) => {
+    //     ...
+    //   },
+    //   error: ...
+    // });
   }
 
   loadProperties(): void {
     this.dashboardService.getProperties().subscribe(
       (data: any) => {
-        // تحقق إذا كانت البيانات هي مصفوفة
         if (Array.isArray(data)) {
-          this.properties = data;  // إذا كانت مصفوفة، احفظها في المتغير
+          this.properties = data;
         } else {
-          console.error('البيانات المستلمة ليست مصفوفة:', data);
-          this.properties = [];  // في حال كانت البيانات ليست مصفوفة، يمكن تعيينها إلى مصفوفة فارغة
+          console.error('Received data is not an array:', data);
+          this.properties = [];
         }
       },
       (error) => {
-        console.error('حدث خطأ أثناء جلب البيانات:', error);
+        console.error('Error fetching properties:', error);
       }
     );
   }
-  
-  loadAppointments(): void {
-    this.dashboardService.getAppointments().subscribe({
-      next: (appointments: Appointment[]) => {
-        this.appointments = appointments.map(appointment => ({
-          ...appointment,
-          property_title: appointment.property_title || 'Unknown' // التعامل مع حالة البيانات المفقودة
-        }));
-      },
-      error: (error) => {
-        console.error('Error fetching appointments', error);
-      }
-    });
-  }
-  
+
   toggleDarkMode(): void {
     this.darkMode = !this.darkMode;
     document.body.classList.toggle('dark-mode');
@@ -198,64 +171,6 @@ currentProperty: Property = {
     this.router.navigate(['/login']);
   }
 
-  // Appointment CRUD Operations
-openAddAppointmentModal(): void {
-  this.isEditingAppointment = false;
-  this.currentAppointment = {
-    date: '',
-    time: '',
-    client: '',
-    property_id: this.properties[0]?.id || 0, // تعيين القيمة الافتراضية بشكل صحيح
-    purpose: 'Property Viewing',
-    status: 'Scheduled'
-  };
-}
-
-  editAppointment(appointment: Appointment): void {
-    this.isEditingAppointment = true;
-    this.currentAppointment = { ...appointment };
-  }
-
-  saveAppointment(): void {
-    if (!this.currentAppointment) return;
-  
-    const operation = this.isEditingAppointment && this.currentAppointment.id
-      ? this.dashboardService.updateAppointment(this.currentAppointment.id, this.currentAppointment)
-      : this.dashboardService.createAppointment(this.currentAppointment);
-  
-    operation.subscribe({
-      next: (savedAppointment) => {
-        if (this.isEditingAppointment) {
-          const index = this.appointments.findIndex(a => a.id === savedAppointment.id);
-          if (index !== -1) {
-            this.appointments[index] = savedAppointment;
-          }
-        } else {
-          this.appointments.unshift(savedAppointment);
-        }
-        this.showSuccess(this.isEditingAppointment ? 'تم تحديث الموعد بنجاح!' : 'تم إضافة الموعد بنجاح!');
-      },
-      error: (err) => {
-        console.error('Error saving appointment', err);
-      }
-    });
-  }
-
-  deleteAppointment(id: number): void {
-    if (confirm('هل أنت متأكد من حذف هذا الموعد؟')) {
-      this.dashboardService.deleteAppointment(id).subscribe({
-        next: () => {
-          this.appointments = this.appointments.filter(a => a.id !== id);
-          this.showSuccess('تم حذف الموعد بنجاح');
-        },
-        error: (err) => {
-          console.error('Error deleting appointment', err);
-        }
-      });
-    }
-  }
-
-  // Helper methods
   private updateStats(): void {
     this.listedCount = this.properties.length;
     this.bookedCount = this.properties.filter(p => p.status === 'Under Contract').length;
