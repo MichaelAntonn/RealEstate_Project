@@ -104,37 +104,6 @@
       display: none;
   }
 }
-  
-  .user-info::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--main-color);
-    transition: var(--transition);
-  }
-  
-  .user-info:hover::after {
-    width: 100%;
-  }
-  
-  .user-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--main-color);
-    transition: var(--transition);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .user-avatar:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(247, 124, 52, 0.3);
-  }
-  
   /* ========== Sidebar Styles ========== */
   .sidebar {
     width: 280px;
