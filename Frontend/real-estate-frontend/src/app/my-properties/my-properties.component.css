@@ -1,0 +1,71 @@
+.property-card {
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.property-image-container {
+  height: 200px;
+  overflow: hidden;
+}
+
+.property-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.property-card:hover .property-image {
+  transform: scale(1.05);
+}
+
+.bg-land {
+  background-color: #28a745;
+  color: white;
+}
+
+.bg-apartment {
+  background-color: #007bff;
+  color: white;
+}
+
+.bg-villa {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.bg-office {
+  background-color: #fd7e14;
+  color: white;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.btn-group .btn.active {
+  background-color: var(--main-color);
+  color: white;
+  border-color: var(--main-color);
+}
+
+@media (max-width: 768px) {
+  .property-image-container {
+    height: 150px;
+  }
+}
