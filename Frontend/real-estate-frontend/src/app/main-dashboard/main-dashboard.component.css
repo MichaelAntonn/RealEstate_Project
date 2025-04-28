@@ -43,14 +43,67 @@
     color: var(--secondary-color);
     transform: translateX(5px);
   }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    cursor: pointer;
+  /* أنماط Dropdown المستخدم */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  transition: var(--transition);
+}
+
+.user-info:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-info .user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--main-color);
+  transition: var(--transition);
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  margin-top: 10px;
+  background: white;
+}
+
+.dark-mode .dropdown-menu {
+  background: #1a1a2e;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown-item {
+  padding: 0.5rem 1.5rem;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background: rgba(247, 124, 52, 0.1);
+  color: var(--main-color);
+}
+
+.dropdown-item fa-icon {
+  width: 20px;
+  text-align: center;
+}
+
+@media (max-width: 992px) {
+  .user-info span {
+      display: none;
   }
+}
   
   .user-info::after {
     content: '';

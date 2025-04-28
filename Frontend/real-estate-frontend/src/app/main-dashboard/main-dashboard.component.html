@@ -34,10 +34,34 @@
                 </label>
             </div>
 
-            <div class="user-info">
-                <span>Welcome, {{ username }}</span>
-                <img src="assets/1.png" alt="User" class="user-avatar">
-            </div>
+          <!-- بدل الجزء الحالي -->
+<div class="dropdown">
+    <button class="btn btn-link text-white dropdown-toggle user-info" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <span>Welcome, {{ username }}</span>
+        <img src="assets/1.png" alt="User" class="user-avatar">
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li>
+            <a class="dropdown-item" routerLink="/home">
+                <fa-icon [icon]="faHome" class="me-2"></fa-icon>
+                Home
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" routerLink="/maindashboard/profile">
+                <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+                Profile
+            </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item text-danger" (click)="logout()">
+                <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>
+                Logout
+            </a>
+        </li>
+    </ul>
+</div>
         </div>
     </div>
 </nav>
