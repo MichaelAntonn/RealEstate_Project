@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class NewPropertySubmitted extends Notification
 {
@@ -28,7 +29,7 @@ class NewPropertySubmitted extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -56,5 +57,15 @@ class NewPropertySubmitted extends Notification
             'submitted_by' => $this->property->user->name,
             'url' => url('/properties/' . $this->property->id),
         ];
+    }
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'message' => 'A new property "' . $this->property->title . '" has been submitted for review.',
+            'property_id' => $this->property->id,
+            'property_title' => $this->property->title,
+            'submitted_by' => $this->property->user->name,
+            'url' => url('/properties/' . $this->property->id),
+        ]);
     }
 }

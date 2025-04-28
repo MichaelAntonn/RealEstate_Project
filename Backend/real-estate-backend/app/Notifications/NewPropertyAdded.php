@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 
 class NewPropertyAdded extends Notification
@@ -30,7 +30,7 @@ class NewPropertyAdded extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -58,5 +58,16 @@ class NewPropertyAdded extends Notification
             'url' => url('/properties/' . $this->property->id),
             'type' => $this->property->type
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'message' => 'A new property "' . $this->property->title . '" has been added!',
+            'property_id' => $this->property->id,
+            'property_title' => $this->property->title,
+            'url' => url('/properties/' . $this->property->id),
+            'type' => $this->property->type
+        ]);
     }
 }

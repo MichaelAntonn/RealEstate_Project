@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -30,7 +31,7 @@ class PropertyRejected extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -63,5 +64,20 @@ class PropertyRejected extends Notification
         }
 
         return $data;
+    }
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        $data = [
+            'message' => 'Your property "' . $this->property->title . '" has been rejected.',
+            'property_id' => $this->property->id,
+            'property_title' => $this->property->title,
+            'url' => url('/properties/' . $this->property->id),
+        ];
+
+        if ($this->reason) {
+            $data['reason'] = $this->reason;
+        }
+
+        return new BroadcastMessage($data);
     }
 }

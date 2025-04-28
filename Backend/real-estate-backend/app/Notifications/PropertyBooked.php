@@ -6,6 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
+
 
 class PropertyBooked extends Notification
 {
@@ -29,7 +31,7 @@ class PropertyBooked extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -59,5 +61,17 @@ class PropertyBooked extends Notification
             'booking_date' => $this->booking->booking_date,
             'url' => url('/properties/' . $this->property->id),
         ];
+    }
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'message' => 'Someone booked your property "' . $this->property->title . '"!',
+            'property_id' => $this->property->id,
+            'property_title' => $this->property->title,
+            'booking_id' => $this->booking->id,
+            'booker_id' => $this->booking->user_id,
+            'booking_date' => $this->booking->booking_date,
+            'url' => url('/properties/' . $this->property->id),
+        ]);
     }
 }

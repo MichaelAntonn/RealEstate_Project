@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens,Notifiable;
     protected $fillable = [
         'first_name',
         'last_name',
@@ -19,7 +20,7 @@ class Admin extends Authenticatable
         'terms_and_conditions',
         'password',
         'profile_image',
-        
+
     ];
     // Use the same table as users
     protected $table = 'users';
@@ -31,7 +32,7 @@ class Admin extends Authenticatable
 
     // Default attributes
     protected $attributes = [
-        'user_type' => 'admin', 
+        'user_type' => 'admin',
     ];
 
     // Scope to filter admin users
@@ -40,5 +41,5 @@ class Admin extends Authenticatable
         return $query->where('user_type', 'admin');
     }
 
-    
+
 }

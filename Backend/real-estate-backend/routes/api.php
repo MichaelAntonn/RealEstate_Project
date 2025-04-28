@@ -21,6 +21,7 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\PaymentWebhookController;
 use App\Http\Controllers\SubscriptionController;
@@ -81,7 +82,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan'); // Get the trial subscription plan
         Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
     });
-    
+
       // Payments
       Route::prefix('payment')->group(function () {
         Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
@@ -326,4 +327,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{company_id}', [CompanyController::class, 'update'])->middleware('auth:sanctum');
         Route::delete('/{company_id}', [CompanyController::class, 'destroy'])->middleware('auth:sanctum');
     });
-    
+
+    // Notifications Routes
+    Route::prefix('v1')->group(function () {
+        Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
+            Route::get('/', [NotificationsController::class, 'index'])->name('index'); // Get all notifications
+            Route::put('/{id}/read', [NotificationsController::class, 'markAsRead']);// Mark a notification as read
+            Route::put('/read-all', [NotificationsController::class, 'markAllAsRead']);// Mark all notifications as read
+            Route::delete('/{id}', [NotificationsController::class, 'destroy']); // Delete a notification
+            Route::delete('/', [NotificationsController::class, 'destroyAll']);// Delete all notifications
+        });
+    });

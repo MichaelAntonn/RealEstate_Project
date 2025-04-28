@@ -4,8 +4,10 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+
 
 class PropertyAccepted extends Notification
 {
@@ -28,7 +30,7 @@ class PropertyAccepted extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -55,5 +57,14 @@ class PropertyAccepted extends Notification
             'property_title' => $this->property->title,
             'url' => url('/properties/' . $this->property->id),
         ];
+    }
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'message' => 'Your property "' . $this->property->title . '" has been accepted!',
+            'property_id' => $this->property->id,
+            'property_title' => $this->property->title,
+            'url' => url('/properties/' . $this->property->id),
+        ]);
     }
 }
