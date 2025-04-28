@@ -111,7 +111,7 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
 
   onSortChange(): void {
     this.filterService.updateFilters({
-      sort_by: this.filters['sort_by'],
+      sort_by: this.filters.sort_by,
       page: 1,
     });
   }
@@ -121,13 +121,22 @@ export class PropertyFilterComponent implements OnInit, OnDestroy {
   }
 
   resetFilters(): void {
-    this.filters.min_price = this.priceRange.min;
-    this.filters.max_price = this.priceRange.max;
-    this.filters.min_area = this.areaRange.min;
-    this.filters.max_area = this.areaRange.max;
-    this.filters.bedrooms = undefined;
-    this.filters.bathrooms = undefined;
-    this.filters.sort_by = 'newest';
-    this.onFilterChange();
+    this.filters = {
+      keyword: '',
+      type: '',
+      city: '',
+      listing_type: '',
+      page: 1,
+      sort_by: 'newest',
+      is_new_building: false,
+      min_price: this.priceRange.min,
+      max_price: this.priceRange.max,
+      min_area: this.areaRange.min,
+      max_area: this.areaRange.max,
+      bedrooms: '',
+      bathrooms: '',
+    };
+
+    this.filterService.updateFilters(this.filters);
   }
 }
