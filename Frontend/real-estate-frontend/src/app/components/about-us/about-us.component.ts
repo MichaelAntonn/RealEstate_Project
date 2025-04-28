@@ -63,4 +63,9 @@ export class AboutUsComponent implements AfterViewInit {
   navigateToconsultation(): void {
     this.router.navigate(['/consultation'], { fragment: 'booking' });
   }
+
+  navigateToAddProperty(): void {
+    window.scrollTo(0, 0); // Scroll to top before navigating
+    this.router.navigate(['/add-property']);
+  }
 }
