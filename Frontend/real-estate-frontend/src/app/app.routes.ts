@@ -41,8 +41,10 @@ import { ConsultationComponent } from './components/consultation/consultation.co
 
 
 
+
 import { ConsultationFormComponent } from './components/consultation-form/consultation-form.component';
 import { MyPropertiesComponent } from './my-properties/my-properties.component';
+import { AboutUsComponent } from './components/about-us/about-us.component';
 
 export const routes: Routes = [
   // Default route
@@ -61,6 +63,7 @@ export const routes: Routes = [
 
   { path: 'consultation-form', component: ConsultationFormComponent },
 
+  { path: 'aboutus', component: AboutUsComponent },
 
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },
