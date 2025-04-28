@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-reset-password',
@@ -24,6 +26,7 @@ export class ResetPasswordComponent implements OnInit {
 
   constructor(
     private http: HttpClient, 
+    private location: Location,
     private route: ActivatedRoute, 
     private router: Router
   ) {}
@@ -31,6 +34,7 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.resetData.token = params['token'];
+      this.location.replaceState('/reset-password');
     });
   }
 

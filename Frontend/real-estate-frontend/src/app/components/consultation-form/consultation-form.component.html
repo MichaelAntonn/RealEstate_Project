@@ -1,40 +1,57 @@
-   <!-- Booking Section -->
-   <section class="booking" id="booking">
+<!-- Booking Section -->
+<section class="booking" id="booking">
     <div class="container">
-        <div class="section-title">
-            <h2>Schedule Your Consultation</h2>
-            <p>Begin your journey to smarter real estate decisions today</p>
-        </div>
-        <div class="booking-form" id="booking-form">                <form>
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" placeholder="Enter your name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" placeholder="Enter your phone number">
-                </div>
-                <div class="form-group">
-                    <label for="service">Consultation Type</label>
-                    <select id="service" required>
-                        <option value="">Select service</option>
-                        <option value="residential">Residential Purchase Advisory</option>
-                        <option value="investment">Investment Strategy</option>
-                        <option value="commercial">Commercial Property Consultation</option>
-                        <option value="portfolio">Portfolio Review</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="message">Specific Questions or Requirements</label>
-                    <textarea id="message" placeholder="Tell us about your real estate goals"></textarea>
-                </div>
-                <button type="submit" class="btn">Request Consultation</button>
-            </form>
-        </div>
+      <div class="section-title">
+        <h2>Schedule Your Consultation</h2>
+        <p>Begin your journey to smarter real estate decisions today</p>
+      </div>
+      <div class="booking-form" id="booking-form">
+        <form [formGroup]="consultationForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="full_name">Full Name</label>
+            <input type="text" formControlName="full_name" placeholder="Enter your name" required>
+            <div *ngIf="consultationForm.get('full_name').touched && consultationForm.get('full_name').invalid" class="error-message">
+              Full Name is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" formControlName="email" placeholder="Enter your email" required>
+            <div *ngIf="consultationForm.get('email').touched && consultationForm.get('email').invalid" class="error-message">
+              Please enter a valid email
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" formControlName="phone" placeholder="Enter your phone number">
+            <div *ngIf="consultationForm.get('phone').touched && consultationForm.get('phone').invalid" class="error-message">
+              Phone number is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="service">Consultation Type</label>
+            <select formControlName="type" required>
+              <option value="">Select service</option>
+              <option value="residential">Residential Purchase Advisory</option>
+              <option value="investment">Investment Strategy</option>
+              <option value="commercial">Commercial Property Consultation</option>
+              <option value="portfolio">Portfolio Review</option>
+              <option value="other">Other</option>
+            </select>
+            <div *ngIf="consultationForm.get('type').touched && consultationForm.get('type').invalid" class="error-message">
+              Please select a consultation type
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="message">Specific Questions or Requirements</label>
+            <textarea formControlName="message" placeholder="Tell us about your real estate goals"></textarea>
+          </div>
+          <button type="submit" class="btn" [disabled]="isSubmitting">Request Consultation</button>
+          <div *ngIf="isSubmitting" class="loading">Submitting...</div>
+          <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+          <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        </form>
+      </div>
     </div>
-</section>
+  </section>
+  
