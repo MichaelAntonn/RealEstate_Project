@@ -1,1 +1,121 @@
-<p>my-properties works!</p>
+<div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <h2 class="mb-0">My Properties</h2>
+        <p class="text-muted">Manage your property listings</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <!-- <a routerLink="/maindashboard/properties/add" class="btn btn-primary">
+          <fa-icon [icon]="faPlus"></fa-icon> Add New Property
+        </a> -->
+      </div>
+    </div>
+  
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text">
+                <fa-icon [icon]="faSearch"></fa-icon>
+              </span>
+              <input type="text" class="form-control" placeholder="Search properties..." 
+                     [(ngModel)]="searchTerm" (input)="filterProperties()">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="btn-group float-end">
+              <button class="btn btn-outline-secondary" [class.active]="currentStatus === 'all'" 
+                      (click)="setStatusFilter('all')">
+                All
+              </button>
+              <button class="btn btn-outline-warning" [class.active]="currentStatus === 'pending'" 
+                      (click)="setStatusFilter('pending')">
+                Pending
+              </button>
+              <button class="btn btn-outline-success" [class.active]="currentStatus === 'accepted'" 
+                      (click)="setStatusFilter('accepted')">
+                Accepted
+              </button>
+              <button class="btn btn-outline-danger" [class.active]="currentStatus === 'rejected'" 
+                      (click)="setStatusFilter('rejected')">
+                Rejected
+              </button>
+              <button class="btn btn-outline-primary" (click)="refreshProperties()">
+                <fa-icon [icon]="faSync"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="isLoading" class="text-center py-5">
+      <fa-icon [icon]="faSpinner" spin size="3x"></fa-icon>
+      <p class="mt-3">Loading properties...</p>
+    </div>
+  
+    <div *ngIf="!isLoading && filteredProperties.length === 0" class="text-center py-5">
+      <div class="alert alert-info">
+        No properties found. <a routerLink="/maindashboard/properties/add" class="alert-link">Add a new property</a> to get started.
+      </div>
+    </div>
+  
+    <div class="row g-4">
+      <div *ngFor="let property of filteredProperties" class="col-md-6 col-lg-4">
+        <div class="card h-100 property-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="badge rounded-pill {{getPropertyTypeClass(property.type)}}">
+              {{ property.type | titlecase }}
+            </span>
+            <div>
+              <fa-icon [icon]="getStatusIcon(property.approval_status).icon" 
+                      [ngClass]="getStatusIcon(property.approval_status).color"
+                      [title]="property.approval_status | titlecase"></fa-icon>
+            </div>
+          </div>
+          
+          <div class="property-image-container">
+            <img [src]="property.cover_image || 'assets/property-placeholder.jpg'" 
+                 class="card-img-top property-image" 
+                 alt="{{ property.title }}">
+          </div>
+          
+          <div class="card-body">
+            <h5 class="card-title">{{ property.title }}</h5>
+            <p class="card-text text-muted">{{ property.city }}, {{ property.district }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="badge bg-light text-dark">
+                {{ property.listing_type === 'for_sale' ? 'For Sale' : 'For Rent' }}
+              </span>
+              <h5 class="mb-0 text-primary">{{ property.price | currency:'USD':'symbol':'1.0-0' }}</h5>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">
+                <fa-icon [icon]="faBed"></fa-icon> {{ property.bedrooms || 0 }} Beds
+              </span>
+              <span class="text-muted">
+                <fa-icon [icon]="faBath"></fa-icon> {{ property.bathrooms || 0 }} Baths
+              </span>
+              <span class="text-muted">
+                {{ property.area }} m²
+              </span>
+            </div>
+          </div>
+          
+          <div class="card-footer bg-transparent">
+            <div class="d-flex justify-content-between">
+              <!-- <a [routerLink]="['/maindashboard/properties/edit', property.id]" class="btn btn-sm btn-outline-primary">
+                <fa-icon [icon]="faEdit"></fa-icon> Edit
+              </a> -->
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteProperty(property.id)">
+                <fa-icon [icon]="faTrash"></fa-icon> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
