@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->enum('user_type', ['user', 'admin','super-admin'])->default('user');
             $table->enum('account_status', ['active', 'suspended', 'banned'])->default('active');
-            $table->string('profile_image')->nullable();
+            $table->longText('profile_image')->nullable();
             $table->string('identity_document')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
