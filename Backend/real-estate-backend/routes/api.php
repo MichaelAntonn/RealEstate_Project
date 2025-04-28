@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialLoginController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
@@ -89,10 +90,17 @@ Route::prefix('v1')->group(function () {
         Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
     });
 
-      // consultants Route (public)
-      Route::prefix('consultants')->group(function () {
-    Route::post('/', [ConsultantController::class, 'store']);
-      });
+    // consultants Route (public)
+    Route::prefix('consultants')->group(function () {
+        Route::post('/', [ConsultantController::class, 'store']);
+    });
+
+    // blogs Route (public)
+    Route::prefix('blogs')->group(function () {
+        Route::get('/', [BlogController::class, 'index']);
+        Route::get('/{id}', [BlogController::class, 'show']);
+    });
+
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -268,11 +276,20 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', [PaymentController::class, 'Payments'])->name('index'); // list all payments (accessible by admin users)
             });
 
-             // consultants Route 
-      Route::prefix('consultants')->group(function () {
-        Route::get('/', [ConsultantController::class, 'index']);
-        Route::delete('/{id}', [ConsultantController::class, 'destroy']);
-          });
+            // consultants Route 
+            Route::prefix('consultants')->group(function () {
+                Route::get('/', [ConsultantController::class, 'index']);
+                Route::delete('/{id}', [ConsultantController::class, 'destroy']);
+            });
+
+            // blogs Route 
+            Route::prefix('blogs')->group(function () {
+                Route::post('/', [BlogController::class, 'store']);
+                Route::put('/{id}', [BlogController::class, 'update']);
+                Route::delete('/{id}', [BlogController::class, 'destroy']);
+            });
+
+
 
             // Settings Routes
             Route::prefix('settings')->name('settings.')->group(function () {
@@ -348,9 +365,9 @@ Route::prefix('company')->group(function () {
 Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
         Route::get('/', [NotificationsController::class, 'index'])->name('index'); // Get all notifications
-        Route::put('/{id}/read', [NotificationsController::class, 'markAsRead']);// Mark a notification as read
-        Route::put('/read-all', [NotificationsController::class, 'markAllAsRead']);// Mark all notifications as read
+        Route::put('/{id}/read', [NotificationsController::class, 'markAsRead']); // Mark a notification as read
+        Route::put('/read-all', [NotificationsController::class, 'markAllAsRead']); // Mark all notifications as read
         Route::delete('/{id}', [NotificationsController::class, 'destroy']); // Delete a notification
-        Route::delete('/', [NotificationsController::class, 'destroyAll']);// Delete all notifications
-});
+        Route::delete('/', [NotificationsController::class, 'destroyAll']); // Delete all notifications
+    });
 });
