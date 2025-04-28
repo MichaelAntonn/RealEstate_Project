@@ -8,26 +8,72 @@
 
 .navbar {
   margin-top: -.5%;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Gradient background زاهي ومبهج */
+ 
+  padding: 10px 20px; /* زيادة الـ padding عشان يبقى أوسع */
+  position: sticky; /* يفضل ثابت في الأعلى */
+  top: 0;
+  z-index: 1000;
 }
 
 .navbar-brand img {
   width: 80px;
   height: auto;
+  filter: brightness(1.1); /* نضيف تأثير للـ logo عشان يبقى أوضح */
+  transition: transform 0.3s ease; /* تأثير animation للـ logo */
+}
+
+.navbar-brand img:hover {
+  transform: scale(1.1); /* لما نعمل hover الـ logo يكبر شوية */
 }
 
 .nav-link {
-  color: #172940;
-  font-weight: 500;
-  margin-right: 15px;
-  transition: color 0.3s ease;
+  color: #000000; /* اللون الأبيض عشان يناسب الـ background الملون */
+  font-weight: 600; /* خط أثقل عشان يكون واضح */
+  margin-right: 20px; /* زيادة المسافة بين الـ links */
+  padding: 8px 15px; /* padding أكبر عشان الـ link يبقى أكبر */
+  border-radius: 5px; /* حواف دائرية للـ links */
+  position: relative; /* عشان نضيف تأثير الـ underline */
+  transition: all 0.3s ease; /* تأثير سلس لكل التغييرات */
 }
 
-#home, .nav-link:hover {
-  color: #F77C34;
+/* تأثير الـ hover */
+.nav-link:hover {
+  color: #ff7b25; /* لون أصفر فاتح لما نعمل hover */
+  background-color: rgba(255, 255, 255, 0.2); /* خلفية شفافة لما نعمل hover */
+  transform: translateY(-2px); /* الـ link يتحرك لفوق شوية */
 }
 
+/* الـ active link */
+.nav-link.active {
+  color: #010101; /* لون أصفر فاتح للـ active */
+  background-color: rgba(255, 255, 255, 0.3); /* خلفية شفافة أقوى */
+  font-weight: 700; /* خط أثقل للـ active */
+}
+
+/* تأثير underline متحرك لما نعمل hover أو الـ link يبقى active */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #ff7b25; /* لون الخط الأصفر */
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%; /* الخط يمتد لما نعمل hover أو الـ link يبقى active */
+}
+
+/* لما الـ navbar يكون collapsed (في الـ mobile view) */
+.navbar-collapse {
+ 
+  padding: 10px; /* padding إضافي */
+  border-radius: 10px; /* حواف دائرية */
+}
 .signupandlogin {
   margin-left: auto;
   display: flex;
@@ -36,7 +82,7 @@
 
 /* Login & Signup Buttons */
 .login, .btn-custom:hover {
-  background-color: #F2F4F3;
+  background-color: #3e5549;
   color: rgb(255, 123, 37);
   border: solid 1px #F77C34;
   transform: skew(-20deg);
