@@ -40,7 +40,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
     keyword: '',
     type: '',
     city: '',
-    listing_type: '', // بدون قيمة افتراضية
+    listing_type: '',
     page: 1,
     sort_by: 'newest',
     is_new_building: false,
@@ -88,7 +88,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
           keyword: params['keyword'] || '',
           type: params['type'] || '',
           city: params['city'] || '',
-          listing_type: params['listing_type'] || '', // ناخد الـ listing_type من الـ query params لو موجود
+          listing_type: params['listing_type'] || '',
           page: this.currentPage,
         };
         this.filterService.updateFilters(filtersFromParams);
@@ -101,6 +101,19 @@ export class PropertiesComponent implements OnInit, OnDestroy {
         this.filters = { ...this.filters, ...filters };
         this.currentPage = filters.page || 1;
         this.loadProperties();
+
+        // Update URL query params to reflect filter changes
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {
+            page: this.currentPage,
+            keyword: filters.keyword || undefined,
+            type: filters.type || undefined,
+            city: filters.city || undefined,
+            listing_type: filters.listing_type || undefined,
+          },
+          queryParamsHandling: 'merge',
+        });
       })
     );
   }
@@ -175,7 +188,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
       listing_type: this.filters.listing_type,
       page: 1,
     });
-    // تحديث الـ query params عشان نحافظ على الـ listing_type لما نتنقل بين الصفحات
+    // Update query params to maintain filter state
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
@@ -193,7 +206,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
       keyword: this.filters.keyword,
       page: 1,
     });
-    // تحديث الـ query params عشان نحافظ على الـ keyword
+    // Update query params to maintain keyword
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
