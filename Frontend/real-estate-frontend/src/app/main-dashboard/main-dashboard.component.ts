@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ViewEncapsulation } from '@angular/core';
+import { AuthService } from '../services/auth.service';
 import { 
   faBars, faBell, faHome, faUser, faBuilding, 
   faHeart, faCalendarAlt, faEnvelope, faChartLine, 
@@ -17,7 +18,7 @@ import {
     RouterModule,
     RouterOutlet,
     RouterLink,
-    FontAwesomeModule
+    FontAwesomeModule,
   ],
   templateUrl: './main-dashboard.component.html',
   styleUrls: ['./main-dashboard.component.css'],
@@ -26,6 +27,7 @@ import {
 })
 export class MainDashboardComponent {
   // Font Awesome Icons
+  
   faBars = faBars;
   faBell = faBell;
   faHome = faHome;
@@ -41,8 +43,9 @@ export class MainDashboardComponent {
   username: string = '';
   darkMode: boolean = false;
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.getUsername();
+
   }
 
   getUsername(): void {
@@ -63,9 +66,9 @@ export class MainDashboardComponent {
     document.body.classList.toggle('dark-mode');
   }
 
-  logout(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
+  logout() {
+    this.authService.logout();
+    this.username = 'User'; // Reset username on logout
   }
+
 }
