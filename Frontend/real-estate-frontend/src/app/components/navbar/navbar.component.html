@@ -8,12 +8,28 @@
     </button>
     <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link active" id="home" routerLink="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/catalog">Catalog</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/account">Account</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/vendor">Vendor</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/pages">Pages</a></li>
+        <li class="nav-item">
+          <a 
+            class="nav-link" 
+            id="home" 
+            routerLink="/" 
+            [routerLinkActive]="['active']" 
+            [routerLinkActiveOptions]="{ exact: true }">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/properties" [routerLinkActive]="['active']">Properties</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/consultation" [routerLinkActive]="['active']">Consultation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/blog" [routerLinkActive]="['active']">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/aboutus" [routerLinkActive]="['active']">About Us</a>
+        </li>
       </ul>
+    </div>
       <div class="signupandlogin">
         <!-- Show when user is NOT logged in -->
         <div *ngIf="!authService.isLoggedIn()">
@@ -26,12 +42,12 @@
           <button class="btn dropdown-toggle user-dropdown" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <div class="user-info">
               <img [src]="getUserImage()" alt="User" class="user-image">
-              <span class="user-name">Hello, {{username}}</span>
+              <span class="user-name"> {{username}}</span>
             </div>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
             <li>
-              <a class="dropdown-item" routerLink="/maindashboard">
+              <a class="dropdown-item" routerLink="/maindashboard/profile">
                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
               </a>
             </li>
@@ -45,5 +61,5 @@
         </div>
       </div>
     </div>
-  </div>
+ 
 </nav>

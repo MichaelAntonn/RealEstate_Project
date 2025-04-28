@@ -18,12 +18,12 @@ import { StatsChartComponent } from '../user-dashboard/components/stats-chart/st
   styleUrls: ['./statistics.component.css']
 })
 export class StatisticsComponent implements OnInit {
-  // إحصائيات العقارات
+  // Real estate statistics
   listedCount: number = 0;
   bookedCount: number = 0;
   soldCount: number = 0;
   
-  // إحصائيات التقييمات
+  // Review statistics
   averageRating: string = '0.0';
   givenReviews: number = 0;
   receivedReviews: number = 0;
@@ -34,9 +34,9 @@ export class StatisticsComponent implements OnInit {
     this.loadStatisticsData();
   }
 
-  // دالة لجلب بيانات الإحصائيات
+  // Function to fetch statistics data
   loadStatisticsData(): void {
-    // جلب بيانات Dashboard
+    // Fetch Dashboard data
     this.dashboardService.getDashboardData().subscribe({
       next: (res) => {
         const data = res.dashboard;
@@ -50,11 +50,11 @@ export class StatisticsComponent implements OnInit {
         );
       },
       error: (error) => {
-        console.error('خطأ في جلب بيانات Dashboard:', error);
+        console.error('Error fetching Dashboard data:', error);
       }
     });
 
-    // جلب بيانات إضافية من Statistics
+    // Fetch additional statistics data
     this.dashboardService.getStatistics().subscribe({
       next: (stats) => {
         this.updateStatistics(
@@ -67,12 +67,12 @@ export class StatisticsComponent implements OnInit {
         );
       },
       error: (error) => {
-        console.error('خطأ في جلب البيانات الإحصائية:', error);
+        console.error('Error fetching statistics data:', error);
       }
     });
   }
 
-  // دالة مساعدة لتحديث البيانات الإحصائية
+  // Helper function to update statistics
   private updateStatistics(
     listed: number,
     booked: number,

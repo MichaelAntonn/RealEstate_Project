@@ -7,9 +7,9 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [FormsModule, CommonModule], // Removed Router from imports
+  imports: [FormsModule, CommonModule],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.css'
+  styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent implements OnInit {
   resetData = {
@@ -18,30 +18,55 @@ export class ResetPasswordComponent implements OnInit {
     password_confirmation: '',
     token: ''
   };
+  isLoading = false;
+  errorMessage = '';
+  successMessage = '';
 
-  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private http: HttpClient, 
+    private route: ActivatedRoute, 
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    // Get token from URL
     this.route.params.subscribe(params => {
       this.resetData.token = params['token'];
     });
   }
 
+  validatePassword(): boolean {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(this.resetData.password);
+  }
+
   onSubmit() {
+    this.errorMessage = '';
+    this.successMessage = '';
+
     if (this.resetData.password !== this.resetData.password_confirmation) {
-      alert('Passwords do not match!');
+      this.errorMessage = 'Passwords do not match!';
       return;
     }
 
+    if (!this.validatePassword()) {
+      this.errorMessage = 'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character';
+      return;
+    }
+
+    this.isLoading = true;
+
     this.http.post('http://localhost:8000/api/v1/password/reset-password', this.resetData)
       .subscribe({
-        next: (response) => {
-          alert('Password reset successfully!');
-          this.router.navigate(['/login']);
+        next: (response: any) => {
+          this.isLoading = false;
+          this.successMessage = response.success || 'Password reset successfully!';
+          setTimeout(() => this.router.navigate(['/login']), 2000);
         },
         error: (error) => {
-          alert('Error resetting password: ' + error.message);
+          this.isLoading = false;
+          this.errorMessage = error.error?.error || 
+                             error.error?.message || 
+                             'An error occurred while resetting your password';
         }
       });
   }

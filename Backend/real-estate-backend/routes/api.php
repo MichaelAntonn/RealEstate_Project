@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -39,9 +38,6 @@ Route::prefix('v1')->group(function () {
     Route::prefix('password')->name('password.')->group(function () {
         Route::post('/forgot-password', [ResetPasswordController::class, 'submitForgetPasswordForm'])->name('forgot');
         Route::post('/reset-password', [ResetPasswordController::class, 'submitResetPasswordForm'])->name('reset');
-        // Route::get('/reset-password/{token}', function ($token) {
-        //     return response()->json(['token' => $token], 200);
-        // })->name('reset.token');
     });
 
     // Social Login Routes (public)
@@ -54,46 +50,49 @@ Route::prefix('v1')->group(function () {
     Route::prefix('properties')->name('properties.')->group(function () {
         Route::get('/', [PropertyController::class, 'index'])->name('index');
         Route::get('/check-slug', [PropertyController::class, 'checkSlug'])->name('check-slug');
-        Route::get('check-property-code', [PropertyController::class, 'checkPropertyCode'])->name('check-property-code');
+        Route::get('/check-property-code', [PropertyController::class, 'checkPropertyCode'])->name('check-property-code');
         Route::get('/slug/{slug}', [PropertyController::class, 'showBySlug'])->name('showBySlug');
         Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
     });
 
     // Search Route (public)
-    Route::get('/search', [PropertyController::class, 'search'])->name('search.properties') /*->middleware('throttle:search')*/;
+    Route::get('/search', [PropertyController::class, 'search'])->name('search.properties');
 
     // Cities Route (public)
     Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
 
-      // Reviews Route (public)
-      Route::prefix('reviews')->name('reviews.')->group(function () {
+    // Reviews Route (public)
+    Route::prefix('reviews')->name('reviews.')->group(function () {
         Route::get('/by-property/{propertyId}', [ReviewController::class, 'getByProperty'])->name('by.property');
     });
 
-    Route::prefix('companies')->group(function () {
-        Route::get('/', [CompanyController::class, 'index']);  // Get all companies
-        Route::post('/', [CompanyController::class, 'store']); // Create a new company
-        Route::get('/{company_id}', [CompanyController::class, 'show']); // Get a specific company
+    // Companies Routes (public)
+    Route::prefix('companies')->name('companies.')->group(function () {
+        Route::get('/', [CompanyController::class, 'index'])->name('index');
+        Route::post('/register', [CompanyController::class, 'store'])->name('register');
+        Route::post('/login', [CompanyController::class, 'login'])->name('login');
+        Route::get('/{company_id}', [CompanyController::class, 'show'])->name('show');
     });
+
     // Subscriptions Routes
     Route::prefix('subscription')->group(function () {
-        // Public routes (accessible without authentication)
-        Route::get('/plans', [SubscriptionController::class, 'getPlans'])->name('subscription.plans'); // Get all available subscription plans except trial
-        Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan'); // Get the trial subscription plan
-        Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
+
+        Route::get('/plans', [SubscriptionController::class, 'getPlans'])->name('subscription.plans');
+        Route::get('/plan/trial', [SubscriptionController::class, 'getTrialPlan'])->name('subscription.trialPlan');
+        Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration');
+
     });
 
-      // Payments
-      Route::prefix('payment')->group(function () {
-        Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
+    // Payments
+    Route::prefix('payment')->group(function () {
+        Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');
     });
-
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
-        })->name('user.get-profile'); // two //user.profile
+        })->name('user.get-profile');
 
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
@@ -111,15 +110,12 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{property}/is-favorite', [FavoriteController::class, 'check'])->name('check-favorite');
             });
 
-
-            // Status Routes
             Route::prefix('status')->group(function () {
                 Route::get('/pending', [PropertyController::class, 'getPendingProperties'])->name('pending');
                 Route::get('/accepted', [PropertyController::class, 'getAcceptedProperties'])->name('accepted');
                 Route::get('/rejected', [PropertyController::class, 'getRejectedProperties'])->name('rejected');
             });
 
-            // Media Routes
             Route::prefix('/{property}/media')->name('media.')->group(function () {
                 Route::get('/', [PropertyController::class, 'getMedia'])->name('index');
                 Route::post('/', [PropertyController::class, 'addMedia'])->name('store');
@@ -127,13 +123,16 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-
-
         // Booking routes
         Route::prefix('bookings')->name('bookings.')->group(function () {
             Route::get('/', [BookingController::class, 'index'])->name('index');
             Route::get('/{id}', [BookingController::class, 'show'])->name('show');
             Route::post('/', [BookingController::class, 'store'])->name('store');
+            Route::put('/{id}/status', [BookingController::class, 'updateStatus'])->name('updateStatus');
+            Route::get('/status/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
+            Route::get('/status/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
+            Route::get('/status/pending', [BookingController::class, 'getPending'])->name('pending');
+            Route::delete('/{id}', [BookingController::class, 'destroy'])->name('destroy');
         });
 
         // Review routes
@@ -146,41 +145,41 @@ Route::prefix('v1')->group(function () {
         Route::prefix('user')->name('user.')->group(function () {
             Route::get('/dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
             Route::get('/statistics', [UserDashboardController::class, 'userStatistics'])->name('statistics');
-            Route::get('/profile', [UserDashboardController::class, 'getProfile'])->name('profile'); // one
+            Route::get('/profile', [UserDashboardController::class, 'getProfile'])->name('profile');
             Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
             Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('change.password');
             Route::delete('/account', [UserDashboardController::class, 'deleteAccount'])->name('account.delete');
-            Route::get('/user/activities', [DashboardController::class, 'userActivities'])->name('Activities');;
+            Route::get('/activities', [DashboardController::class, 'userActivities'])->name('activities');
         });
 
         // Chat routes
         Route::prefix('messages')->name('messages.')->group(function () {
-            Route::post('/send', [ChatController::class, 'sendMessage']);
-            Route::patch('/{message}/read', [ChatController::class, 'markAsRead']);
-            Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
+            Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+            Route::patch('/{message}/read', [ChatController::class, 'markAsRead'])->name('read');
+            Route::get('/conversations/{conversation}/messages', [ChatController::class, 'getMessages'])->name('get');
+            Route::post('/conversations', [ChatController::class, 'createConversation'])->name('create-conversation');
         });
 
-
-        Route::prefix('companies')->name('company.')->group(function () {
-            Route::put('/{company_id}', [CompanyController::class, 'update']); // Update a company
-            Route::delete('/{company_id}', [CompanyController::class, 'destroy']); // Delete a company
+        // Companies Routes (authenticated)
+        Route::prefix('companies')->name('companies.')->group(function () {
+            Route::put('/{company_id}', [CompanyController::class, 'update'])->name('update');
+            Route::delete('/{company_id}', [CompanyController::class, 'destroy'])->name('destroy');
         });
 
-        //Subscriptions
+        // Subscriptions
         Route::prefix('subscription')->group(function () {
-            Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe'); // Subscribe a company to a plan
-            Route::post('/subscribe/trial', [SubscriptionController::class, 'subscribeToTrial'])->name('subscription.subscribeTrial'); // Subscribe a company to a trial plan
-            Route::get('/company/{id}/subscription', [SubscriptionController::class, 'show'])->name('subscription.show'); // Get a company's subscription details by company ID
-            Route::post('/cancel', [SubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel'); // Cancel the subscription for the authenticated company
-            Route::put('/{id}', [SubscriptionController::class, 'updateSubscription'])->name('subscription.update'); // Update subscription details by subscription ID
-            Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations']); // get upcoming subscription expirations within a specific number of days
-            Route::get('/current-subscription-status', [SubscriptionController::class, 'getCurrentSubscriptionStatus']); // get the current subscription status of the authenticated company
-
+            Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe');
+            Route::post('/subscribe/trial', [SubscriptionController::class, 'subscribeToTrial'])->name('subscription.subscribeTrial');
+            Route::get('/company/{id}/subscription', [SubscriptionController::class, 'show'])->name('subscription.show');
+            Route::post('/cancel', [SubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel');
+            Route::put('/{id}', [SubscriptionController::class, 'updateSubscription'])->name('subscription.update');
+            Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations'])->name('subscription.upcoming-expirations');
+            Route::get('/current-subscription-status', [SubscriptionController::class, 'getCurrentSubscriptionStatus'])->name('subscription.status');
         });
 
         // Payments
         Route::prefix('payment')->group(function () {
-            Route::post('/checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout-session');  //  create a Stripe checkout session
+            Route::post('/checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout-session');
         });
     });
 
@@ -220,16 +219,16 @@ Route::prefix('v1')->group(function () {
 
             // Commission Routes
             Route::prefix('commissions')->name('commissions.')->group(function () {
-                Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin'])->name('monthly-profit'); // Returns the monthly profit margin analysis
-                Route::post('/complete-sale/{id}', [CommissionController::class, 'completeSale'])->name('complete-sale'); // Completes the property sale and calculates the commission
-                Route::get('/overview', [CommissionController::class, 'commissionsOverview'])->name('overview'); // Provides an overview of the commissions
-                Route::get('/property-statistics', [CommissionController::class, 'propertyStatistics'])->name('property-statistics'); // Displays property statistics
-                Route::get('/agent-performance', [CommissionController::class, 'agentPerformance'])->name('agent-performance'); // Shows the performance of the top agents
-                Route::get('/yearly-summary/{year?}', [CommissionController::class, 'yearlySummary'])->name('yearly-summary'); // Provides a yearly summary of sales, commissions, and new properties
-                Route::get('/cost-analysis', [CommissionController::class, 'costAnalysis'])->name('cost-analysis'); // Analyzes costs by category
-                Route::get('/yearly-goal-progress/{year}', [CommissionController::class, 'getYearlyGoalProgress'])->name('yearly-goal-progress'); // Shows progress towards achieving yearly goals
-                Route::get('/cost-trends', [CommissionController::class, 'costTrends'])->name('cost-trends'); // Analyzes cost trends over the past months
-                Route::get('/profit-analysis/{year?}', [CommissionController::class, 'profitAnalysis'])->name('profit-analysis'); // Analyzes yearly profits and compares them with costs
+                Route::get('/monthly-profit', [CommissionController::class, 'monthlyProfitMargin'])->name('monthly-profit');
+                Route::post('/complete-sale/{id}', [CommissionController::class, 'completeSale'])->name('complete-sale');
+                Route::get('/overview', [CommissionController::class, 'commissionsOverview'])->name('overview');
+                Route::get('/property-statistics', [CommissionController::class, 'propertyStatistics'])->name('property-statistics');
+                Route::get('/agent-performance', [CommissionController::class, 'agentPerformance'])->name('agent-performance');
+                Route::get('/yearly-summary/{year?}', [CommissionController::class, 'yearlySummary'])->name('yearly-summary');
+                Route::get('/cost-analysis', [CommissionController::class, 'costAnalysis'])->name('cost-analysis');
+                Route::get('/yearly-goal-progress/{year}', [CommissionController::class, 'getYearlyGoalProgress'])->name('yearly-goal-progress');
+                Route::get('/cost-trends', [CommissionController::class, 'costTrends'])->name('cost-trends');
+                Route::get('/profit-analysis/{year?}', [CommissionController::class, 'profitAnalysis'])->name('profit-analysis');
             });
 
             // Goals Routes
@@ -241,21 +240,28 @@ Route::prefix('v1')->group(function () {
 
             // Costs Routes
             Route::prefix('costs')->name('costs.')->group(function () {
-
-                Route::get('/', [CostController::class, 'index']); // Retrieve all costs (with optional filters: search, month, year, type)
-                Route::post('/', [CostController::class, 'store']); // Create a new cost entry
-                // Additional cost routes
-                Route::get('/summary', [CostController::class, 'summary']); // Get a cost summary for a specific month and year
-                Route::get('/categories', [CostController::class, 'usedCategories']); // Get distinct categories used in existing cost records
-                // Individual cost routes
-                Route::get('/{cost}', [CostController::class, 'show']); // Show details of a specific cost by ID
-                Route::put('/{cost}', [CostController::class, 'update']); // Update an existing cost
-                Route::delete('/{cost}', [CostController::class, 'destroy']); // Delete a cost by ID
+                Route::get('/', [CostController::class, 'index'])->name('index');
+                Route::post('/', [CostController::class, 'store'])->name('store');
+                Route::get('/summary', [CostController::class, 'summary'])->name('summary');
+                Route::get('/categories', [CostController::class, 'usedCategories'])->name('categories');
+                Route::get('/{cost}', [CostController::class, 'show'])->name('show');
+                Route::put('/{cost}', [CostController::class, 'update'])->name('update');
+                Route::delete('/{cost}', [CostController::class, 'destroy'])->name('destroy');
             });
 
             // Payments
             Route::prefix('payments')->name('payments.')->group(function () {
-                Route::get('/', [PaymentController::class, 'Payments'])->name('index'); // list all payments (accessible by admin users)
+                Route::get('/', [PaymentController::class, 'Payments'])->name('index');
+            });
+
+            // Companies Routes (admin)
+            Route::prefix('companies')->name('companies.')->group(function () {
+                Route::get('/pending', [CompanyController::class, 'getPendingCompanies'])->name('pending');
+                Route::get('/verified', [CompanyController::class, 'getVerifiedCompanies'])->name('verified');
+                Route::get('/rejected', [CompanyController::class, 'getRejectedCompanies'])->name('rejected');
+                Route::post('/{id}/verify', [CompanyController::class, 'verifyCompany'])->name('verify');
+                Route::put('/{id}/reject', [CompanyController::class, 'rejectVerifiedCompany'])->name('reject');
+                Route::put('/{id}/verify', [CompanyController::class, 'verifyRejectedCompany'])->name('verify-rejected');
             });
 
             // Settings Routes
@@ -263,27 +269,27 @@ Route::prefix('v1')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
                 Route::post('/financial', [SettingController::class, 'updateCommissionRate'])->name('commission-rate');
                 Route::prefix('goals')->name('goals.')->group(function () {
-                    Route::post('/monthly', [SettingController::class, 'createMonthlyGoal'])->name('monthly.create'); // Create a monthly goal
-                    Route::get('/monthly/target', [SettingController::class, 'getMonthlyTarget'])->name('monthly.target'); // Get a monthly goal
-                    Route::put('/monthly/{goalId}', [SettingController::class, 'updateMonthlyGoal'])->name('monthly.update'); // Update a monthly goal
-                    Route::post('/yearly', [SettingController::class, 'createYearlyGoal'])->name('yearly.create');  // Create a yearly goal
-                    Route::get('/yearly/target', [SettingController::class, 'getYearlyTarget'])->name('yearly.target'); // Get a yearly goal
-                    Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly.update'); // Update a yearly goal
-                    Route::delete('/{goal}', [SettingController::class, 'deleteGoal'])->name('delete'); // Delete a Goal
+                    Route::post('/monthly', [SettingController::class, 'createMonthlyGoal'])->name('monthly.create');
+                    Route::get('/monthly/target', [SettingController::class, 'getMonthlyTarget'])->name('monthly.target');
+                    Route::put('/monthly/{goalId}', [SettingController::class, 'updateMonthlyGoal'])->name('monthly.update');
+                    Route::post('/yearly', [SettingController::class, 'createYearlyGoal'])->name('yearly.create');
+                    Route::get('/yearly/target', [SettingController::class, 'getYearlyTarget'])->name('yearly.target');
+                    Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly.update');
+                    Route::delete('/{goal}', [SettingController::class, 'deleteGoal'])->name('delete');
                 });
-                Route::prefix('subscription')->group(function () {
-                    Route::get('/plan/{id}', [SubscriptionPlanController::class, 'show'])->name('settings.subscriptions.plan.show'); // Get details of a specific subscription plan by ID
-                    Route::get('/plans', [SubscriptionPlanController::class, 'index'])->name('settings.subscriptions.index'); // Get all subscription plans
-                    Route::post('/plan', [SubscriptionPlanController::class, 'store'])->name('settings.subscriptions.store'); // Create a new subscription plan
-                    Route::put('/plan/{id}', [SubscriptionPlanController::class, 'update'])->name('settings.subscriptions.update'); // Update an existing subscription plan by ID
-                    Route::delete('/plan/{id}', [SubscriptionPlanController::class, 'destroy'])->name('settings.subscriptions.destroy'); // Delete a subscription plan by ID
-                    Route::get('/check-expired-subscriptions', [SubscriptionController::class, 'checkExpiredSubscriptions']);  // check expired subscriptions and update their status
-                    Route::get('/subscription-reports', [SubscriptionController::class, 'getSubscriptionReports']);  // get subscription reports (total, active, expired, canceled, etc.)
-
+                Route::prefix('subscription')->name('subscriptions.')->group(function () {
+                    Route::get('/plan/{id}', [SubscriptionPlanController::class, 'show'])->name('plan.show');
+                    Route::get('/plans', [SubscriptionPlanController::class, 'index'])->name('index');
+                    Route::post('/plan', [SubscriptionPlanController::class, 'store'])->name('store');
+                    Route::put('/plan/{id}', [SubscriptionPlanController::class, 'update'])->name('update');
+                    Route::delete('/plan/{id}', [SubscriptionPlanController::class, 'destroy'])->name('destroy');
+                    Route::get('/check-expired-subscriptions', [SubscriptionController::class, 'checkExpiredSubscriptions'])->name('check-expired');
+                    Route::get('/subscription-reports', [SubscriptionController::class, 'getSubscriptionReports'])->name('reports');
                 });
             });
         });
     });
+
 });
 
 // routes/api.php
@@ -338,3 +344,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/', [NotificationsController::class, 'destroyAll']);// Delete all notifications
         });
     });
+
+});
+

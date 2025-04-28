@@ -1,22 +1,34 @@
-<div class="p-6 bg-gray-50 rounded-lg shadow-md space-y-4">
-  <h2 class="text-2xl font-semibold">Address</h2>
+<div class="p-6 bg-white rounded-lg shadow-md space-y-4">
+  <h2 class="text-2xl font-semibold">Property Location</h2>
 
   <div
     class="flex flex-col sm:flex-row justify-between gap-4 text-sm text-gray-700"
   >
-    <div><strong>Address:</strong> Cairo 1, Egypt</div>
-    <div><strong>Code:</strong> 2365</div>
+    <div *ngIf="property?.full_address">
+      <strong>Address:</strong> {{ property?.full_address }}
+    </div>
+    <div *ngIf="property?.property_code">
+      <strong>Code:</strong> {{ property?.property_code }}
+    </div>
   </div>
 
   <div class="overflow-hidden rounded-lg">
-    <iframe
-      width="100%"
-      height="300"
-      class="rounded-lg"
-      loading="lazy"
-      allowfullscreen
-      referrerpolicy="no-referrer-when-downgrade"
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110502.60389525066!2d31.188423417488722!3d30.059618470531192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583fa60b21beeb%3A0x79dfb296e8423bba!2sCairo%2C%20Cairo%20Governorate%2C%20Egypt!5e0!3m2!1sen!2seg!4v1716147977355!5m2!1sen!2seg"
-    ></iframe>
+    <div *ngIf="center; else noLocation">
+      <google-map
+        height="300px"
+        width="100%"
+        [center]="center"
+        [zoom]="zoom"
+      >
+        <map-marker
+          [position]="center"
+          [options]="markerOptions" 
+        ></map-marker>
+      </google-map>
+    </div>
+    <ng-template #noLocation>
+      <p class="text-gray-500">The location of this property has not been specified yet.</p>
+    </ng-template>
   </div>
+
 </div>

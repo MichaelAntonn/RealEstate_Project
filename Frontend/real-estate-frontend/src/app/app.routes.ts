@@ -41,7 +41,11 @@ import { ConsultationComponent } from './components/consultation/consultation.co
 
 
 
+
 import { ConsultationFormComponent } from './components/consultation-form/consultation-form.component';
+import { MyPropertiesComponent } from './my-properties/my-properties.component';
+import { AboutUsComponent } from './components/about-us/about-us.component';
+import { RealEstateBlogComponent } from './components/real-estate-blog/real-estate-blog.component';
 
 export const routes: Routes = [
   // Default route
@@ -57,9 +61,11 @@ export const routes: Routes = [
   { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'consultation', component: ConsultationComponent },
+  { path: 'blog', component: RealEstateBlogComponent },
 
   { path: 'consultation-form', component: ConsultationFormComponent },
 
+  { path: 'aboutus', component: AboutUsComponent },
 
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },
@@ -73,13 +79,14 @@ export const routes: Routes = [
     path: 'maindashboard',
     component: MainDashboardComponent,
     children: [
-      { path: 'dashboard', component: UserDashboardComponent },
+      { path: 'statistics', component: UserDashboardComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'favorites', component: FavoritesComponent },
       { path: 'appointments', component: AppointmentsComponent },
       { path: 'messages', component: MessagesComponent },
-      { path: 'statistics', component: StatisticsComponent },
+      // { path: 'statistics', component: StatisticsComponent },
       { path: 'settings', component: SettingsComponent },
+      {path:'properties',component:MyPropertiesComponent},
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

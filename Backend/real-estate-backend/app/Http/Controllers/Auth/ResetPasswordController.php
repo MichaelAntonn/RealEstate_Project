@@ -27,7 +27,7 @@ class ResetPasswordController extends Controller
         // Delete any existing tokens for this email
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-        // Insert the new token into the database
+        // Insert the new token into the database with a short expiration (15 minutes)
         DB::table('password_reset_tokens')->insert([
             'email' => $request->email,
             'token' => ($token),
@@ -39,7 +39,6 @@ class ResetPasswordController extends Controller
 
         // Send the notification
         $user->notify(new ResetPasswordNotification($token));
-
 
         // Return a JSON response
         return response()->json(['success' => 'We have emailed your password reset link!'], 200);
@@ -54,7 +53,7 @@ class ResetPasswordController extends Controller
             'password_confirmation' => 'required',
             'token' => 'required',
         ]);
-
+        
         // Find the token in the database
         $tokenData = DB::table('password_reset_tokens')
             ->where([
@@ -68,7 +67,8 @@ class ResetPasswordController extends Controller
             return response()->json(['error' => 'Invalid token!'], 400);
         }
 
-        $tokenExpired = Carbon::parse($tokenData->created_at)->addMinutes(30)->isPast();
+        // Check if the token has expired (15 minutes)
+        $tokenExpired = Carbon::parse($tokenData->created_at)->addMinutes(15)->isPast();
         if ($tokenExpired) {
             return response()->json(['error' => 'Token has expired!'], 400);
         }
@@ -77,7 +77,7 @@ class ResetPasswordController extends Controller
         User::where('email', $request->email)
             ->update(['password' => Hash::make($request->password)]);
 
-        // Delete the token after the password has been reset
+        // Delete the token after it has been used (to ensure it is used once only)
         DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->delete();

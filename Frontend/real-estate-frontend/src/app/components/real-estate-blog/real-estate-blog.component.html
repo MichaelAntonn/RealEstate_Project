@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+<section class="blog-section">
+    <!-- Hero Section -->
+    <div class="blog-hero">
+      <div class="hero-content">
+        <h1 class="hero-title">Real Estate Insights</h1>
+        <p class="hero-subtitle">Expert analysis, market trends, and buying guides</p>
+        <div class="search-bar">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search articles...">
+          <button class="search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Category Filters -->
+    <div class="category-filters">
+      <button 
+        *ngFor="let cat of ['all', 'Buying', 'Selling', 'Market Trends', 'Interior Design']"
+        [class.active]="activeCategory === cat"
+        (click)="setCategory(cat)"
+      >
+        {{ cat === 'all' ? 'All Articles' : cat }}
+      </button>
+    </div>
+  
+    <!-- Blog Posts Grid -->
+    <div class="blog-grid">
+      <div 
+        class="blog-card fade-in-up" 
+        *ngFor="let post of filteredPosts; let i = index"
+        [routerLink]="['/blog', post.id]"
+        [style.animation-delay.ms]="i * 100"
+      >
+        <div class="card-image">
+          <img [src]="post.featuredImage" [alt]="post.title">
+          <div class="image-overlay">
+            <span class="category-badge">{{ post.category }}</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="post-meta">
+            <span class="author">{{ post.author }}</span>
+            <span class="date">{{ post.date | date:'mediumDate' }}</span>
+            <span class="read-time">{{ post.readTime }} min read</span>
+          </div>
+          <h3 class="post-title">{{ post.title }}</h3>
+          <p class="post-excerpt">{{ post.excerpt }}</p>
+          <div class="tags">
+            <span *ngFor="let tag of post.tags" class="tag">{{ tag }}</span>
+          </div>
+          <div class="post-stats">
+            <button 
+              class="like-btn" 
+              (click)="likePost(post.id, $event)"
+              [class.like-animation]="post.liked"
+            >
+              <i class="far fa-heart"></i> {{ post.likes }}
+            </button>
+            <span class="comments">
+              <i class="far fa-comment"></i> {{ post.comments }} comments
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredPosts.length === 0">
+      <img src="assets/images/no-results.svg" alt="No articles found">
+      <h3>No articles found</h3>
+      <p>Try adjusting your search or filter criteria</p>
+    </div>
+  </section>
+  <app-footer></app-footer>

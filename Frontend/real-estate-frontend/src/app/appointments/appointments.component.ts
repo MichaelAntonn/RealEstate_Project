@@ -1,101 +1,258 @@
 import { Component, OnInit } from '@angular/core';
-import { UserDashboardService } from '../user-dashboard/user-dashboard.service';
-import { Appointment } from '../user-dashboard/models/appointment.model';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+import { 
+  faEye, faTimes, faPlus, faCalendarAlt, 
+  faBed, faBath, faRulerCombined, faLayerGroup, 
+  faCar, faHome 
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faPlus, faPencilAlt, faTrash, faEye, faChevronLeft, faChevronRight, faCalendarAlt, faSave } from '@fortawesome/free-solid-svg-icons';
-import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+
+interface Booking {
+  id: number;
+  property_id: number;
+  user_id: number;
+  booking_date: string;
+  visit_date: string | null;
+  status: 'pending' | 'confirmed' | 'canceled';
+  property?: {
+    id: number;
+    title: string;
+    address: string;
+    city: string;
+    state: string;
+    zip_code: string;
+    price: number;
+    bedrooms: number;
+    bathrooms: number;
+    area: number;
+    floors: number;
+    garage: number;
+    year_built: number;
+    description: string;
+    images: string[];
+    user?: {
+      name: string;
+      email: string;
+      phone: string;
+      
+    };
+  };
+}
+
+interface Property {
+  id: number;
+  title: string;
+  address: string;
+  price: number;
+  images: string[];
+}
+interface ApiResponse<T> {
+  bookings: {
+    current_page: number;
+    data: T[];
+    first_page_url: string;
+    from: number | null;
+    last_page: number;
+    last_page_url: string;
+    links: any[];
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number | null;
+    total: number;
+  };
+}
+
 @Component({
   selector: 'app-appointments',
-  standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule,RouterModule],
   templateUrl: './appointments.component.html',
-  styleUrls: ['./appointments.component.css']
+  styleUrls: ['./appointments.component.css'],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule],
+  standalone: true
 })
 export class AppointmentsComponent implements OnInit {
-  // Icons
-  faSearch = faSearch;
-  faPlus = faPlus;
-  faPencilAlt = faPencilAlt;
-  faTrash = faTrash;
+  // Font Awesome Icons
   faEye = faEye;
-  faChevronLeft = faChevronLeft;
-  faChevronRight = faChevronRight;
+  faTimes = faTimes;
+  faPlus = faPlus;
   faCalendarAlt = faCalendarAlt;
-  faSave = faSave;
-
-  // Data
-  appointments: Appointment[] = [];
-  filteredAppointments: Appointment[] = [];
-  statusStats: any[] = [];
+  faBed = faBed;
+  faBath = faBath;
+  faRulerCombined = faRulerCombined;
+  faLayerGroup = faLayerGroup;
+  faCar = faCar;
+  faHome = faHome;
   
-  // Pagination
+  appointments: Booking[] = [];
+  filteredAppointments: Booking[] = [];
+
+  properties: Property[] = [];
+  selectedAppointment: any = null; // تأكد من أن هذه القيمة تبدأ بـ null
+  
+  currentFilter: string = 'all';
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  totalPages: number = 1;
-  
-  // Modal
-  isEditingAppointment: boolean = false;
-  currentAppointment: Appointment = {
-    date: '',
-    time: '',
-    client: '',
-    phone: '',
-    property_id: 0,
-    purpose: 'Property Viewing',
-    status: 'Scheduled',
-    notes: ''
-  };
+  isSubmitting: boolean = false;
+  paginationInfo: any;
 
-  constructor(private dashboardService: UserDashboardService) { }
+  appointmentForm: FormGroup;
+Math: any;
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private modalService: NgbModal,
+    private toastr: ToastrService
+  ) {
+    this.appointmentForm = this.fb.group({
+      property_id: ['', Validators.required],
+      booking_date: ['', Validators.required],
+      visit_date: ['']
+    });
+  }
 
   ngOnInit(): void {
     this.loadAppointments();
+    this.loadProperties();
   }
-
   loadAppointments(): void {
-    this.dashboardService.getAppointments().subscribe({
-      next: (appointments: Appointment[]) => {
-        this.appointments = appointments.map(appointment => ({
-          ...appointment,
-          property_title: appointment.property_title || 'N/A'
-        }));
-        this.filteredAppointments = [...this.appointments];
-        this.updateStatusStats();
-        this.updatePagination();
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<ApiResponse<Booking>>('http://localhost:8000/api/v1/bookings', { headers }).subscribe({
+      next: (response) => {
+        console.log('API Response:', response);
+        this.appointments = response.bookings.data || [];
+        this.paginationInfo = {
+          current_page: response.bookings.current_page,
+          per_page: response.bookings.per_page,
+          total_items: response.bookings.total,
+          total_pages: response.bookings.last_page
+        };
+        this.filterAppointments(this.currentFilter);
       },
-      error: (error) => {
-        console.error('Error fetching appointments', error);
+      error: (err) => {
+        console.error('Error loading appointments:', err);
+        this.toastr.error('Failed to load appointments', 'Error');
+        if (err.status === 401) {
+          this.authService.logout();
+        }
+      }
+    });
+  }
+  
+  loadProperties(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>('http://localhost:8000/api/v1/properties', { headers }).subscribe({
+      next: (response) => {
+        this.properties = response.data || []; // Adjust based on actual API response
+      },
+      error: (err) => {
+        console.error('Error loading properties:', err);
+        this.toastr.error('Failed to load properties', 'Error');
       }
     });
   }
 
-  updateStatusStats(): void {
-    const statusCounts = this.appointments.reduce((acc, appointment) => {
-      acc[appointment.status] = (acc[appointment.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
 
-    this.statusStats = [
-      { status: 'Scheduled', count: statusCounts['Scheduled'] || 0, icon: 'far fa-calendar-check', color: 'blue' },
-      { status: 'Confirmed', count: statusCounts['Confirmed'] || 0, icon: 'fas fa-check-circle', color: 'green' },
-      { status: 'Pending', count: statusCounts['Pending'] || 0, icon: 'fas fa-hourglass-half', color: 'yellow' },
-      { status: 'Cancelled', count: statusCounts['Cancelled'] || 0, icon: 'fas fa-times-circle', color: 'red' },
-      { status: 'Completed', count: statusCounts['Completed'] || 0, icon: 'fas fa-clipboard-check', color: 'purple' }
-    ];
-  }
-
-  updatePagination(): void {
-    this.totalPages = Math.ceil(this.filteredAppointments.length / this.itemsPerPage);
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
+  filterAppointments(filter: string): void {
+    this.currentFilter = filter;
+    this.currentPage = 1;
+    
+    if (filter === 'all') {
+      this.filteredAppointments = [...this.appointments];
+    } else {
+      this.filteredAppointments = this.appointments.filter(
+        appt => appt.status === filter
+      );
     }
   }
 
-  get paginatedAppointments(): Appointment[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredAppointments.slice(startIndex, startIndex + this.itemsPerPage);
+  viewAppointmentDetails(appointment: Booking): void {
+    this.selectedAppointment = appointment;
+    this.modalService.open(document.getElementById('appointmentDetailsModal'), { size: 'lg' });
+  }
+
+  // openAddAppointmentModal(): void {
+  //   this.modalService.open(document.getElementById('addAppointmentModal'));
+  // }
+
+  submitAppointment(): void {
+    if (this.appointmentForm.invalid) return;
+
+    this.isSubmitting = true;
+    const headers = this.authService.getAuthHeaders();
+    const formData = this.appointmentForm.value;
+
+    this.http.post<Booking>('http://localhost:8000/api/v1/bookings', formData, { headers }).subscribe({
+      next: (response) => {
+        this.toastr.success('Appointment scheduled successfully', 'Success');
+        this.modalService.dismissAll();
+        this.appointmentForm.reset();
+        this.loadAppointments();
+        this.isSubmitting = false;
+      },
+      error: (err) => {
+        console.error('Error scheduling appointment:', err);
+        this.toastr.error('Failed to schedule appointment', 'Error');
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  cancelAppointment(appointment: Booking): void {
+    if (confirm('Are you sure you want to cancel this appointment?')) {
+      const headers = this.authService.getAuthHeaders();
+      // http://localhost:8000/api/v1/bookings/${appointment.id}/status
+      this.http.patch<Booking>(``, 
+        { status: 'canceled' }, 
+        { headers }
+      ).subscribe({
+        next: (response) => {
+          this.toastr.success('Appointment canceled successfully', 'Success');
+          this.loadAppointments();
+        },
+        error: (err) => {
+          console.error('Error canceling appointment:', err);
+          this.toastr.error('Failed to cancel appointment', 'Error');
+        }
+      });
+    }
+  }
+
+  confirmAppointment(appointment: Booking): void {
+    const headers = this.authService.getAuthHeaders();
+    
+    this.http.patch<Booking>(`http://localhost:8000/api/v1/bookings/${appointment.id}/status`, 
+      { status: 'confirmed' }, 
+      { headers }
+    ).subscribe({
+      next: (response) => {
+        this.toastr.success('Appointment confirmed successfully', 'Success');
+        this.modalService.dismissAll();
+        this.loadAppointments();
+      },
+      error: (err) => {
+        console.error('Error confirming appointment:', err);
+        this.toastr.error('Failed to confirm appointment', 'Error');
+      }
+    });
+  }
+
+  // Pagination methods
+  getPages(): number[] {
+    const totalPages = Math.ceil(this.filteredAppointments.length / this.itemsPerPage);
+    return Array(totalPages).fill(0).map((x, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
   }
 
   prevPage(): void {
@@ -105,75 +262,8 @@ export class AppointmentsComponent implements OnInit {
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) {
+    if (this.currentPage * this.itemsPerPage < this.filteredAppointments.length) {
       this.currentPage++;
     }
-  }
-
-  openAddAppointmentModal(): void {
-    this.isEditingAppointment = false;
-    this.currentAppointment = {
-      date: '',
-      time: '',
-      client: '',
-      phone: '',
-      property_id: 0,
-      purpose: 'Property Viewing',
-      status: 'Scheduled',
-      notes: ''
-    };
-  }
-
-  editAppointment(appointment: Appointment): void {
-    this.isEditingAppointment = true;
-    this.currentAppointment = { ...appointment };
-  }
-
-  saveAppointment(): void {
-    if (!this.currentAppointment) return;
-
-    const operation = this.isEditingAppointment && this.currentAppointment.id
-      ? this.dashboardService.updateAppointment(this.currentAppointment.id, this.currentAppointment)
-      : this.dashboardService.createAppointment(this.currentAppointment);
-
-    operation.subscribe({
-      next: (savedAppointment) => {
-        this.loadAppointments(); // Refresh the data
-      },
-      error: (err) => {
-        console.error('Error saving appointment', err);
-      }
-    });
-  }
-
-  deleteAppointment(id: number): void {
-    if (confirm('Are you sure you want to delete this appointment?')) {
-      this.dashboardService.deleteAppointment(id).subscribe({
-        next: () => {
-          this.loadAppointments(); // Refresh the data
-        },
-        error: (err) => {
-          console.error('Error deleting appointment', err);
-        }
-      });
-    }
-  }
-
-  // Add search functionality if needed
-  searchAppointments(term: string): void {
-    if (!term) {
-      this.filteredAppointments = [...this.appointments];
-    } else {
-      const lowerTerm = term.toLowerCase();
-      this.filteredAppointments = this.appointments.filter(appointment =>
-        appointment.client.toLowerCase().includes(lowerTerm) ||
-        (appointment.phone && appointment.phone.includes(term)) ||
-        appointment.property_title?.toLowerCase().includes(lowerTerm) ||
-        appointment.purpose.toLowerCase().includes(lowerTerm) ||
-        appointment.status.toLowerCase().includes(lowerTerm)
-      );
-    }
-    this.currentPage = 1;
-    this.updatePagination();
   }
 }

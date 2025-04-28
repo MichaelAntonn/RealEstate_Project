@@ -37,6 +37,9 @@
     flex-grow: 1;
     max-width: 400px;
 }
+#titleh{
+    background-color: #1c3f86 !important;
+}
 
 .search-box i {
     position: absolute;

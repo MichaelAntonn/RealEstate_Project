@@ -22,6 +22,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 })
 export class PropertyDetailsComponent implements OnInit {
   propertyId: number | null = null;
+  propertyDetails: Property | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,14 +36,18 @@ export class PropertyDetailsComponent implements OnInit {
         this.propertyService.getPropertyBySlug(slug).subscribe({
           next: (property: Property) => {
             this.propertyId = property.id;
+            this.propertyDetails = property; // تخزين تفاصيل العقار هنا
           },
           error: (error) => {
             this.propertyId = null;
+            this.propertyDetails = null;
           },
         });
       } else {
         this.propertyId = null;
+        this.propertyDetails = null;
       }
     });
   }
+  
 }
