@@ -175,7 +175,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       this.showFieldError('email', 'Email required');
       isValid = false;
     } else if (!emailPattern.test(this.email)) {
-      this.showFieldError('email', 'Enter valid email');
+      this.showFieldError('email', 'Enter valid email (e.g., example@gmail.com)');
       isValid = false;
     }
 
@@ -240,7 +240,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       this.showFieldError('company_email', 'Email required');
       isValid = false;
     } else if (!emailPattern.test(this.company.company_email)) {
-      this.showFieldError('company_email', 'Enter valid email');
+      this.showFieldError('company_email', 'Enter valid email (e.g., company@example.com)');
       isValid = false;
     }
 
@@ -292,33 +292,36 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
 
     return isValid;
   }
-
   validateLoginForm(): boolean {
     let isValid = true;
-
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Same pattern used in Signup
+  
     // Clear previous errors
     this.clearFieldError('loginEmail');
     this.clearFieldError('loginPassword');
-
-    // Email
+  
+    // Email validation
     if (!this.loginEmail) {
-      this.showFieldError('loginEmail', 'Email required');
+      this.showFieldError('loginEmail', 'Email is required');
+      isValid = false;
+    } else if (!emailPattern.test(this.loginEmail)) {
+      this.showFieldError('loginEmail', 'Invalid email format (e.g., user@gmail.com)');
       isValid = false;
     }
-
-    // Password
+  
+    // Password validation
     if (!this.loginPassword) {
-      this.showFieldError('loginPassword', 'Password required');
+      this.showFieldError('loginPassword', 'Password is required');
       isValid = false;
     }
-
+  
     if (!isValid) {
-      this.showNotification('Enter email and password', 'error');
+      this.showNotification('errors in the entered data', 'error');
     }
-
+  
     return isValid;
   }
-
+  
   // Form toggle methods
   toggleLoginType() {
     this.userType = this.userType === 'user' ? 'company' : 'user';
