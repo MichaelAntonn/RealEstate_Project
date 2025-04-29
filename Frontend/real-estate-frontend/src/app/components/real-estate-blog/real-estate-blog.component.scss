@@ -1,4 +1,3 @@
-
 @use 'sass:color';
 
 /* Variables */
@@ -347,5 +346,63 @@ $dark-gray: #666;
 
   .blog-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: $dark-gray;
+
+  p {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  color: $text-color;
+
+  .pagination-btn {
+    background: $primary-color;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: color.adjust($primary-color, $lightness: -10%);
+    }
+
+    &:disabled {
+      background: $medium-gray;
+      cursor: not-allowed;
+    }
+  }
+
+  span {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+/* Error State */
+.error-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: $secondary-color;
+
+  p {
+    font-size: 1.2rem;
+    font-weight: 500;
   }
 }
