@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('type');
             $table->text('message')->nullable();
+            $table->boolean('seen')->default(false);
             $table->timestamps();
         });
     }

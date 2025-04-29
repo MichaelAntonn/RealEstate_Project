@@ -1,0 +1,123 @@
+<section class="admin-glass-container">
+    <div class="glass-section">
+      <h2 class="glass-title">
+        Consultants
+        <span class="glass-badge">{{ pagination.total }} Requests</span>
+      </h2>
+      <div class="glass-card-grid" *ngIf="!isLoading && consultants.length > 0">
+        <div
+          class="glass-card"
+          *ngFor="let consultant of consultants; let i = index"
+          (click)="openModal(consultant)"
+          [@cardFadeIn]="i"
+        >
+          <div class="glass-card-avatar">
+            {{ consultant.full_name | slice:0:1 | uppercase }}
+          </div>
+          <div class="glass-card-header">
+            <h3>{{ consultant.full_name }}</h3>
+            <div class="glass-card-actions">
+              <span class="glass-card-id">#{{ consultant.id }}</span>
+              <i
+                class="fas glass-seen-icon"
+                [ngClass]="consultant.seen ? 'fa-eye seen' : 'fa-eye-slash unseen'"
+                (click)="toggleSeenStatus(consultant, $event)"
+                title="{{ consultant.seen ? 'Mark as Unseen' : 'Mark as Seen' }}"
+              ></i>
+            </div>
+          </div>
+          <div class="glass-card-body">
+            <p><strong>Email:</strong> {{ consultant.email }}</p>
+            <p><strong>Phone:</strong> {{ consultant.phone }}</p>
+            <p>
+              <strong>Type:</strong>
+              <span
+                class="glass-type-badge"
+                [ngClass]="{
+                  'residential': consultant.type === 'residential',
+                  'investment': consultant.type === 'investment',
+                  'commercial': consultant.type === 'commercial',
+                  'portfolio': consultant.type === 'portfolio',
+                  'other': consultant.type === 'other'
+                }"
+              >
+                {{ consultant.type | titlecase }}
+              </span>
+            </p>
+            <div class="glass-card-message">
+              <p><strong>Message:</strong> {{ consultant.message ? (consultant.message | slice:0:100) + (consultant.message.length > 100 ? '...' : '') : '-' }}</p>
+            </div>
+            <p><strong>Created At:</strong> {{ consultant.created_at | date:'medium' }}</p>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isLoading" class="glass-empty">Loading...</div>
+      <div *ngIf="!isLoading && consultants.length === 0" class="glass-empty">No consultants found.</div>
+      <div class="glass-pagination" *ngIf="pagination.total > 0">
+        <div class="glass-pagination-numbers">
+          <button
+            *ngFor="let link of pagination.links"
+            class="glass-pagination-number"
+            [class.glass-pagination-active]="link.active"
+            (click)="goToPage(link.label)"
+            [disabled]="!link.url"
+          >
+            {{ link.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Modal -->
+    <div class="glass-modal" *ngIf="selectedConsultant" [@modalSlideIn]>
+      <div class="glass-modal-content">
+        <span class="glass-modal-close" (click)="closeModal()">×</span>
+        <div class="glass-modal-avatar">
+          {{ selectedConsultant.full_name | slice:0:1 | uppercase }}
+        </div>
+        <h2 class="glass-modal-title">{{ selectedConsultant.full_name }}'s Consultation Request</h2>
+        <div class="glass-modal-body">
+          <p><strong>ID:</strong> {{ selectedConsultant.id }}</p>
+          <p><strong>Email:</strong> {{ selectedConsultant.email }}</p>
+          <p><strong>Phone:</strong> {{ selectedConsultant.phone }}</p>
+          <p>
+            <strong>Type:</strong>
+            <span
+              class="glass-type-badge"
+              [ngClass]="{
+                'residential': selectedConsultant.type === 'residential',
+                'investment': selectedConsultant.type === 'investment',
+                'commercial': selectedConsultant.type === 'commercial',
+                'portfolio': selectedConsultant.type === 'portfolio',
+                'other': selectedConsultant.type === 'other'
+              }"
+            >
+              {{ selectedConsultant.type | titlecase }}
+            </span>
+          </p>
+          <p><strong>Created At:</strong> {{ selectedConsultant.created_at | date:'medium' }}</p>
+          <p>
+            <strong>Status:</strong>
+            <span
+              class="glass-seen-badge"
+              [ngClass]="{'seen': selectedConsultant.seen, 'unseen': !selectedConsultant.seen}"
+            >
+              <i class="fas" [ngClass]="selectedConsultant.seen ? 'fa-eye' : 'fa-eye-slash'"></i>
+              {{ selectedConsultant.seen ? 'Seen' : 'Unseen' }}
+            </span>
+          </p>
+          <p><strong>Message:</strong></p>
+          <div class="glass-modal-message">{{ selectedConsultant.message || '-' }}</div>
+        </div>
+        <div class="glass-modal-footer">
+          <button
+            class="glass-btn glass-btn-reject"
+            (click)="deleteConsultant(selectedConsultant.id, selectedConsultant.full_name)"
+          >
+            Delete
+          </button>
+          <button class="glass-btn glass-btn-close" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </section>
