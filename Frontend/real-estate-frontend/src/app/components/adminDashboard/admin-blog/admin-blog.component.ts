@@ -1,10 +1,17 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../services/blog.service';
 import { Blog, PaginatedBlogs } from '../../../models/blog';
 import { ArrayPipe } from '../../../pipes/array.pipe';
+import { normalizeTags } from '../../../utils/normalize-tags';
 import Swal from 'sweetalert2';
+
+// Local interface to ensure tags is always string[]
+interface NormalizedBlog extends Blog {
+  tags: string[];
+}
 
 @Component({
   selector: 'app-admin-blog',
@@ -14,7 +21,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./admin-blog.component.css'],
 })
 export class AdminBlogComponent implements OnInit {
-  blogs: Blog[] = [];
+  blogs: NormalizedBlog[] = [];
   pagination: any = {
     current_page: 1,
     last_page: 1,
@@ -46,7 +53,10 @@ export class AdminBlogComponent implements OnInit {
     this.isLoading = true;
     this.blogService.getBlogs(page).subscribe({
       next: (response) => {
-        this.blogs = response.blogs;
+        this.blogs = response.blogs.map((blog: Blog) => ({
+          ...blog,
+          tags: normalizeTags(blog.tags), // Ensure tags is string[]
+        })) as NormalizedBlog[];
         this.pagination = {
           current_page: response.current_page,
           last_page: response.last_page,
@@ -69,17 +79,6 @@ export class AdminBlogComponent implements OnInit {
     });
   }
 
-  // New method to handle tag parsing
-  getTags(tags: string | string[]): string {
-    try {
-      const tagArray = Array.isArray(tags) ? tags : JSON.parse(tags || '[]');
-      return tagArray.join(', ');
-    } catch (e) {
-      console.error('Error parsing tags:', e);
-      return '';
-    }
-  }
-
   openForm(blog: Blog | null = null): void {
     this.selectedBlog = blog;
     this.showForm = true;
@@ -89,7 +88,7 @@ export class AdminBlogComponent implements OnInit {
         excerpt: blog.excerpt,
         content: blog.content,
         author: blog.author,
-        tags: Array.isArray(blog.tags) ? blog.tags : JSON.parse(blog.tags || '[]'),
+        tags: normalizeTags(blog.tags), // Ensure tags is string[]
         category: blog.category,
         readTime: blog.readTime,
         featuredImage: null,
