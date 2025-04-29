@@ -9,7 +9,17 @@
             <fa-icon [icon]="faHome"></fa-icon> Real Estate
         </a>
 
-        <div class="d-flex align-items-center justify-content-end" >
+        <div class="d-flex align-items-center justify-content-end">
+          <div class="dropdown me-4">
+            <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <fa-icon [icon]="faBell"></fa-icon>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ notificationsCount }}
+              </span>
+            </button>
+            <app-notifications></app-notifications>
+          </div>
+        <!-- <div class="d-flex align-items-center justify-content-end" >
             <div class="dropdown me-4" >
                 <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <fa-icon [icon]="faBell"></fa-icon>
@@ -25,7 +35,7 @@
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-center" href="#">View All</a></li>
                 </ul>
-            </div>
+            </div> -->
 
             <div class="form-check form-switch me-3">
                 <label class="switch">
@@ -86,7 +96,7 @@
                     <fa-icon [icon]="faBuilding"></fa-icon>
                     My Properties
                 </a>
-            </li> 
+            </li>
                 <li class="nav-item">
                 <a routerLink="/maindashboard/favorites" routerLinkActive="active" class="nav-link">
                     <fa-icon [icon]="faHeart"></fa-icon>

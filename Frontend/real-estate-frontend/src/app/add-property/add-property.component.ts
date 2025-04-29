@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -15,6 +15,8 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
 import { map, catchError, debounceTime } from 'rxjs/operators';
 import { Property, PropertyMedia } from '../models/property';
+// import L from 'leaflet';
+declare const L: any;
 
 @Component({
   selector: 'app-add-property',
@@ -23,7 +25,7 @@ import { Property, PropertyMedia } from '../models/property';
   templateUrl: './add-property.component.html',
   styleUrls: ['./add-property.component.css'],
 })
-export class AddPropertyComponent implements OnInit {
+export class AddPropertyComponent implements OnInit, AfterViewInit {
   propertyForm!: FormGroup;
   isEditMode = false;
   propertyId: number | null = null;
@@ -37,6 +39,10 @@ export class AddPropertyComponent implements OnInit {
   isDraggingCover = false;
   currentYear = new Date().getFullYear();
   submitted = false;
+
+  // Map variables
+  private map: any;
+  private marker: any;
 
   propertyTypes = ['land', 'apartment', 'villa', 'office'] as const;
   listingTypes = ['for_sale', 'for_rent'] as const;
@@ -68,7 +74,10 @@ export class AddPropertyComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.checkEditMode();
-    this.propertyForm.statusChanges.subscribe((status) => {});
+  }
+
+  ngAfterViewInit(): void {
+    this.initMap();
   }
 
   initForm(): void {
@@ -118,6 +127,49 @@ export class AddPropertyComponent implements OnInit {
         [Validators.required],
         [this.uniquePropertyCodeValidator()],
       ],
+      latitude: ['', Validators.required],
+      longitude: ['', Validators.required],
+    });
+  }
+
+  initMap(): void {
+    // Initialize map with default coordinates (Cairo)
+    const defaultLat = 30.0444;
+    const defaultLng = 31.2357;
+
+    this.map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    // If we're in edit mode, the marker will be set when loading property data
+    if (!this.isEditMode) {
+      this.setMarker(defaultLat, defaultLng);
+    }
+  }
+
+  private setMarker(lat: number, lng: number): void {
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+    } else {
+      this.marker = L.marker([lat, lng], {
+        draggable: true
+      }).addTo(this.map);
+
+      this.marker.on('dragend', () => {
+        const position = this.marker.getLatLng();
+        this.updateFormCoordinates(position.lat, position.lng);
+      });
+    }
+
+    this.updateFormCoordinates(lat, lng);
+  }
+
+  private updateFormCoordinates(lat: number, lng: number): void {
+    this.propertyForm.patchValue({
+      latitude: lat,
+      longitude: lng
     });
   }
 
@@ -238,9 +290,17 @@ export class AddPropertyComponent implements OnInit {
             ? property.payment_options.join(', ')
             : property.payment_options || '',
           property_code: property.property_code || '',
+          latitude: property.latitude || '',
+          longitude: property.longitude || '',
         };
 
         this.propertyForm.patchValue(safeProperty);
+
+        // Update map if coordinates exist
+        if (property.latitude && property.longitude) {
+          this.setMarker(property.latitude, property.longitude);
+          this.map.setView([property.latitude, property.longitude], 13);
+        }
 
         if (property.media) {
           this.existingMedia = property.media;

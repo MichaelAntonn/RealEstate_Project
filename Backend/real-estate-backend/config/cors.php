@@ -10,7 +10,7 @@ return [
     | your API routes as well as the Sanctum CSRF cookie endpoint.
     |
     */
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie','broadcasting/auth'],
 
     /*
     |--------------------------------------------------------------------------

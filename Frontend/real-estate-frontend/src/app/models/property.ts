@@ -33,6 +33,8 @@ export interface Property {
   cover_image?: string | null;
   property_code: string;
   media?: PropertyMedia[]; // Optional to avoid errors if not loaded
+  longitude: number;
+  latitude: number;
   user_id: number;
   created_at: string;
   updated_at: string;
