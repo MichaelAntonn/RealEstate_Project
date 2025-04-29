@@ -2,25 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NavbarComponent } from "../navbar/navbar.component";
-import { FooterComponent } from "../footer/footer.component";
+import { NavbarComponent } from '../navbar/navbar.component';
+import { FooterComponent } from '../footer/footer.component';
+import { BlogService } from '../../services/blog.service';
+import { Blog, PaginatedBlogs } from '../../models/blog';
+// import { normalizeTags } from '../../utils/normalize-tags'; // Import utility function
 
-interface BlogPost {
-  id: number;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: Date;
-  featuredImage: string;
-  tags: string[];
-  category: 'Buying' | 'Selling' | 'Market Trends' | 'Interior Design';
-  readTime: number;
-  likes: number;
-  comments: number;
-  liked?: boolean;
+
+function normalizeTags(tags: string | string[] | null | undefined): string[] {
+  if (typeof tags === 'string') {
+    return tags.split(',').map((tag: string) => tag.trim());
+  }
+  if (Array.isArray(tags)) {
+    return tags;
+  }
+  return [];
 }
-
 @Component({
   selector: 'app-real-estate-blog',
   standalone: true,
@@ -31,79 +28,87 @@ interface BlogPost {
 export class RealEstateBlogComponent implements OnInit {
   activeCategory: string = 'all';
   searchQuery: string = '';
+  posts: Blog[] = [];
+  currentPage: number = 1;
+  totalPages: number = 1;
+  isLoading: boolean = false;
+  errorMessage: string | null = null;
 
-  posts: BlogPost[] = [
-    {
-      id: 1,
-      title: 'Top 5 Neighborhoods to Invest in for 2024',
-      excerpt: 'Discover the most promising real estate markets this year',
-      content: 'Full article content...',
-      author: 'Michael Johnson',
-      date: new Date(2024, 2, 15),
-      featuredImage: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa',
-      tags: ['investment', 'market trends'],
-      category: 'Market Trends',
-      readTime: 8,
-      likes: 124,
-      comments: 32,
-      liked: false
-    },
-    {
-      id: 2,
-      title: 'Modern Interior Design Trends for Luxury Apartments',
-      excerpt: 'Explore the latest design trends transforming luxury spaces',
-      content: 'Full article content...',
-      author: 'Sarah Williams',
-      date: new Date(2024, 1, 28),
-      featuredImage: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914',
-      tags: ['interior design', 'luxury'],
-      category: 'Interior Design',
-      readTime: 6,
-      likes: 89,
-      comments: 14,
-      liked: false
-    },
-  ];
-
-  get filteredPosts() {
-    let result = this.posts;
-    
-    if (this.activeCategory !== 'all') {
-      result = result.filter(post => post.category === this.activeCategory);
-    }
-    
-    if (this.searchQuery) {
-      const query = this.searchQuery.toLowerCase();
-      result = result.filter(post => 
-        post.title.toLowerCase().includes(query) || 
-        post.excerpt.toLowerCase().includes(query) ||
-        post.tags.some(tag => tag.toLowerCase().includes(query))
-      );
-    }
-    
-    return result;
-  }
-
-  constructor() { }
+  constructor(private blogService: BlogService) {}
 
   ngOnInit(): void {
-    // API call would go here in real implementation
+    this.loadBlogs(this.currentPage);
   }
 
-  setCategory(category: string) {
+  loadBlogs(page: number): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.blogService.getBlogs(page).subscribe({
+      next: (response: PaginatedBlogs) => {
+        this.posts = response.blogs.map((post: Blog) => ({
+          ...post,
+          tags: normalizeTags(post.tags), // Use utility function
+          created_at: new Date(post.created_at),
+          likes: post.likes ?? 0,
+          liked: post.liked ?? false
+        }));
+        this.currentPage = response.current_page;
+        this.totalPages = response.last_page;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching blogs:', error);
+        this.errorMessage = 'Failed to load articles. Please try again later.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // get filteredPosts(): Blog[] {
+  //   let result = this.posts;
+
+  //   if (this.activeCategory !== 'all') {
+  //     result = result.filter(post => post.category === this.activeCategory);
+  //   }
+
+  //   if (this.searchQuery) {
+  //     const query = this.searchQuery.toLowerCase();
+  //     result = result.filter(post =>
+  //       post.title.toLowerCase().includes(query) ||
+  //       post.excerpt.toLowerCase().includes(query) ||
+  //       post.tags.some((tag: string) => tag.toLowerCase().includes(query))
+  //     );
+  //   }
+
+  //   return result;
+  // }
+
+  setCategory(category: string): void {
     this.activeCategory = category;
   }
 
-  likePost(postId: number, event: Event) {
+  likePost(postId: number, event: Event): void {
     event.stopPropagation();
     const post = this.posts.find(p => p.id === postId);
     if (post) {
-      post.likes++;
+      post.likes = (post.likes || 0) + 1;
       post.liked = true;
-      
+
       setTimeout(() => {
         post.liked = false;
       }, 500);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.loadBlogs(this.currentPage + 1);
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.loadBlogs(this.currentPage - 1);
     }
   }
 }

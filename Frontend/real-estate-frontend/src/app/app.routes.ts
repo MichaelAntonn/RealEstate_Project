@@ -47,6 +47,7 @@ import { MyPropertiesComponent } from './my-properties/my-properties.component';
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { RealEstateBlogComponent } from './components/real-estate-blog/real-estate-blog.component';
 import { ContactUsComponent } from './components/adminDashboard/contact-us/contact-us.component';
+import { AdminBlogComponent } from './components/adminDashboard/admin-blog/admin-blog.component';
 
 export const routes: Routes = [
   // Default route
@@ -160,7 +161,13 @@ export const routes: Routes = [
         path: 'contact-us',
         component: ContactUsComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['super-admin'] },
+        data: { roles: ['admin','super-admin'] },
+      },
+      {
+        path: 'blog',
+        component: AdminBlogComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin','super-admin'] },
       },
     ],
   },
