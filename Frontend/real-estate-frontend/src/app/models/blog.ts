@@ -6,14 +6,14 @@ export interface Blog {
     author: string;
     created_at: string | Date;
     featuredImage: string;
-    tags: string[] | string | null; // Allow string, string[], or null
+    tags: string[] | string ; // Allow string, string[], or null
     category: 'Buying' | 'Selling' | 'Market Trends' | 'Interior Design';
     readTime: number;
     likes: number;
     comments: number;
     liked?: boolean;
   }
-  
+
   export interface PaginatedBlogs {
     blogs: Blog[];
     current_page: number;
