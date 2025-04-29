@@ -37,7 +37,7 @@
                                     <th>Booking Date</th>
                                     <th>Visit Date</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                    <!-- <th>Actions</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,14 +66,14 @@
                                             {{ appointment.status | titlecase }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <button class="btn btn-sm btn-outline-primary me-2" (click)="viewAppointmentDetails(appointment)">
                                             <fa-icon [icon]="faEye"></fa-icon>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger" (click)="cancelAppointment(appointment)" *ngIf="appointment.status !== 'canceled'">
                                             <fa-icon [icon]="faTimes"></fa-icon>
                                         </button>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 <tr *ngIf="filteredAppointments.length === 0">
                                     <td colspan="5" class="text-center py-4">
@@ -116,8 +116,7 @@
         </div>
     </div>
 </div>
-
-<!-- Appointment Details Modal -->
+<!-- 
 <div class="modal fade" id="appointmentDetailsModal" tabindex="-1" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -243,7 +242,6 @@
     </div>
 </div>
 
-<!-- Add Appointment Modal -->
 <div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -278,4 +276,8 @@
             </div>
         </div>
     </div>
-</div>
+
+
+
+
+</div> -->
