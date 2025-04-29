@@ -15,20 +15,6 @@
     </div>
 
     <div *ngIf="!isLoading" class="profile-content">
-      <!-- Success and Error Messages -->
-      <div *ngIf="successMessage" class="glass-alert glass-alert-success">
-        {{ successMessage }}
-        <button type="button" class="glass-btn glass-btn-close" (click)="successMessage = ''">
-          &times;
-        </button>
-      </div>
-      <div *ngIf="errorMessage" class="glass-alert glass-alert-danger">
-        {{ errorMessage }}
-        <button type="button" class="glass-btn glass-btn-close" (click)="errorMessage = ''">
-          &times;
-        </button>
-      </div>
-
       <!-- Profile Information -->
       <div class="glass-card profile-card">
         <div class="glass-card-header">
@@ -38,7 +24,7 @@
               Edit Profile
             </button>
             <div *ngIf="isEditing" class="d-flex">
-              <button class="glass-btn glass-btn-accept me-2" (click)="saveProfile()">
+              <button class="glass-btn glass-btn-accept me-2" (click)="saveProfile()" [disabled]="profileForm.invalid">
                 Save
               </button>
               <button class="glass-btn glass-btn-close" (click)="toggleEdit()">
@@ -138,7 +124,8 @@
               Change Password
             </button>
             <div *ngIf="isPasswordEditing" class="d-flex">
-              <button class="glass-btn glass-btn-accept me-2" (click)="changePassword()">
+              <button class="glass-btn glass-btn-accept me-2" (click)="changePassword()" 
+                      [disabled]="passwordForm.invalid || passwordForm.errors?.['mismatch']">
                 Save
               </button>
               <button class="glass-btn glass-btn-close" (click)="togglePasswordEdit()">
