@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -23,7 +23,22 @@ export class ProfileService {
   }
 
   updateProfile(profileData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/profile`, profileData, { headers: this.getHeaders() });
+    return this.http.put(`${this.apiUrl}/profile`, profileData, { headers: this.getHeaders() }).pipe(
+      tap((response: any) => {
+        if (response.user) {
+          this.authService.saveUser(response.user);
+        } else if (response.profile) {
+          const currentUser = this.authService.getUser();
+          const updatedUser = {
+            ...currentUser,
+            first_name: response.profile.first_name,
+            last_name: response.profile.last_name,
+            email: response.profile.email
+          };
+          this.authService.saveUser(updatedUser);
+        }
+      })
+    );
   }
 
   changePassword(passwordData: any): Observable<any> {

@@ -18,6 +18,18 @@ export class AuthService {
     this.loadStoredUser();
   }
 
+  private profileImageSubject = new BehaviorSubject<string>('assets/1.png');
+profileImage$ = this.profileImageSubject.asObservable();
+
+updateProfileImage(image: string): void {
+  const user = this.getUser();
+  if (user) {
+    user.profile_image = image;
+    this.saveUser(user);
+    this.profileImageSubject.next(image);
+  }
+}
+
   // تحميل بيانات المستخدم المخزنة عند بدء الخدمة
   private loadStoredUser(): void {
     const user = this.getUser();
@@ -148,6 +160,15 @@ export class AuthService {
     ['access_token', 'token'].forEach((key) => localStorage.removeItem(key));
   }
 
+  // داخل AuthService class
+getCurrentUserImage(): string {
+  const user = this.getUser();
+  if (user?.profile_image) {
+    return user.profile_image.startsWith('data:image') ? 
+      user.profile_image : user.profile_image;
+  }
+  return 'assets/1.png'; // الصورة الافتراضية
+}
   // مسح جميع التوكنات والبيانات
   private clearAllTokens(): void {
     localStorage.removeItem(this.AUTH_KEY);

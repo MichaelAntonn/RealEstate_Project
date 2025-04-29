@@ -42,18 +42,27 @@ export class MainDashboardComponent {
 
   username: string = '';
   darkMode: boolean = false;
-
+  profileImage: string = 'assets/1.png';
   constructor(private authService: AuthService) {
     this.getUsername();
 
   }
-
   getUsername(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.username = user?.first_name && user?.last_name ? 
       `${user.first_name} ${user.last_name}` : 'User';
+    
+    // معالجة الصورة سواء كانت base64 أو مسارًا
+    if (user?.profile_image) {
+      if (user.profile_image.startsWith('data:image')) {
+        this.profileImage = user.profile_image; // base64
+      } else {
+        this.profileImage = user.profile_image; // مسار ملف
+      }
+    } else {
+      this.profileImage = 'assets/1.png'; // الصورة الافتراضية
+    }
   }
-
   toggleSidebar(): void {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
@@ -66,6 +75,16 @@ export class MainDashboardComponent {
     document.body.classList.toggle('dark-mode');
   }
 
+  // أضف هذه الدالة داخل class MainDashboardComponent
+updateProfileImage(newImage: string): void {
+  // تحديث الصورة في localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  user.profile_image = newImage;
+  localStorage.setItem('user', JSON.stringify(user));
+  
+  // تحديث العرض مباشرة
+  this.getUsername();
+}
   logout() {
     this.authService.logout();
     this.username = 'User'; // Reset username on logout
