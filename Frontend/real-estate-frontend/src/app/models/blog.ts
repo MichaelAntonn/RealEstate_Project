@@ -13,7 +13,7 @@ export interface Blog {
     comments: number;
     liked?: boolean;
   }
-  
+
   export interface PaginatedBlogs {
     blogs: Blog[];
     current_page: number;
