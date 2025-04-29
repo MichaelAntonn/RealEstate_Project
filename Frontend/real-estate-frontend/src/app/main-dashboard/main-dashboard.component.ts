@@ -9,14 +9,20 @@ import {
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ViewEncapsulation } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { 
-  faBars, faBell, faHome, faUser, faBuilding, 
-  faHeart, faCalendarAlt, faEnvelope, faChartLine, 
-  faCog, faSignOutAlt 
-
+import {
+  faBars,
+  faBell,
+  faHome,
+  faUser,
+  faBuilding,
+  faHeart,
+  faCalendarAlt,
+  faEnvelope,
+  faChartLine,
+  faCog,
+  faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 import { NotificationService } from '../services/notification.service';
 import { NotificationsComponent } from '../components/notifications/notifications.component';
 
@@ -30,7 +36,6 @@ import { NotificationsComponent } from '../components/notifications/notification
     RouterLink,
     FontAwesomeModule,
     NotificationsComponent,
-
   ],
   templateUrl: './main-dashboard.component.html',
   styleUrls: ['./main-dashboard.component.css'],
@@ -38,7 +43,7 @@ import { NotificationsComponent } from '../components/notifications/notification
 })
 export class MainDashboardComponent {
   // Font Awesome Icons
-  
+
   faBars = faBars;
   faBell = faBell;
   faHome = faHome;
@@ -61,8 +66,12 @@ export class MainDashboardComponent {
     private authService: AuthService,
     private notificationService: NotificationService,
     private router: Router
-  ) {}
+  ) {
+    this.getUsername();
+  }
+  // constructor(private authService: AuthService) {
 
+  // }
   ngOnInit() {
     // Load username
     this.loadUsername();
@@ -76,9 +85,11 @@ export class MainDashboardComponent {
     this.loadNotificationsCount();
 
     // Subscribe to real-time notifications
-    this.subscription = this.notificationService.notifications$.subscribe(() => {
-      this.loadNotificationsCount();
-    });
+    this.subscription = this.notificationService.notifications$.subscribe(
+      () => {
+        this.loadNotificationsCount();
+      }
+    );
   }
 
   loadUsername() {
@@ -93,26 +104,25 @@ export class MainDashboardComponent {
   loadNotificationsCount() {
     this.notificationService.getNotifications(1, 10, 'unread').subscribe({
       next: (response) => {
-        this.notificationsCount = response.data?.data?.length || response.data?.length || 0;
+        this.notificationsCount =
+          response.data?.data?.length || response.data?.length || 0;
         console.log('Notifications count:', this.notificationsCount);
       },
       error: (error) => {
         console.error('Error fetching notifications count:', error);
-      }
+      },
     });
   }
 
-  
   profileImage: string = 'assets/1.png';
-  constructor(private authService: AuthService) {
-    this.getUsername();
 
-  }
   getUsername(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.username = user?.first_name && user?.last_name ? 
-      `${user.first_name} ${user.last_name}` : 'User';
-    
+    this.username =
+      user?.first_name && user?.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : 'User';
+
     // معالجة الصورة سواء كانت base64 أو مسارًا
     if (user?.profile_image) {
       if (user.profile_image.startsWith('data:image')) {
@@ -134,7 +144,6 @@ export class MainDashboardComponent {
     document.body.classList.toggle('dark-mode');
   }
 
-
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
@@ -143,19 +152,15 @@ export class MainDashboardComponent {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-}
 
   // أضف هذه الدالة داخل class MainDashboardComponent
-updateProfileImage(newImage: string): void {
-  // تحديث الصورة في localStorage
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  user.profile_image = newImage;
-  localStorage.setItem('user', JSON.stringify(user));
-  
-  // تحديث العرض مباشرة
-  this.getUsername();
-}
- 
+  updateProfileImage(newImage: string): void {
+    // تحديث الصورة في localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    user.profile_image = newImage;
+    localStorage.setItem('user', JSON.stringify(user));
 
+    // تحديث العرض مباشرة
+    this.getUsername();
+  }
 }
-
