@@ -29,16 +29,16 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
 import { AddPropertyComponent } from './add-property/add-property.component';
 import { PropertyDetailsComponent } from './components/property-details/property-details.component';
 import { propertyOwnerGuard } from './guards/property-owner.guard';
+import { ConsultationComponent } from './components/consultation/consultation.component';
 
 // Company imports
 import { CompanyLayoutComponent } from './components/companyDashboard/company-layout/company-layout.component';
 import { CompanyPropertiesComponent } from './components/companyDashboard/company-properties/company-properties.component';
 import { CompanyBookingsComponent } from './components/companyDashboard/company-bookings/company-bookings.component';
 import { CompanyStatisticsComponent } from './components/companyDashboard/company-statistics/company-statistics.component';
+import { SubscriptionInterfaceComponent } from './subscription-interface/subscription-interface.component';
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
-
-import { ConsultationComponent } from './components/consultation/consultation.component';
-
+import { CompanySubscriptionComponent } from './components/companyDashboard/company-subscription/company-subscription.component';
 
 
 
@@ -102,7 +102,12 @@ export const routes: Routes = [
       { path: 'properties', component: CompanyPropertiesComponent },
       { path: 'bookings', component: CompanyBookingsComponent },
       { path: 'statistics', component: CompanyStatisticsComponent },
-      { path: '', redirectTo: 'statistics', pathMatch: 'full' },
+      { path: 'subscription', component: SubscriptionInterfaceComponent },
+      { path: 'company-layout', component: CompanyLayoutComponent },
+      { path: 'SubscriptionInterface', component: CompanySubscriptionComponent },
+
+
+      { path: '', redirectTo: 'SubscriptionInterface', pathMatch: 'full' },
     ],
   },
 
