@@ -20,11 +20,11 @@ export class ConsultantService {
   }
   // Submit consultation form
   submitConsultation(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/consultants`, data);
+    return this.http.post(`${this.apiUrl}/api/v1/consultants`, data);
   }
  // Fetch paginated consultants
  getConsultants(page: number = 1): Observable<any> {
-  return this.http.get(`${this.apiUrl}/admin/consultants?page=${page}`, {
+  return this.http.get(`${this.apiUrl}/api/v1/admin/consultants?page=${page}`, {
     headers: this.getHeaders(),
     withCredentials: true,
   });
@@ -32,7 +32,7 @@ export class ConsultantService {
 
 // Mark a consultant as seen
 markAsSeen(id: number): Observable<any> {
-  return this.http.get(`${this.apiUrl}/admin/consultants/${id}`, {
+  return this.http.get(`${this.apiUrl}/api/v1/admin/consultants/${id}`, {
     headers: this.getHeaders(),
     withCredentials: true,
   });
@@ -40,7 +40,7 @@ markAsSeen(id: number): Observable<any> {
 
 // Toggle seen status
 toggleSeen(id: number): Observable<any> {
-  return this.http.patch(`${this.apiUrl}/admin/consultants/${id}/seen`, {}, {
+  return this.http.patch(`${this.apiUrl}/api/v1/admin/consultants/${id}/seen`, {}, {
     headers: this.getHeaders(),
     withCredentials: true,
   });
@@ -48,7 +48,7 @@ toggleSeen(id: number): Observable<any> {
 
 // Delete a consultant by ID
 deleteConsultant(id: number): Observable<any> {
-  return this.http.delete(`${this.apiUrl}/admin/consultants/${id}`, {
+  return this.http.delete(`${this.apiUrl}/api/v1/admin/consultants/${id}`, {
     headers: this.getHeaders(),
     withCredentials: true,
   });
