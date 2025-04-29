@@ -5,23 +5,33 @@
       <div class="bg-orange-500 px-6 py-4">
         <h2 class="text-2xl font-bold text-white flex items-center">
           <i class="fas fa-home mr-2"></i>
-          {{ isEditMode ? 'Edit Property' : 'Add New Property' }}
+          {{ isEditMode ? "Edit Property" : "Add New Property" }}
         </h2>
       </div>
 
       <!-- Card Body -->
       <div class="p-6">
-        <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()" class="space-y-8" enctype="multipart/form-data">
+        <form
+          [formGroup]="propertyForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-8"
+          enctype="multipart/form-data"
+        >
           <!-- Basic Information -->
           <div class="space-y-4">
             <div class="flex items-center border-b border-orange-200 pb-2">
               <i class="fas fa-info-circle text-orange-500 mr-2"></i>
-              <h3 class="text-lg font-semibold text-gray-800">Basic Information</h3>
+              <h3 class="text-lg font-semibold text-gray-800">
+                Basic Information
+              </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Title -->
               <div>
-                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="title"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-heading text-orange-500 mr-1"></i> Title*
                 </label>
                 <input
@@ -29,24 +39,31 @@
                   id="title"
                   formControlName="title"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('title')?.invalid && (propertyForm.get('title')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('title')?.invalid &&
+                    (propertyForm.get('title')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('title')?.invalid && (propertyForm.get('title')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('title')?.errors?.['required']) {
-                      Title is required
-                    } @else if (propertyForm.get('title')?.errors?.['maxlength']) {
-                      Title must not exceed 255 characters
-                    } @else if (propertyForm.get('title')?.errors?.['serverError']) {
-                      {{ propertyForm.get('title')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('title')?.invalid &&
+                (propertyForm.get('title')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('title')?.errors?.['required']) { Title
+                  is required } @else if
+                  (propertyForm.get('title')?.errors?.['maxlength']) { Title
+                  must not exceed 255 characters } @else if
+                  (propertyForm.get('title')?.errors?.['serverError']) {
+                  {{ propertyForm.get('title')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Slug -->
               <div>
-                <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="slug"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-link text-orange-500 mr-1"></i> Slug*
                 </label>
                 <input
@@ -54,123 +71,162 @@
                   id="slug"
                   formControlName="slug"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('slug')?.invalid && (propertyForm.get('slug')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('slug')?.invalid &&
+                    (propertyForm.get('slug')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('slug')?.invalid && (propertyForm.get('slug')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('slug')?.errors?.['required']) {
-                      Slug is required
-                    } @else if (propertyForm.get('slug')?.errors?.['slugTaken']) {
-                      This slug is already taken
-                    } @else if (propertyForm.get('slug')?.errors?.['serverError']) {
-                      {{ propertyForm.get('slug')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('slug')?.invalid &&
+                (propertyForm.get('slug')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('slug')?.errors?.['required']) { Slug is
+                  required } @else if
+                  (propertyForm.get('slug')?.errors?.['slugTaken']) { This slug
+                  is already taken } @else if
+                  (propertyForm.get('slug')?.errors?.['serverError']) {
+                  {{ propertyForm.get('slug')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Description -->
               <div class="md:col-span-2">
-                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-align-left text-orange-500 mr-1"></i> Description*
+                <label
+                  for="description"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-align-left text-orange-500 mr-1"></i>
+                  Description*
                 </label>
                 <textarea
                   id="description"
                   rows="3"
                   formControlName="description"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('description')?.invalid && (propertyForm.get('description')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('description')?.invalid &&
+                    (propertyForm.get('description')?.touched || submitted)
+                  "
                 ></textarea>
-                @if (propertyForm.get('description')?.invalid && (propertyForm.get('description')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('description')?.errors?.['required']) {
-                      Description is required
-                    } @else if (propertyForm.get('description')?.errors?.['serverError']) {
-                      {{ propertyForm.get('description')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('description')?.invalid &&
+                (propertyForm.get('description')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('description')?.errors?.['required']) {
+                  Description is required } @else if
+                  (propertyForm.get('description')?.errors?.['serverError']) {
+                  {{ propertyForm.get('description')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Property Type -->
               <div>
-                <label for="type" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-building text-orange-500 mr-1"></i> Property Type*
+                <label
+                  for="type"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-building text-orange-500 mr-1"></i> Property
+                  Type*
                 </label>
                 <select
                   id="type"
                   formControlName="type"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('type')?.invalid && (propertyForm.get('type')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('type')?.invalid &&
+                    (propertyForm.get('type')?.touched || submitted)
+                  "
                 >
                   <option value="" disabled>Select Type</option>
                   @for (type of propertyTypes; track type) {
-                    <option [value]="type">{{ type | titlecase }}</option>
+                  <option [value]="type">{{ type | titlecase }}</option>
                   }
                 </select>
-                @if (propertyForm.get('type')?.invalid && (propertyForm.get('type')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('type')?.errors?.['required']) {
-                      Property type is required
-                    } @else if (propertyForm.get('type')?.errors?.['serverError']) {
-                      {{ propertyForm.get('type')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('type')?.invalid &&
+                (propertyForm.get('type')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('type')?.errors?.['required']) {
+                  Property type is required } @else if
+                  (propertyForm.get('type')?.errors?.['serverError']) {
+                  {{ propertyForm.get('type')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Listing Type -->
               <div>
-                <label for="listing_type" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="listing_type"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-tag text-orange-500 mr-1"></i> Listing Type*
                 </label>
                 <select
                   id="listing_type"
                   formControlName="listing_type"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('listing_type')?.invalid && (propertyForm.get('listing_type')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('listing_type')?.invalid &&
+                    (propertyForm.get('listing_type')?.touched || submitted)
+                  "
                 >
                   <option value="" disabled>Select Listing Type</option>
                   @for (type of listingTypes; track type) {
-                    <option [value]="type">{{ type | titlecase }}</option>
+                  <option [value]="type">{{ type | titlecase }}</option>
                   }
                 </select>
-                @if (propertyForm.get('listing_type')?.invalid && (propertyForm.get('listing_type')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('listing_type')?.errors?.['required']) {
-                      Listing type is required
-                    } @else if (propertyForm.get('listing_type')?.errors?.['serverError']) {
-                      {{ propertyForm.get('listing_type')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('listing_type')?.invalid &&
+                (propertyForm.get('listing_type')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('listing_type')?.errors?.['required']) {
+                  Listing type is required } @else if
+                  (propertyForm.get('listing_type')?.errors?.['serverError']) {
+                  {{ propertyForm.get('listing_type')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Construction Status -->
               <div>
-                <label for="construction_status" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-hard-hat text-orange-500 mr-1"></i> Construction Status*
+                <label
+                  for="construction_status"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-hard-hat text-orange-500 mr-1"></i>
+                  Construction Status*
                 </label>
                 <select
                   id="construction_status"
                   formControlName="construction_status"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('construction_status')?.invalid && (propertyForm.get('construction_status')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('construction_status')?.invalid &&
+                    (propertyForm.get('construction_status')?.touched ||
+                      submitted)
+                  "
                 >
                   <option value="" disabled>Select Status</option>
                   @for (status of constructionStatuses; track status) {
-                    <option [value]="status">{{ status | titlecase }}</option>
+                  <option [value]="status">{{ status | titlecase }}</option>
                   }
                 </select>
-                @if (propertyForm.get('construction_status')?.invalid && (propertyForm.get('construction_status')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('construction_status')?.errors?.['required']) {
-                      Construction status is required
-                    } @else if (propertyForm.get('construction_status')?.errors?.['serverError']) {
-                      {{ propertyForm.get('construction_status')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('construction_status')?.invalid &&
+                (propertyForm.get('construction_status')?.touched || submitted))
+                {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if
+                  (propertyForm.get('construction_status')?.errors?.['required'])
+                  { Construction status is required } @else if
+                  (propertyForm.get('construction_status')?.errors?.['serverError'])
+                  {
+                  {{ propertyForm.get('construction_status')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
             </div>
@@ -180,12 +236,17 @@
           <div class="space-y-4">
             <div class="flex items-center border-b border-orange-200 pb-2">
               <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
-              <h3 class="text-lg font-semibold text-gray-800">Location Information</h3>
+              <h3 class="text-lg font-semibold text-gray-800">
+                Location Information
+              </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <!-- City -->
               <div>
-                <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="city"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-city text-orange-500 mr-1"></i> City*
                 </label>
                 <input
@@ -193,46 +254,62 @@
                   id="city"
                   formControlName="city"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('city')?.invalid && (propertyForm.get('city')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('city')?.invalid &&
+                    (propertyForm.get('city')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('city')?.invalid && (propertyForm.get('city')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('city')?.errors?.['required']) {
-                      City is required
-                    } @else if (propertyForm.get('city')?.errors?.['serverError']) {
-                      {{ propertyForm.get('city')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('city')?.invalid &&
+                (propertyForm.get('city')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('city')?.errors?.['required']) { City is
+                  required } @else if
+                  (propertyForm.get('city')?.errors?.['serverError']) {
+                  {{ propertyForm.get('city')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- District -->
               <div>
-                <label for="district" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-map-marked-alt text-orange-500 mr-1"></i> District*
+                <label
+                  for="district"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-map-marked-alt text-orange-500 mr-1"></i>
+                  District*
                 </label>
                 <input
                   type="text"
                   id="district"
                   formControlName="district"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('district')?.invalid && (propertyForm.get('district')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('district')?.invalid &&
+                    (propertyForm.get('district')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('district')?.invalid && (propertyForm.get('district')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('district')?.errors?.['required']) {
-                      District is required
-                    } @else if (propertyForm.get('district')?.errors?.['serverError']) {
-                      {{ propertyForm.get('district')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('district')?.invalid &&
+                (propertyForm.get('district')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('district')?.errors?.['required']) {
+                  District is required } @else if
+                  (propertyForm.get('district')?.errors?.['serverError']) {
+                  {{ propertyForm.get('district')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Full Address -->
               <div>
-                <label for="full_address" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-address-card text-orange-500 mr-1"></i> Full Address
+                <label
+                  for="full_address"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-address-card text-orange-500 mr-1"></i> Full
+                  Address
                 </label>
                 <input
                   type="text"
@@ -248,16 +325,24 @@
           <div class="space-y-4">
             <div class="flex items-center border-b border-orange-200 pb-2">
               <i class="fas fa-dollar-sign text-orange-500 mr-2"></i>
-              <h3 class="text-lg font-semibold text-gray-800">Pricing & Details</h3>
+              <h3 class="text-lg font-semibold text-gray-800">
+                Pricing & Details
+              </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <!-- Price -->
               <div>
-                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-money-bill-wave text-orange-500 mr-1"></i> Price*
+                <label
+                  for="price"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-money-bill-wave text-orange-500 mr-1"></i>
+                  Price*
                 </label>
                 <div class="relative rounded-md shadow-sm">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                  >
                     <span class="text-gray-500 sm:text-sm">$</span>
                   </div>
                   <input
@@ -266,26 +351,34 @@
                     formControlName="price"
                     min="0"
                     class="block w-full pl-7 pr-12 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                    [class.border-red-500]="propertyForm.get('price')?.invalid && (propertyForm.get('price')?.touched || submitted)"
+                    [class.border-red-500]="
+                      propertyForm.get('price')?.invalid &&
+                      (propertyForm.get('price')?.touched || submitted)
+                    "
                   />
                 </div>
-                @if (propertyForm.get('price')?.invalid && (propertyForm.get('price')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('price')?.errors?.['required']) {
-                      Price is required
-                    } @else if (propertyForm.get('price')?.errors?.['min']) {
-                      Price must be 0 or greater
-                    } @else if (propertyForm.get('price')?.errors?.['serverError']) {
-                      {{ propertyForm.get('price')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('price')?.invalid &&
+                (propertyForm.get('price')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('price')?.errors?.['required']) { Price
+                  is required } @else if
+                  (propertyForm.get('price')?.errors?.['min']) { Price must be 0
+                  or greater } @else if
+                  (propertyForm.get('price')?.errors?.['serverError']) {
+                  {{ propertyForm.get('price')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Area -->
               <div>
-                <label for="area" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-ruler-combined text-orange-500 mr-1"></i> Area (sq ft)*
+                <label
+                  for="area"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-ruler-combined text-orange-500 mr-1"></i>
+                  Area (sq ft)*
                 </label>
                 <div class="relative rounded-md shadow-sm">
                   <input
@@ -294,53 +387,70 @@
                     formControlName="area"
                     min="0"
                     class="block w-full pl-4 pr-12 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                    [class.border-red-500]="propertyForm.get('area')?.invalid && (propertyForm.get('area')?.touched || submitted)"
+                    [class.border-red-500]="
+                      propertyForm.get('area')?.invalid &&
+                      (propertyForm.get('area')?.touched || submitted)
+                    "
                   />
-                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+                  >
                     <span class="text-gray-500 sm:text-sm">sq ft</span>
                   </div>
                 </div>
-                @if (propertyForm.get('area')?.invalid && (propertyForm.get('area')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('area')?.errors?.['required']) {
-                      Area is required
-                    } @else if (propertyForm.get('area')?.errors?.['min']) {
-                      Area must be 0 or greater
-                    } @else if (propertyForm.get('area')?.errors?.['serverError']) {
-                      {{ propertyForm.get('area')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('area')?.invalid &&
+                (propertyForm.get('area')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('area')?.errors?.['required']) { Area is
+                  required } @else if
+                  (propertyForm.get('area')?.errors?.['min']) { Area must be 0
+                  or greater } @else if
+                  (propertyForm.get('area')?.errors?.['serverError']) {
+                  {{ propertyForm.get('area')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Property Code -->
               <div>
-                <label for="property_code" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-barcode text-orange-500 mr-1"></i> Property Code*
+                <label
+                  for="property_code"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-barcode text-orange-500 mr-1"></i> Property
+                  Code*
                 </label>
                 <input
                   type="text"
                   id="property_code"
                   formControlName="property_code"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('property_code')?.invalid && (propertyForm.get('property_code')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('property_code')?.invalid &&
+                    (propertyForm.get('property_code')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('property_code')?.invalid && (propertyForm.get('property_code')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('property_code')?.errors?.['required']) {
-                      Property code is required
-                    } @else if (propertyForm.get('property_code')?.errors?.['propertyCodeTaken']) {
-                      This property code is already taken
-                    } @else if (propertyForm.get('property_code')?.errors?.['serverError']) {
-                      {{ propertyForm.get('property_code')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('property_code')?.invalid &&
+                (propertyForm.get('property_code')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('property_code')?.errors?.['required'])
+                  { Property code is required } @else if
+                  (propertyForm.get('property_code')?.errors?.['propertyCodeTaken'])
+                  { This property code is already taken } @else if
+                  (propertyForm.get('property_code')?.errors?.['serverError']) {
+                  {{ propertyForm.get('property_code')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Legal Status -->
               <div>
-                <label for="legal_status" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="legal_status"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-gavel text-orange-500 mr-1"></i> Legal Status
                 </label>
                 <select
@@ -350,13 +460,16 @@
                 >
                   <option value="">Select Status</option>
                   @for (status of legalStatuses; track status) {
-                    <option [value]="status">{{ status | titlecase }}</option>
+                  <option [value]="status">{{ status | titlecase }}</option>
                   }
                 </select>
               </div>
               <!-- Bedrooms -->
               <div>
-                <label for="bedrooms" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="bedrooms"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-bed text-orange-500 mr-1"></i> Bedrooms
                 </label>
                 <input
@@ -365,22 +478,29 @@
                   formControlName="bedrooms"
                   min="0"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('bedrooms')?.invalid && (propertyForm.get('bedrooms')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('bedrooms')?.invalid &&
+                    (propertyForm.get('bedrooms')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('bedrooms')?.invalid && (propertyForm.get('bedrooms')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('bedrooms')?.errors?.['min']) {
-                      Bedrooms must be 0 or greater
-                    } @else if (propertyForm.get('bedrooms')?.errors?.['serverError']) {
-                      {{ propertyForm.get('bedrooms')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('bedrooms')?.invalid &&
+                (propertyForm.get('bedrooms')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('bedrooms')?.errors?.['min']) { Bedrooms
+                  must be 0 or greater } @else if
+                  (propertyForm.get('bedrooms')?.errors?.['serverError']) {
+                  {{ propertyForm.get('bedrooms')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Bathrooms -->
               <div>
-                <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  for="bathrooms"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
                   <i class="fas fa-bath text-orange-500 mr-1"></i> Bathrooms
                 </label>
                 <input
@@ -389,23 +509,31 @@
                   formControlName="bathrooms"
                   min="0"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
-                  [class.border-red-500]="propertyForm.get('bathrooms')?.invalid && (propertyForm.get('bathrooms')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('bathrooms')?.invalid &&
+                    (propertyForm.get('bathrooms')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('bathrooms')?.invalid && (propertyForm.get('bathrooms')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('bathrooms')?.errors?.['min']) {
-                      Bathrooms must be 0 or greater
-                    } @else if (propertyForm.get('bathrooms')?.errors?.['serverError']) {
-                      {{ propertyForm.get('bathrooms')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('bathrooms')?.invalid &&
+                (propertyForm.get('bathrooms')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('bathrooms')?.errors?.['min']) {
+                  Bathrooms must be 0 or greater } @else if
+                  (propertyForm.get('bathrooms')?.errors?.['serverError']) {
+                  {{ propertyForm.get('bathrooms')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Building Year -->
               <div>
-                <label for="building_year" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-calendar-alt text-orange-500 mr-1"></i> Building Year
+                <label
+                  for="building_year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-calendar-alt text-orange-500 mr-1"></i>
+                  Building Year
                 </label>
                 <input
                   type="date"
@@ -414,17 +542,23 @@
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
                   [max]="currentYear + '-12-31'"
                   [min]="'1900-01-01'"
-                  [class.border-red-500]="propertyForm.get('building_year')?.invalid && (propertyForm.get('building_year')?.touched || submitted)"
+                  [class.border-red-500]="
+                    propertyForm.get('building_year')?.invalid &&
+                    (propertyForm.get('building_year')?.touched || submitted)
+                  "
                 />
-                @if (propertyForm.get('building_year')?.invalid && (propertyForm.get('building_year')?.touched || submitted)) {
-                  <div class="text-red-600 text-sm mt-1">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    @if (propertyForm.get('building_year')?.errors?.['invalidYear']) {
-                      Building year must be between 1900 and {{ currentYear }}
-                    } @else if (propertyForm.get('building_year')?.errors?.['serverError']) {
-                      {{ propertyForm.get('building_year')?.errors?.['serverError'] }}
-                    }
-                  </div>
+                @if (propertyForm.get('building_year')?.invalid &&
+                (propertyForm.get('building_year')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if
+                  (propertyForm.get('building_year')?.errors?.['invalidYear']) {
+                  Building year must be between 1900 and {{ currentYear }}
+                  } @else if
+                  (propertyForm.get('building_year')?.errors?.['serverError']) {
+                  {{ propertyForm.get('building_year')?.errors?.['serverError'] }}
+                  }
+                </div>
                 }
               </div>
               <!-- Furnished -->
@@ -443,8 +577,12 @@
               </div>
               <!-- Amenities -->
               <div class="md:col-span-2">
-                <label for="amenities" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-swimming-pool text-orange-500 mr-1"></i> Amenities (comma-separated)
+                <label
+                  for="amenities"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-swimming-pool text-orange-500 mr-1"></i>
+                  Amenities (comma-separated)
                 </label>
                 <input
                   type="text"
@@ -456,8 +594,12 @@
               </div>
               <!-- Payment Options -->
               <div class="md:col-span-2">
-                <label for="payment_options" class="block text-sm font-medium text-gray-700 mb-1">
-                  <i class="fas fa-credit-card text-orange-500 mr-1"></i> Payment Options (comma-separated)
+                <label
+                  for="payment_options"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  <i class="fas fa-credit-card text-orange-500 mr-1"></i>
+                  Payment Options (comma-separated)
                 </label>
                 <input
                   type="text"
@@ -498,28 +640,36 @@
                 />
                 <p class="text-gray-500">
                   Drag and drop image here or
-                  <label for="cover_image" class="text-orange-500 cursor-pointer hover:underline">
+                  <label
+                    for="cover_image"
+                    class="text-orange-500 cursor-pointer hover:underline"
+                  >
                     browse
                   </label>
                 </p>
               </div>
               @if (coverPreviewUrl) {
-                <div class="relative mt-2">
-                  <img [src]="coverPreviewUrl" class="h-32 w-auto rounded-md" alt="Cover Image Preview" />
-                  <button
-                    type="button"
-                    class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                    (click)="removeCoverImage()"
-                  >
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
+              <div class="relative mt-2">
+                <img
+                  [src]="coverPreviewUrl"
+                  class="h-32 w-auto rounded-md"
+                  alt="Cover Image Preview"
+                />
+                <button
+                  type="button"
+                  class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                  (click)="removeCoverImage()"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
               }
             </div>
             <!-- Additional Media -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-images text-orange-500 mr-1"></i> Additional Media
+                <i class="fas fa-images text-orange-500 mr-1"></i> Additional
+                Media
               </label>
               <div
                 class="border-2 border-dashed rounded-md p-4 text-center"
@@ -539,60 +689,151 @@
                 />
                 <p class="text-gray-500">
                   Drag and drop images/videos here or
-                  <label for="media_files" class="text-orange-500 cursor-pointer hover:underline">
+                  <label
+                    for="media_files"
+                    class="text-orange-500 cursor-pointer hover:underline"
+                  >
                     browse
                   </label>
                 </p>
               </div>
               @if (previewUrls.length > 0) {
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  @for (preview of previewUrls; track preview.url) {
-                    <div class="relative">
-                      @if (preview.type.startsWith('image')) {
-                        <img [src]="preview.url" class="h-32 w-full object-cover rounded-md" alt="Media Preview" />
-                      } @else {
-                        <video [src]="preview.url" controls class="h-32 w-full object-cover rounded-md"></video>
-                      }
-                      <button
-                        type="button"
-                        class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                        (click)="removeMedia(preview.url)"
-                      >
-                        <i class="fas fa-times"></i>
-                      </button>
-                    </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                @for (preview of previewUrls; track preview.url) {
+                <div class="relative">
+                  @if (preview.type.startsWith('image')) {
+                  <img
+                    [src]="preview.url"
+                    class="h-32 w-full object-cover rounded-md"
+                    alt="Media Preview"
+                  />
+                  } @else {
+                  <video
+                    [src]="preview.url"
+                    controls
+                    class="h-32 w-full object-cover rounded-md"
+                  ></video>
                   }
+                  <button
+                    type="button"
+                    class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                    (click)="removeMedia(preview.url)"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
+                }
+              </div>
               }
               <!-- Existing Media -->
               @if (existingMedia.length > 0) {
-                <div class="mt-4">
-                  <h4 class="text-sm font-medium text-gray-700 mb-2">Existing Media</h4>
-                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    @for (media of existingMedia; track media.id) {
-                      <div class="relative">
-                        @if (media.MediaType === 'image') {
-                          <img [src]="media.MediaURL" class="h-32 w-full object-cover rounded-md" alt="Existing Media" />
-                        } @else {
-                          <video [src]="media.MediaURL" controls class="h-32 w-full object-cover rounded-md"></video>
-                        }
-                        <button
-                          type="button"
-                          class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                          (click)="markMediaForDeletion(media.id)"
-                        >
-                          <i class="fas fa-times"></i>
-                        </button>
-                      </div>
+              <div class="mt-4">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">
+                  Existing Media
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  @for (media of existingMedia; track media.id) {
+                  <div class="relative">
+                    @if (media.MediaType === 'image') {
+                    <img
+                      [src]="media.MediaURL"
+                      class="h-32 w-full object-cover rounded-md"
+                      alt="Existing Media"
+                    />
+                    } @else {
+                    <video
+                      [src]="media.MediaURL"
+                      controls
+                      class="h-32 w-full object-cover rounded-md"
+                    ></video>
                     }
+                    <button
+                      type="button"
+                      class="absolute top-0 right-0 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                      (click)="markMediaForDeletion(media.id)"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
                   </div>
+                  }
                 </div>
+              </div>
               }
             </div>
           </div>
-
+          <!-- Location Section -->
+          <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Location</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <div id="map" style="height: 400px; width: 100%"></div>
+              </div>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Latitude*</label
+                  >
+                  <input
+                    type="text"
+                    formControlName="latitude"
+                    readonly
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('latitude')?.invalid &&
+                      (propertyForm.get('latitude')?.dirty ||
+                        propertyForm.get('latitude')?.touched ||
+                        submitted)
+                    "
+                    class="text-red-500 text-sm mt-1"
+                  >
+                    <div
+                      *ngIf="propertyForm.get('latitude')?.errors?.['required']"
+                    >
+                      Please select a location on the map
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Longitude*</label
+                  >
+                  <input
+                    type="text"
+                    formControlName="longitude"
+                    readonly
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <div
+                    *ngIf="
+                      propertyForm.get('longitude')?.invalid &&
+                      (propertyForm.get('longitude')?.dirty ||
+                        propertyForm.get('longitude')?.touched ||
+                        submitted)
+                    "
+                    class="text-red-500 text-sm mt-1"
+                  >
+                    <div
+                      *ngIf="propertyForm.get('longitude')?.errors?.['required']"
+                    >
+                      Please select a location on the map
+                    </div>
+                  </div>
+                </div>
+                <div class="pt-2">
+                  <p class="text-sm text-gray-500">
+                    Click on the map to set the property location or drag the
+                    marker to adjust.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- Form Actions -->
-          <div class="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-200">
+          <div
+            class="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-200"
+          >
             <button
               type="button"
               (click)="router.navigate(['/properties'])"
@@ -606,7 +847,7 @@
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
               >
                 <i class="fas fa-save mr-2"></i>
-                {{ isEditMode ? 'Update' : 'Save' }}
+                {{ isEditMode ? "Update" : "Save" }}
               </button>
             </div>
           </div>

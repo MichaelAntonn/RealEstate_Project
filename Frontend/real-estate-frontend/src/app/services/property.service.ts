@@ -22,6 +22,7 @@ import {
   PropertyMedia,
 } from '../models/property';
 import { FilterService } from './filter.service';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +30,11 @@ import { FilterService } from './filter.service';
 export class PropertyService {
   private apiUrl = 'http://127.0.0.1:8000/api/v1';
 
-  constructor(private http: HttpClient, private filterService: FilterService) {
+  constructor(
+    private http: HttpClient,
+    private filterService: FilterService,
+    private authService: AuthService
+  ) {
     this.getCities().subscribe({
       next: (cities) => this.filterService.setCities(cities),
       error: (error) => console.error('Error fetching cities:', error),
@@ -37,10 +42,7 @@ export class PropertyService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    let token = localStorage.getItem('auth_token') || '';
-    if (!token) {
-      token = localStorage.getItem('company_token') || '';
-    }
+    const token = this.authService.getToken() || '';
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -214,7 +216,6 @@ export class PropertyService {
             params = params.set(key, value.toString());
           }
         });
-        console.log('Query Params:', params.toString()); // أضفنا ده عشان نشوف الـ params
         return this.http
           .get<{ data: Property[]; pagination: any }>(`${this.apiUrl}/properties`, {
             params,
@@ -222,7 +223,6 @@ export class PropertyService {
           })
           .pipe(
             map((response) => {
-              console.log('API Response:', response); // أضفنا ده عشان نشوف الـ response
               return {
                 data: response.data || [],
                 pagination: {
