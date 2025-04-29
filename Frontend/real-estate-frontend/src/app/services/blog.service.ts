@@ -22,7 +22,7 @@ export class BlogService {
 
   // Fetch paginated blogs
   getBlogs(page: number = 1): Observable<PaginatedBlogs> {
-    return this.http.get<PaginatedBlogs>(`${this.apiUrl}/blogs?page=${page}`, {
+    return this.http.get<PaginatedBlogs>(`${this.apiUrl}/api/v1/blogs?page=${page}`, {
       headers: this.getHeaders(),
       withCredentials: true,
     });
@@ -30,7 +30,7 @@ export class BlogService {
 
   // Fetch a single blog by ID
   getBlog(id: number): Observable<Blog> {
-    return this.http.get<Blog>(`${this.apiUrl}/blogs/${id}`, {
+    return this.http.get<Blog>(`${this.apiUrl}/api/v1/blogs/${id}`, {
       headers: this.getHeaders(),
       withCredentials: true,
     });
@@ -38,7 +38,7 @@ export class BlogService {
 
   // Create a new blog
   createBlog(formData: FormData): Observable<Blog> {
-    return this.http.post<Blog>(`${this.apiUrl}/admin/blogs`, formData, {
+    return this.http.post<Blog>(`${this.apiUrl}/api/v1/admin/blogs`, formData, {
       headers: this.getHeaders(),
       withCredentials: true,
     });
@@ -46,7 +46,7 @@ export class BlogService {
 
   // Update an existing blog
   updateBlog(id: number, formData: FormData): Observable<Blog> {
-    return this.http.put<Blog>(`${this.apiUrl}/admin/blogs/${id}`, formData, {
+    return this.http.put<Blog>(`${this.apiUrl}/api/v1/admin/blogs/${id}`, formData, {
       headers: this.getHeaders(),
       withCredentials: true,
     });
@@ -54,7 +54,7 @@ export class BlogService {
 
   // Delete a blog by ID
   deleteBlog(id: number): Observable<{message: string}> {
-    return this.http.delete<{message: string}>(`${this.apiUrl}/admin/blogs/${id}`, {
+    return this.http.delete<{message: string}>(`${this.apiUrl}/api/v1/admin/blogs/${id}`, {
       headers: this.getHeaders(),
       withCredentials: true,
     });

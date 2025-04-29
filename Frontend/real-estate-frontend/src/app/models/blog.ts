@@ -6,7 +6,7 @@ export interface Blog {
     author: string;
     created_at: string | Date;
     featuredImage: string;
-    tags: string[] | string | null; // Allow string, string[], or null
+    tags: string[] | string | null;
     category: 'Buying' | 'Selling' | 'Market Trends' | 'Interior Design';
     readTime: number;
     likes: number;

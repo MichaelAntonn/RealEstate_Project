@@ -1,117 +1,118 @@
+
 <section class="admin-glass-container">
-    <div class="glass-section">
-      <div class="glass-header">
-        <h2 class="glass-title">
-          Blogs
-          <span class="glass-badge">{{ pagination.total }} Blogs</span>
-        </h2>
-        <button class="glass-btn glass-btn-create" (click)="openForm()">
-          <i class="fas fa-plus"></i> Create Blog
+  <div class="glass-section">
+    <div class="glass-header">
+      <h2 class="glass-title">
+        Blogs
+        <span class="glass-badge">{{ pagination.total }} Blogs</span>
+      </h2>
+      <button class="glass-btn glass-btn-create" (click)="openForm()">
+        <i class="fas fa-plus"></i> Create Blog
+      </button>
+    </div>
+    <div class="glass-card-grid" *ngIf="!isLoading && blogs.length > 0">
+      <div
+        class="glass-card"
+        *ngFor="let blog of blogs; let i = index"
+        [@cardFadeIn]="i"
+      >
+        <div class="glass-card-image" *ngIf="blog.featuredImage">
+          <img [src]="blog.featuredImage" alt="{{ blog.title }}" />
+        </div>
+        <div class="glass-card-header">
+          <h3>{{ blog.title }}</h3>
+          <div class="glass-card-actions">
+            <span class="glass-card-id">#{{ blog.id }}</span>
+            <i
+              class="fas fa-edit glass-action-icon"
+              (click)="openForm(blog); $event.stopPropagation()"
+              title="Edit Blog"
+            ></i>
+            <i
+              class="fas fa-trash glass-action-icon"
+              (click)="deleteBlog(blog.id, blog.title); $event.stopPropagation()"
+              title="Delete Blog"
+            ></i>
+          </div>
+        </div>
+        <div class="glass-card-body">
+          <p><strong>Excerpt:</strong> {{ blog.excerpt | slice:0:100 }}{{ blog.excerpt.length > 100 ? '...' : '' }}</p>
+          <p><strong>Author:</strong> {{ blog.author }}</p>
+          <p><strong>Category:</strong> {{ blog.category | titlecase }}</p>
+          <p><strong>Tags:</strong> {{ blog.tags.join(', ') }}</p>
+          <p><strong>Read Time:</strong> {{ blog.readTime }} min</p>
+          <p><strong>Created At:</strong> {{ blog.created_at | date:'medium' }}</p>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isLoading" class="glass-empty">Loading...</div>
+    <div *ngIf="!isLoading && blogs.length === 0" class="glass-empty">No blogs found.</div>
+    <div class="glass-pagination" *ngIf="pagination.total > 0">
+      <div class="glass-pagination-numbers">
+        <button
+          *ngFor="let page of pagination.last_page | array:1"
+          class="glass-pagination-number"
+          [class.glass-pagination-active]="page === pagination.current_page"
+          (click)="goToPage(page)"
+        >
+          {{ page }}
         </button>
       </div>
-      <div class="glass-card-grid" *ngIf="!isLoading && blogs.length > 0">
-        <div
-          class="glass-card"
-          *ngFor="let blog of blogs; let i = index"
-          [@cardFadeIn]="i"
-        >
-          <div class="glass-card-image" *ngIf="blog.featuredImage">
-            <img [src]="blog.featuredImage" alt="{{ blog.title }}" />
-          </div>
-          <div class="glass-card-header">
-            <h3>{{ blog.title }}</h3>
-            <div class="glass-card-actions">
-              <span class="glass-card-id">#{{ blog.id }}</span>
-              <i
-                class="fas fa-edit glass-action-icon"
-                (click)="openForm(blog); $event.stopPropagation()"
-                title="Edit Blog"
-              ></i>
-              <i
-                class="fas fa-trash glass-action-icon"
-                (click)="deleteBlog(blog.id, blog.title); $event.stopPropagation()"
-                title="Delete Blog"
-              ></i>
-            </div>
-          </div>
-          <div class="glass-card-body">
-            <p><strong>Excerpt:</strong> {{ blog.excerpt | slice:0:100 }}{{ blog.excerpt.length > 100 ? '...' : '' }}</p>
-            <p><strong>Author:</strong> {{ blog.author }}</p>
-            <p><strong>Category:</strong> {{ blog.category | titlecase }}</p>
-            <p><strong>Tags:</strong> {{ getTags(blog.tags) }}</p>
-            <p><strong>Read Time:</strong> {{ blog.readTime }} min</p>
-            <p><strong>Created At:</strong> {{ blog.created_at | date:'medium' }}</p>
-          </div>
+    </div>
+  </div>
+
+  <!-- Blog Form Modal -->
+  <div class="glass-modal" *ngIf="showForm" [@modalSlideIn]>
+    <div class="glass-modal-content">
+      <span class="glass-modal-close" (click)="closeForm()">×</span>
+      <h2 class="glass-modal-title">{{ selectedBlog ? 'Edit Blog' : 'Create Blog' }}</h2>
+      <form class="glass-form" (ngSubmit)="submitForm()">
+        <div class="glass-form-group">
+          <label for="title">Title</label>
+          <input id="title" type="text" [(ngModel)]="form.title" name="title" required />
         </div>
-      </div>
-      <div *ngIf="isLoading" class="glass-empty">Loading...</div>
-      <div *ngIf="!isLoading && blogs.length === 0" class="glass-empty">No blogs found.</div>
-      <div class="glass-pagination" *ngIf="pagination.total > 0">
-        <div class="glass-pagination-numbers">
-          <button
-            *ngFor="let page of pagination.last_page | array:1"
-            class="glass-pagination-number"
-            [class.glass-pagination-active]="page === pagination.current_page"
-            (click)="goToPage(page)"
-          >
-            {{ page }}
+        <div class="glass-form-group">
+          <label for="excerpt">Excerpt</label>
+          <textarea id="excerpt" [(ngModel)]="form.excerpt" name="excerpt" required maxlength="500"></textarea>
+        </div>
+        <div class="glass-form-group">
+          <label for="content">Content</label>
+          <textarea id="content" [(ngModel)]="form.content" name="content" required></textarea>
+        </div>
+        <div class="glass-form-group">
+          <label for="author">Author</label>
+          <input id="author" type="text" [(ngModel)]="form.author" name="author" required />
+        </div>
+        <div class="glass-form-group">
+          <label for="category">Category</label>
+          <input id="category" type="text" [(ngModel)]="form.category" name="category" required />
+        </div>
+        <div class="glass-form-group">
+          <label for="tags">Tags (comma-separated)</label>
+          <input
+            id="tags"
+            type="text"
+            [(ngModel)]="tagInput"
+            name="tags"
+            (blur)="addTags()"
+            placeholder="e.g., real estate, tips, news"
+          />
+        </div>
+        <div class="glass-form-group">
+          <label for="readTime">Read Time (minutes)</label>
+          <input id="readTime" type="number" [(ngModel)]="form.readTime" name="readTime" min="1" required />
+        </div>
+        <div class="glass-form-group">
+          <label for="featuredImage">Featured Image</label>
+          <input id="featuredImage" type="file" (change)="onFileChange($event)" name="featuredImage" accept="image/*" />
+        </div>
+        <div class="glass-form-footer">
+          <button type="submit" class="glass-btn glass-btn-submit">
+            {{ selectedBlog ? 'Update' : 'Create' }}
           </button>
+          <button type="button" class="glass-btn glass-btn-close" (click)="closeForm()">Cancel</button>
         </div>
-      </div>
+      </form>
     </div>
-  
-    <!-- Blog Form Modal -->
-    <div class="glass-modal" *ngIf="showForm" [@modalSlideIn]>
-      <div class="glass-modal-content">
-        <span class="glass-modal-close" (click)="closeForm()">×</span>
-        <h2 class="glass-modal-title">{{ selectedBlog ? 'Edit Blog' : 'Create Blog' }}</h2>
-        <form class="glass-form" (ngSubmit)="submitForm()">
-          <div class="glass-form-group">
-            <label for="title">Title</label>
-            <input id="title" type="text" [(ngModel)]="form.title" name="title" required />
-          </div>
-          <div class="glass-form-group">
-            <label for="excerpt">Excerpt</label>
-            <textarea id="excerpt" [(ngModel)]="form.excerpt" name="excerpt" required maxlength="500"></textarea>
-          </div>
-          <div class="glass-form-group">
-            <label for="content">Content</label>
-            <textarea id="content" [(ngModel)]="form.content" name="content" required></textarea>
-          </div>
-          <div class="glass-form-group">
-            <label for="author">Author</label>
-            <input id="author" type="text" [(ngModel)]="form.author" name="author" required />
-          </div>
-          <div class="glass-form-group">
-            <label for="category">Category</label>
-            <input id="category" type="text" [(ngModel)]="form.category" name="category" required />
-          </div>
-          <div class="glass-form-group">
-            <label for="tags">Tags (comma-separated)</label>
-            <input
-              id="tags"
-              type="text"
-              [(ngModel)]="tagInput"
-              name="tags"
-              (blur)="addTags()"
-              placeholder="e.g., real estate, tips, news"
-            />
-          </div>
-          <div class="glass-form-group">
-            <label for="readTime">Read Time (minutes)</label>
-            <input id="readTime" type="number" [(ngModel)]="form.readTime" name="readTime" min="1" required />
-          </div>
-          <div class="glass-form-group">
-            <label for="featuredImage">Featured Image</label>
-            <input id="featuredImage" type="file" (change)="onFileChange($event)" name="featuredImage" accept="image/*" />
-          </div>
-          <div class="glass-form-footer">
-            <button type="submit" class="glass-btn glass-btn-submit">
-              {{ selectedBlog ? 'Update' : 'Create' }}
-            </button>
-            <button type="button" class="glass-btn glass-btn-close" (click)="closeForm()">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
