@@ -285,12 +285,9 @@ Route::prefix('v1')->group(function () {
             });
 
             // blogs Route 
-            Route::prefix('blogs')->group(function () {
-                Route::post('/', [BlogController::class, 'store']);
-                Route::put('/{id}', [BlogController::class, 'update']);
-                Route::delete('/{id}', [BlogController::class, 'destroy']);
-            });
-
+            Route::post('/blogs', [BlogController::class, 'store']);
+            Route::put('blogs/{blog}', [BlogController::class, 'update']);
+            Route::delete('blogs/{blog}', [BlogController::class, 'destroy']);
 
 
             // Settings Routes
@@ -373,3 +370,6 @@ Route::prefix('v1')->group(function () {
         Route::delete('/', [NotificationsController::class, 'destroyAll']); // Delete all notifications
     });
 });
+
+
+

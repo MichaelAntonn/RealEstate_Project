@@ -8,15 +8,18 @@ use Illuminate\Support\Facades\Storage;
 class Blog extends Model
 {
     protected $fillable = [
-        'title', 'excerpt', 'content', 'author', 'date', 'featuredImage',
-        'tags', 'category', 'readTime', 'likes', 'comments', 'liked'
+        'title', 'excerpt', 'content', 'author', 'featuredImage',
+        'tags', 'category', 'readTime', 'likes', 'comments', 'liked',
     ];
+
     protected $casts = [
         'tags' => 'array',
     ];
-    
+
     public function getFeaturedImageUrlAttribute()
     {
-        return $this->featuredImage ? Storage::url($this->featuredImage) : null;
+        return $this->featuredImage 
+            ? asset('storage/' . $this->featuredImage) 
+            : null;
     }
 }

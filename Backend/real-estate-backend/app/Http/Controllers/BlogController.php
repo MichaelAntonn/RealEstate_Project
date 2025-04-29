@@ -6,17 +6,17 @@ use App\Constants\UserType;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
 class BlogController extends Controller
 {
     public function index(Request $request)
     {
-        // تحديد عدد النتائج في الصفحة من الـ query string أو الافتراضي 10
         $perPage = $request->get('per_page', 10);
 
-        // ترتيب حسب الأحدث مع التصفّح
         $blogs = Blog::latest()->paginate($perPage);
 
         return response()->json([
@@ -28,9 +28,8 @@ class BlogController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+  
+
     public function store(Request $request)
     {
         $this->authorizeAdmin($request);
@@ -41,7 +40,7 @@ class BlogController extends Controller
             'content' => 'required|string',
             'author' => 'required|string|max:255',
             'featuredImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'tags' => 'required|array',
+            'tags' => 'nullable|array',
             'category' => 'required|string|max:255',
             'readTime' => 'required|integer|min:1',
         ]);
@@ -79,9 +78,9 @@ class BlogController extends Controller
     }
     
 
-    /**
-     * Display the specified resource.
-     */
+//     /**
+//      * Display the specified resource.
+//      */
     public function show(Blog $blog)
     {
         return response()->json(['blog' => $blog], 200);
@@ -91,6 +90,8 @@ class BlogController extends Controller
     {
         $this->authorizeAdmin($request);
     
+
+        
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|required|string|max:255',
             'excerpt' => 'sometimes|required|string|max:500',

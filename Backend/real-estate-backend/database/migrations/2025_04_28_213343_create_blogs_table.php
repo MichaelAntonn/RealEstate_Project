@@ -17,7 +17,6 @@ return new class extends Migration
         $table->text('excerpt');
         $table->longText('content');
         $table->string('author');
-        $table->date('date');
         $table->string('featuredImage')->nullable();
         $table->json('tags'); 
         $table->string('category');
