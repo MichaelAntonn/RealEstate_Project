@@ -19,11 +19,11 @@ export class AdminAuthService {
     if (storedToken && storedRole) {
       this.userRole = storedRole;
       console.log('Initialized with token:', storedToken, 'and role:', storedRole);
-      this.validateToken().subscribe(isValid => {
-        if (!isValid) {
-          this.logout();
-        }
-      });
+      // this.validateToken().subscribe(isValid => {
+      //   if (!isValid) {
+      //     this.logout();
+      //   }
+      // });
     } else {
       console.log('No valid token or role found in localStorage');
     }

@@ -4,6 +4,7 @@
   background-color: #f5f5f5;
   padding: 2rem;
   min-height: 100vh;
+  overflow-x: hidden; /* Prevent horizontal scroll at container level */
 }
 
 /* Loading State */
@@ -134,6 +135,7 @@
   padding: 2rem;
   margin-bottom: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .glass-chart-group {
@@ -141,8 +143,17 @@
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
   margin-bottom: 1.5rem;
+  width: 100%; /* Ensure it fits within parent */
+  box-sizing: border-box; /* Include padding and border in width */
 }
 
+/* Full-width chart for Yearly Summary */
+.glass-chart-group.full-width-chart {
+  grid-template-columns: 1fr; /* Single column for full width */
+  width: 100%;
+}
+
+/* Chart Card */
 .glass-chart-card {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
@@ -150,6 +161,7 @@
   padding: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Ensure card takes full width */
 }
 
 .glass-chart-title {
@@ -162,8 +174,41 @@
 
 .glass-chart-container {
   position: relative;
-  height: 300px;
+  height: 400px; /* Increased height */
+  min-height: 400px;
   width: 100%;
+  overflow: hidden; /* Prevent overflow from canvas */
+  background: #ffffff; /* Solid white background */
+}
+
+.glass-chart-container canvas {
+  background: #ffffff; /* Ensure canvas is not transparent */
+  width: 100% !important; /* Force canvas to take full width */
+  height: 100% !important; /* Force canvas to take full height */
+}
+
+/* Year Selector */
+.year-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.year-selector select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(192, 192, 192, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+.year-selector select:focus {
+  outline: none;
+  border-color: #e67e22;
 }
 
 /* Table Section */
@@ -216,6 +261,14 @@
   padding: 1.5rem;
 }
 
+/* Debug Fallback */
+.debug-fallback {
+  text-align: center;
+  color: #e74c3c;
+  font-weight: 500;
+  padding: 1rem;
+}
+
 /* Animations */
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -255,6 +308,7 @@
   }
   
   .glass-chart-container {
-    height: 250px;
+    height: 300px; /* Reduced height for mobile */
+    min-height: 300px;
   }
 }
