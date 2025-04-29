@@ -46,6 +46,7 @@ import { ConsultationFormComponent } from './components/consultation-form/consul
 import { MyPropertiesComponent } from './my-properties/my-properties.component';
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { RealEstateBlogComponent } from './components/real-estate-blog/real-estate-blog.component';
+import { ContactUsComponent } from './components/adminDashboard/contact-us/contact-us.component';
 
 export const routes: Routes = [
   // Default route
@@ -152,6 +153,12 @@ export const routes: Routes = [
       {
         path: 'statistics',
         component: AdminStatisticsComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['super-admin'] },
+      },
+      {
+        path: 'contact-us',
+        component: ContactUsComponent,
         canActivate: [AuthGuard],
         data: { roles: ['super-admin'] },
       },
