@@ -4,8 +4,8 @@ import { DashboardService } from '../../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
-// Define interfaces inside the component file
 interface Statistics {
   total_commissions: number;
   total_properties: number;
@@ -33,31 +33,53 @@ interface Property {
   created_at: string;
 }
 
+interface YearlySummary {
+  month: string;
+  sales: number;
+  revenue: number;
+  new_listings: number;
+}
+
 @Component({
   selector: 'app-admin-statistics',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-statistics.component.html',
   styleUrls: ['./admin-statistics.component.css']
 })
 export class AdminStatisticsComponent implements OnInit, AfterViewInit {
   statistics: Statistics | string | null = null;
   monthlyData: MonthlyData[] = [];
+  yearlyData: MonthlyData[] = [];
   latestProperties: Property[] | string = [];
+  yearlySummary: YearlySummary[] = [];
+  selectedYear: number = new Date().getFullYear();
+  availableYears: number[] = Array.from({length: 5}, (_, i) => new Date().getFullYear() - i);
   private salesChart: Chart | null = null;
   private profitTrendChart: Chart | null = null;
   private usersListingsChart: Chart | null = null;
+  private yearlyDataChart: Chart | null = null;
+  private yearlySummaryChart: Chart | null = null;
   loadingStatistics: boolean = false;
+  loadingYearlySummary: boolean = false;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService) {
+    console.log('AdminStatisticsComponent: Constructor called');
+  }
 
   ngOnInit(): void {
-    console.log('ngOnInit: Starting to fetch admin statistics data');
+    console.log('ngOnInit: Initializing component and fetching data');
     this.fetchDashboardData();
+    this.fetchYearlySummary(this.selectedYear);
   }
 
   ngAfterViewInit(): void {
-    console.log('ngAfterViewInit: DOM should be ready, canvas elements should be available');
+    console.log('ngAfterViewInit: DOM should be ready, rendering charts');
+    this.renderCharts();
+    setTimeout(() => {
+      console.log('ngAfterViewInit: Retrying chart rendering after 500ms');
+      this.renderCharts();
+    }, 500);
   }
 
   isStatistics(value: Statistics | string | null): value is Statistics {
@@ -70,6 +92,7 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
 
   fetchDashboardData(): void {
     this.loadingStatistics = true;
+    console.log('fetchDashboardData: Fetching statistics');
     this.dashboardService.getStatistics()
       .pipe(
         catchError(error => {
@@ -85,6 +108,7 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
         this.loadingStatistics = false;
       });
 
+    console.log('fetchDashboardData: Fetching latest properties');
     this.dashboardService.getLatestProperties()
       .pipe(
         catchError(error => {
@@ -98,12 +122,12 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
         this.latestProperties = data.latest_properties || [];
       });
 
+    console.log('fetchDashboardData: Fetching monthly data');
     this.dashboardService.getMonthlyData()
       .pipe(
         catchError(error => {
           console.error('Error fetching monthly data:', error);
           this.monthlyData = [];
-          console.log('After error, monthlyData set to:', this.monthlyData);
           this.renderCharts();
           return throwError(() => error);
         })
@@ -114,21 +138,68 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
         console.log('Processed monthlyData:', this.monthlyData);
         this.renderCharts();
       });
+
+    console.log('fetchDashboardData: Fetching yearly data');
+    this.dashboardService.getYearlyData()
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching yearly data:', error);
+          this.yearlyData = [];
+          this.renderCharts();
+          return throwError(() => error);
+        })
+      )
+      .subscribe((data: { success: boolean; data: MonthlyData[] }) => {
+        console.log('Raw API response for yearly data:', data);
+        this.yearlyData = data.success ? data.data : [];
+        console.log('Processed yearlyData:', this.yearlyData);
+        this.renderCharts();
+      });
+  }
+
+  fetchYearlySummary(year: number): void {
+    this.loadingYearlySummary = true;
+    console.log('fetchYearlySummary: Fetching yearly summary for year:', year);
+    this.dashboardService.getYearlySummary(year)
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching yearly summary:', error);
+          this.yearlySummary = [];
+          this.loadingYearlySummary = false;
+          this.renderYearlySummaryChart();
+          return throwError(() => error);
+        })
+      )
+      .subscribe((data: { success: boolean; year: string; summary: YearlySummary[] }) => {
+        console.log('Yearly summary response:', data);
+        this.yearlySummary = data.success ? data.summary : [];
+        console.log('Processed yearlySummary:', this.yearlySummary);
+        this.loadingYearlySummary = false;
+        this.renderYearlySummaryChart();
+      });
+  }
+
+  onYearChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedYear = +selectElement.value;
+    console.log('onYearChange: Year changed to:', this.selectedYear);
+    this.fetchYearlySummary(this.selectedYear);
   }
 
   private renderCharts(): void {
-    setTimeout(() => {
-      console.log('Rendering charts with monthlyData:', this.monthlyData);
-      this.renderSalesChart();
-      this.renderProfitTrendChart();
-      this.renderUsersListingsChart();
-    }, 100);
+    console.log('renderCharts: Rendering all charts');
+    this.renderSalesChart();
+    this.renderProfitTrendChart();
+    this.renderUsersListingsChart();
+    this.renderYearlyDataChart();
+    this.renderYearlySummaryChart();
   }
 
   renderSalesChart(): void {
+    console.log('renderSalesChart: Attempting to render sales chart');
     const salesCtx = document.getElementById('myChart') as HTMLCanvasElement;
     if (!salesCtx) {
-      console.error('Sales chart canvas not found');
+      console.error('renderSalesChart: Sales chart canvas not found');
       return;
     }
     const existingChart = Chart.getChart('myChart');
@@ -154,12 +225,14 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
         plugins: { legend: { display: true, position: 'top' } }
       }
     });
+    console.log('renderSalesChart: Sales chart rendered successfully');
   }
 
   renderProfitTrendChart(): void {
+    console.log('renderProfitTrendChart: Attempting to render profit trend chart');
     const lineCtx = document.getElementById('lineChart') as HTMLCanvasElement;
     if (!lineCtx) {
-      console.error('Profit trend chart canvas not found');
+      console.error('renderProfitTrendChart: Profit trend chart canvas not found');
       return;
     }
     const existingChart = Chart.getChart('lineChart');
@@ -188,12 +261,14 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
         scales: { y: { beginAtZero: true, title: { display: true, text: 'Profit Margin (%)' } } }
       }
     });
+    console.log('renderProfitTrendChart: Profit trend chart rendered successfully');
   }
 
   renderUsersListingsChart(): void {
+    console.log('renderUsersListingsChart: Attempting to render users vs listings chart');
     const usersListingsCtx = document.getElementById('usersListingsChart') as HTMLCanvasElement;
     if (!usersListingsCtx) {
-      console.error('Users vs Listings chart canvas not found');
+      console.error('renderUsersListingsChart: Users vs Listings chart canvas not found');
       return;
     }
     const existingChart = Chart.getChart('usersListingsChart');
@@ -248,5 +323,116 @@ export class AdminStatisticsComponent implements OnInit, AfterViewInit {
         }
       }
     });
+    console.log('renderUsersListingsChart: Users vs Listings chart rendered successfully');
+  }
+
+  renderYearlyDataChart(): void {
+    console.log('renderYearlyDataChart: Attempting to render yearly data chart');
+    const yearlyDataCtx = document.getElementById('yearlyDataChart') as HTMLCanvasElement;
+    if (!yearlyDataCtx) {
+      console.error('renderYearlyDataChart: Yearly data chart canvas not found');
+      return;
+    }
+    const existingChart = Chart.getChart('yearlyDataChart');
+    if (existingChart) existingChart.destroy();
+
+    const labels = this.yearlyData.length ? this.yearlyData.map(item => item.month) : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const profitData = this.yearlyData.length ? this.yearlyData.map(item => item.profit) : Array(12).fill(0);
+
+    this.yearlyDataChart = new Chart(yearlyDataCtx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Yearly Profit',
+          data: profitData,
+          backgroundColor: 'rgba(153, 102, 255, 0.5)',
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true, position: 'top' },
+          title: { display: true, text: 'Yearly Profit Overview', font: { size: 16 } }
+        },
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Profit ($)' } }
+        }
+      }
+    });
+    console.log('renderYearlyDataChart: Yearly data chart rendered successfully');
+  }
+
+  renderYearlySummaryChart(): void {
+    console.log('renderYearlySummaryChart: Attempting to render yearly summary chart');
+    const yearlySummaryCtx = document.getElementById('yearlySummaryChart') as HTMLCanvasElement;
+    if (!yearlySummaryCtx) {
+      console.error('renderYearlySummaryChart: Yearly summary chart canvas not found');
+      setTimeout(() => this.renderYearlySummaryChart(), 100); // Retry after 100ms
+      return;
+    }
+    const existingChart = Chart.getChart('yearlySummaryChart');
+    if (existingChart) existingChart.destroy();
+  
+    const labels = this.yearlySummary.length ? this.yearlySummary.map(item => item.month) : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const salesData = this.yearlySummary.length ? this.yearlySummary.map(item => item.sales) : Array(12).fill(0);
+    const revenueData = this.yearlySummary.length ? this.yearlySummary.map(item => item.revenue / 1000) : Array(12).fill(0);
+    const newListingsData = this.yearlySummary.length ? this.yearlySummary.map(item => item.new_listings) : Array(12).fill(0);
+  
+    this.yearlySummaryChart = new Chart(yearlySummaryCtx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Sales',
+            data: salesData,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Revenue ($K)',
+            data: revenueData,
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            yAxisID: 'y1'
+          },
+          {
+            label: 'New Listings',
+            data: newListingsData,
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            yAxisID: 'y'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true, position: 'top' },
+          title: { display: true, text: `Yearly Summary for ${this.selectedYear}`, font: { size: 16 } }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Sales / New Listings' },
+            position: 'left'
+          },
+          y1: {
+            beginAtZero: true,
+            title: { display: true, text: 'Revenue ($K)' },
+            position: 'right',
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+    console.log('renderYearlySummaryChart: Yearly summary chart rendered successfully');
   }
 }
