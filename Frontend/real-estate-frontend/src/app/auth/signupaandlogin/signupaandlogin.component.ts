@@ -422,7 +422,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       terms_and_conditions: this.terms_and_conditions ? 1 : 0,
     };
 
-    this.http.post('http://localhost:8000/api/v1/companies/register', userData).subscribe({
+    this.http.post('http://localhost:8000/api/v1/register', userData).subscribe({
       next: () => {
         this.showNotification('Registration complete', 'success');
         this.resetSignupForm();
