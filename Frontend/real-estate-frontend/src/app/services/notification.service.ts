@@ -42,13 +42,16 @@ export class NotificationService {
       this.initializeEcho();
     }
 
+    // الحصول على التوكن (لإرساله إذا كان مطلوبًا)
     private getToken(): string | null {
       return this.authService.getToken() || this.companyAuthService.getToken();
     }
 
+    // تهيئة Echo وتوصيلها بـ Pusher وتهيئة المصادقة عبر الكوكيز
     private initializeEcho(): void {
       (window as any).Pusher = Pusher;
 
+      // إرسال طلب للحصول على الكوكيز الخاصة بـ Sanctum
       this.http.get(`${environment.apiUrl}/sanctum/csrf-cookie`, {
         withCredentials: true
       }).subscribe({
@@ -60,22 +63,21 @@ export class NotificationService {
           }
 
           try {
+            console.log(`${environment.apiUrl}/broadcasting/auth`);
+
+            // تهيئة Echo
             this.echo = new Echo({
               broadcaster: 'pusher',
               key: environment.pusher.key,
               cluster: environment.pusher.cluster,
               forceTLS: true,
               authEndpoint: `${environment.apiUrl}/broadcasting/auth`,
-              auth: {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  Accept: 'application/json'
-                }
-              },
-              withCredentials: true
+              withCredentials: true // التأكد من إرسال الكوكيز مع كل طلب
             });
 
-            console.log('Echo initialized successfully');
+            // طباعة الـ Echo و Channel للتأكد من أنهما تم تهيئتهما بشكل صحيح
+            console.log('Echo initialized successfully:', this.echo);
+            console.log('Echo Channel:', this.echo.channel);
           } catch (error) {
             console.error('Echo initialization error:', error);
           }
@@ -84,8 +86,13 @@ export class NotificationService {
           console.error('CSRF Cookie error:', err);
         }
       });
+
+      // طباعة إعدادات Pusher
+      console.log('Pusher Key:', environment.pusher.key);
+      console.log('Pusher Cluster:', environment.pusher.cluster);
     }
 
+    // تهيئة الاشتراك في القناة الخاصة بالتنبيهات
     initNotifications(): void {
       if (this.isSubscribed || !this.echo) return;
 
@@ -99,8 +106,9 @@ export class NotificationService {
       }
 
       this.isSubscribed = true;
-      const channelName = `App.Models.User.${userId}`;
+      const channelName = `Notifications.${userId}`;
 
+      // الاشتراك في القناة الخاصة
       this.echo.private(channelName)
         .notification((notification: Notification) => {
           this.notificationsSubject.next(notification);
@@ -109,36 +117,44 @@ export class NotificationService {
           console.error('Pusher error:', error);
           this.isSubscribed = false;
         });
+
+      // طباعة القناة للاطمئنان أنها تم الاشتراك فيها بشكل صحيح
+      console.log('Subscribed to channel:', channelName);
     }
 
-  getNotifications(page: number = 1, perPage: number = 10, type?: 'unread' | 'read'): Observable<any> {
-    let params: any = { page, per_page: perPage };
-    if (type) {
-      params.type = type;
+    // الحصول على التنبيهات من الـ API
+    getNotifications(page: number = 1, perPage: number = 10, type?: 'unread' | 'read'): Observable<any> {
+      let params: any = { page, per_page: perPage };
+      if (type) {
+        params.type = type;
+      }
+
+      return this.http.get(`${environment.apiUrl}/api/v1/notifications`, { params }).pipe(
+        tap(response => console.log('Notifications response:', response)),
+        catchError(error => {
+          console.error('Error fetching notifications:', error);
+          throw error;
+        })
+      );
     }
 
-    return this.http.get(`${environment.apiUrl}/api/v1/notifications`, { params }).pipe(
-      tap(response => console.log('Notifications response:', response)),
-      catchError(error => {
-        console.error('Error fetching notifications:', error);
-        throw error;
-      })
-    );
-  }
+    // تعيين تنبيه كـ "مقروء"
+    markAsRead(notificationId: string): Observable<any> {
+      return this.http.put(`${environment.apiUrl}/api/v1/notifications/${notificationId}/read`, {});
+    }
 
-  markAsRead(notificationId: string): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/api/v1/notifications/${notificationId}/read`, {});
-  }
+    // تعيين كل التنبيهات كـ "مقروءة"
+    markAllAsRead(): Observable<any> {
+      return this.http.put(`${environment.apiUrl}/api/v1/notifications/read-all`, {});
+    }
 
-  markAllAsRead(): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/api/v1/notifications/read-all`, {});
-  }
+    // حذف تنبيه
+    deleteNotification(notificationId: string): Observable<any> {
+      return this.http.delete(`${environment.apiUrl}/api/v1/notifications/${notificationId}`);
+    }
 
-  deleteNotification(notificationId: string): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}/api/v1/notifications/${notificationId}`);
-  }
-
-  deleteAllNotifications(): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}/api/v1/notifications`);
-  }
+    // حذف كل التنبيهات
+    deleteAllNotifications(): Observable<any> {
+      return this.http.delete(`${environment.apiUrl}/api/v1/notifications`);
+    }
 }

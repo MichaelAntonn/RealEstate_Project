@@ -73,23 +73,38 @@ export class MainDashboardComponent {
 
   // }
   ngOnInit() {
-    // Load username
-    this.loadUsername();
-
-    // Initialize notifications
-    // this.notificationService.initNotifications();
+    console.log('MainDashboardComponent initialized'); // ← أضف هذا
     setTimeout(() => {
+      console.log('Calling initNotifications...'); // ← أضف هذا
       this.notificationService.initNotifications();
     }, 1000);
-    // Load notifications count
-    this.loadNotificationsCount();
+    this.loadUsername();
 
-    // Subscribe to real-time notifications
-    this.subscription = this.notificationService.notifications$.subscribe(
-      () => {
+    const user = this.authService.getUser();
+    if (user) {
+      this.notificationService.initNotifications();
+
+      this.subscription = this.notificationService.notifications$.subscribe(() => {
         this.loadNotificationsCount();
-      }
-    );
+      });
+
+      this.loadNotificationsCount();
+    }
+    // // Load username
+    // this.loadUsername();
+
+    // // Initialize notifications
+    // this.notificationService.initNotifications();
+
+    // // Load notifications count
+    // this.loadNotificationsCount();
+
+    // // Subscribe to real-time notifications
+    // this.subscription = this.notificationService.notifications$.subscribe(
+    //   () => {
+    //     this.loadNotificationsCount();
+    //   }
+    // );
   }
 
   loadUsername() {

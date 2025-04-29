@@ -66,4 +66,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Define the broadcast channel name for notifications.
+     *
+     * @return string
+     */
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'Notifications.' . $this->id;
+    }
 }

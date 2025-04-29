@@ -70,4 +70,9 @@ class NewPropertyAdded extends Notification
             'type' => $this->property->type
         ]);
     }
+
+    public function broadcastType()
+{
+    return 'NewOrder';
+}
 }
