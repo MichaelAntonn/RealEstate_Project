@@ -28,7 +28,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
   // Login form fields
   loginEmail: string = '';
   loginPassword: string = '';
-  userType: string = 'user'; // Default to user login
+  userType: string = 'user';
 
   // Company Signup form fields
   isCompanySignup: boolean = false;
@@ -50,15 +50,14 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     accept_terms: false
   };
 
-  // Notification system
+  // Simple notification system
   notification = {
     show: false,
     message: '',
-    isError: false,
-    type: 'success'
+    type: 'info' // 'info' | 'success' | 'error'
   };
 
-  // Error messages
+  // Clean error messages
   errors: any = {
     first_name: '',
     last_name: '',
@@ -87,30 +86,27 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    // Check for access_token in query parameters
     this.route.queryParams.subscribe(params => {
       const token = params['access_token'];
       const error = params['error'];
 
       if (error) {
-        this.showErrorNotification('Google login failed. Please try again.');
+        this.showNotification('Google login failed', 'error');
         return;
       }
 
       if (token) {
-        // Store token in localStorage as auth_token
         localStorage.setItem('auth_token', token);
         this.authService.saveToken(token);
 
-        // Fetch user data
         this.authService.getUser().subscribe({
           next: (user: User) => {
             this.authService.saveUser(user);
-            this.showSuccessNotification('Google login successful!');
+            this.showNotification('Login successful', 'success');
             this.router.navigate(['/home']);
           },
           error: () => {
-            this.showErrorNotification('Failed to fetch user data.');
+            this.showNotification('Failed to load user data', 'error');
             this.router.navigate(['/home']);
           }
         });
@@ -118,13 +114,12 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Notification methods
-  showNotification(message: string, isError: boolean = false, duration: number = 5000) {
+  // Simple notification methods
+  showNotification(message: string, type: 'info' | 'success' | 'error' = 'info', duration: number = 4000) {
     this.notification = {
       show: true,
       message: message,
-      isError: isError,
-      type: isError ? 'error' : 'success'
+      type: type
     };
     setTimeout(() => this.hideNotification(), duration);
   }
@@ -133,35 +128,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     this.notification.show = false;
   }
 
-  showSuccessNotification(message: string, duration: number = 5000) {
-    this.showNotification(message, false, duration);
-  }
-
-  showErrorNotification(message: string, duration: number = 5000) {
-    this.showNotification(message, true, duration);
-  }
-
-  showWarningNotification(message: string, duration: number = 5000) {
-    this.notification = {
-      show: true,
-      message: message,
-      isError: false,
-      type: 'warning'
-    };
-    setTimeout(() => this.hideNotification(), duration);
-  }
-
-  showInfoNotification(message: string, duration: number = 5000) {
-    this.notification = {
-      show: true,
-      message: message,
-      isError: false,
-      type: 'info'
-    };
-    setTimeout(() => this.hideNotification(), duration);
-  }
-
-  // Error handling methods
+  // Field validation helpers
   showFieldError(field: string, message: string) {
     this.errors[field] = message;
     const element = document.getElementById(field);
@@ -177,79 +144,79 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     if (element) element.classList.remove('error');
   }
 
-  validateField(field: string, value: any, rules: any): boolean {
-    this.clearFieldError(field);
-
-    if (rules.required && !value) {
-      this.showFieldError(field, rules.requiredMessage || 'This field is required');
-      return false;
-    }
-
-    if (rules.minLength && value && value.length < rules.minLength) {
-      this.showFieldError(field, `Must be at least ${rules.minLength} characters`);
-      return false;
-    }
-
-    if (rules.pattern && value && !rules.pattern.test(value)) {
-      this.showFieldError(field, rules.patternMessage || 'Invalid format');
-      return false;
-    }
-
-    if (rules.match && value !== rules.match) {
-      this.showFieldError(field, rules.matchMessage || 'Values do not match');
-      return false;
-    }
-
-    return true;
-  }
-
   // Form validation methods
   validateUserForm(): boolean {
     let isValid = true;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    isValid = this.validateField('first_name', this.first_name, {
-      required: true,
-      minLength: 3,
-      requiredMessage: 'First name is required'
-    }) && isValid;
+    // Clear previous errors
+    Object.keys(this.errors).forEach(key => this.clearFieldError(key));
 
-    isValid = this.validateField('last_name', this.last_name, {
-      required: true,
-      minLength: 3,
-      requiredMessage: 'Last name is required'
-    }) && isValid;
+    // First name
+    if (!this.first_name) {
+      this.showFieldError('first_name', 'First name required');
+      isValid = false;
+    } else if (this.first_name.length < 2) {
+      this.showFieldError('first_name', 'Minimum 2 characters');
+      isValid = false;
+    }
 
-    isValid = this.validateField('email', this.email, {
-      required: true,
-      pattern: emailPattern,
-      patternMessage: 'Invalid email format'
-    }) && isValid;
+    // Last name
+    if (!this.last_name) {
+      this.showFieldError('last_name', 'Last name required');
+      isValid = false;
+    } else if (this.last_name.length < 2) {
+      this.showFieldError('last_name', 'Minimum 2 characters');
+      isValid = false;
+    }
 
-    isValid = this.validateField('country', this.country, {
-      required: true,
-      requiredMessage: 'Country is required'
-    }) && isValid;
+    // Email
+    if (!this.email) {
+      this.showFieldError('email', 'Email required');
+      isValid = false;
+    } else if (!emailPattern.test(this.email)) {
+      this.showFieldError('email', 'Enter valid email (e.g., example@gmail.com)');
+      isValid = false;
+    }
 
-    isValid = this.validateField('password', this.password, {
-      required: true,
-      minLength: 8,
-      requiredMessage: 'Password is required'
-    }) && isValid;
+    // Country
+    if (!this.country) {
+      this.showFieldError('country', 'Select country');
+      isValid = false;
+    }
 
-    isValid = this.validateField('confirmPassword', this.confirmPassword, {
-      required: true,
-      match: this.password,
-      matchMessage: 'Passwords do not match'
-    }) && isValid;
+    // Phone number (if provided)
+    if (this.phone_number && this.country === 'EG' && !this.phone_number.startsWith('+2')) {
+      this.showFieldError('phone_number', 'Start with +2');
+      isValid = false;
+    }
 
+    // Password
+    if (!this.password) {
+      this.showFieldError('password', 'Password required');
+      isValid = false;
+    } else if (this.password.length < 8) {
+      this.showFieldError('password', 'Minimum 8 characters');
+      isValid = false;
+    }
+
+    // Confirm password
+    if (!this.confirmPassword) {
+      this.showFieldError('confirmPassword', 'Confirm password');
+      isValid = false;
+    } else if (this.password !== this.confirmPassword) {
+      this.showFieldError('confirmPassword', 'Passwords don\'t match');
+      isValid = false;
+    }
+
+    // Terms
     if (!this.terms_and_conditions) {
-      this.showFieldError('terms_and_conditions', 'You must accept the terms');
+      this.showFieldError('terms_and_conditions', 'Accept terms to continue');
       isValid = false;
     }
 
     if (!isValid) {
-      this.showErrorNotification('Please correct the form errors');
+      this.showNotification('Please check the form', 'error');
     }
 
     return isValid;
@@ -259,116 +226,146 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     let isValid = true;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    isValid = this.validateField('company_name', this.company.company_name, {
-      required: true,
-      requiredMessage: 'Company name is required'
-    }) && isValid;
+    // Clear previous errors
+    Object.keys(this.errors).forEach(key => this.clearFieldError(key));
 
-    isValid = this.validateField('company_email', this.company.company_email, {
-      required: true,
-      pattern: emailPattern,
-      patternMessage: 'Invalid email format'
-    }) && isValid;
-
-    isValid = this.validateField('company_phone_number', this.company.company_phone_number, {
-      required: true,
-      requiredMessage: 'Company phone is required'
-    }) && isValid;
-
-    isValid = this.validateField('company_password', this.company.password, {
-      required: true,
-      minLength: 8,
-      requiredMessage: 'Password is required'
-    }) && isValid;
-
-    isValid = this.validateField('company_confirm_password', this.company.password_confirmation, {
-      required: true,
-      match: this.company.password,
-      matchMessage: 'Passwords do not match'
-    }) && isValid;
-
-    if (!this.company.accept_terms) {
-      this.showFieldError('company_accept_terms', 'You must accept the terms');
+    // Company name
+    if (!this.company.company_name) {
+      this.showFieldError('company_name', 'Company name required');
       isValid = false;
     }
 
-    // Validate required documents
+    // Company email
+    if (!this.company.company_email) {
+      this.showFieldError('company_email', 'Email required');
+      isValid = false;
+    } else if (!emailPattern.test(this.company.company_email)) {
+      this.showFieldError('company_email', 'Enter valid email (e.g., company@example.com)');
+      isValid = false;
+    }
+
+    // Company phone
+    if (!this.company.company_phone_number) {
+      this.showFieldError('company_phone_number', 'Phone required');
+      isValid = false;
+    }
+
+    // Password
+    if (!this.company.password) {
+      this.showFieldError('company_password', 'Password required');
+      isValid = false;
+    } else if (this.company.password.length < 8) {
+      this.showFieldError('company_password', 'Minimum 8 characters');
+      isValid = false;
+    }
+
+    // Confirm password
+    if (!this.company.password_confirmation) {
+      this.showFieldError('company_confirm_password', 'Confirm password');
+      isValid = false;
+    } else if (this.company.password !== this.company.password_confirmation) {
+      this.showFieldError('company_confirm_password', 'Passwords don\'t match');
+      isValid = false;
+    }
+
+    // Terms
+    if (!this.company.accept_terms) {
+      this.showFieldError('company_accept_terms', 'Accept terms to continue');
+      isValid = false;
+    }
+
+    // Documents
     if (!this.company.commercial_registration_doc) {
-      this.showErrorNotification('Commercial registration document is required');
+      this.showNotification('Commercial document required', 'error');
       isValid = false;
     }
 
     if (!this.company.tax_card_doc) {
-      this.showErrorNotification('Tax card document is required');
+      this.showNotification('Tax document required', 'error');
       isValid = false;
     }
 
     if (!this.company.proof_of_address_doc) {
-      this.showErrorNotification('Proof of address document is required');
+      this.showNotification('Address proof required', 'error');
       isValid = false;
     }
 
-    if (!isValid) {
-      this.showErrorNotification('Please correct the form errors');
-    }
-
     return isValid;
   }
-
   validateLoginForm(): boolean {
     let isValid = true;
-
-    isValid = this.validateField('loginEmail', this.loginEmail, {
-      required: true,
-      requiredMessage: 'Email is required'
-    }) && isValid;
-
-    isValid = this.validateField('loginPassword', this.loginPassword, {
-      required: true,
-      requiredMessage: 'Password is required'
-    }) && isValid;
-
-    if (!isValid) {
-      this.showErrorNotification('Please fill all required fields');
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Same pattern used in Signup
+  
+    // Clear previous errors
+    this.clearFieldError('loginEmail');
+    this.clearFieldError('loginPassword');
+  
+    // Email validation
+    if (!this.loginEmail) {
+      this.showFieldError('loginEmail', 'Email is required');
+      isValid = false;
+    } else if (!emailPattern.test(this.loginEmail)) {
+      this.showFieldError('loginEmail', 'Invalid email format (e.g., user@gmail.com)');
+      isValid = false;
     }
-
+  
+    // Password validation
+    if (!this.loginPassword) {
+      this.showFieldError('loginPassword', 'Password is required');
+      isValid = false;
+    }
+  
+    if (!isValid) {
+      this.showNotification('errors in the entered data', 'error');
+    }
+  
     return isValid;
   }
-
-  // Toggle between user and company login
+  
+  // Form toggle methods
   toggleLoginType() {
     this.userType = this.userType === 'user' ? 'company' : 'user';
-    this.showInfoNotification(`Switched to ${this.userType} login`);
+    this.showNotification(`Switched to ${this.userType} login`, 'info');
   }
 
-  // Toggle between user and company signup forms
   toggleSignupMode() {
     this.isCompanySignup = !this.isCompanySignup;
-    this.showInfoNotification(`Switched to ${this.isCompanySignup ? 'company' : 'individual'} signup`);
+    this.showNotification(`Switched to ${this.isCompanySignup ? 'company' : 'individual'} signup`, 'info');
   }
 
-  // Toggle between login and signup forms
   toggleForms() {
     const container = document.getElementById('container');
     container?.classList.toggle('active');
   }
 
-  // Handle file selection for company documents
+  // File handling
   onFileSelected(event: any, field: string) {
     const file: File = event.target.files[0];
     if (file) {
+      const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      
+      if (!validTypes.includes(file.type)) {
+        this.showNotification('Only PDF, JPG or PNG files', 'error');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        this.showNotification('Max file size 5MB', 'error');
+        return;
+      }
+
       this.company[field] = file;
-      this.showSuccessNotification(`${field.replace(/_/g, ' ')} file selected`);
+      this.showNotification(`${field.replace(/_/g, ' ')} uploaded`, 'success');
     }
   }
 
-  // Handle company signup form submission
+  // Form submission methods
   onCompanySignupSubmit() {
     if (!this.validateCompanyForm()) return;
 
-    this.showInfoNotification('Registering your company...');
+    this.showNotification('Processing registration...', 'info');
 
-    // Create FormData for file upload
     const formData = new FormData();
     formData.append('company_name', this.company.company_name);
     formData.append('commercial_registration_number', this.company.commercial_registration_number);
@@ -378,6 +375,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     formData.append('commercial_registration_doc', this.company.commercial_registration_doc);
     formData.append('tax_card_doc', this.company.tax_card_doc);
     formData.append('proof_of_address_doc', this.company.proof_of_address_doc);
+    
     if (this.company.real_estate_license_doc) {
       formData.append('real_estate_license_doc', this.company.real_estate_license_doc);
     }
@@ -390,27 +388,28 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     if (this.company.date_of_establishment) {
       formData.append('date_of_establishment', this.company.date_of_establishment);
     }
+    
     formData.append('password', this.company.password);
     formData.append('password_confirmation', this.company.password_confirmation);
     formData.append('accept_terms', this.company.accept_terms ? '1' : '0');
 
-    // Send to backend
-    this.http.post('http://localhost:8000/api/company/register', formData).subscribe({
-      next: (response: any) => {
-        this.showSuccessNotification('Company registration successful! Pending verification');
+    this.http.post('http://localhost:8000/api/v1/companies/register', formData).subscribe({
+      next: () => {
+        this.showNotification('Registration submitted', 'success');
         this.resetCompanyForm();
-        this.toggleForms(); // Switch to login form
+        this.toggleForms();
       },
       error: (error) => {
-        const errorMsg = error.error?.message || 'Company registration failed';
-        this.showErrorNotification(errorMsg);
+        const errorMsg = error.error?.message || 'Registration failed';
+        this.showNotification(errorMsg, 'error');
       }
     });
   }
 
-  // Handle user signup form submission
   onSignupSubmit() {
     if (!this.validateUserForm()) return;
+
+    this.showNotification('Creating account...', 'info');
 
     const userData = {
       first_name: this.first_name,
@@ -423,26 +422,23 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       terms_and_conditions: this.terms_and_conditions ? 1 : 0,
     };
 
-    this.showInfoNotification('Creating your account...');
-
     this.http.post('http://localhost:8000/api/v1/register', userData).subscribe({
       next: () => {
-        this.showSuccessNotification('Registration successful!');
+        this.showNotification('Registration complete', 'success');
         this.resetSignupForm();
-        this.toggleForms(); // Switch to login form
+        this.toggleForms();
       },
       error: (error) => {
         const errorMsg = error.error?.message || 'Registration failed';
-        this.showErrorNotification(errorMsg);
+        this.showNotification(errorMsg, 'error');
       }
     });
   }
 
-  // Handle login form submission
   onLoginSubmit() {
     if (!this.validateLoginForm()) return;
 
-    this.showInfoNotification('Logging in...');
+    this.showNotification('Logging in...', 'info');
 
     if (this.userType === 'company') {
       this.companyAuthService.login({
@@ -451,15 +447,14 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       }).subscribe({
         next: (success) => {
           if (success) {
-            this.showSuccessNotification('Login successful as company');
+            this.showNotification('Login successful', 'success');
             this.router.navigate(['/company']);
           } else {
-            this.showErrorNotification('Invalid credentials');
+            this.showNotification('Invalid credentials', 'error');
           }
         },
-        error: (error) => {
-          const errorMsg = error.error?.message || 'Login failed';
-          this.showErrorNotification(errorMsg);
+        error: () => {
+          this.showNotification('Login failed', 'error');
         }
       });
     } else {
@@ -468,20 +463,19 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
         password: this.loginPassword
       }).subscribe({
         next: (response: any) => {
-          this.showSuccessNotification('Login successful');
+          this.showNotification('Welcome back', 'success');
           this.authService.saveToken(response.access_token);
           this.authService.saveUser(response.user);
           this.router.navigate(['/home']);
         },
-        error: (error) => {
-          const errorMsg = error.error?.message || 'Login failed';
-          this.showErrorNotification(errorMsg);
+        error: () => {
+          this.showNotification('Login failed', 'error');
         }
       });
     }
   }
 
-  // Reset user signup form
+  // Form reset methods
   resetSignupForm() {
     this.first_name = '';
     this.last_name = '';
@@ -494,7 +488,6 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     Object.keys(this.errors).forEach(key => this.clearFieldError(key));
   }
 
-  // Reset company form
   resetCompanyForm() {
     this.company = {
       company_name: '',
@@ -518,14 +511,14 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
 
   // Google sign in
   signInWithGoogle(event: Event) {
-    event.preventDefault(); // Prevent default link behavior
-    this.showInfoNotification('Redirecting to Google login...');
+    event.preventDefault();
+    this.showNotification('Redirecting to Google...', 'info');
     window.location.href = 'http://127.0.0.1:8000/auth/google';
   }
 
-  // Navigate to forgot password
+  // Forgot password
   navigateToForgotPassword() {
-    this.showInfoNotification('Redirecting to password recovery...');
+    this.showNotification('Redirecting...', 'info');
     this.router.navigate(['/forgot-password']);
   }
 

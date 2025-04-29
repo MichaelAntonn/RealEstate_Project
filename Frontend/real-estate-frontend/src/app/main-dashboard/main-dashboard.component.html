@@ -47,8 +47,8 @@
 <div class="dropdown">
     <button class="btn btn-link text-white dropdown-toggle user-info" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <span>Welcome, {{ username }}</span>
-        <img src="assets/1.png" alt="User" class="user-avatar">
-    </button>
+        <img [src]="profileImage" alt="User" class="user-avatar">
+        </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
         <li>
             <a class="dropdown-item" routerLink="/home">

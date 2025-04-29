@@ -1,14 +1,12 @@
 <div class="container" id="container">
   <!-- Notification Container -->
-  <div class="notification-container" *ngIf="notification.show">
-    <div class="notification" [class.error]="notification.isError" 
-         [class.success]="notification.type === 'success'"
-         [class.warning]="notification.type === 'warning'"
-         [class.info]="notification.type === 'info'">
-      <span>{{ notification.message }}</span>
-      <i class="bi bi-x" (click)="hideNotification()"></i>
-    </div>
+ <!-- Notification Container -->
+ <div class="notification-container" *ngIf="notification.show">
+  <div class="notification" [class]="notification.type">
+    <span>{{ notification.message }}</span>
+    <i class="bi bi-x" (click)="hideNotification()"></i>
   </div>
+</div>
 
   <!-- User Sign Up Form -->
   <div class="form-container sign-up">

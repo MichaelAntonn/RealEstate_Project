@@ -41,6 +41,7 @@
     "ngx-toastr": "^19.0.0",
     "pusher-js": "^8.4.0",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.6.13",
     "tslib": "^2.3.0",
     "vite": "^6.2.5",
     "zone.js": "~0.15.0"

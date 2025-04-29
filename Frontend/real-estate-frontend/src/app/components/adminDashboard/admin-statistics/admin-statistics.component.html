@@ -103,5 +103,28 @@
         </ng-template>
       </div>
     </div>
+    
+    <!-- Yearly Summary Chart -->
+    <div class="glass-chart-group full-width-chart">
+      <div class="glass-chart-card">
+        <h3 class="glass-chart-title">Yearly Summary</h3>
+        <div class="year-selector">
+          <label for="yearSelect">Select Year:</label>
+          <select id="yearSelect" (change)="onYearChange($event)">
+            <option *ngFor="let year of availableYears" [value]="year" [selected]="year === selectedYear">{{ year }}</option>
+          </select>
+        </div>
+        <div class="glass-loading" *ngIf="loadingYearlySummary">
+          <div class="glass-spinner"></div>
+          <span class="glass-loading-text">Loading...</span>
+        </div>
+        <div class="glass-chart-container">
+          <canvas id="yearlySummaryChart"></canvas>
+        </div>
+        <div class="debug-fallback" *ngIf="!loadingYearlySummary && !yearlySummary.length">
+          <p>No data available for the selected year.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

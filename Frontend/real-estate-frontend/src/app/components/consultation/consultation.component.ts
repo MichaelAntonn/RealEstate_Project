@@ -3,6 +3,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ConsultationFormComponent } from "../consultation-form/consultation-form.component";
 
 @Component({
   selector: 'app-consultation',
@@ -11,7 +12,8 @@ import { Router } from '@angular/router';
     CommonModule,
     NavbarComponent,
     FooterComponent,
-  ],
+    ConsultationFormComponent
+],
   templateUrl: './consultation.component.html',
   styleUrls: ['./consultation.component.css']
 })

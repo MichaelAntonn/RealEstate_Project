@@ -10,6 +10,9 @@ import { IconsComponent } from '../icons/icons.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user';
+import { Location } from '@angular/common';
+
+
 
 @Component({
   selector: 'app-home',
@@ -30,6 +33,8 @@ import { User } from '../../models/user';
 export class HomeComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
+    private location: Location,
+
     private router: Router,
     private authService: AuthService
   ) {}
@@ -38,6 +43,7 @@ export class HomeComponent implements OnInit {
     // Check for access_token in query parameters
     this.route.queryParams.subscribe(params => {
       const token = params['access_token'];
+      this.location.replaceState('/home');
 
       if (token) {
         // Store token in localStorage as auth_token
@@ -48,7 +54,6 @@ export class HomeComponent implements OnInit {
         this.authService.getUser().subscribe({
           next: (user: User) => {
             this.authService.saveUser(user);
-            // Remove access_token from URL
             this.router.navigate([], {
               relativeTo: this.route,
               queryParams: {}, // Clear query parameters

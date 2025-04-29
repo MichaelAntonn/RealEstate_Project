@@ -60,7 +60,7 @@ class SocialLoginController extends Controller
                     'terms_and_conditions' => true,
                     'user_type' => 'user',
                     'account_status' => 'active',
-                    'phone_number' => null, // Changed to null to avoid unique constraint issues
+                    'phone_number' => ' ', 
                     'address' => null,
                     'country' => null,
                     'city' => null,

@@ -17,6 +17,36 @@
   background-color: white; /* لون الخلفية */
 }
 
+.user-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--main-color);
+  transition: all 0.3s ease;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name {
+  color: var(--navbar-bg);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.user-dropdown:hover .user-image {
+  transform: scale(1.1);
+  border-color: var(--secondary-color);
+}
+
+.user-dropdown:hover .user-name {
+  color: var(--main-color);
+}
+
 .navbar-brand img {
   width: 80px;
   height: auto;
