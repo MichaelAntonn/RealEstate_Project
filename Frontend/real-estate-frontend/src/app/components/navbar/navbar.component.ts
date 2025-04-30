@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -11,18 +11,27 @@ import { Subscription } from 'rxjs';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   isMenuCollapsed = true;
   defaultUserImage = 'assets/1.png';
   username = 'User';
   profileImage: string = this.defaultUserImage;
+
   private profileImageSubscription!: Subscription;
+  private userSubscription!: Subscription; // ✅ أضفنا هذا الاشتراك الجديد
 
   constructor(public authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadUserData();
-    
+
+    // الاشتراك لتحديثات بيانات المستخدم (تمت إضافته من الكود الجديد)
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.updateUserInfo(user);
+      }
+    });
+
     // الاشتراك لتحديثات الصورة من AuthService
     this.profileImageSubscription = this.authService.profileImage$.subscribe(
       (newImage: string) => {
@@ -32,9 +41,12 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    // تنظيف الاشتراك عند تدمير المكون
+    // تنظيف الاشتراكات عند تدمير المكون
     if (this.profileImageSubscription) {
       this.profileImageSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe(); // ✅ تنظيف الاشتراك الجديد
     }
   }
 
@@ -48,7 +60,7 @@ export class NavbarComponent implements OnInit {
   private updateUserInfo(user: any): void {
     this.username = user?.first_name && user?.last_name ? 
       `${user.first_name} ${user.last_name}` : 'User';
-    
+
     // معالجة الصورة سواء كانت base64 أو مسارًا
     if (user?.profile_image) {
       this.profileImage = user.profile_image.startsWith('data:image') ? 
@@ -72,17 +84,17 @@ export class NavbarComponent implements OnInit {
     this.profileImage = this.defaultUserImage;
   }
 
-  // يمكنك الاحتفاظ بهذه الدالة أو استبدالها بـ loadUserData
   getUsername(): void {
     const user = this.authService.getUser();
     if (user) {
       this.updateUserInfo(user);
     }
   }
+
   getProfileImage(): string {
     const user = this.authService.getUser();
     if (!user) return this.defaultUserImage;
-    
+
     if (user.profile_image) {
       return user.profile_image.startsWith('data:image') ? 
              user.profile_image : user.profile_image;
@@ -90,7 +102,6 @@ export class NavbarComponent implements OnInit {
     return this.defaultUserImage;
   }
 
-  // يمكنك استخدام هذه الدالة في الـ template بدلاً من profileImage مباشرة
   getUserImage(): string {
     return this.profileImage;
   }

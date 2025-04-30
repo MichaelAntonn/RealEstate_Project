@@ -21,6 +21,19 @@ export class AuthService {
   private profileImageSubject = new BehaviorSubject<string>('assets/1.png');
 profileImage$ = this.profileImageSubject.asObservable();
 
+// داخل AuthService class
+handleGoogleLogin(token: string): Observable<any> {
+  this.saveToken(token);
+  return this.http.get(`${this.apiUrl}/user`).pipe(
+    tap((user: any) => {
+      this.saveUser(user);
+      this.profileImageSubject.next(user.profile_image || 'assets/1.png');
+    }),
+    catchError(this.handleError)
+  );
+}
+
+
 updateProfileImage(image: string): void {
   const user = this.getUser();
   if (user) {
@@ -85,6 +98,7 @@ updateProfileImage(image: string): void {
     return localStorage.getItem(this.AUTH_KEY);
   }
 
+
   // حفظ بيانات المستخدم
   saveUser(user: any): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
@@ -127,7 +141,7 @@ updateProfileImage(image: string): void {
 
   // التحقق من حالة المصادقة
   isLoggedIn(): boolean {
-    return !!this.getToken() && !!this.getUser();
+    return !!this.getToken() ;
   }
 
   // إنشاء رؤوس المصادقة

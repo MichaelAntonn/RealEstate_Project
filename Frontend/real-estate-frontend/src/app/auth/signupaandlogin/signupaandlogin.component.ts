@@ -84,28 +84,23 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
     private companyAuthService: CompanyAuthService,
     private route: ActivatedRoute
   ) {}
-
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const token = params['access_token'];
       const error = params['error'];
-
+  
       if (error) {
         this.showNotification('Google login failed', 'error');
         return;
       }
-
+  
       if (token) {
-        localStorage.setItem('auth_token', token);
-        this.authService.saveToken(token);
-
-        this.authService.getUser().subscribe({
-          next: (user: User) => {
-            this.authService.saveUser(user);
+        this.authService.handleGoogleLogin(token).subscribe({
+          next: () => {
             this.showNotification('Login successful', 'success');
             this.router.navigate(['/home']);
           },
-          error: () => {
+          error: (err) => {
             this.showNotification('Failed to load user data', 'error');
             this.router.navigate(['/home']);
           }
@@ -113,7 +108,6 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
   // Simple notification methods
   showNotification(message: string, type: 'info' | 'success' | 'error' = 'info', duration: number = 4000) {
     this.notification = {
