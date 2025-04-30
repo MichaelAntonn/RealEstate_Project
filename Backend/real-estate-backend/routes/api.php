@@ -31,6 +31,7 @@ use App\Http\Controllers\SubscriptionPlanController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::post('/stripe/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
 
 Route::prefix('v1')->group(function () {
     // Authentication routes (public)
@@ -85,10 +86,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
     });
 
-    // Payments
-    Route::prefix('payment')->group(function () {
-        Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
-    });
+    // // Payments
+    // Route::prefix('payment')->group(function () {
+    //     Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
+    // });
 
     // consultants Route (public)
     Route::prefix('consultants')->group(function () {
@@ -290,6 +291,7 @@ Route::prefix('v1')->group(function () {
             Route::delete('blogs/{blog}', [BlogController::class, 'destroy']);
 
 
+
             // Settings Routes
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/financial', [SettingController::class, 'getFinancialSettings'])->name('financial');
@@ -370,6 +372,3 @@ Route::prefix('v1')->group(function () {
         Route::delete('/', [NotificationsController::class, 'destroyAll']); // Delete all notifications
     });
 });
-
-
-

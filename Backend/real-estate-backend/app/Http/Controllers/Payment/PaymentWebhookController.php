@@ -14,15 +14,18 @@ class PaymentWebhookController extends Controller
     public function handle(Request $request)
     {
         $payload = $request->getContent();
-        $sig_header = $request->header('Stripe-Signature');
-        $secret = config('services.stripe.webhook_secret');
+$sigHeader = $request->header('Stripe-Signature');
+$secret = config('services.stripe.webhook_secret');
 
-        try {
-            $event = Webhook::constructEvent($payload, $sig_header, $secret);
-        } catch (\Exception $e) {
-            Log::error('Stripe webhook signature verification failed', ['error' => $e->getMessage()]);
-            return response('Invalid signature', 400);
-        }
+try {
+    $event = \Stripe\Webhook::constructEvent(
+        $payload, $sigHeader, $secret
+    );
+} catch (\Stripe\Exception\SignatureVerificationException $e) {
+    Log::error('Stripe webhook signature verification failed', ['error' => $e->getMessage()]);
+    return response('Invalid signature', 400);
+}
+
 
         Log::info('Stripe Webhook received', ['type' => $event->type]);
 
