@@ -55,7 +55,7 @@ class PropertyAccepted extends Notification
             'message' => 'Your property "' . $this->property->title . '" has been accepted!',
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/' . $this->property->slug,
         ];
     }
     public function toBroadcast(object $notifiable): BroadcastMessage
@@ -64,7 +64,7 @@ class PropertyAccepted extends Notification
             'message' => 'Your property "' . $this->property->title . '" has been accepted!',
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/' . $this->property->slug,
         ]);
     }
 }

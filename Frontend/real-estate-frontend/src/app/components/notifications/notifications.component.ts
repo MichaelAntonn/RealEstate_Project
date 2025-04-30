@@ -5,11 +5,12 @@ import { NotificationService, Notification } from '../../services/notification.s
 import { AuthService } from '../../services/auth.service';
 import { CompanyAuthService } from '../../services/company-auth.service';
 import { Subscription } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css']
 })
@@ -24,17 +25,17 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.notificationService.initNotifications();
-    this.loadNotifications();
-    this.subscription = this.notificationService.notifications$.subscribe((newNotification) => {
-      this.notifications.unshift(newNotification);
+    // this.notificationService.initNotifications();
+    this.subscription = this.notificationService.notifications$.subscribe(() => {
+      this.loadNotifications();
     });
+    this.loadNotifications();
   }
 
   loadNotifications() {
     this.notificationService.getNotifications().subscribe({
       next: (response) => {
-        this.notifications = response.data?.data || response.data || response || [];
+        this.notifications = response.data?.data || [];
       },
       error: (error) => {
         console.error('Error fetching notifications:', error);

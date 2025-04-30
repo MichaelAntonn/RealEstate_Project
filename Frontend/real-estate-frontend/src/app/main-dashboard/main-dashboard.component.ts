@@ -69,8 +69,6 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('MainDashboardComponent initialized');
-
     this.subscription = this.notificationService.notifications$.subscribe(() => {
       this.loadNotificationsCount();
     });
@@ -92,7 +90,6 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.notificationsCount =
           response.data?.data?.length || response.data?.length || 0;
-        console.log('Notifications count:', this.notificationsCount);
       },
       error: (error) => {
         console.error('Error fetching notifications count:', error);

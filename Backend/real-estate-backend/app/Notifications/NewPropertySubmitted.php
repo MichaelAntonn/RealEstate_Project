@@ -55,7 +55,7 @@ class NewPropertySubmitted extends Notification
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
             'submitted_by' => $this->property->user->name,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/' . $this->property->slug,
         ];
     }
     public function toBroadcast(object $notifiable): BroadcastMessage
@@ -65,7 +65,7 @@ class NewPropertySubmitted extends Notification
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
             'submitted_by' => $this->property->user->name,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/' . $this->property->slug,
         ]);
     }
 }

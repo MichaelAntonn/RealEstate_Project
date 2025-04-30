@@ -47,38 +47,42 @@ export class NotificationService {
 
     (window as any).Pusher = Pusher;
 
-    this.http.get(`${environment.apiUrl}/sanctum/csrf-cookie`, {
-      withCredentials: true,
-    }).subscribe({
-      next: () => {
-        this.echo = new Echo({
-          broadcaster: 'pusher',
-          key: environment.pusher.key,
-          cluster: environment.pusher.cluster,
-          forceTLS: true,
-          authEndpoint: `${environment.apiUrl}/broadcasting/auth`,
-          auth: {
-            headers: {
-              'Authorization': `Bearer ${this.authService.getToken()}`,
-              'X-CSRF-TOKEN': this.getCsrfToken()
-            }
-          },
-          withCredentials: true,
-        });
+    this.http
+      .get(`${environment.apiUrl}/sanctum/csrf-cookie`, {
+        withCredentials: true,
+      })
+      .subscribe({
+        next: () => {
+          this.echo = new Echo({
+            broadcaster: 'pusher',
+            key: environment.pusher.key,
+            cluster: environment.pusher.cluster,
+            forceTLS: true,
+            authEndpoint: `${environment.apiUrl}/broadcasting/auth`,
+            auth: {
+              headers: {
+                Authorization: `Bearer ${this.authService.getToken()}`,
+                'X-CSRF-TOKEN': this.getCsrfToken(),
+              },
+            },
+            withCredentials: true,
+          });
 
-        console.log('Echo initialized successfully');
-        this.initNotifications(); // تهيئة الإشعارات تلقائياً بعد اكتمال Echo
-      },
-      error: (err) => {
-        console.error('Failed to initialize Echo:', err);
-      }
-    });
+          this.initNotifications(); // تهيئة الإشعارات تلقائياً بعد اكتمال Echo
+        },
+        error: (err) => {
+          console.error('Failed to initialize Echo:', err);
+        },
+      });
   }
 
   private getCsrfToken(): string {
-    return document.cookie.split('; ')
-      .find(row => row.startsWith('XSRF-TOKEN='))
-      ?.split('=')[1] || '';
+    return (
+      document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1] || ''
+    );
   }
 
   initNotifications(): void {
@@ -96,7 +100,8 @@ export class NotificationService {
     this.isSubscribed = true;
     const channelName = `Notifications.${userId}`;
 
-    this.echo.private(channelName)
+    this.echo
+      .private(channelName)
       .notification((notification: Notification) => {
         this.notificationsSubject.next(notification);
       })
@@ -122,7 +127,6 @@ export class NotificationService {
         withCredentials: true,
       })
       .pipe(
-        tap((response) => console.log('Fetched notifications:', response)),
         catchError((error) => {
           console.error('Error fetching notifications:', error);
           throw error;
@@ -154,4 +158,3 @@ export class NotificationService {
     return this.http.delete(`${environment.apiUrl}/api/v1/notifications`);
   }
 }
-
