@@ -31,6 +31,7 @@ use App\Http\Controllers\SubscriptionPlanController;
 
 // Public routes
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::post('/stripe/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
 
 Route::prefix('v1')->group(function () {
     // Authentication routes (public)
@@ -85,10 +86,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/plans/all', [SubscriptionController::class, 'getAllPlansForRegistration'])->name('subscription.allPlansForRegistration'); // Get all plans including trial for registration
     });
 
-    // Payments
-    Route::prefix('payment')->group(function () {
-        Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
-    });
+    // // Payments
+    // Route::prefix('payment')->group(function () {
+    //     Route::post('/webhook', [PaymentWebhookController::class, 'handle'])->name('webhook');  //  handle Stripe webhook events
+    // });
 
     // consultants Route (public)
     Route::prefix('consultants')->group(function () {
@@ -279,15 +280,16 @@ Route::prefix('v1')->group(function () {
             // consultants Route 
             Route::prefix('consultants')->group(function () {
                 Route::get('/', [ConsultantController::class, 'index']);
-                Route::get('/{id}', [ConsultantController::class, 'show']);
-                Route::patch('/{id}/seen', [ConsultantController::class, 'updateSeen']);
                 Route::delete('/{id}', [ConsultantController::class, 'destroy']);
             });
 
             // blogs Route 
-            Route::post('/blogs', [BlogController::class, 'store']);
-            Route::put('blogs/{blog}', [BlogController::class, 'update']);
-            Route::delete('blogs/{blog}', [BlogController::class, 'destroy']);
+            Route::prefix('blogs')->group(function () {
+                Route::post('/', [BlogController::class, 'store']);
+                Route::put('/{id}', [BlogController::class, 'update']);
+                Route::delete('/{id}', [BlogController::class, 'destroy']);
+            });
+
 
 
             // Settings Routes
@@ -370,6 +372,3 @@ Route::prefix('v1')->group(function () {
         Route::delete('/', [NotificationsController::class, 'destroyAll']); // Delete all notifications
     });
 });
-
-
-
