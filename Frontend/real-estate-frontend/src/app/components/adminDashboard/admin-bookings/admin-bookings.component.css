@@ -1,3 +1,5 @@
+
+
 /* Base Glass Styles */
 .admin-glass-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -76,6 +78,14 @@
   text-align: center;
   color: rgba(211, 84, 0, 0.5);
   padding: 1.5rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem; /* Add spacing between buttons */
+  align-items: center;
+  justify-content: flex-start;
 }
 
 /* Buttons */
@@ -210,8 +220,14 @@
     overflow-x: auto;
   }
   
+  .action-buttons {
+    flex-direction: column; /* Stack buttons vertically on small screens */
+    gap: 0.3rem;
+  }
+  
   .glass-btn {
     padding: 0.5rem 0.8rem;
     font-size: 0.8rem;
+    width: 100%; /* Make buttons full-width on small screens */
   }
 }

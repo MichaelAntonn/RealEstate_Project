@@ -31,7 +31,7 @@
             <td>{{ property.property_code }}</td>
             <td>{{ property.price | currency:'EGP' }}</td>
             <td>{{ property.city }}</td>
-            <td>
+            <td class="action-buttons">
               <button class="glass-btn glass-btn-view" (click)="viewProperty(property)">
                 <i class="fas fa-eye"></i> View
               </button>
@@ -102,7 +102,7 @@
             <td>{{ property.property_code }}</td>
             <td>{{ property.price | currency:'EGP' }}</td>
             <td>{{ property.city }}</td>
-            <td>
+            <td class="action-buttons">
               <button class="glass-btn glass-btn-view" (click)="viewProperty(property)">
                 <i class="fas fa-eye"></i> View
               </button>
@@ -173,7 +173,7 @@
             <td>{{ property.property_code }}</td>
             <td>{{ property.price | currency:'EGP' }}</td>
             <td>{{ property.city }}</td>
-            <td>
+            <td class="action-buttons">
               <button class="glass-btn glass-btn-view" (click)="viewProperty(property)">
                 <i class="fas fa-eye"></i> View
               </button>
@@ -304,4 +304,3 @@
       </div>
     </div>
   </div>
-</div>

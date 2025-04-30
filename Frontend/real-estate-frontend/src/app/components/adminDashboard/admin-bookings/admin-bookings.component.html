@@ -22,7 +22,7 @@
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
             <td>{{ booking.status }}</td>
-            <td>
+            <td class="action-buttons">
               <button class="glass-btn glass-btn-accept" (click)="updateBookingStatus(booking.id, 'confirmed')">
                 <i class="fas fa-check"></i> Confirm
               </button>
@@ -79,7 +79,7 @@
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
             <td>{{ booking.status }}</td>
-            <td>
+            <td class="action-buttons">
               <button class="glass-btn glass-btn-reject" (click)="updateBookingStatus(booking.id, 'canceled')">
                 <i class="fas fa-times"></i> Cancel
               </button>
@@ -136,7 +136,7 @@
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
             <td>{{ booking.status }}</td>
-            <td>
+            <td class="action-buttons">
               <button class="glass-btn glass-btn-accept" (click)="updateBookingStatus(booking.id, 'confirmed')">
                 <i class="fas fa-check"></i> Confirm
               </button>
