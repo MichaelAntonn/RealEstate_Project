@@ -70,9 +70,15 @@ class NewPropertyAdded extends Notification
             'type' => $this->property->type
         ]);
     }
+    // public function broadcastOn(): array
+    // {
+    //     return [
+    //         new PrivateChannel('Notifications.' . $this->property->user_id)
+    //     ];
+    // }
 
-    public function broadcastType()
-{
-    return 'NewOrder';
-}
+    // public function broadcastAs()
+    // {
+    //     return 'NewPropertyAdded';
+    // }
 }

@@ -1,3 +1,4 @@
+// notifications.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '../../services/notification.service';
@@ -24,18 +25,16 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.notificationService.initNotifications();
-    this.subscription = this.notificationService.notifications$.subscribe(notification => {
-      this.notifications.unshift(notification);
-    });
     this.loadNotifications();
+    this.subscription = this.notificationService.notifications$.subscribe((newNotification) => {
+      this.notifications.unshift(newNotification);
+    });
   }
 
   loadNotifications() {
     this.notificationService.getNotifications().subscribe({
       next: (response) => {
-        console.log('Full API response:', response);
         this.notifications = response.data?.data || response.data || response || [];
-        console.log('Fetched notifications:', this.notifications);
       },
       error: (error) => {
         console.error('Error fetching notifications:', error);
@@ -49,7 +48,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         const notification = this.notifications.find(n => n.id === notificationId);
         if (notification) {
           notification.read_at = new Date().toISOString();
-          console.log('Notification marked as read:', notificationId);
         }
       },
       error: (error) => {
