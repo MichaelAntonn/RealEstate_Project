@@ -71,8 +71,8 @@ export const routes: Routes = [
 
   { path: 'properties', component: PropertiesComponent },
   { path: 'property-details/:slug', component: PropertyDetailsComponent },
-  { path: 'booking/:id', component: BookingComponent },
-  { path: 'add-property', component: AddPropertyComponent },
+  { path: 'booking/:id', component: BookingComponent ,canActivate: [AuthGuard]},
+  { path: 'add-property', component: AddPropertyComponent,canActivate: [AuthGuard] },
   { path: 'edit-property/:id', component: AddPropertyComponent },
   { path: 'signupandlogin', component: SignupaandloginComponent },
 
