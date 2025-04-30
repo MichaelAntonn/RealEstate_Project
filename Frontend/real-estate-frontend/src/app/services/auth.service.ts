@@ -127,7 +127,7 @@ updateProfileImage(image: string): void {
 
   // التحقق من حالة المصادقة
   isLoggedIn(): boolean {
-    return !!this.getToken() && !!this.getUser();
+    return !!this.getToken() ;
   }
 
   // إنشاء رؤوس المصادقة

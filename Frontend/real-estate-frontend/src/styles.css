@@ -8,12 +8,23 @@
   --secondary-text: #aaaaaa; /* رمادي أفتح للعناوين */
   --border-color: #333333; /* حدود داكنة */
 }
+/* القاعدة العامة لتطبيق خط Poppins على كل العناصر */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif !important;
+}
 
+/* استثناءات لخط Font Awesome */
+.fa,
+.fas,
+.fab,
+.far,
+.fal,
+.fad {
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900; /* أو 400 حسب نوع الأيقونة */
 }
 
 @font-face {
