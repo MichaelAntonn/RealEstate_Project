@@ -280,15 +280,15 @@ Route::prefix('v1')->group(function () {
             // consultants Route 
             Route::prefix('consultants')->group(function () {
                 Route::get('/', [ConsultantController::class, 'index']);
+                Route::get('/{id}', [ConsultantController::class, 'show']);
+                Route::patch('/{id}/seen', [ConsultantController::class, 'updateSeen']);
                 Route::delete('/{id}', [ConsultantController::class, 'destroy']);
             });
 
             // blogs Route 
-            Route::prefix('blogs')->group(function () {
-                Route::post('/', [BlogController::class, 'store']);
-                Route::put('/{id}', [BlogController::class, 'update']);
-                Route::delete('/{id}', [BlogController::class, 'destroy']);
-            });
+            Route::post('/blogs', [BlogController::class, 'store']);
+            Route::put('blogs/{blog}', [BlogController::class, 'update']);
+            Route::delete('blogs/{blog}', [BlogController::class, 'destroy']);
 
 
 
