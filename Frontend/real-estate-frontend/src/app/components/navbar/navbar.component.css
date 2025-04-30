@@ -7,9 +7,7 @@
 }
 
 .navbar {
-  margin-top: -.5%;
-  /* Gradient background زاهي ومبهج */
- 
+  margin-top: -.5%; 
   padding: 0px 20px; /* زيادة الـ padding عشان يبقى أوسع */
    position: sticky;
   top: 0;
@@ -113,7 +111,7 @@
 
 /* Login & Signup Buttons */
 .login, .btn-custom:hover {
-  background-color: #3e5549;
+  /* background-color: #3e5549; */
   color: rgb(255, 123, 37);
   border: solid 1px #F77C34;
   transform: skew(-20deg);
@@ -122,6 +120,13 @@
   padding: 6px 13px;
   font-size: small;
   margin-left: 20px !important;
+}
+.login:hover{
+  padding: 7px 15px;
+ 
+}
+.btn-custom:hover {
+  color: #F9FDFF !important;
 }
 
 .login:hover {

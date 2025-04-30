@@ -16,6 +16,10 @@
   font-family: 'Poppins', sans-serif !important;
 }
 
+a,button{
+  cursor: pointer !important;
+}
+
 /* استثناءات لخط Font Awesome */
 .fa,
 .fas,

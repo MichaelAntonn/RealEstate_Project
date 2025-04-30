@@ -12,6 +12,15 @@
 .row.justify-content-center {
     justify-content: center;
 }
+#pro{
+    color: #ff7700;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1.7rem !important;
+    letter-spacing: 2px;
+    font-weight: 200 !important ;
+  
+}
 
 .col-md-2 {
     padding: 0 0.5rem;
