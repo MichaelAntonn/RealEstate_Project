@@ -18,7 +18,7 @@ import { StatsChartComponent } from '../user-dashboard/components/stats-chart/st
   styleUrls: ['./statistics.component.css']
 })
 export class StatisticsComponent implements OnInit {
-  // Real estate statistics
+  // Easy Estatestatistics
   listedCount: number = 0;
   bookedCount: number = 0;
   soldCount: number = 0;
