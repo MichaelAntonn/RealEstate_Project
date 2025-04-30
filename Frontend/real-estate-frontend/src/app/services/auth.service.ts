@@ -10,31 +10,25 @@ export class AuthService {
   private apiUrl = 'http://localhost:8000/api/v1';
   private readonly AUTH_KEY = 'auth_token';
   private readonly USER_KEY = 'user';
+
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
+  private profileImageSubject = new BehaviorSubject<string>('assets/1.png');
+  profileImage$ = this.profileImageSubject.asObservable();
+
   constructor(private http: HttpClient, private router: Router) {
-    // جلب بيان Chambre des notaires des Yvelines
     this.loadStoredUser();
   }
-
-  private profileImageSubject = new BehaviorSubject<string>('assets/1.png');
-profileImage$ = this.profileImageSubject.asObservable();
-
-updateProfileImage(image: string): void {
-  const user = this.getUser();
-  if (user) {
-    user.profile_image = image;
-    this.saveUser(user);
-    this.profileImageSubject.next(image);
-  }
-}
 
   // تحميل بيانات المستخدم المخزنة عند بدء الخدمة
   private loadStoredUser(): void {
     const user = this.getUser();
     if (user && this.getToken()) {
       this.currentUserSubject.next(user);
+      if (user.profile_image || user.picture) {
+        this.profileImageSubject.next(this.getCurrentUserImage());
+      }
     }
   }
 
@@ -54,6 +48,7 @@ updateProfileImage(image: string): void {
         if (response.user) {
           this.saveUser(response.user);
           this.currentUserSubject.next(response.user);
+          this.profileImageSubject.next(this.getCurrentUserImage());
           this.router.navigate(['/dashboard']);
         }
       }),
@@ -89,6 +84,7 @@ updateProfileImage(image: string): void {
   saveUser(user: any): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUserSubject.next(user);
+    this.profileImageSubject.next(this.getCurrentUserImage());
   }
 
   // جلب بيانات المستخدم
@@ -97,7 +93,7 @@ updateProfileImage(image: string): void {
     return user ? JSON.parse(user) : null;
   }
 
-  // جلب المستخدم الحالي
+  // تحميل المستخدم الحالي من السيرفر
   loadCurrentUser(): Observable<any> {
     const token = this.getToken();
     if (!token) {
@@ -118,10 +114,33 @@ updateProfileImage(image: string): void {
       );
   }
 
+  // تحديث صورة الملف الشخصي
+  updateProfileImage(image: string): void {
+    const user = this.getUser();
+    if (user) {
+      user.profile_image = image;
+      this.saveUser(user); // يحفظ ويُحدث الـ currentUser و profileImage
+    }
+  }
+
+  // جلب صورة المستخدم الحالية
+  getCurrentUserImage(): string {
+    const user = this.getUser();
+    if (user?.profile_image) {
+      return user.profile_image.startsWith('data:image')
+        ? user.profile_image
+        : user.profile_image;
+    } else if (user?.picture) {
+      return user.picture;
+    }
+    return 'assets/1.png';
+  }
+
   // تسجيل الخروج
   logout(): void {
     this.clearAllTokens();
     this.currentUserSubject.next(null);
+    this.profileImageSubject.next('assets/1.png');
     this.router.navigate(['/login']);
   }
 
@@ -149,31 +168,22 @@ updateProfileImage(image: string): void {
     );
   }
 
-  // معالجة الأخطاء المركزية
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
-    return throwError(() => new Error(error.message || 'Server error'));
-  }
-
   // تنظيف التوكنات القديمة
   private clearStaleTokens(): void {
     ['access_token', 'token'].forEach((key) => localStorage.removeItem(key));
   }
 
-  // داخل AuthService class
-getCurrentUserImage(): string {
-  const user = this.getUser();
-  if (user?.profile_image) {
-    return user.profile_image.startsWith('data:image') ? 
-      user.profile_image : user.profile_image;
-  }
-  return 'assets/1.png'; // الصورة الافتراضية
-}
   // مسح جميع التوكنات والبيانات
   private clearAllTokens(): void {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.clearStaleTokens();
     this.currentUserSubject.next(null);
+  }
+
+  // معالجة الأخطاء
+  private handleError(error: any): Observable<never> {
+    console.error('An error occurred:', error);
+    return throwError(() => new Error(error.message || 'Server error'));
   }
 }
