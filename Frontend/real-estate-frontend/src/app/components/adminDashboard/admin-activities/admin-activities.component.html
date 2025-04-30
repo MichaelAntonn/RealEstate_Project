@@ -4,18 +4,23 @@
     <h2 class="glass-title">Recent User Activities</h2>
     
     <div class="glass-table-container">
-      <div class="activity-list">
-        <div class="activity-item" *ngFor="let activity of activities">
-          <div class="activity-content">
-            <p class="description">{{ activity.description }}</p>
-            <p class="timestamp">{{ formatTimestamp(activity.timestamp) }}</p>
+      <div class="timeline-wrapper">
+        <div class="timeline">
+          <div class="timeline-item" *ngFor="let activity of activities">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="activity-type" [ngClass]="getTypeClass(activity.type)">
+                  {{ activity.type | replaceUnderscore | titlecase }}
+                </span>
+                <span class="timestamp">{{ formatTimestamp(activity.timestamp) }}</span>
+              </div>
+              <p class="description">{{ activity.description }}</p>
+            </div>
           </div>
-          <div class="activity-type" [ngClass]="getTypeClass(activity.type)">
-            {{ activity.type | replaceUnderscore | titlecase }}
+          <div class="glass-empty-timeline" *ngIf="activities.length === 0">
+            No recent activities found.
           </div>
-        </div>
-        <div class="glass-empty-row" *ngIf="activities.length === 0">
-          No recent activities found.
         </div>
       </div>
     </div>
