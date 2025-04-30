@@ -41,9 +41,7 @@ import { NotificationsComponent } from '../components/notifications/notification
   styleUrls: ['./main-dashboard.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class MainDashboardComponent {
-  // Font Awesome Icons
-
+export class MainDashboardComponent implements OnInit, OnDestroy {
   faBars = faBars;
   faBell = faBell;
   faHome = faHome;
@@ -58,9 +56,9 @@ export class MainDashboardComponent {
 
   username: string = '';
   darkMode: boolean = false;
-
   notificationsCount: number = 0;
   private subscription: Subscription = new Subscription();
+  profileImage: string = 'assets/1.png';
 
   constructor(
     private authService: AuthService,
@@ -69,42 +67,15 @@ export class MainDashboardComponent {
   ) {
     this.getUsername();
   }
-  // constructor(private authService: AuthService) {
 
-  // }
   ngOnInit() {
-    console.log('MainDashboardComponent initialized'); // ← أضف هذا
-    setTimeout(() => {
-      console.log('Calling initNotifications...'); // ← أضف هذا
-      this.notificationService.initNotifications();
-    }, 1000);
-    this.loadUsername();
+    console.log('MainDashboardComponent initialized');
 
-    const user = this.authService.getUser();
-    if (user) {
-      this.notificationService.initNotifications();
-
-      this.subscription = this.notificationService.notifications$.subscribe(() => {
-        this.loadNotificationsCount();
-      });
-
+    this.subscription = this.notificationService.notifications$.subscribe(() => {
       this.loadNotificationsCount();
-    }
-    // // Load username
-    // this.loadUsername();
+    });
 
-    // // Initialize notifications
-    // this.notificationService.initNotifications();
-
-    // // Load notifications count
-    // this.loadNotificationsCount();
-
-    // // Subscribe to real-time notifications
-    // this.subscription = this.notificationService.notifications$.subscribe(
-    //   () => {
-    //     this.loadNotificationsCount();
-    //   }
-    // );
+    this.loadNotificationsCount();
   }
 
   loadUsername() {
@@ -129,8 +100,6 @@ export class MainDashboardComponent {
     });
   }
 
-  profileImage: string = 'assets/1.png';
-
   getUsername(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.username =
@@ -149,6 +118,7 @@ export class MainDashboardComponent {
       this.profileImage = 'assets/1.png'; // الصورة الافتراضية
     }
   }
+
   toggleSidebar(): void {
     const sidebar = document.getElementById('sidebar');
     sidebar?.classList.toggle('show');
