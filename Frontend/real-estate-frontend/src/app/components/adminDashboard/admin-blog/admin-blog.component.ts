@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +7,6 @@ import { ArrayPipe } from '../../../pipes/array.pipe';
 import { normalizeTags } from '../../../utils/normalize-tags';
 import Swal from 'sweetalert2';
 
-// Local interface to ensure tags is always string[]
 interface NormalizedBlog extends Blog {
   tags: string[];
 }
@@ -55,7 +53,7 @@ export class AdminBlogComponent implements OnInit {
       next: (response) => {
         this.blogs = response.blogs.map((blog: Blog) => ({
           ...blog,
-          tags: normalizeTags(blog.tags), // Ensure tags is string[]
+          tags: normalizeTags(blog.tags),
         })) as NormalizedBlog[];
         this.pagination = {
           current_page: response.current_page,
@@ -88,7 +86,7 @@ export class AdminBlogComponent implements OnInit {
         excerpt: blog.excerpt,
         content: blog.content,
         author: blog.author,
-        tags: normalizeTags(blog.tags), // Ensure tags is string[]
+        tags: normalizeTags(blog.tags),
         category: blog.category,
         readTime: blog.readTime,
         featuredImage: null,
@@ -138,10 +136,80 @@ export class AdminBlogComponent implements OnInit {
         .map((tag: string) => tag.trim())
         .filter((tag: string) => tag);
       this.tagInput = this.form.tags.join(', ');
+    } else {
+      this.form.tags = [];
     }
   }
 
+  validateForm(): boolean {
+    if (!this.form.title || this.form.title.length > 255) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Title',
+        text: 'Title is required and must be less than 255 characters.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    if (!this.form.excerpt || this.form.excerpt.length > 500) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Excerpt',
+        text: 'Excerpt is required and must be less than 500 characters.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    if (!this.form.content) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Content',
+        text: 'Content is required.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    if (!this.form.author) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Author',
+        text: 'Author is required.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    if (!this.form.category) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Category',
+        text: 'Category is required.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    if (!this.form.readTime || this.form.readTime < 1) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Read Time',
+        text: 'Read time must be at least 1 minute.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    return true;
+  }
+
   submitForm(): void {
+    if (!this.validateForm()) {
+      return;
+    }
+
     const formData = new FormData();
     formData.append('title', this.form.title);
     formData.append('excerpt', this.form.excerpt);
@@ -176,7 +244,7 @@ export class AdminBlogComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'Failed to save blog. Please try again.',
+          text: error.message || 'Failed to save blog. Please try again.',
           timer: 3000,
           showConfirmButton: false,
         });
