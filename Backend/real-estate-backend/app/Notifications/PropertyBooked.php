@@ -59,7 +59,8 @@ class PropertyBooked extends Notification
             'booking_id' => $this->booking->id,
             'booker_id' => $this->booking->user_id,
             'booking_date' => $this->booking->booking_date,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/' . $this->property->slug,
+
         ];
     }
     public function toBroadcast(object $notifiable): BroadcastMessage
@@ -71,7 +72,7 @@ class PropertyBooked extends Notification
             'booking_id' => $this->booking->id,
             'booker_id' => $this->booking->user_id,
             'booking_date' => $this->booking->booking_date,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/' . $this->property->slug,
         ]);
     }
 }

@@ -55,7 +55,7 @@ class NewPropertyAdded extends Notification
             'message' => 'A new property "' . $this->property->title . '" has been added!',
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/'. $this->property->slug,
             'type' => $this->property->type
         ];
     }
@@ -66,19 +66,8 @@ class NewPropertyAdded extends Notification
             'message' => 'A new property "' . $this->property->title . '" has been added!',
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => '/property-details/'. $this->property->slug,
             'type' => $this->property->type
         ]);
     }
-    // public function broadcastOn(): array
-    // {
-    //     return [
-    //         new PrivateChannel('Notifications.' . $this->property->user_id)
-    //     ];
-    // }
-
-    // public function broadcastAs()
-    // {
-    //     return 'NewPropertyAdded';
-    // }
 }
