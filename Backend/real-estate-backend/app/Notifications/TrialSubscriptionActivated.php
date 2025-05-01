@@ -4,24 +4,19 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 
-
-class PropertyBooked extends Notification
+class TrialSubscriptionActivated extends Notification
 {
     use Queueable;
-    protected $booking;
-    protected $property;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct($booking, $property)
+    protected $subscription;
+
+    public function __construct($subscription)
     {
-        $this->booking = $booking;
-        $this->property = $property;
+        $this->subscription = $subscription;
     }
 
     /**
@@ -50,17 +45,12 @@ class PropertyBooked extends Notification
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
+    public function toArray(object $notifiable)
     {
         return [
-            'message' => 'Someone booked your property "' . $this->property->title . '"!',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'booking_id' => $this->booking->id,
-            'booker_id' => $this->booking->user_id,
-            'booking_date' => $this->booking->booking_date,
-            'url' => '/property-details/' . $this->property->slug,
-
+            'message' => 'Trial subscription activated for ' . $this->subscription->plan_name,
+            'subscription_id' => $this->subscription->id,
+            'ends_at' => $this->subscription->ends_at->format('Y-m-d'),
         ];
     }
 

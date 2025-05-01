@@ -65,19 +65,8 @@ class PropertyRejected extends Notification
 
         return $data;
     }
-    public function toBroadcast(object $notifiable): BroadcastMessage
+    public function toBroadcast($notifiable): BroadcastMessage
     {
-        $data = [
-            'message' => 'Your property "' . $this->property->title . '" has been rejected.',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'url' => '/property-details/' . $this->property->slug,
-        ];
-
-        if ($this->reason) {
-            $data['reason'] = $this->reason;
-        }
-
-        return new BroadcastMessage($data);
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

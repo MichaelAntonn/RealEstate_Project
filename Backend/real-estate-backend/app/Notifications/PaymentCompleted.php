@@ -4,24 +4,24 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 
-
-class PropertyBooked extends Notification
+class PaymentCompleted extends Notification
 {
     use Queueable;
-    protected $booking;
-    protected $property;
+
+    protected $payment;
+    protected $isAdmin;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($booking, $property)
+    public function __construct($payment, $isAdmin = false)
     {
-        $this->booking = $booking;
-        $this->property = $property;
+        $this->payment = $payment;
+        $this->isAdmin = $isAdmin;
     }
 
     /**
@@ -50,20 +50,15 @@ class PropertyBooked extends Notification
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable): array
     {
         return [
-            'message' => 'Someone booked your property "' . $this->property->title . '"!',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'booking_id' => $this->booking->id,
-            'booker_id' => $this->booking->user_id,
-            'booking_date' => $this->booking->booking_date,
-            'url' => '/property-details/' . $this->property->slug,
-
+            'message' => $this->isAdmin ? "Payment completed for user ID: {$this->payment->subscription->user_id}" : 'Your payment has been completed.',
+            'amount' => number_format($this->payment->amount, 2),
+            'payment_reference' => $this->payment->payment_reference,
+            'paid_at' => $this->payment->paid_at->toFormattedDateString(),
         ];
     }
-
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage($this->toArray($notifiable));

@@ -4,22 +4,20 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class NewPropertySubmitted extends Notification
+class SubscriptionPending extends Notification
 {
     use Queueable;
 
-    protected $property;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct($property)
+    protected $subscription;
+
+    public function __construct($subscription)
     {
-        $this->property = $property;
+        $this->subscription = $subscription;
     }
 
     /**
@@ -29,7 +27,7 @@ class NewPropertySubmitted extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast'];
+        return ['database','broadcast'];
     }
 
     /**
@@ -38,9 +36,9 @@ class NewPropertySubmitted extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
     }
 
     /**
@@ -51,13 +49,12 @@ class NewPropertySubmitted extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'A new property "' . $this->property->title . '" has been submitted for review.',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'submitted_by' => $this->property->user->name,
-            'url' => '/property-details/' . $this->property->slug,
+            'message' => 'Subscription renewal pending for ' . $this->subscription->plan_name,
+            'subscription_id' => $this->subscription->id,
+            'status' => $this->subscription->status,
         ];
     }
+
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage($this->toArray($notifiable));

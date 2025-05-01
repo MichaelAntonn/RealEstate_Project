@@ -60,14 +60,8 @@ class NewPropertyAdded extends Notification
         ];
     }
 
-    public function toBroadcast(object $notifiable): BroadcastMessage
+    public function toBroadcast($notifiable): BroadcastMessage
     {
-        return new BroadcastMessage([
-            'message' => 'A new property "' . $this->property->title . '" has been added!',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'url' => '/property-details/'. $this->property->slug,
-            'type' => $this->property->type
-        ]);
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }
