@@ -3,6 +3,9 @@
   position: relative;
   z-index: 1;
 }
+.banner-four {
+  overflow: hidden; /* هذا سيخفي أي محتوى يتجاوز العرض */
+}
 
 @media (min-width: 576px) {
   .banner-four {

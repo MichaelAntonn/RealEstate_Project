@@ -4,7 +4,7 @@
 /* Custom styles for the property card */
 .cards-container {
   display: flex;
-  gap: 30px;
+  gap: 50px;
   justify-content: center;
   flex-wrap: wrap;
   background-color: #f3f3f3;

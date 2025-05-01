@@ -13,6 +13,7 @@
   top: 0;
   z-index: 1000;
   background-color: white; /* لون الخلفية */
+  max-width: 100% !important;
 }
 
 .user-image {
@@ -100,7 +101,7 @@
 /* لما الـ navbar يكون collapsed (في الـ mobile view) */
 .navbar-collapse {
  
-  padding: 10px; /* padding إضافي */
+  /* padding: 10px; padding إضافي */
   border-radius: 10px; /* حواف دائرية */
 }
 .signupandlogin {

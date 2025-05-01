@@ -1,15 +1,16 @@
-.container{
+.container {
   margin-top: -30px !important;
   margin-bottom: 10vh !important;
-
+  max-width: 100%;
+  overflow-x: hidden;
 }
+
 .text-muted {
   color: #D0944B;
   text-transform: uppercase;
-  font-weight: bold;
+  font-weight: 200 !important;
   font-size: 1.7rem !important;
   letter-spacing: 2px;
-  font-weight: 200 !important ;
 }
 
 .real-estate-card {
@@ -19,8 +20,8 @@
   padding: 20px;
   text-align: center;
   transition: all 0.4s ease-in-out;
-  /* margin-right:  !important; */
   cursor: pointer;
+  height: 100%;
 }
 
 .real-estate-card-icon {
@@ -29,35 +30,38 @@
   color: #D94B2B;
 }
 
+.real-estate-card:hover {
+  background-color: #172940;
+  color: #F9FDFF !important;
+  clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
+}
+
+.title {
+  font-family: 'PlayfairDisplay','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: black;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #FFA500, #FF4500);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: normal;
+  font-family: 'Poppins-Medium','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
 .real-estate-tilted-card {
   background-color: #172940;
   color: white;
   clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
 }
 
-.real-estate-normal-card {
-  background-color: white;
-  color: black;
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+
+/* للتأكد من أن الصفحة لا تسحب أفقيًا */
+body {
+  overflow-x: hidden;
 }
 
-.real-estate-card:hover {
-  background-color: #172940;
-  color: #F9FDFF !important;
-  clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
-}
-.title{
-  font-family: 'PlayfairDisplay','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  color: black;
-}
-.gradient-text {
-  background: linear-gradient(90deg, #FFA500, #FF4500);
-  -webkit-background-clip: text;   /* For Safari/Chrome */
-  background-clip: text;           /* Standard property */
-  -webkit-text-fill-color: transparent; /* For Safari/Chrome */
-  color: transparent;              /* Fallback for other browsers */
-  font-weight: normal;
-  font-family: 'Poppins-Medium','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: 1.2rem;
-  letter-spacing: 2px;
-}
