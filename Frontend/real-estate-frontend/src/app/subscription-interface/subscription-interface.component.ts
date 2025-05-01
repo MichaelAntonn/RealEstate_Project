@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SubscriptionService, SubscriptionPlan } from '../services/subscription.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
@@ -22,7 +22,8 @@ export class SubscriptionInterfaceComponent implements OnInit {
 
   constructor(
     private subscriptionService: SubscriptionService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -55,56 +56,84 @@ export class SubscriptionInterfaceComponent implements OnInit {
     }
 
     this.isSubscribing[plan.id] = true;
-    this.subscriptionService.subscribe(plan.id, this.autoRenew[plan.id]).subscribe({
-      next: (response: any) => {
-        console.log('Subscribe response:', response);
-        if (response.subscription && response.subscription.id) {
-          console.log('Proceeding to initiateCheckout with subscription_id:', response.subscription.id);
-          this.subscriptionService.initiateCheckout(response.subscription.id, 'http://localhost:4200').subscribe({
-            next: (checkoutResponse) => {
-              console.log('Checkout response:', checkoutResponse);
-              this.isSubscribing[plan.id] = false;
-              if (checkoutResponse.url && checkoutResponse.url.startsWith('https://')) {
-                console.log('Redirecting to:', checkoutResponse.url);
-                window.location.href = checkoutResponse.url;
-              } else {
-                console.error('Invalid checkout URL:', checkoutResponse.url);
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Checkout Failed',
-                  text: 'Invalid or missing checkout URL.',
-                });
-              }
-            },
-            error: (err) => {
-              console.error('Checkout error:', err);
-              this.isSubscribing[plan.id] = false;
-              Swal.fire({
-                icon: 'error',
-                title: 'Checkout Error',
-                text: err.message || 'Failed to initiate checkout.',
-              });
-            }
+
+    if (plan.name.toLowerCase() === 'free trial') {
+      this.subscriptionService.subscribeTrial().subscribe({
+        next: (response) => {
+          console.log('Trial subscribe response:', response);
+          this.isSubscribing[plan.id] = false;
+          Swal.fire({
+            icon: response.message.includes('activated') ? 'success' : 'error',
+            title: response.message.includes('activated') ? 'Success' : 'Trial Unavailable',
+            text: response.message,
+          }).then(() => {
+            this.router.navigateByUrl('/');
           });
-        } else {
-          console.warn('Subscription response invalid:', response);
+        },
+        error: (err) => {
+          console.error('Trial subscription error:', err);
           this.isSubscribing[plan.id] = false;
           Swal.fire({
             icon: 'error',
-            title: 'Subscription Failed',
-            text: response.message || 'Unable to subscribe to the plan.',
+            title: 'Trial Subscription Error',
+            text: err.message || 'Failed to activate trial.',
+          }).then(() => {
+            this.router.navigateByUrl('/');
           });
         }
-      },
-      error: (err) => {
-        console.error('Subscription error:', err);
-        this.isSubscribing[plan.id] = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Subscription Error',
-          text: err.message || 'Failed to subscribe to the plan.',
-        });
-      }
-    });
+      });
+    } else {
+      this.subscriptionService.subscribe(plan.id, this.autoRenew[plan.id]).subscribe({
+        next: (response: any) => {
+          console.log('Subscribe response:', response);
+          if (response.subscription && response.subscription.id) {
+            console.log('Proceeding to initiateCheckout with subscription_id:', response.subscription.id);
+            this.subscriptionService.initiateCheckout(response.subscription.id, 'http://localhost:4200').subscribe({
+              next: (checkoutResponse) => {
+                console.log('Checkout response:', checkoutResponse);
+                this.isSubscribing[plan.id] = false;
+                if (checkoutResponse.url && checkoutResponse.url.startsWith('https://')) {
+                  console.log('Redirecting to:', checkoutResponse.url);
+                  window.location.href = checkoutResponse.url;
+                } else {
+                  console.error('Invalid checkout URL:', checkoutResponse.url);
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Checkout Failed',
+                    text: 'Invalid or missing checkout URL.',
+                  });
+                }
+              },
+              error: (err) => {
+                console.error('Checkout error:', err);
+                this.isSubscribing[plan.id] = false;
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Checkout Error',
+                  text: err.message || 'Failed to initiate checkout.',
+                });
+              }
+            });
+          } else {
+            console.warn('Subscription response invalid:', response);
+            this.isSubscribing[plan.id] = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Subscription Failed',
+              text: response.message || 'Unable to subscribe to the plan.',
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Subscription error:', err);
+          this.isSubscribing[plan.id] = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Subscription Error',
+            text: err.message || 'Failed to subscribe to the plan.',
+          });
+        }
+      });
+    }
   }
 }
