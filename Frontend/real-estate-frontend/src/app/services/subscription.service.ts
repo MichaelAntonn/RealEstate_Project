@@ -10,13 +10,8 @@ export interface SubscriptionPlan {
   price?: string;
   duration_in_days: number;
   description: string;
-  features: {
-    priority_support: boolean;
-    additional_features: boolean;
-    max_properties_allowed: number;
-  };
+  features: string[];
   max_properties_allowed: number;
-  featuresArray?: string[]; // Added for template display
 }
 
 interface RawSubscriptionPlan {
@@ -49,7 +44,7 @@ interface CheckoutResponse {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class SubscriptionService {
   private apiUrl = 'http://localhost:8000/api/v1/subscription/plans/all';
@@ -70,7 +65,6 @@ export class SubscriptionService {
   }
 
   getPlans(): Observable<SubscriptionPlan[]> {
-
     const headers = this.getAuthHeaders();
     return this.http.get<ApiResponse>(this.apiUrl, { headers }).pipe(
       map(response => {
@@ -146,20 +140,7 @@ export class SubscriptionService {
           ? error.error?.message || 'Failed to initiate checkout. Please try again.'
           : error.message;
         return throwError(() => new Error(errorMessage));
-
       })
     );
-  }
-
-  private getFeaturesArray(features: SubscriptionPlan['features']): string[] {
-    const featuresList: string[] = [];
-    if (features.priority_support) {
-      featuresList.push('Priority Support');
-    }
-    if (features.additional_features) {
-      featuresList.push('Advanced Analytics'); // Adjust based on actual feature
-    }
-    featuresList.push(`${features.max_properties_allowed} Properties Allowed`);
-    return featuresList;
   }
 }
