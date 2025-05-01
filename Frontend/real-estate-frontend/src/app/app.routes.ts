@@ -75,6 +75,7 @@ export const routes: Routes = [
   { path: 'add-property', component: AddPropertyComponent,canActivate: [AuthGuard] },
   { path: 'edit-property/:id', component: AddPropertyComponent },
   { path: 'signupandlogin', component: SignupaandloginComponent },
+  { path: 'subscription', component: SubscriptionInterfaceComponent },
 
   // User dashboard routes
   {

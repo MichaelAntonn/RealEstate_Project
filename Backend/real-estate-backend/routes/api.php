@@ -305,7 +305,7 @@ Route::prefix('v1')->group(function () {
                     Route::put('/yearly/{goalId}', [SettingController::class, 'updateYearlyGoal'])->name('yearly.update'); // Update a yearly goal
                     Route::delete('/{goal}', [SettingController::class, 'deleteGoal'])->name('delete'); // Delete a Goal
                 });
-                Route::prefix('subscription')->group(function () {
+                Route::prefix('/plans')->group(function () {
                     Route::get('/plan/{id}', [SubscriptionPlanController::class, 'show'])->name('settings.subscriptions.plan.show'); // Get details of a specific subscription plan by ID
                     Route::get('/plans', [SubscriptionPlanController::class, 'index'])->name('settings.subscriptions.index'); // Get all subscription plans
                     Route::post('/plan', [SubscriptionPlanController::class, 'store'])->name('settings.subscriptions.store'); // Create a new subscription plan
