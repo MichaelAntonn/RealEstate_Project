@@ -16,21 +16,21 @@ export class AdminDashboardComponent implements OnInit {
   constructor(private adminAuthService: AdminAuthService) {} // Updated to use AdminAuthService
 
   ngOnInit(): void {
-    console.log('ngOnInit: Initializing admin dashboard');
+    // console.log('ngOnInit: Initializing admin dashboard');
     this.fetchUserRole(); // Fetch user role
   }
 
   // Fetch the current user's role from AdminAuthService
   fetchUserRole(): void {
     this.userRole = this.adminAuthService.getUserRole(); // Synchronous check first
-    console.log('Initial user role from service:', this.userRole);
+    //console.log('Initial user role from service:', this.userRole);
 
     if (!this.userRole) {
       // If no role is cached, fetch it from the server
       this.adminAuthService.fetchUserRole().subscribe({
         next: (role: string | null) => {
           this.userRole = role;
-          console.log('Fetched user role:', this.userRole);
+          //console.log('Fetched user role:', this.userRole);
         },
         error: (error) => {
           console.error('Error fetching user role:', error);

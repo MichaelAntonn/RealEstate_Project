@@ -27,6 +27,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // this.notificationService.initNotifications();
     this.subscription = this.notificationService.notifications$.subscribe(() => {
+      // console.log('Notifications updated for admin');
       this.loadNotifications();
     });
     this.loadNotifications();

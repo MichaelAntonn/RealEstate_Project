@@ -41,5 +41,14 @@ class Admin extends Authenticatable
         return $query->where('user_type', 'admin');
     }
 
+        /**
+     * Define the broadcast channel name for notifications.
+     *
+     * @return string
+     */
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'Notifications.' . $this->id;
+    }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\UserType;
+use App\Models\Admin;
 use App\Models\Property;
 use App\Models\PropertyMedia;
 use App\Models\User;
@@ -151,7 +152,7 @@ class PropertyController extends Controller
             'media' => 'nullable|array',
             'media.*' => 'file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480',
             'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -212,7 +213,7 @@ class PropertyController extends Controller
 
         Notification::send($users, new NewPropertyAdded($property));
 
-        $admins = User::where('user_type', 'admin')->get();
+        $admins = Admin::whereIn('user_type', ['admin', 'super-admin'])->get();
         Notification::send($admins, new NewPropertySubmitted($property));
 
         return response()->json([
@@ -337,7 +338,7 @@ class PropertyController extends Controller
             'media_to_delete' => 'nullable|array',
             'media_to_delete.*' => 'exists:property_media,id',
             'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {

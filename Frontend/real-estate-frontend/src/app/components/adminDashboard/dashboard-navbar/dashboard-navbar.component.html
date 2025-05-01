@@ -1,14 +1,26 @@
-<div class="navbar-container d-flex justify-content-between align-items-center mb-4 px-4 py-3 bg-gradient shadow-elegant">
+<div class="navbar-container d-flex justify-content-between align-items-center mb-4 px-4 py-3 bg-white">
   <h2 class="mb-0 text-gold fw-bold fs-3">Admin Dashboard</h2>
   <div class="d-flex align-items-center">
     <span class="time-display me-4 fw-medium">
       <i class="bi bi-clock me-1"></i>
       Cairo: {{ egyptTime | date:'shortTime' }}
     </span>
+    <div class="d-flex align-items-center justify-content-end">
+      <div class="dropdown me-4">
+          <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <fa-icon [icon]="faBell" class="fa-lg text-dark"></fa-icon>
+              <!-- عرض عدد الإشعارات -->
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ notificationsCount }}
+              </span>
+          </button>
+          <!-- إشعارات جديدة -->
+          <app-notifications></app-notifications>
+      </div>
     <div class="dropdown">
       <div class="user-profile d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-        <img [src]="userImage" 
-             alt="User Profile" 
+        <img [src]="userImage"
+             alt="User Profile"
              class="profile-img rounded-circle border border-2 border-gold"
              (error)="userImage = 'https://www.pngmart.com/files/23/Profile-PNG-Photo.png'">
         <span class="user-name ms-2 me-1 fw-medium">{{ userName }}</span>

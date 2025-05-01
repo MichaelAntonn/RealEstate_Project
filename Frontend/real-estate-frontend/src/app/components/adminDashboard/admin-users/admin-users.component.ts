@@ -34,7 +34,7 @@ export class AdminUsersComponent implements OnInit {
   checkUserRole(): void {
     const role = this.adminAuthService.getUserRole();
     this.isSuperAdmin = role === 'super-admin';
-    console.log('User role:', role, 'Is Super Admin:', this.isSuperAdmin);
+    // console.log('User role:', role, 'Is Super Admin:', this.isSuperAdmin);
   }
 
   loadData(): void {
