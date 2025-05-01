@@ -19,7 +19,7 @@ class PaymentController extends Controller
             'subscription_id' => 'required|exists:subscriptions,id',
         ]);
     
-        $subscription = Subscription::with('company')->findOrFail($request->subscription_id);
+        $subscription = Subscription::with('user')->findOrFail($request->subscription_id);
         
         // // Ensure the current user is the company owner
         // if ($request->user()->id !== $subscription->company->user_id) {
@@ -47,7 +47,7 @@ class PaymentController extends Controller
                 'client_reference_id' => $subscription->id,
                 'metadata' => [
                     'subscription_id' => $subscription->id,
-                    'company_id' => $subscription->company_id,
+                    'user_id' => $subscription->user_id,
                 ],
             ]);
     
