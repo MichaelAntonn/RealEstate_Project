@@ -215,24 +215,19 @@
   font-weight: 600;
   box-shadow: 0 2px 5px rgba(255, 179, 71, 0.3);
 }
-.glass-btn-done {
-  background: rgba(0, 123, 255, 0.15);
-  color: #0056b3;
-  border: 1px solid rgba(0, 123, 255, 0.3);
-}
-/* خط على الكلام */
+
+/* Strike-through */
 .strike-through {
   text-decoration: line-through;
   opacity: 0.6;
   pointer-events: none;
 }
 
-/* زر بعد الضغط */
+/* Disabled Button */
 button.glass-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
-
 
 /* Animations */
 @keyframes shine {
@@ -268,10 +263,4 @@ button.glass-btn:disabled {
     font-size: 0.8rem;
     width: 100%;
   }
-  .glass-btn-done {
-    background: rgba(0, 123, 255, 0.15);
-    color: #0056b3;
-    border: 1px solid rgba(0, 123, 255, 0.3);
-  }
-  
 }
