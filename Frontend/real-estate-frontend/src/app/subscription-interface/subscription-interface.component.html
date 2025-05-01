@@ -1,121 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Easy EstatePlans</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-</head>
-<body>
-    <div class="pricing-container">
-        <!-- Free Plan -->
-        <div class="pricing-card free">
-            <div class="pricing-header">
-                <h3 class="pricing-title"><i class="fas fa-star"></i> STARTER</h3>
-                <div class="pricing-price">$0</div>
-                <div class="pricing-period">per month</div>
-            </div>
-            <div class="pricing-features">
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>2 Property Listings Only</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>5 High-Quality Photos per Property</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span> Chat Support</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Essential Analytics Dashboard</span>
-                </div>
-               
-            </div>
-            <div class="pricing-footer">
-                <button routerLink="/company/statistics" class="select-button">GET STARTED</button>
-                
-            </div>
-            <router-outlet></router-outlet>
+<div class="pricing-container">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Loading plans...
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="error">
+        <i class="fas fa-exclamation-circle"></i> {{ error }}
+    </div>
+
+    <!-- Dynamic Plans -->
+    <div *ngFor="let plan of plans; let i = index"
+         class="pricing-card"
+         [ngClass]="{
+             'trial': plan.name.toLowerCase() === 'free trial',
+             'free': plan.name.toLowerCase() === 'basic',
+             'basic': plan.name.toLowerCase() === 'professional',
+             'premium': plan.name.toLowerCase() === 'enterprise'
+         }">
+        <!-- Popular Badge for Enterprise Plan -->
+        <div class="popular-badge" *ngIf="plan.name.toLowerCase() === 'enterprise'">
+            MOST POPULAR
         </div>
-        
-        <!-- Basic Plan -->
-        <div class="pricing-card basic">
-            <div class="pricing-header">
-                <h3 class="pricing-title"><i class="fas fa-shield-alt"></i> PROFESSIONAL</h3>
-                <div class="pricing-price">$99</div>
-                <div class="pricing-period">per month</div>
-            </div>
-            <div class="pricing-features">
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>25 Property Listings</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>15 High-Quality Photos per Property</span>
-                </div>
-               
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Priority Email & Chat Support</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Advanced Analytics & Reports</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Essential Analytics Dashboard</span>
-                </div>
-            </div>
-            <div class="pricing-footer">
-                <button class="select-button">CHOOSE PLAN</button>
+
+        <!-- Trial Badge for Free Trial -->
+        <div class="trial-badge" *ngIf="plan.name.toLowerCase() === 'free trial'">
+            FREE TRIAL
+        </div>
+
+        <div class="pricing-header">
+            <h3 class="pricing-title">
+                <i class="fas"
+                   [ngClass]="{
+                       'fa-gift': plan.name.toLowerCase() === 'free trial',
+                       'fa-star': plan.name.toLowerCase() === 'basic',
+                       'fa-shield-alt': plan.name.toLowerCase() === 'professional',
+                       'fa-crown': plan.name.toLowerCase() === 'enterprise'
+                   }"></i>
+                {{ plan.name | uppercase }}
+            </h3>
+            <div class="pricing-price">${{ plan.price }}</div>
+            <div class="pricing-period">per {{ plan.duration_in_days }} days</div>
+        </div>
+
+        <div class="pricing-features">
+            <div class="feature" *ngFor="let feature of plan.features">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ feature }}</span>
             </div>
         </div>
-        
-        <!-- Premium Plan -->
-        <div class="pricing-card premium">
-            <div class="popular-badge">MOST POPULAR</div>
-            <div class="pricing-header">
-                <h3 class="pricing-title"><i class="fas fa-crown"></i> ELITE</h3>
-                <div class="pricing-price">$199</div>
-                <div class="pricing-period">per month</div>
-            </div>
-            <div class="pricing-features">
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Unlimited Property Listings</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>30+ High-Quality Photos per Property</span>
-                </div>
-            
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>24/7 Dedicated Support</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Premium Analytics & Market Insights</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Featured Listings & Promotions</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Essential Analytics Dashboard</span>
-                </div>
-            </div>
-            <div class="pricing-footer">
-                <button class="select-button">GET PREMIUM</button>
-            </div>
+
+        <div class="pricing-footer">
+            <button class="select-button"
+                    [routerLink]="plan.name.toLowerCase() === 'free trial' ? '/trial/signup' :
+                                  plan.name.toLowerCase() === 'basic' ? '/company/statistics' : null">
+                {{ plan.name.toLowerCase() === 'free trial' ? 'START FREE TRIAL' :
+                   plan.name.toLowerCase() === 'basic' ? 'GET STARTED' :
+                   plan.name.toLowerCase() === 'professional' ? 'CHOOSE PLAN' :
+                   'GET PREMIUM' }}
+            </button>
         </div>
     </div>
-</body>
-</html>
+</div>
