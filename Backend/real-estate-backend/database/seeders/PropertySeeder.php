@@ -23,7 +23,7 @@ class PropertySeeder extends Seeder
             'bathrooms' => 6,
             'listing_type' => 'for_sale',  // For sale
             'construction_status' => 'available',  // Ready for move-in
-            'approval_status' => 'pending',  // Pending approval
+            'approval_status' => 'accepted',  // Pending approval
             'transaction_status' => 'pending',
             'building_year' => 2020,
             'legal_status' => 'licensed',  // Licensed

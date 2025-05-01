@@ -17,15 +17,15 @@ export class AddressSectionComponent implements OnChanges {
   zoom = 16;
   markerOptions: google.maps.MarkerOptions = {
     draggable: false,
-    label: { // label هي أوبجكت
-      text: '', // هنحدث النص ده في ngOnChanges
-      color: 'white',
-      fontSize: '14px',
-      className: 'marker-label' // ممكن تضيف كلاس CSS للتصميم
-    },
+    // label: { // label 
+    //   text: '', 
+    //   color: '#ff6600',
+    //   fontSize: '14px',
+    //   className: 'marker-label' 
+    // },
     icon: {
-      url: 'URL_TO_YOUR_DEFAULT_MARKER_ICON' // ممكن تستخدم أيقونة افتراضية لو عايز
-    }
+      url: 'https://cdn-icons-png.flaticon.com/512/69/69524.png', 
+      scaledSize: new google.maps.Size(20, 20),    }
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -36,15 +36,14 @@ export class AddressSectionComponent implements OnChanges {
         lat: this.latitude,
         lng: this.longitude,
       };
-      // حدث نص التسمية هنا
-      this.markerOptions = { // لازم نحدث الأوبجكت كله
+      this.markerOptions = {
         ...this.markerOptions,
-        label: {
-          text: this.property?.title || 'عقار', // استخدم عنوان العقار كتسمية أو أي نص افتراضي
-          color: 'white',
-          fontSize: '14px',
-          className: 'marker-label'
-        }
+        // label: {
+        //   text: this.property?.title || 'property',
+        //   color: 'black',
+        //   fontSize: '14px',
+        //   className: 'marker-label'
+        // }
       };
     } else {
       this.center = null;
