@@ -16,6 +16,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, debounceTime } from 'rxjs/operators';
 import { Property, PropertyMedia } from '../models/property';
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 declare const L: any;
 
 @Component({
@@ -27,6 +28,7 @@ declare const L: any;
 })
 export class AddPropertyComponent implements OnInit, AfterViewInit {
   propertyForm!: FormGroup;
+  isLoading = true;
   isEditMode = false;
   propertyId: number | null = null;
   selectedFiles: File[] = [];
@@ -79,6 +81,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.initForm();
     this.checkEditMode();
+    
   }
 
   ngAfterViewInit(): void {
@@ -586,9 +589,32 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         this.showNotification('Property created successfully!', 'success');
         this.router.navigate(['/properties']);
       },
-      error: (err) => this.handleError(err),
+      error: (error) => {
+        console.error('Error loading profile:', error);
+        this.isLoading = false;
+  
+        Swal.fire({
+          icon: 'error',
+          title: 'Access Denied!',
+          html:  `
+          <strong>You are not subscribed to this service.</strong><br><br>
+          To access this feature, you need an active subscription.<br>
+          Please subscribe now to unlock all premium features and continue enjoying our platform.
+        `,
+          confirmButtonText: 'Go to Subscription',
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/subscription']);
+          }
+        });
+      }
     });
   }
+  
 
   updateProperty(formData: FormData): void {
     if (!this.propertyId) return;
