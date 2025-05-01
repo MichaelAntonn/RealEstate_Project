@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { AuthService } from './auth.service'; // Adjust path as needed
+import { AuthService } from './auth.service';
 
 export interface SubscriptionPlan {
   id: number;
@@ -33,10 +33,24 @@ interface ApiResponse {
   trial_plan: RawSubscriptionPlan;
 }
 
+interface SubscriptionDetails {
+  id: number;
+  user_id: number;
+  plan_id: number;
+  plan_name: string;
+  price: string;
+  duration_in_days: number;
+  auto_renew: boolean;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  starts_at: string | null;
+  ends_at: string | null;
+}
+
 interface SubscribeResponse {
-  success: boolean;
-  subscription_id: number;
   message?: string;
+  subscription?: SubscriptionDetails;
 }
 
 interface CheckoutResponse {
@@ -58,7 +72,7 @@ export class SubscriptionService {
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-    console.log('Auth token:', token); // Debug log
+    console.log('Auth token:', token);
     return new HttpHeaders({
       Authorization: `Bearer ${token || ''}`,
     });
@@ -98,7 +112,7 @@ export class SubscriptionService {
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Error fetching plans:', error);
-        return of([]);
+        return throwError(() => new Error('Failed to fetch plans'));
       })
     );
   }
@@ -112,6 +126,7 @@ export class SubscriptionService {
     return this.http.post<SubscribeResponse>(this.subscribeUrl, body, { headers }).pipe(
       catchError((error: HttpErrorResponse) => {
         const errorMessage = error.error?.message || 'Failed to subscribe. Please try again.';
+        console.error('Subscribe error:', error);
         return throwError(() => new Error(errorMessage));
       })
     );
@@ -125,13 +140,25 @@ export class SubscriptionService {
     };
     return this.http.post(this.checkoutUrl, body, { headers, responseType: 'text' }).pipe(
       map(response => {
+        console.log('Raw checkout response:', response);
         try {
-          const url = JSON.parse(response); // Parse quoted string, e.g., '"https://..."'
-          if (typeof url !== 'string') {
-            throw new Error('Invalid URL format');
+          let url: string;
+          try {
+            url = JSON.parse(response);
+            if (typeof url !== 'string') {
+              throw new Error('Parsed response is not a string');
+            }
+          } catch (e) {
+            const jsonResponse = JSON.parse(response);
+            if (jsonResponse.url && typeof jsonResponse.url === 'string') {
+              url = jsonResponse.url;
+            } else {
+              throw new Error('Invalid URL format in JSON response');
+            }
           }
           return { url };
         } catch (e) {
+          console.error('Failed to parse checkout response:', e);
           throw new Error('Failed to parse checkout URL');
         }
       }),
@@ -139,6 +166,7 @@ export class SubscriptionService {
         const errorMessage = error instanceof HttpErrorResponse
           ? error.error?.message || 'Failed to initiate checkout. Please try again.'
           : error.message;
+        console.error('Checkout error:', error);
         return throwError(() => new Error(errorMessage));
       })
     );
