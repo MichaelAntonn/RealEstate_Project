@@ -10,10 +10,8 @@ import Swal from 'sweetalert2';
   selector: 'app-subscription-interface',
   templateUrl: './subscription-interface.component.html',
   styleUrls: ['./subscription-interface.component.css'],
-
   imports: [RouterModule, CommonModule, FormsModule],
   standalone: true
-
 })
 export class SubscriptionInterfaceComponent implements OnInit {
   plans: SubscriptionPlan[] = [];
@@ -41,7 +39,7 @@ export class SubscriptionInterfaceComponent implements OnInit {
         this.error = 'Failed to load subscription plans. Please try again later.';
         this.isLoading = false;
         console.error('Error fetching plans:', err);
-      },
+      }
     });
   }
 
