@@ -17,23 +17,24 @@ class PaymentController extends Controller
     {
         $request->validate([
             'subscription_id' => 'required|exists:subscriptions,id',
+            'return_url' => 'required|url',
         ]);
-    
+
         $subscription = Subscription::with('user')->findOrFail($request->subscription_id);
-        
+
         // // Ensure the current user is the company owner
         // if ($request->user()->id !== $subscription->company->user_id) {
         //     return response()->json(['error' => 'Unauthorized'], 403);
         // }
-    
+
         Stripe::setApiKey(config('services.stripe.secret'));
-    
+
         try {
             $session = Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
-                        'currency' => 'usd',
+                        'currency' => 'egp',
                         'product_data' => [
                             'name' => $subscription->plan_name,
                         ],
@@ -42,7 +43,7 @@ class PaymentController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode' => 'payment',
-                'success_url' => url('/payment/success?session_id={CHECKOUT_SESSION_ID}'),
+                'success_url' => $request->return_url . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => url('/payment/cancel'),
                 'client_reference_id' => $subscription->id,
                 'metadata' => [
@@ -50,7 +51,7 @@ class PaymentController extends Controller
                     'user_id' => $subscription->user_id,
                 ],
             ]);
-    
+
             Payment::create([
                 'subscription_id' => $subscription->id,
                 'amount' => $subscription->price,
@@ -58,21 +59,20 @@ class PaymentController extends Controller
                 'payment_reference' => $session->payment_intent ?? $session->id,
                 'status' => 'pending',
             ]);
-    
+
             Log::info('Checkout session created', [
                 'user_id' => $request->user()->id,
                 'subscription_id' => $subscription->id,
                 'session_id' => $session->id
             ]);
-    
+
             return response()->json(['url' => $session->url]);
-            
         } catch (\Exception $e) {
             Log::error('Failed to create checkout session', [
                 'error' => $e->getMessage(),
                 'subscription_id' => $request->subscription_id
             ]);
-            
+
             return response()->json([
                 'error' => 'Unable to create payment session. Please try again later.'
             ], 500);
@@ -90,7 +90,7 @@ class PaymentController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'status' => true,   
+            'status' => true,
             'data' => $payments
         ]);
     }
