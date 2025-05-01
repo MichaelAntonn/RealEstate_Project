@@ -7,6 +7,7 @@ import {
   AbstractControl,
   ValidationErrors,
   AsyncValidatorFn,
+  FormsModule,
 } from '@angular/forms';
 import { PropertyService } from '../services/property.service';
 import { CommonModule } from '@angular/common';
@@ -15,13 +16,14 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
 import { map, catchError, debounceTime } from 'rxjs/operators';
 import { Property, PropertyMedia } from '../models/property';
-// import L from 'leaflet';
+import { HttpClient } from '@angular/common/http';
 declare const L: any;
+// import * as L from 'leaflet';
 
 @Component({
   selector: 'app-add-property',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './add-property.component.html',
   styleUrls: ['./add-property.component.css'],
 })
@@ -43,6 +45,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   // Map variables
   private map: any;
   private marker: any;
+  address: string = '';
 
   propertyTypes = ['land', 'apartment', 'villa', 'office'] as const;
   listingTypes = ['for_sale', 'for_rent'] as const;
@@ -68,7 +71,8 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     private propertyService: PropertyService,
     public router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -95,7 +99,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       price: ['', [Validators.required, Validators.min(0)]],
       city: ['', Validators.required],
       district: ['', Validators.required],
-      full_address: [''],
+      full_address: ['', Validators.required],
       area: ['', [Validators.required, Validators.min(0)]],
       bedrooms: [null, [Validators.min(0)]],
       bathrooms: [null, [Validators.min(0)]],
@@ -130,6 +134,11 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       latitude: ['', Validators.required],
       longitude: ['', Validators.required],
     });
+
+    // Sync address input with form
+    this.propertyForm.get('full_address')?.valueChanges.subscribe((value) => {
+      this.address = value || '';
+    });
   }
 
   initMap(): void {
@@ -140,10 +149,15 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     this.map = L.map('map').setView([defaultLat, defaultLng], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
 
-    // If we're in edit mode, the marker will be set when loading property data
+    // Allow clicking on the map to set marker
+    this.map.on('click', (e: any) => {
+      this.setMarker(e.latlng.lat, e.latlng.lng);
+      this.reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
     if (!this.isEditMode) {
       this.setMarker(defaultLat, defaultLng);
     }
@@ -154,22 +168,65 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       this.marker.setLatLng([lat, lng]);
     } else {
       this.marker = L.marker([lat, lng], {
-        draggable: true
+        draggable: true,
       }).addTo(this.map);
 
       this.marker.on('dragend', () => {
         const position = this.marker.getLatLng();
         this.updateFormCoordinates(position.lat, position.lng);
+        this.reverseGeocode(position.lat, position.lng);
       });
     }
 
+    this.map.setView([lat, lng], 13);
     this.updateFormCoordinates(lat, lng);
   }
 
   private updateFormCoordinates(lat: number, lng: number): void {
     this.propertyForm.patchValue({
-      latitude: lat,
-      longitude: lng
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6),
+    });
+  }
+
+  private reverseGeocode(lat: number, lng: number): void {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+    this.http.get(url, {
+      headers: { 'User-Agent': 'EasyState/1.0 (your.email@example.com)' },
+    }).subscribe({
+      next: (data: any) => {
+        const address = data.display_name || '';
+        this.address = address;
+        this.propertyForm.patchValue({ full_address: address });
+      },
+      error: () => {
+        this.toastr.warning('Could not retrieve address');
+      },
+    });
+  }
+
+  searchAddress(): void {
+    if (!this.address) {
+      this.toastr.warning('Please enter an address');
+      return;
+    }
+
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.address)}&limit=1`;
+    this.http.get(url, {
+      headers: { 'User-Agent': 'YourAppName/1.0 (your.email@example.com)' },
+    }).subscribe({
+      next: (data: any) => {
+        if (data && data.length > 0) {
+          const { lat, lon } = data[0];
+          this.setMarker(parseFloat(lat), parseFloat(lon));
+          this.propertyForm.patchValue({ full_address: this.address });
+        } else {
+          this.toastr.error('Address not found');
+        }
+      },
+      error: () => {
+        this.toastr.error('Error searching address');
+      },
     });
   }
 
@@ -221,17 +278,6 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
           catchError(() => of(null))
         );
     };
-  }
-
-  getInvalidControls(): string[] {
-    const invalid = [];
-    const controls = this.propertyForm.controls;
-    for (const name in controls) {
-      if (controls[name].invalid) {
-        invalid.push(name);
-      }
-    }
-    return invalid;
   }
 
   checkEditMode(): void {
@@ -295,11 +341,11 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         };
 
         this.propertyForm.patchValue(safeProperty);
+        this.address = property.full_address || '';
 
         // Update map if coordinates exist
         if (property.latitude && property.longitude) {
           this.setMarker(property.latitude, property.longitude);
-          this.map.setView([property.latitude, property.longitude], 13);
         }
 
         if (property.media) {
@@ -388,9 +434,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
 
   handleCoverFile(file: File): void {
     if (!this.VALID_IMAGE_TYPES.includes(file.type)) {
-      this.toastr.warning(
-        `Unsupported file type for cover image: ${file.name}`
-      );
+      this.toastr.warning(`Unsupported file type for cover image: ${file.name}`);
       return;
     }
     if (file.size > this.MAX_FILE_SIZE) {
