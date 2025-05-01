@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Subscription;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ReviewSeeder::class,
             SubscriptionPlansSeeder::class,
             CompanySeeder::class,
+            SubscriptionSeeder::class,
         ]);
     }
 }

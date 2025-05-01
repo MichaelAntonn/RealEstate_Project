@@ -12,13 +12,11 @@ import {
 import { PropertyService } from '../services/property.service';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
 import { map, catchError, debounceTime } from 'rxjs/operators';
 import { Property, PropertyMedia } from '../models/property';
 import { HttpClient } from '@angular/common/http';
 declare const L: any;
-// import * as L from 'leaflet';
 
 @Component({
   selector: 'app-add-property',
@@ -41,6 +39,10 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   isDraggingCover = false;
   currentYear = new Date().getFullYear();
   submitted = false;
+  mediaErrors: string[] = [];
+  coverImageErrors: string[] = [];
+  notifications: { id: number; message: string; type: 'success' | 'error' | 'warning' }[] = [];
+  private notificationId = 0;
 
   // Map variables
   private map: any;
@@ -71,7 +73,6 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
     private propertyService: PropertyService,
     public router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService,
     private http: HttpClient
   ) {}
 
@@ -135,14 +136,12 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       longitude: ['', Validators.required],
     });
 
-    // Sync address input with form
     this.propertyForm.get('full_address')?.valueChanges.subscribe((value) => {
       this.address = value || '';
     });
   }
 
   initMap(): void {
-    // Initialize map with default coordinates (Cairo)
     const defaultLat = 30.0444;
     const defaultLng = 31.2357;
 
@@ -152,7 +151,6 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
 
-    // Allow clicking on the map to set marker
     this.map.on('click', (e: any) => {
       this.setMarker(e.latlng.lat, e.latlng.lng);
       this.reverseGeocode(e.latlng.lat, e.latlng.lng);
@@ -200,14 +198,14 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         this.propertyForm.patchValue({ full_address: address });
       },
       error: () => {
-        this.toastr.warning('Could not retrieve address');
+        this.showNotification('Could not retrieve address', 'warning');
       },
     });
   }
 
   searchAddress(): void {
     if (!this.address) {
-      this.toastr.warning('Please enter an address');
+      this.showNotification('Please enter an address', 'warning');
       return;
     }
 
@@ -221,11 +219,11 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
           this.setMarker(parseFloat(lat), parseFloat(lon));
           this.propertyForm.patchValue({ full_address: this.address });
         } else {
-          this.toastr.error('Address not found');
+          this.showNotification('Address not found', 'error');
         }
       },
       error: () => {
-        this.toastr.error('Error searching address');
+        this.showNotification('Error searching address', 'error');
       },
     });
   }
@@ -343,7 +341,6 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         this.propertyForm.patchValue(safeProperty);
         this.address = property.full_address || '';
 
-        // Update map if coordinates exist
         if (property.latitude && property.longitude) {
           this.setMarker(property.latitude, property.longitude);
         }
@@ -356,7 +353,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => {
-        this.toastr.error('Failed to load property data');
+        this.showNotification('Failed to load property data', 'error');
         console.error('Error loading property:', err);
       },
     });
@@ -417,28 +414,43 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   }
 
   handleMediaFiles(files: FileList): void {
+    this.mediaErrors = [];
     Array.from(files).forEach((file) => {
       if (!this.VALID_MEDIA_TYPES.includes(file.type)) {
-        this.toastr.warning(`Unsupported file type: ${file.name}`);
+        this.mediaErrors.push(
+          `Unsupported file type for ${file.name}. Only JPEG, PNG, MP4, MOV, AVI are allowed.`
+        );
         return;
       }
       if (file.size > this.MAX_FILE_SIZE) {
-        this.toastr.warning(`File ${file.name} exceeds 20MB limit`);
+        this.mediaErrors.push(
+          `File ${file.name} exceeds 20MB limit. Please upload a smaller file.`
+        );
         return;
       }
       this.selectedFiles.push(file);
       const url = URL.createObjectURL(file);
       this.previewUrls.push({ url, type: file.type });
     });
+    if (this.mediaErrors.length > 0) {
+      this.scrollToFirstError();
+    }
   }
 
   handleCoverFile(file: File): void {
+    this.coverImageErrors = [];
     if (!this.VALID_IMAGE_TYPES.includes(file.type)) {
-      this.toastr.warning(`Unsupported file type for cover image: ${file.name}`);
+      this.coverImageErrors.push(
+        `Unsupported file type for ${file.name}. Only JPEG and PNG are allowed.`
+      );
+      this.scrollToFirstError();
       return;
     }
     if (file.size > this.MAX_FILE_SIZE) {
-      this.toastr.warning(`Cover image ${file.name} exceeds 20MB limit`);
+      this.coverImageErrors.push(
+        `Cover image ${file.name} exceeds 20MB limit. Please upload a smaller file.`
+      );
+      this.scrollToFirstError();
       return;
     }
     this.coverSelectedFile = file;
@@ -469,12 +481,64 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
     this.submitted = true;
+    this.mediaErrors = [];
+    this.coverImageErrors = [];
+
     if (this.propertyForm.invalid) {
-      this.toastr.warning('Please fill all required fields correctly');
-      this.propertyForm.markAllAsTouched();
+      // Define the order of fields to ensure notifications follow form order
+      const formFieldsOrder = [
+        'title',
+        'slug',
+        'description',
+        'type',
+        'listing_type',
+        'construction_status',
+        'city',
+        'district',
+        'full_address',
+        'latitude',
+        'longitude',
+        'price',
+        'area',
+        'property_code',
+        'legal_status',
+        'bedrooms',
+        'bathrooms',
+        'building_year',
+        'furnished',
+        'amenities',
+        'payment_options',
+      ];
+
+      // Find the first invalid field
+      const firstInvalidField = formFieldsOrder.find(
+        (key) => this.propertyForm.get(key)?.invalid
+      );
+
+      if (firstInvalidField) {
+        const fieldName = this.getFieldDisplayName(firstInvalidField);
+        if (firstInvalidField === 'latitude' || firstInvalidField === 'longitude') {
+          this.showNotification(
+            'Please click on the map to select a location or use the search button',
+            'error'
+          );
+        } else {
+          this.showNotification(
+            `Please enter a valid ${fieldName}`,
+            'error'
+          );
+        }
+      }
+      this.scrollToFirstError();
       return;
     }
-    this.submitted = false;
+
+    if (!this.coverSelectedFile && !this.coverPreviewUrl) {
+      this.coverImageErrors.push('Please upload a cover image');
+      this.showNotification('Please upload a cover image', 'error');
+      this.scrollToFirstError();
+      return;
+    }
 
     const formData = new FormData();
     const formValue = this.propertyForm.value;
@@ -503,7 +567,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
 
     if (this.coverSelectedFile) {
       formData.append('cover_image', this.coverSelectedFile);
-    }
+    };
 
     if (this.mediaToDelete.length > 0) {
       formData.append('media_to_delete', JSON.stringify(this.mediaToDelete));
@@ -519,7 +583,7 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   createProperty(formData: FormData): void {
     this.propertyService.createProperty(formData).subscribe({
       next: () => {
-        this.toastr.success('Property created successfully!');
+        this.showNotification('Property created successfully!', 'success');
         this.router.navigate(['/properties']);
       },
       error: (err) => this.handleError(err),
@@ -531,11 +595,39 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
 
     this.propertyService.updateProperty(this.propertyId, formData).subscribe({
       next: () => {
-        this.toastr.success('Property updated successfully!');
+        this.showNotification('Property updated successfully!', 'success');
         this.router.navigate(['/properties']);
       },
       error: (err) => this.handleError(err),
     });
+  }
+
+  private getFieldDisplayName(key: string): string {
+    const fieldNames: { [key: string]: string } = {
+      title: 'Title',
+      slug: 'Slug',
+      description: 'Description',
+      type: 'Property Type',
+      price: 'Price',
+      city: 'City',
+      district: 'District',
+      full_address: 'Address',
+      area: 'Area',
+      bedrooms: 'Bedrooms',
+      bathrooms: 'Bathrooms',
+      listing_type: 'Listing Type',
+      construction_status: 'Construction Status',
+      transaction_status: 'Transaction Status',
+      building_year: 'Building Year',
+      legal_status: 'Legal Status',
+      furnished: 'Furnished',
+      amenities: 'Amenities',
+      payment_options: 'Payment Options',
+      property_code: 'Property Code',
+      latitude: 'Location',
+      longitude: 'Location',
+    };
+    return fieldNames[key] || key.charAt(0).toUpperCase() + key.slice(1);
   }
 
   private handleError(err: any): void {
@@ -545,13 +637,97 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
         const control = this.propertyForm.get(field);
         if (control) {
           control.setErrors({ serverError: errors[field].join(', ') });
+          this.showNotification(
+            `Error in ${this.getFieldDisplayName(field)}: ${errors[field].join(', ')}`,
+            'error'
+          );
         }
-        this.toastr.error(errors[field].join(', '), `Error in ${field}`);
       });
+      this.scrollToFirstError();
     } else {
       const errorMessage = err.error?.message || err.message || 'Unknown error';
-      this.toastr.error(`Operation failed: ${errorMessage}`);
+      this.showNotification(`Operation failed: ${errorMessage}`, 'error');
     }
     console.error('Error:', err);
+  }
+
+  private scrollToFirstError(): void {
+    setTimeout(() => {
+      // Define the order of fields as they appear in the form
+      const formFieldsOrder = [
+        'title',
+        'slug',
+        'description',
+        'type',
+        'listing_type',
+        'construction_status',
+        'city',
+        'district',
+        'full_address',
+        'latitude',
+        'longitude',
+        'price',
+        'area',
+        'property_code',
+        'legal_status',
+        'bedrooms',
+        'bathrooms',
+        'building_year',
+        'furnished',
+        'amenities',
+        'payment_options',
+      ];
+
+      // Find the first invalid field in the defined order
+      const firstInvalidField = formFieldsOrder.find(
+        (key) => this.propertyForm.get(key)?.invalid
+      );
+
+      if (firstInvalidField) {
+        if (firstInvalidField === 'latitude' || firstInvalidField === 'longitude') {
+          const mapElement = document.getElementById('map');
+          if (mapElement) {
+            window.scrollTo({
+              top: mapElement.getBoundingClientRect().top + window.scrollY - 100,
+              behavior: 'smooth',
+            });
+          }
+        } else {
+          const element = document.getElementById(firstInvalidField);
+          if (element) {
+            window.scrollTo({
+              top: element.getBoundingClientRect().top + window.scrollY - 100,
+              behavior: 'smooth',
+            });
+            element.focus();
+          }
+        }
+      } else if (this.coverImageErrors.length > 0) {
+        const coverInput = document.getElementById('cover_image');
+        if (coverInput) {
+          window.scrollTo({
+            top: coverInput.getBoundingClientRect().top + window.scrollY - 100,
+            behavior: 'smooth',
+          });
+        }
+      } else if (this.mediaErrors.length > 0) {
+        const mediaInput = document.getElementById('media_files');
+        if (mediaInput) {
+          window.scrollTo({
+            top: mediaInput.getBoundingClientRect().top + window.scrollY - 100,
+            behavior: 'smooth',
+          });
+        }
+      }
+    }, 100);
+  }
+
+  showNotification(message: string, type: 'success' | 'error' | 'warning'): void {
+    const id = this.notificationId++;
+    this.notifications.push({ id, message, type });
+
+    setTimeout(() => {
+      this.notifications = this.notifications.filter((n) => n.id !== id);
+    }, 6000);
   }
 }

@@ -1,4 +1,30 @@
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8 relative">
+  <!-- Notifications -->
+  <div class="fixed top-4 right-4 z-50 space-y-2">
+    @for (notification of notifications; track notification.id) {
+    <div
+      class="notification"
+      [ngClass]="{
+        'bg-green-500': notification.type === 'success',
+        'bg-red-500': notification.type === 'error',
+        'bg-yellow-500': notification.type === 'warning'
+      }"
+    >
+      <div class="flex items-center">
+        <i
+          class="fas mr-2"
+          [ngClass]="{
+            'fa-check-circle': notification.type === 'success',
+            'fa-exclamation-circle': notification.type === 'error',
+            'fa-exclamation-triangle': notification.type === 'warning'
+          }"
+        ></i>
+        <span>{{ notification.message }}</span>
+      </div>
+    </div>
+    }
+  </div>
+
   <div class="max-w-6xl mx-auto px-4">
     <div class="bg-white rounded-xl shadow-md overflow-hidden">
       <!-- Card Header -->
@@ -48,10 +74,10 @@
                 (propertyForm.get('title')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('title')?.errors?.['required']) { Title
-                  is required } @else if
+                  @if (propertyForm.get('title')?.errors?.['required']) { Please
+                  enter a property title } @else if
                   (propertyForm.get('title')?.errors?.['maxlength']) { Title
-                  must not exceed 255 characters } @else if
+                  cannot exceed 255 characters } @else if
                   (propertyForm.get('title')?.errors?.['serverError']) {
                   {{ propertyForm.get('title')?.errors?.['serverError'] }}
                   }
@@ -80,10 +106,10 @@
                 (propertyForm.get('slug')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('slug')?.errors?.['required']) { Slug is
-                  required } @else if
+                  @if (propertyForm.get('slug')?.errors?.['required']) { Please
+                  enter a unique slug } @else if
                   (propertyForm.get('slug')?.errors?.['slugTaken']) { This slug
-                  is already taken } @else if
+                  is already taken. Please choose another. } @else if
                   (propertyForm.get('slug')?.errors?.['serverError']) {
                   {{ propertyForm.get('slug')?.errors?.['serverError'] }}
                   }
@@ -114,7 +140,7 @@
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
                   @if (propertyForm.get('description')?.errors?.['required']) {
-                  Description is required } @else if
+                  Please provide a description of the property } @else if
                   (propertyForm.get('description')?.errors?.['serverError']) {
                   {{ propertyForm.get('description')?.errors?.['serverError'] }}
                   }
@@ -148,9 +174,12 @@
                 (propertyForm.get('type')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('type')?.errors?.['required']) {
-                  Property type is required } @else if
-                  (propertyForm.get('type')?.errors?.['serverError']) {
+                  @if (propertyForm.get('type')?.errors?.['required']) { Please
+                  select a property type } @else if
+                  (propertyForm.get('type')?.errors?.['pattern']) { Invalid
+                  property type. Choose from Land, Apartment, Villa, or Office.
+                  } @else if (propertyForm.get('type')?.errors?.['serverError'])
+                  {
                   {{ propertyForm.get('type')?.errors?.['serverError'] }}
                   }
                 </div>
@@ -183,7 +212,9 @@
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
                   @if (propertyForm.get('listing_type')?.errors?.['required']) {
-                  Listing type is required } @else if
+                  Please select a listing type } @else if
+                  (propertyForm.get('listing_type')?.errors?.['pattern']) {
+                  Invalid listing type. Choose For Sale or For Rent. } @else if
                   (propertyForm.get('listing_type')?.errors?.['serverError']) {
                   {{ propertyForm.get('listing_type')?.errors?.['serverError'] }}
                   }
@@ -221,7 +252,10 @@
                   <i class="fas fa-exclamation-circle mr-1"></i>
                   @if
                   (propertyForm.get('construction_status')?.errors?.['required'])
-                  { Construction status is required } @else if
+                  { Please select a construction status } @else if
+                  (propertyForm.get('construction_status')?.errors?.['pattern'])
+                  { Invalid construction status. Choose Available or Under
+                  Construction. } @else if
                   (propertyForm.get('construction_status')?.errors?.['serverError'])
                   {
                   {{ propertyForm.get('construction_status')?.errors?.['serverError'] }}
@@ -263,8 +297,8 @@
                 (propertyForm.get('city')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('city')?.errors?.['required']) { City is
-                  required } @else if
+                  @if (propertyForm.get('city')?.errors?.['required']) { Please
+                  enter the city name } @else if
                   (propertyForm.get('city')?.errors?.['serverError']) {
                   {{ propertyForm.get('city')?.errors?.['serverError'] }}
                   }
@@ -295,7 +329,7 @@
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
                   @if (propertyForm.get('district')?.errors?.['required']) {
-                  District is required } @else if
+                  Please enter the district name } @else if
                   (propertyForm.get('district')?.errors?.['serverError']) {
                   {{ propertyForm.get('district')?.errors?.['serverError'] }}
                   }
@@ -309,14 +343,29 @@
                   class="block text-sm font-medium text-gray-700 mb-1"
                 >
                   <i class="fas fa-address-card text-orange-500 mr-1"></i> Full
-                  Address
+                  Address*
                 </label>
                 <input
                   type="text"
                   id="full_address"
                   formControlName="full_address"
                   class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  [class.border-red-500]="
+                    propertyForm.get('full_address')?.invalid &&
+                    (propertyForm.get('full_address')?.touched || submitted)
+                  "
                 />
+                @if (propertyForm.get('full_address')?.invalid &&
+                (propertyForm.get('full_address')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('full_address')?.errors?.['required']) {
+                  Please enter the full address } @else if
+                  (propertyForm.get('full_address')?.errors?.['serverError']) {
+                  {{ propertyForm.get('full_address')?.errors?.['serverError'] }}
+                  }
+                </div>
+                }
               </div>
             </div>
           </div>
@@ -361,8 +410,8 @@
                 (propertyForm.get('price')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('price')?.errors?.['required']) { Price
-                  is required } @else if
+                  @if (propertyForm.get('price')?.errors?.['required']) { Please
+                  enter the property price } @else if
                   (propertyForm.get('price')?.errors?.['min']) { Price must be 0
                   or greater } @else if
                   (propertyForm.get('price')?.errors?.['serverError']) {
@@ -402,8 +451,8 @@
                 (propertyForm.get('area')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('area')?.errors?.['required']) { Area is
-                  required } @else if
+                  @if (propertyForm.get('area')?.errors?.['required']) { Please
+                  enter the property area } @else if
                   (propertyForm.get('area')?.errors?.['min']) { Area must be 0
                   or greater } @else if
                   (propertyForm.get('area')?.errors?.['serverError']) {
@@ -436,9 +485,10 @@
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
                   @if (propertyForm.get('property_code')?.errors?.['required'])
-                  { Property code is required } @else if
+                  { Please enter a unique property code } @else if
                   (propertyForm.get('property_code')?.errors?.['propertyCodeTaken'])
-                  { This property code is already taken } @else if
+                  { This property code is already taken. Please choose another.
+                  } @else if
                   (propertyForm.get('property_code')?.errors?.['serverError']) {
                   {{ propertyForm.get('property_code')?.errors?.['serverError'] }}
                   }
@@ -463,6 +513,18 @@
                   <option [value]="status">{{ status | titlecase }}</option>
                   }
                 </select>
+                @if (propertyForm.get('legal_status')?.invalid &&
+                (propertyForm.get('legal_status')?.touched || submitted)) {
+                <div class="text-red-600 text-sm mt-1">
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  @if (propertyForm.get('legal_status')?.errors?.['pattern']) {
+                  Invalid legal status. Choose Licensed, Unlicensed, or Pending.
+                  } @else if
+                  (propertyForm.get('legal_status')?.errors?.['serverError']) {
+                  {{ propertyForm.get('legal_status')?.errors?.['serverError'] }}
+                  }
+                </div>
+                }
               </div>
               <!-- Bedrooms -->
               <div>
@@ -487,8 +549,8 @@
                 (propertyForm.get('bedrooms')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('bedrooms')?.errors?.['min']) { Bedrooms
-                  must be 0 or greater } @else if
+                  @if (propertyForm.get('bedrooms')?.errors?.['min']) { Number
+                  of bedrooms must be 0 or greater } @else if
                   (propertyForm.get('bedrooms')?.errors?.['serverError']) {
                   {{ propertyForm.get('bedrooms')?.errors?.['serverError'] }}
                   }
@@ -518,8 +580,8 @@
                 (propertyForm.get('bathrooms')?.touched || submitted)) {
                 <div class="text-red-600 text-sm mt-1">
                   <i class="fas fa-exclamation-circle mr-1"></i>
-                  @if (propertyForm.get('bathrooms')?.errors?.['min']) {
-                  Bathrooms must be 0 or greater } @else if
+                  @if (propertyForm.get('bathrooms')?.errors?.['min']) { Number
+                  of bathrooms must be 0 or greater } @else if
                   (propertyForm.get('bathrooms')?.errors?.['serverError']) {
                   {{ propertyForm.get('bathrooms')?.errors?.['serverError'] }}
                   }
@@ -621,7 +683,7 @@
             <!-- Cover Image -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-image text-orange-500 mr-1"></i> Cover Image
+                <i class="fas fa-image text-orange-500 mr-1"></i> Cover Image*
               </label>
               <div
                 class="border-2 border-dashed rounded-md p-4 text-center"
@@ -648,7 +710,14 @@
                   </label>
                 </p>
               </div>
-              @if (coverPreviewUrl) {
+              @if (coverImageErrors.length > 0) {
+              <div class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                @for (error of coverImageErrors; track error) {
+                <div>{{ error }}</div>
+                }
+              </div>
+              } @if (coverPreviewUrl) {
               <div class="relative mt-2">
                 <img
                   [src]="coverPreviewUrl"
@@ -697,7 +766,14 @@
                   </label>
                 </p>
               </div>
-              @if (previewUrls.length > 0) {
+              @if (mediaErrors.length > 0) {
+              <div class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                @for (error of mediaErrors; track error) {
+                <div>{{ error }}</div>
+                }
+              </div>
+              } @if (previewUrls.length > 0) {
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                 @for (preview of previewUrls; track preview.url) {
                 <div class="relative">
@@ -778,6 +854,7 @@
                   <div class="flex">
                     <input
                       type="text"
+                      id="full_address"
                       formControlName="full_address"
                       placeholder="Enter address"
                       class="w-full px-3 py-2 border rounded-md focus:ring-orange-500 focus:border-orange-500"
@@ -799,20 +876,41 @@
                   <div class="text-red-600 text-sm mt-1">
                     <i class="fas fa-exclamation-circle mr-1"></i>
                     @if (propertyForm.get('full_address')?.errors?.['required'])
-                    { Address is required }
+                    { Please enter a valid address } @else if
+                    (propertyForm.get('full_address')?.errors?.['serverError'])
+                    {
+                    {{ propertyForm.get('full_address')?.errors?.['serverError'] }}
+                    }
                   </div>
                   }
                 </div>
               </div>
               <!-- Map -->
               <div id="map" style="height: 400px; width: 100%"></div>
+              <!-- Latitude and Longitude Errors -->
+              @if ((propertyForm.get('latitude')?.invalid ||
+              propertyForm.get('longitude')?.invalid) &&
+              (propertyForm.get('latitude')?.touched || submitted)) {
+              <div class="text-red-600 text-sm mt-2">
+                <i class="fas fa-map-marker-alt mr-1"></i>
+                @if (propertyForm.get('latitude')?.errors?.['required'] ||
+                propertyForm.get('longitude')?.errors?.['required']) { Please
+                click on the map to select a location or use the search button }
+                @else if (propertyForm.get('latitude')?.errors?.['serverError'])
+                {
+                {{ propertyForm.get('latitude')?.errors?.['serverError'] }}
+                } @else if
+                (propertyForm.get('longitude')?.errors?.['serverError']) {
+                {{ propertyForm.get('longitude')?.errors?.['serverError'] }}
+                }
+              </div>
+              }
               <p class="text-sm text-gray-500 mt-2">
                 Click on the map or drag the marker to set the property
                 location, or enter an address and click Search.
               </p>
             </div>
           </div>
-          <!--  -->
           <!-- Form Actions -->
           <div
             class="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-200"
