@@ -53,6 +53,10 @@ interface SubscribeResponse {
   subscription?: SubscriptionDetails;
 }
 
+interface TrialResponse {
+  message: string;
+}
+
 interface CheckoutResponse {
   url: string;
 }
@@ -63,6 +67,7 @@ interface CheckoutResponse {
 export class SubscriptionService {
   private apiUrl = 'http://localhost:8000/api/v1/subscription/plans/all';
   private subscribeUrl = 'http://localhost:8000/api/v1/subscription/subscribe';
+  private trialSubscribeUrl = 'http://localhost:8000/api/v1/subscription/subscribe/trial';
   private checkoutUrl = 'http://localhost:8000/api/v1/payment/checkout-session';
 
   constructor(
@@ -127,6 +132,17 @@ export class SubscriptionService {
       catchError((error: HttpErrorResponse) => {
         const errorMessage = error.error?.message || 'Failed to subscribe. Please try again.';
         console.error('Subscribe error:', error);
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  subscribeTrial(): Observable<TrialResponse> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<TrialResponse>(this.trialSubscribeUrl, {}, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        const errorMessage = error.error?.message || 'Failed to activate trial. Please try again.';
+        console.error('Trial subscription error:', error);
         return throwError(() => new Error(errorMessage));
       })
     );
