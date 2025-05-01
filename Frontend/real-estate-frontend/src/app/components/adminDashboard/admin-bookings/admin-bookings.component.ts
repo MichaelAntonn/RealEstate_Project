@@ -13,18 +13,22 @@ export class AdminBookingsComponent {
   pendingBookings: any[] = [];
   confirmedBookings: any[] = [];
   canceledBookings: any[] = [];
+  completedBookings: any[] = [];
 
   pendingPage: number = 1;
   confirmedPage: number = 1;
   canceledPage: number = 1;
+  completedPage: number = 1;
 
   pendingLastPage: number = 1;
   confirmedLastPage: number = 1;
   canceledLastPage: number = 1;
+  completedLastPage: number = 1;
 
   pendingTotal: number = 0;
   confirmedTotal: number = 0;
   canceledTotal: number = 0;
+  completedTotal: number = 0;
 
   isAdmin: boolean = false; // Set based on user role; adjust as needed
 
@@ -34,6 +38,7 @@ export class AdminBookingsComponent {
     this.loadPendingBookings();
     this.loadConfirmedBookings();
     this.loadCanceledBookings();
+    this.loadCompletedBookings();
   }
 
   loadPendingBookings(): void {
@@ -90,13 +95,55 @@ export class AdminBookingsComponent {
     });
   }
 
-  updateBookingStatus(bookingId: number, status: string): void {
+  loadCompletedBookings(): void {
+    this.dashboardService.getCompletedBookings(this.completedPage).subscribe({
+      next: (response) => {
+        console.log('Raw API response for completed:', response);
+        const bookingsData = response.bookings || {};
+        this.completedBookings = bookingsData.data || [];
+        this.completedPage = bookingsData.current_page || 1;
+        this.completedLastPage = bookingsData.last_page || 1;
+        this.completedTotal = bookingsData.total || 0;
+        console.log('Completed bookings assigned:', this.completedBookings);
+      },
+      error: (error) => {
+        console.error('Error fetching completed bookings:', error);
+        this.completedBookings = [];
+      }
+    });
+  }
+
+  updateBookingStatus(bookingId: number, status: string, propertyId?: number): void {
     this.dashboardService.updateBookingStatus(bookingId, status).subscribe({
       next: () => {
         console.log(`Booking ${bookingId} updated to ${status}`);
-        this.loadPendingBookings();
-        this.loadConfirmedBookings();
-        this.loadCanceledBookings();
+        // إذا كانت الحالة "completed"، نفّذ طلب بيع العقار
+        if (status === 'completed' && propertyId) {
+          this.dashboardService.sellProperty(propertyId).subscribe({
+            next: (sellResponse) => {
+              console.log(`Property ${propertyId} sold successfully:`, sellResponse);
+              // إعادة تحميل القوائم لتعكس التغييرات
+              this.loadPendingBookings();
+              this.loadConfirmedBookings();
+              this.loadCanceledBookings();
+              this.loadCompletedBookings();
+            },
+            error: (sellError) => {
+              console.error(`Error selling property ${propertyId}:`, sellError);
+              // لا تزال القوائم تتحدث حتى لو فشل طلب البيع
+              this.loadPendingBookings();
+              this.loadConfirmedBookings();
+              this.loadCanceledBookings();
+              this.loadCompletedBookings();
+            }
+          });
+        } else {
+          // إذا لم تكن الحالة "completed"، فقط قم بتحديث القوائم
+          this.loadPendingBookings();
+          this.loadConfirmedBookings();
+          this.loadCanceledBookings();
+          this.loadCompletedBookings();
+        }
       },
       error: (error) => console.error(`Error updating booking ${bookingId}:`, error)
     });
@@ -112,6 +159,9 @@ export class AdminBookingsComponent {
     } else if (status === 'canceled' && this.canceledPage > 1) {
       this.canceledPage--;
       this.loadCanceledBookings();
+    } else if (status === 'completed' && this.completedPage > 1) {
+      this.completedPage--;
+      this.loadCompletedBookings();
     }
   }
 
@@ -125,6 +175,9 @@ export class AdminBookingsComponent {
     } else if (status === 'canceled' && this.canceledPage < this.canceledLastPage) {
       this.canceledPage++;
       this.loadCanceledBookings();
+    } else if (status === 'completed' && this.completedPage < this.completedLastPage) {
+      this.completedPage++;
+      this.loadCompletedBookings();
     }
   }
 
@@ -138,6 +191,9 @@ export class AdminBookingsComponent {
     } else if (status === 'canceled') {
       this.canceledPage = page;
       this.loadCanceledBookings();
+    } else if (status === 'completed') {
+      this.completedPage = page;
+      this.loadCompletedBookings();
     }
   }
 
@@ -145,7 +201,8 @@ export class AdminBookingsComponent {
     let lastPage: number;
     if (status === 'pending') lastPage = this.pendingLastPage;
     else if (status === 'confirmed') lastPage = this.confirmedLastPage;
-    else lastPage = this.canceledLastPage;
+    else if (status === 'canceled') lastPage = this.canceledLastPage;
+    else lastPage = this.completedLastPage;
     return Array.from({ length: lastPage }, (_, i) => i + 1);
   }
 }

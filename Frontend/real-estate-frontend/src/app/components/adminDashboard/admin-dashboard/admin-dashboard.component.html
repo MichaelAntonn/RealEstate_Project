@@ -1,3 +1,4 @@
+
 <div class="luxury-admin-dashboard">
   <div class="container-fluid">
     <h1 class="dashboard-title">Welcome, <span>Admin</span></h1>
@@ -76,6 +77,32 @@
             <div class="card-content">
               <h6>Settings</h6>
               <h3>System Config</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Blog Card (Super-Admin Only) -->
+      <div class="card-wrapper" *ngIf="isSuperAdmin()">
+        <a routerLink="/admin/layout/blog" class="luxury-card card-blog">
+          <div class="card-inner">
+            <i class="bi bi-pencil-square card-icon"></i>
+            <div class="card-content">
+              <h6>Blog</h6>
+              <h3>Create a Blog</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Contact Us Card (Super-Admin Only) -->
+      <div class="card-wrapper" *ngIf="isSuperAdmin()">
+        <a routerLink="/admin/layout/contact-us" class="luxury-card card-contact">
+          <div class="card-inner">
+            <i class="bi bi-envelope card-icon"></i>
+            <div class="card-content">
+              <h6>Contact Us</h6>
+              <h3>View Consultation</h3>
             </div>
           </div>
         </a>

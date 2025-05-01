@@ -129,6 +129,10 @@ export class DashboardService {
     return this.http.get(`${this.apiUrl}/admin/bookings/canceled?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
   }
 
+  getCompletedBookings(page: number = 1): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/bookings/completed?page=${page}`, { headers: this.getHeaders(), withCredentials: true });
+  }
+
   updateBookingStatus(id: number, status: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/admin/bookings/${id}/status`, { status }, { headers: this.getHeaders(), withCredentials: true });
   }
@@ -214,4 +218,8 @@ export class DashboardService {
   getCostCategories(): Observable<any> {
     return this.http.get(`${this.apiUrl}/admin/costs/categories`, { headers: this.getHeaders(), withCredentials: true });
   }
+    // Sell Property
+    sellProperty(propertyId: number): Observable<any> {
+      return this.http.put(`${this.apiUrl}/properties/${propertyId}/sell`, {}, { headers: this.getHeaders(), withCredentials: true });
+    }
 }
