@@ -152,6 +152,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/status/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
             Route::get('/status/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
             Route::get('/status/pending', [BookingController::class, 'getPending'])->name('pending');
+            // Route::get('/status/completed', [BookingController::class, 'getCompleted'])->name('completed');
             Route::delete('/{id}', [BookingController::class, 'destroy'])->name('destroy');
         });
 
@@ -231,6 +232,7 @@ Route::prefix('v1')->group(function () {
 
             // Bookings Routes
             Route::prefix('bookings')->name('bookings.')->group(function () {
+                Route::get('/completed', [BookingController::class, 'getCompleted'])->name('completed');
                 Route::get('/pending', [BookingController::class, 'getPending'])->name('pending');
                 Route::get('/confirmed', [BookingController::class, 'getConfirmed'])->name('confirmed');
                 Route::get('/canceled', [BookingController::class, 'getCanceled'])->name('canceled');
