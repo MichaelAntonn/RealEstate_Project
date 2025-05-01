@@ -21,7 +21,7 @@ class UserDashboardController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        
+
         $stats = [
             'properties' => [
                 'total' => Property::where('user_id', $user->id)->count(),
@@ -68,7 +68,7 @@ class UserDashboardController extends Controller
     public function userStatistics()
     {
         $user = Auth::user();
-        
+
         $stats = [
             'joined_date' => $user->created_at->format('M d, Y'),
             'properties_added' => Property::where('user_id', $user->id)->count(),
@@ -88,13 +88,14 @@ class UserDashboardController extends Controller
     public function getProfile()
     {
         $user = Auth::user();
-        
+
         return response()->json([
             'success' => true,
             'profile' => $user->only([
-                'first_name', 
-                'last_name', 
-                'email', 
+                'id',
+                'first_name',
+                'last_name',
+                'email',
                 'phone_number',
                 'country',
                 'city',
@@ -110,7 +111,7 @@ class UserDashboardController extends Controller
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
-        
+
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -121,7 +122,7 @@ class UserDashboardController extends Controller
                 Rule::unique('users')->ignore($user->id),
             ],
             'phone_number' => [
-                'nullable', 
+                'nullable',
                 new Phone($request->country),
                 Rule::unique('users')->ignore($user->id),
             ],
@@ -130,20 +131,20 @@ class UserDashboardController extends Controller
             'address' => 'nullable|string|max:255',
             'profile_image' => 'nullable|string',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-    
+
         $user->update($request->all());
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully',
             'profile' => $user->only([
-                'first_name', 
-                'last_name', 
-                'email', 
+                'first_name',
+                'last_name',
+                'email',
                 'phone_number',
                 'country',
                 'city',
@@ -152,35 +153,35 @@ class UserDashboardController extends Controller
             ]),
         ]);
     }
-    
+
     /**
      * Change user password
      */
     public function changePassword(Request $request)
     {
         $user = Auth::user();
-        
+
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/|different:current_password',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors(),
                 'message' => $validator->errors()->has('new_password.confirmed') ? 'The password confirmation does not match.' : null
             ], 400);
         }
-    
+
         // Verify current password
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['error' => 'Current password is incorrect'], 400);
         }
-    
+
         $user->update([
             'password' => Hash::make($request->new_password)
         ]);
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Password changed successfully',
@@ -193,7 +194,7 @@ class UserDashboardController extends Controller
     public function deleteAccount()
     {
         $user = Auth::user();
-        
+
         // Soft delete the user
         $user->delete();
 
@@ -212,7 +213,7 @@ class UserDashboardController extends Controller
     public function getProperties(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = Property::where('user_id', $user->id);
 
         // Apply filters
@@ -249,7 +250,7 @@ class UserDashboardController extends Controller
     public function getBookings(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = Booking::where('user_id', $user->id)
             ->with(['property' => function($query) {
                 $query->select('id', 'title', 'cover_image');
@@ -289,7 +290,7 @@ class UserDashboardController extends Controller
     public function getReviews(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = Review::where('user_id', $user->id)
             ->with(['property' => function($query) {
                 $query->select('id', 'title');

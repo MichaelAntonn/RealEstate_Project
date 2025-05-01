@@ -21,7 +21,7 @@ export class AdminDashboardSidebarComponent implements OnInit {
 
   fetchUserRole(): void {
     this.userRole = this.adminAuthService.getUserRole();
-    console.log('Initial user role from service:', this.userRole);
+    // console.log('Initial user role from service:', this.userRole);
 
     if (!this.userRole) {
       this.adminAuthService.fetchUserRole().subscribe({
