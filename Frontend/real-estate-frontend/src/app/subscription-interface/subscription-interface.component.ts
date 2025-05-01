@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './subscription-interface.component.html',
   styleUrls: ['./subscription-interface.component.css'],
   imports: [RouterModule, CommonModule],
-  standalone: true
+  standalone: true,
 })
 export class SubscriptionInterfaceComponent implements OnInit {
   plans: SubscriptionPlan[] = [];
@@ -27,7 +27,7 @@ export class SubscriptionInterfaceComponent implements OnInit {
         this.error = 'Failed to load subscription plans. Please try again later.';
         this.isLoading = false;
         console.error('Error fetching plans:', err);
-      }
+      },
     });
   }
 }
