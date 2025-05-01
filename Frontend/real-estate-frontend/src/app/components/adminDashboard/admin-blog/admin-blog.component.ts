@@ -40,6 +40,7 @@ export class AdminBlogComponent implements OnInit {
     featuredImage: null,
   };
   tagInput = '';
+  private readonly baseUrl: string = 'http://127.0.0.1:8000'; // Base URL for images
 
   constructor(private blogService: BlogService) {}
 
@@ -54,6 +55,9 @@ export class AdminBlogComponent implements OnInit {
         this.blogs = response.blogs.map((blog: Blog) => ({
           ...blog,
           tags: normalizeTags(blog.tags),
+          featuredImage: blog.featuredImage
+            ? `${this.baseUrl}/${blog.featuredImage.replace(/^\/+/, '')}`
+            : 'assets/images/placeholder.jpg', // Fallback image
         })) as NormalizedBlog[];
         this.pagination = {
           current_page: response.current_page,
@@ -197,6 +201,16 @@ export class AdminBlogComponent implements OnInit {
         icon: 'error',
         title: 'Invalid Read Time',
         text: 'Read time must be at least 1 minute.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+    if (!this.selectedBlog && !this.form.featuredImage) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Image',
+        text: 'Featured image is required for new blogs.',
         timer: 3000,
         showConfirmButton: false,
       });
