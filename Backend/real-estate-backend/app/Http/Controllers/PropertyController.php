@@ -121,6 +121,7 @@ class PropertyController extends Controller
         //
     }
 
+    const subscribed = true;
     /**
      * Store a newly created resource in storage.
      */
@@ -136,7 +137,8 @@ class PropertyController extends Controller
             ->first();
     
         if (!$subscription) {
-            return response()->json(['message' => 'You must have an active subscription to add a property.'], 403);
+            $subscribed = false;
+            return response()->json(['message' => 'You must have an active subscription to add a property.', $subscribed], 403);
         }
     
         // 2. Check the maximum number of properties allowed according to the plan
