@@ -6,7 +6,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { BlogService } from '../../services/blog.service';
 import { Blog, PaginatedBlogs } from '../../models/blog';
-import { normalizeTags } from '../../utils/normalize-tags'; // Update import path
+import { normalizeTags } from '../../utils/normalize-tags';
 
 @Component({
   selector: 'app-real-estate-blog',
@@ -23,6 +23,9 @@ export class RealEstateBlogComponent implements OnInit {
   totalPages: number = 1;
   isLoading: boolean = false;
   errorMessage: string | null = null;
+  showModal: boolean = false;
+  selectedPost: Blog | null = null;
+  private readonly baseUrl: string = 'http://127.0.0.1:8000'; // Base URL for images
 
   constructor(private blogService: BlogService) {}
 
@@ -41,6 +44,9 @@ export class RealEstateBlogComponent implements OnInit {
           created_at: new Date(post.created_at),
           likes: post.likes ?? 0,
           liked: post.liked ?? false,
+          featuredImage: post.featuredImage
+            ? `${this.baseUrl}/${post.featuredImage.replace(/^\/+/, '')}`
+            : 'assets/images/placeholder.jpg', // Fallback image
         }));
         this.currentPage = response.current_page;
         this.totalPages = response.last_page;
@@ -60,15 +66,28 @@ export class RealEstateBlogComponent implements OnInit {
 
   likePost(postId: number, event: Event): void {
     event.stopPropagation();
+    if (!postId) {
+      console.warn('Invalid post ID for liking');
+      return;
+    }
     const post = this.posts.find((p) => p.id === postId);
     if (post) {
       post.likes = (post.likes || 0) + 1;
       post.liked = true;
-
       setTimeout(() => {
         post.liked = false;
       }, 500);
     }
+  }
+
+  openPostModal(post: Blog): void {
+    this.selectedPost = post;
+    this.showModal = true;
+  }
+
+  closePostModal(): void {
+    this.showModal = false;
+    this.selectedPost = null;
   }
 
   nextPage(): void {

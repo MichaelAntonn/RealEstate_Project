@@ -37,6 +37,17 @@ $dark-gray: #666;
   100% { transform: scale(1); }
 }
 
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .fade-in-up {
   opacity: 0;
   animation: fadeInUp 0.5s ease-out forwards;
@@ -311,6 +322,168 @@ $dark-gray: #666;
   }
 }
 
+/* Modal Styles */
+.blog-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 2rem;
+
+  .blog-modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: $dark-gray;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .modal-header {
+    margin-bottom: 1.5rem;
+
+    .modal-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $text-color;
+      margin-bottom: 1rem;
+    }
+
+    .modal-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: $dark-gray;
+      flex-wrap: wrap;
+
+      span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+
+        &::before {
+          content: '•';
+          margin-right: 0.3rem;
+        }
+
+        &:first-child::before {
+          display: none;
+        }
+      }
+
+      .category-badge {
+        background: $primary-color;
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .modal-image {
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      max-height: 400px;
+    }
+  }
+
+  .modal-body {
+    margin-bottom: 1.5rem;
+
+    .post-content {
+      line-height: 1.8;
+      color: $text-color;
+      font-size: 1rem;
+    }
+  }
+
+  .modal-footer {
+    border-top: 1px solid $medium-gray;
+    padding-top: 1.5rem;
+
+    .modal-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+
+      .tag {
+        background: $light-gray;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        color: #555;
+      }
+    }
+
+    .modal-stats {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
+      .like-btn {
+        background: none;
+        border: none;
+        color: $dark-gray;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: $primary-color;
+        }
+
+        i {
+          transition: all 0.3s ease;
+        }
+      }
+
+      .comments {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: $dark-gray;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -346,6 +519,23 @@ $dark-gray: #666;
 
   .blog-grid {
     grid-template-columns: 1fr;
+  }
+
+  .blog-modal {
+    padding: 1rem;
+
+    .blog-modal-content {
+      max-height: 95vh;
+      padding: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+    }
+
+    .modal-image img {
+      max-height: 300px;
+    }
   }
 }
 
