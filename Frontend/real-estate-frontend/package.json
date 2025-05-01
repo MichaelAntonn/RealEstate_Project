@@ -35,6 +35,7 @@
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.2.0",
     "ng2-charts": "^8.0.0",
     "ngx-intl-tel-input": "^17.0.0",
     "ngx-toastr": "^19.0.0",

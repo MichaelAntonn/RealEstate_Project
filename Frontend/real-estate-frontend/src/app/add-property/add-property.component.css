@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Notification styles */
+.notification {
+  @apply text-white px-4 py-2 rounded-md shadow-lg flex items-center;
+  max-width: 400px;
+  z-index: 1;
+  animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 5.7s forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Ensure inputs with errors are highlighted */
+input.border-red-500,
+select.border-red-500,
+textarea.border-red-500 {
+  @apply border-2;
+}
+
+#map{
+  z-index: 0;
+}
