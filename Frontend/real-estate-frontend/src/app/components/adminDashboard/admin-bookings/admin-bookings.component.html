@@ -73,12 +73,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let booking of confirmedBookings">
+          <tr *ngFor="let booking of confirmedBookings" [class.reviewed]="booking.isReviewed">
             <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
             <td>{{ booking.property?.title }}</td>
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
-            <td>{{ booking.status }}</td>
+            <td>
+              {{ booking.status }}
+              <span *ngIf="booking.isReviewed" class="review-badge">Reviewed</span>
+            </td>
             <td class="action-buttons">
               <button class="glass-btn glass-btn-reject" (click)="updateBookingStatus(booking.id, 'canceled')">
                 <i class="fas fa-times"></i> Cancel
@@ -86,7 +89,11 @@
               <button class="glass-btn glass-btn-revert" (click)="updateBookingStatus(booking.id, 'pending')">
                 <i class="fas fa-undo"></i> Revert to Pending
               </button>
+              <button class="glass-btn glass-btn-done" (click)="updateBookingStatus(booking.id, 'completed')">
+                <i class="fas fa-check-double"></i> Deal is Done
+              </button>
             </td>
+            
           </tr>
           <tr *ngIf="confirmedBookings.length === 0" class="glass-empty">
             <td colspan="6">No confirmed bookings found.</td>

@@ -149,6 +149,78 @@
   background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
 }
 
+.card-statistics {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 75% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+.card-settings {
+  background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+  
+  .card-icon {
+    animation: spinGear 8s linear infinite;
+  }
+  
+  &:hover .card-icon {
+    animation: spinGearHover 2s linear infinite;
+  }
+}
+
+.card-blog {
+  background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 75% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+.card-contact {
+  background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 75% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
 /* Card Elements */
 .card-icon {
   font-size: 3.5rem;
@@ -244,39 +316,6 @@
   }
 }
 
-/* إضافة تدرجات ألوان للبطاقات الجديدة */
-.card-statistics {
-  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 75% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-  
-  &:hover::after {
-    opacity: 1;
-  }
-}
-
-.card-settings {
-  background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
-  
-  .card-icon {
-    animation: spinGear 8s linear infinite;
-  }
-  
-  &:hover .card-icon {
-    animation: spinGearHover 2s linear infinite;
-  }
-}
-
 /* تأثيرات حركية جديدة */
 @keyframes spinGear {
   0% { transform: rotate(0deg); }
@@ -286,19 +325,6 @@
 @keyframes spinGearHover {
   0% { transform: rotate(0deg) scale(1.1); }
   100% { transform: rotate(360deg) scale(1.1); }
-}
-
-/* تعديلات الشبكة لاستيعاب البطاقات الجديدة */
-.cards-grid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  
-  @media (max-width: 1400px) {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
 }
 
 /* تعديلات الأيقونات للبطاقات الجديدة */
@@ -318,6 +344,8 @@
   }
 }
 
-.bi-gear-wide-connected {
+.bi-gear-wide-connected,
+.bi-pencil-square,
+.bi-envelope {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
