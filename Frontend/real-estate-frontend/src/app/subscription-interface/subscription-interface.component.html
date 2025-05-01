@@ -15,11 +15,11 @@
          [ngClass]="{
              'trial': plan.name.toLowerCase() === 'free trial',
              'free': plan.name.toLowerCase() === 'basic',
-             'basic': plan.name.toLowerCase() === 'professional',
-             'premium': plan.name.toLowerCase() === 'enterprise'
+             'basic': plan.name.toLowerCase() === 'standard',
+             'premium': plan.name.toLowerCase() === 'premium'
          }">
-        <!-- Popular Badge for Enterprise Plan -->
-        <div class="popular-badge" *ngIf="plan.name.toLowerCase() === 'enterprise'">
+        <!-- Popular Badge for Premium Plan -->
+        <div class="popular-badge" *ngIf="plan.name.toLowerCase() === 'premium'">
             MOST POPULAR
         </div>
 
@@ -34,8 +34,8 @@
                    [ngClass]="{
                        'fa-gift': plan.name.toLowerCase() === 'free trial',
                        'fa-star': plan.name.toLowerCase() === 'basic',
-                       'fa-shield-alt': plan.name.toLowerCase() === 'professional',
-                       'fa-crown': plan.name.toLowerCase() === 'enterprise'
+                       'fa-shield-alt': plan.name.toLowerCase() === 'standard',
+                       'fa-crown': plan.name.toLowerCase() === 'premium'
                    }"></i>
                 {{ plan.name | uppercase }}
             </h3>
@@ -53,10 +53,12 @@
         <div class="pricing-footer">
             <button class="select-button"
                     [routerLink]="plan.name.toLowerCase() === 'free trial' ? '/trial/signup' :
-                                  plan.name.toLowerCase() === 'basic' ? '/company/statistics' : null">
+                                  plan.name.toLowerCase() === 'basic' ? '/company/statistics' :
+                                  plan.name.toLowerCase() === 'standard' ? '/subscribe/standard' :
+                                  plan.name.toLowerCase() === 'premium' ? '/subscribe/premium' : null">
                 {{ plan.name.toLowerCase() === 'free trial' ? 'START FREE TRIAL' :
                    plan.name.toLowerCase() === 'basic' ? 'GET STARTED' :
-                   plan.name.toLowerCase() === 'professional' ? 'CHOOSE PLAN' :
+                   plan.name.toLowerCase() === 'standard' ? 'CHOOSE PLAN' :
                    'GET PREMIUM' }}
             </button>
         </div>
