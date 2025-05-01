@@ -11,87 +11,49 @@ use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
-    public function subscribeCompany(Request $request)
+    public function subscribe(Request $request)
     {
         $request->validate([
-            'plan_id' => 'required|exists:subscription_plans,id', 
-            'price' => 'required|numeric',
-            'duration_in_days' => 'required|integer|min:1',
+            'plan_id' => 'required|exists:subscription_plans,id',
+            'auto_renew' => 'required|boolean'
         ]);
-    
-        $company = Auth::user(); 
-    
+
+        $user = Auth::user();
+        $plan = SubscriptionPlan::findOrFail($request->plan_id);
+
+        $autoRenew = $request->boolean('auto_renew');
+
         $startsAt = Carbon::now();
-        $endsAt = $startsAt->copy()->addDays($request->duration_in_days);
-    
-        $plan = SubscriptionPlan::findOrFail($request->plan_id); 
-    
+        $endsAt = $startsAt->copy()->addDays($plan->duration_in_days);
+
+        // إنشاء الاشتراك الجديد
         $subscription = Subscription::create([
-            'company_id' => $company->company_id,
-            'plan_id' => $plan->id, 
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'plan_name' => $plan->name,
             'price' => $plan->price,
-            'duration_in_days' => $request->duration_in_days,
+            'duration_in_days' => $plan->duration_in_days,
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
             'status' => 'active',
+            'auto_renew' => $autoRenew,
         ]);
-    
-        return response()->json(['message' => 'Subscription created successfully.', 'subscription' => $subscription]);
-    }
-    
-
-    public function show($id)
-    {
-        // Load company with its subscription
-        $company = Company::with('subscription')->find($id);
-
-        if (!$company) {
-            return response()->json(['message' => 'Company not found'], 404);
-        }
 
         return response()->json([
-            'company' => $company,
-            'subscription_status' => $company->subscription?->status ?? 'no subscription',
-            'subscription_details' => $company->subscription,
+            'message' => 'Subscription successful.',
+            'subscription' => $subscription,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
         ]);
     }
-
-    public function subscribe(Request $request)
-{
-    $request->validate([
-        'plan_id' => 'required|exists:subscription_plans,id', 
-    ]);
-
-    $company = Auth::user(); 
-
-    $plan = SubscriptionPlan::findOrFail($request->plan_id); 
-
-    $startsAt = Carbon::now();
-    $endsAt = $startsAt->copy()->addDays($plan->duration_in_days);
-
-    $subscription = Subscription::create([
-        'company_id' => $company->company_id,
-        'plan_id' => $plan->id, 
-        'price' => $plan->price,
-        'duration_in_days' => $plan->duration_in_days,
-        'starts_at' => $startsAt,
-        'ends_at' => $endsAt,
-        'status' => 'active',
-    ]);
-
-    return response()->json([
-        'message' => 'Subscription successful.',
-        'subscription' => $subscription
-    ]);
-}
-
 
     public function subscribeToTrial(Request $request)
     {
-        $company = Auth::user();
+        // Get the current user
+        $user = Auth::user();
 
-        // Check if company already used the trial
-        if ($company->has_used_trial) {
+        // Check if the user has used the trial plan before
+        if ($user->has_used_trial) {
             return response()->json(['message' => 'Trial already used.'], 403);
         }
 
@@ -102,31 +64,174 @@ class SubscriptionController extends Controller
             return response()->json(['message' => 'No trial plan available.'], 404);
         }
 
+        // Set the start and end date
         $startsAt = Carbon::now();
         $endsAt = $startsAt->copy()->addDays($trialPlan->duration_in_days);
 
+        // Create the trial subscription for the user
         Subscription::create([
-            'company_id' => $company->company_id,
+            'user_id' => $user->id,  // Replace company_id with user_id
             'plan_id' => $trialPlan->id,
-            'price' => 0.00,
+            'plan_name' => $trialPlan->name,
+            'price' => 0.00,  // Free subscription
             'duration_in_days' => $trialPlan->duration_in_days,
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
             'status' => 'active',
         ]);
 
-        $company->update(['has_used_trial' => true]);
+        // Update user to mark trial as used
+        $user->update(['has_used_trial' => true]);
 
         return response()->json(['message' => 'Trial subscription activated.']);
     }
 
-    /**
-     * Get all available subscription plans (for both authenticated and unauthenticated users)
-     */
+    public function cancelSubscription()
+    {
+        $user = Auth::user();
+
+        $subscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['message' => 'No active subscription found.'], 404);
+        }
+
+        $subscription->update(['status' => 'canceled']);
+
+        return response()->json(['message' => 'Subscription has been canceled successfully.']);
+    }
+
+    public function renewSubscription()
+    {
+        $userId = Auth::id(); // Get the logged-in user's id automatically
+
+        $subscription = Subscription::where('user_id', $userId)
+            ->whereIn('status', ['active', 'expired'])
+            ->latest()
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['message' => 'No subscription found for the user.'], 404);
+        }
+
+        $plan = SubscriptionPlan::find($subscription->plan_id);
+
+        if (!$plan) {
+            return response()->json(['message' => 'Plan not found.'], 404);
+        }
+
+        $startsAt = now();
+        $endsAt = $startsAt->copy()->addDays($plan->duration_in_days);
+
+        $newSubscription = Subscription::create([
+            'user_id' => $userId,
+            'plan_id' => $subscription->plan_id,
+            'plan_name' => $plan->name,
+            'price' => $plan->price,
+            'duration_in_days' => $plan->duration_in_days,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+            'status' => 'active',
+            'auto_renew' => $subscription->auto_renew,
+        ]);
+
+        return response()->json([
+            'message' => 'Subscription renewed successfully.',
+            'subscription' => $newSubscription
+        ], 200);
+    }
+
+    public function changePlan(Request $request)
+    {
+        $request->validate([
+            'new_plan_id' => 'required|exists:subscription_plans,id',
+        ]);
+
+        $user = Auth::user();
+        $newPlan = SubscriptionPlan::findOrFail($request->new_plan_id);
+
+        // Get the current subscription
+        $subscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['message' => 'No active subscription found'], 404);
+        }
+
+        // Change the subscription plan
+        $subscription->update([
+            'plan_id' => $newPlan->id,
+            'plan_name' => $newPlan->name,
+            'price' => $newPlan->price,
+            'duration_in_days' => $newPlan->duration_in_days,
+            'ends_at' => Carbon::now()->addDays($newPlan->duration_in_days),
+        ]);
+
+        return response()->json(['message' => 'Plan changed successfully', 'subscription' => $subscription]);
+    }
+
+    public function autoRenewSubscription($userId)
+    {
+        $subscription = Subscription::where('user_id', $userId)
+            ->where('status', 'active')
+            ->where('auto_renew', true)  // Make sure the subscription has auto-renew enabled
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['message' => 'No active subscription with auto-renew found.'], 404);
+        }
+
+        $plan = SubscriptionPlan::find($subscription->plan_id);
+
+        if (!$plan) {
+            return response()->json(['message' => 'Plan not found.'], 404);
+        }
+
+        // Calculate renewal dates
+        $startsAt = Carbon::now();
+        $endsAt = Carbon::now()->addDays($plan->duration_in_days);
+
+        // Renew the subscription
+        $newSubscription = Subscription::create([
+            'user_id' => $subscription->user_id,
+            'plan_id' => $subscription->plan_id,
+            'plan_name' => $plan->name,
+            'price' => $plan->price,
+            'duration_in_days' => $plan->duration_in_days,
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
+            'status' => 'active',
+            'auto_renew' => true, // Auto-renew
+        ]);
+
+        return response()->json(['message' => 'Subscription auto-renewed successfully', 'subscription' => $newSubscription]);
+    }
+
+    public function cancelAutoRenewSubscription()
+    {
+        $user = Auth::user();
+
+        $subscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('auto_renew', true) // Ensure subscription has auto-renew
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['message' => 'No active subscription with auto-renew found.'], 404);
+        }
+
+        $subscription->update(['auto_renew' => false]);
+
+        return response()->json(['message' => 'Auto-renewal has been disabled for your subscription.']);
+    }
+
     public function getPlans()
     {
         $plans = SubscriptionPlan::where('is_trial', false)
-            ->select(['id', 'name', 'price', 'duration_in_days', 'description', 'features','max_properties_allowed'])
+            ->select(['id', 'name', 'price', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
             ->get()
             ->map(function ($plan) {
                 $plan->features = is_array($plan->features) ? $plan->features : json_decode($plan->features, true);
@@ -136,32 +241,25 @@ class SubscriptionController extends Controller
         return response()->json($plans);
     }
 
-    /**
-     * Get trial plan (for both authenticated and unauthenticated users)
-     */
     public function getTrialPlan()
     {
         $trialPlan = SubscriptionPlan::where('is_trial', true)
-            ->select(['id', 'name', 'duration_in_days', 'description', 'features','max_properties_allowed'])
+            ->select(['id', 'name', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
             ->first();
-        
+
         if (!$trialPlan) {
             return response()->json(['message' => 'No trial plan available'], 404);
         }
-        
-        // Ensure features is properly formatted
+
         $trialPlan->features = is_array($trialPlan->features) ? $trialPlan->features : json_decode($trialPlan->features, true);
-        
+
         return response()->json($trialPlan);
     }
 
-    /**
-     * Get all plans including trial (for registration page)
-     */
     public function getAllPlansForRegistration()
     {
         $regularPlans = SubscriptionPlan::where('is_trial', false)
-            ->select(['id', 'name', 'price', 'duration_in_days', 'description', 'features','max_properties_allowed'])
+            ->select(['id', 'name', 'price', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
             ->get()
             ->map(function ($plan) {
                 $plan->features = is_array($plan->features) ? $plan->features : json_decode($plan->features, true);
@@ -169,7 +267,7 @@ class SubscriptionController extends Controller
             });
 
         $trialPlan = SubscriptionPlan::where('is_trial', true)
-            ->select(['id', 'name', 'duration_in_days', 'description', 'features','max_properties_allowed'])
+            ->select(['id', 'name', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
             ->first();
 
         if ($trialPlan) {
@@ -181,109 +279,47 @@ class SubscriptionController extends Controller
             'trial_plan' => $trialPlan,
         ]);
     }
-    public function cancelSubscription()
+
+    public function getUpcomingExpirations(Request $request)
     {
-        // Get the company associated with the currently authenticated user
-        $company = Auth::user()->company; 
-        
-        // Find the active subscription for the company
-        $subscription = Subscription::where('company_id', $company->company_id)
-                                    ->where('status', 'active')
-                                    ->first();
-    
-        // If no active subscription is found
+        $days = $request->input('days', 7);
+        $upcomingExpirations = Subscription::where('status', 'active')
+            ->whereBetween('ends_at', [Carbon::now(), Carbon::now()->addDays($days)])
+            ->with('user')
+            ->orderBy('ends_at')
+            ->get();
+
+        return response()->json([
+            'upcoming_expirations' => $upcomingExpirations,
+            'days_threshold' => $days
+        ]);
+    }
+
+    public function getCurrentSubscriptionStatus()
+    {
+        $user = Auth::user();
+
+        $subscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
         if (!$subscription) {
             return response()->json(['message' => 'No active subscription found'], 404);
         }
-    
-        // Update the subscription status to "canceled"
-        $subscription->update(['status' => 'canceled']);
-    
-        // Optionally, log the cancellation event for tracking
-        // Log::info('Subscription canceled', ['subscription_id' => $subscription->id]);
-    
-        return response()->json(['message' => 'Subscription has been canceled successfully.']);
+
+        $now = Carbon::now();
+        $endsAt = Carbon::parse($subscription->ends_at);
+
+        $data = [
+            'plan_name' => $subscription->plan_name,
+            'status' => $subscription->status,
+            'start_date' => $subscription->starts_at,
+            'end_date' => $subscription->ends_at,
+            'days_remaining' => $now->diffInDays($endsAt, false),
+            'is_expired' => $now->greaterThan($endsAt),
+            'is_near_expiration' => $now->diffInDays($endsAt, false) <= 7
+        ];
+
+        return response()->json($data);
     }
-    
-    public function updateSubscription(Request $request, $id)
-    {
-        // Get the company associated with the currently authenticated user
-        $company = Auth::user()->company;
-    
-        // Check if the subscription exists and belongs to the company
-        $subscription = Subscription::where('company_id', $company->company_id)
-            ->where('id', $id)
-            ->first();
-    
-        if (!$subscription) {
-            return response()->json(['message' => 'Subscription not found or does not belong to this company'], 404);
-        }
-    
-        // Validate the incoming request data
-        $validatedData = $request->validate([
-            'plan_id' => 'required|exists:subscription_plans,id', // Ensure the plan exists in subscription_plans table
-            'status' => 'nullable|in:active,canceled,pending', // Status must be one of the valid options
-            'expiry_date' => 'nullable|date', // Validate the expiry date
-        ]);
-    
-        // Check if any of the validated data has changed
-        $changes = [];
-        foreach ($validatedData as $key => $value) {
-            if ($subscription->$key != $value) {
-                $changes[$key] = $value;
-            }
-        }
-    
-        // If there are any changes, update the subscription
-        if (!empty($changes)) {
-            $subscription->update($changes);
-            return response()->json(['message' => 'Subscription updated successfully', 'subscription' => $subscription]);
-        }
-    
-        return response()->json(['message' => 'No changes detected for the subscription'], 400);
-    }
-
-public function getUpcomingExpirations(Request $request)
-{
-    $days = $request->input('days', 7); 
-    $upcomingExpirations = Subscription::where('status', 'active')
-        ->whereBetween('ends_at', [Carbon::now(), Carbon::now()->addDays($days)])
-        ->with('company')
-        ->orderBy('ends_at')
-        ->get();
-
-    return response()->json([
-        'upcoming_expirations' => $upcomingExpirations,
-        'days_threshold' => $days
-    ]);
 }
-public function getCurrentSubscriptionStatus()
-{
-    $company = Auth::user();
-    
-    $subscription = Subscription::where('company_id', $company->company_id)
-        ->where('status', 'active')
-        ->first();
-
-    if (!$subscription) {
-        return response()->json(['message' => 'No active subscription found'], 404);
-    }
-
-    $now = Carbon::now();
-    $endsAt = Carbon::parse($subscription->ends_at);
-    
-    $data = [
-        'plan_name' => $subscription->plan_name,
-        'status' => $subscription->status,
-        'start_date' => $subscription->starts_at,
-        'end_date' => $subscription->ends_at,
-        'days_remaining' => $now->diffInDays($endsAt, false),
-        'is_expired' => $now->greaterThan($endsAt),
-        'is_near_expiration' => $now->diffInDays($endsAt, false) <= 7
-    ];
-
-    return response()->json($data);
-}
-
-}
-

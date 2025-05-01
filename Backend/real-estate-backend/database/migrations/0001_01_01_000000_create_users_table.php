@@ -28,6 +28,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->boolean('terms_and_conditions')->default(false);
             $table->timestamp('phone_verified_at')->nullable();
+            $table->boolean('has_used_trial')->default(false);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

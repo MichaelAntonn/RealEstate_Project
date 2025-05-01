@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\SubscriptionPlan;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionPlansSeeder extends Seeder
 {
@@ -12,65 +13,60 @@ class SubscriptionPlansSeeder extends Seeder
      */
     public function run(): void
     {
-        $plans = [
+        DB::table('subscription_plans')->insert([
             [
                 'name' => 'Basic',
-                'price' => 99.00,
+                'price' => 100.00,
                 'duration_in_days' => 30,
-                'description' => 'Basic subscription plan with essential features',
+                'description' => 'Ideal for individuals looking to list a small number of properties.',
                 'features' => json_encode([
-                    'Property listings limit: 10',
-                    'Basic analytics',
-                    'Email support'
+                    'max_properties_allowed' => 5,
+                    'priority_support' => false,
+                    'additional_features' => false
                 ]),
-                'max_properties_allowed' => 10,
-                'is_trial' => false
+                'is_trial' => false,
+                'max_properties_allowed' => 5,
             ],
             [
-                'name' => 'Professional',
-                'price' => 199.00,
-                'duration_in_days' => 30,
-                'description' => 'Professional plan with advanced features',
+                'name' => 'Standard',
+                'price' => 250.00,
+                'duration_in_days' => 90,
+                'description' => 'Suitable for small businesses with a moderate number of properties to list.',
                 'features' => json_encode([
-                    'Property listings limit: 50',
-                    'Advanced analytics',
-                    'Priority support',
-                    'Featured listings'
+                    'max_properties_allowed' => 20,
+                    'priority_support' => true,
+                    'additional_features' => false
                 ]),
-                'max_properties_allowed' => 15,
-                'is_trial' => false
+                'is_trial' => false,
+                'max_properties_allowed' => 20,
             ],
             [
-                'name' => 'Enterprise',
-                'price' => 499.00,
-                'duration_in_days' => 30,
-                'description' => 'Enterprise plan with all features',
+                'name' => 'Premium',
+                'price' => 500.00,
+                'duration_in_days' => 180,
+                'description' => 'Perfect for businesses with a large portfolio of properties.',
                 'features' => json_encode([
-                    'Unlimited property listings',
-                    'Advanced analytics dashboard',
-                    '24/7 dedicated support',
-                    'Featured listings priority',
-                    'API access'
+                    'max_properties_allowed' => 50,
+                    'priority_support' => true,
+                    'additional_features' => true
                 ]),
-                'max_properties_allowed' => -1,
-                'is_trial' => false
+                'is_trial' => false,
+                'max_properties_allowed' => 50,
             ],
             [
                 'name' => 'Free Trial',
                 'price' => 0.00,
                 'duration_in_days' => 7,
-                'description' => '7-day free trial with Professional features',
+                'description' => 'A trial plan to test the features and list a limited number of properties.',
                 'features' => json_encode([
-                    'Property listings limit: 20',
-                    'Basic analytics',
-                    'Email support'
+                    'max_properties_allowed' => 1,
+                    'priority_support' => false,
+                    'additional_features' => false
                 ]),
-                'is_trial' => true
+                'is_trial' => true,
+                'max_properties_allowed' => 1,
             ]
-        ];
-
-        foreach ($plans as $plan) {
-            SubscriptionPlan::create($plan);
-        }
+        ]);
     }
+
 }

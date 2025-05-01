@@ -30,6 +30,7 @@ class User extends Authenticatable
         'password',
         'user_type',
         'profile_image',
+        'has_used_trial'
     ];
     /**
      * Get the properties owned by the user.
@@ -66,7 +67,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
+    protected $casts = [
+        'has_used_trial' => 'boolean',
+    ];
+    
     /**
      * Define the broadcast channel name for notifications.
      *
@@ -76,4 +80,10 @@ class User extends Authenticatable
     {
         return 'Notifications.' . $this->id;
     }
+
+    public function subscriptions()
+{
+    return $this->hasMany(Subscription::class, 'user_id');
+}
+
 }
