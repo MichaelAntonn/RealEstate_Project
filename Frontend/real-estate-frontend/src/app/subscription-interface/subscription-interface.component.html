@@ -10,50 +10,66 @@
     </div>
   
     <!-- Dynamic Plans -->
-    <div
-      *ngFor="let plan of plans; let i = index"
-      class="pricing-card"
-      [ngClass]="{
-        'trial': plan.name.toLowerCase() === 'free trial',
-        'basic': plan.name.toLowerCase() === 'basic',
-        'standard': plan.name.toLowerCase() === 'standard',
-        'premium': plan.name.toLowerCase() === 'premium'
-      }"
-    >
-      <!-- Popular Badge for Premium Plan -->
-      <div class="popular-badge" *ngIf="plan.name.toLowerCase() === 'premium'">
-        MOST POPULAR
-      </div>
-  
-      <!-- Trial Badge for Free Trial -->
-      <div class="trial-badge" *ngIf="plan.name.toLowerCase() === 'free trial'">
-        FREE TRIAL
-      </div>
-  
-      <div class="pricing-header">
-        <h3 class="pricing-title">
-          <i
-            class="fas"
-            [ngClass]="{
-              'fa-gift': plan.name.toLowerCase() === 'free trial',
-              'fa-star': plan.name.toLowerCase() === 'basic',
-              'fa-shield-alt': plan.name.toLowerCase() === 'standard',
-              'fa-crown': plan.name.toLowerCase() === 'premium'
-            }"
-          ></i>
-          {{ plan.name | uppercase }}
-        </h3>
-        <div class="pricing-price">
-          ${{ plan.price }}
+
+    <div *ngFor="let plan of plans; let i = index"
+         class="pricing-card"
+         [ngClass]="{
+             'trial': plan.name.toLowerCase() === 'free trial',
+             'free': plan.name.toLowerCase() === 'basic',
+             'basic': plan.name.toLowerCase() === 'standard',
+             'premium': plan.name.toLowerCase() === 'premium'
+         }">
+        <!-- Popular Badge for Premium Plan -->
+        <div class="popular-badge" *ngIf="plan.name.toLowerCase() === 'premium'">
+            MOST POPULAR
         </div>
-        <div class="pricing-period">per {{ plan.duration_in_days }} days</div>
-        <p class="pricing-description">{{ plan.description }}</p>
-      </div>
-  
-      <div class="pricing-features">
-        <div class="feature" *ngFor="let feature of plan.featuresArray">
-          <i class="fas fa-check-circle"></i>
-          <span>{{ feature }}</span>
+
+        <!-- Trial Badge for Free Trial -->
+        <div class="trial-badge" *ngIf="plan.name.toLowerCase() === 'free trial'">
+            FREE TRIAL
+        </div>
+
+        <div class="pricing-header">
+            <h3 class="pricing-title">
+                <i class="fas"
+                   [ngClass]="{
+                       'fa-gift': plan.name.toLowerCase() === 'free trial',
+                       'fa-star': plan.name.toLowerCase() === 'basic',
+                       'fa-shield-alt': plan.name.toLowerCase() === 'standard',
+                       'fa-crown': plan.name.toLowerCase() === 'premium'
+                   }"></i>
+                {{ plan.name | uppercase }}
+            </h3>
+            <div class="pricing-price">${{ plan.price }}</div>
+            <div class="pricing-period">per {{ plan.duration_in_days }} days</div>
+        </div>
+
+        <div class="pricing-features">
+            <div class="feature" *ngFor="let feature of plan.features">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ feature }}</span>
+            </div>
+        </div>
+
+        <div class="pricing-footer">
+            <div class="auto-renew-checkbox">
+                <label>
+                    <input type="checkbox" [(ngModel)]="autoRenew[plan.id]">
+                    Auto-renew subscription
+                </label>
+            </div>
+            <button class="select-button" (click)="subscribe(plan)" [disabled]="isSubscribing[plan.id]">
+                <span *ngIf="isSubscribing[plan.id]">
+                    <i class="fas fa-spinner fa-spin"></i> Subscribing...
+                </span>
+                <span *ngIf="!isSubscribing[plan.id]">
+                    {{ plan.name.toLowerCase() === 'free trial' ? 'START FREE TRIAL' :
+                       plan.name.toLowerCase() === 'basic' ? 'GET STARTED' :
+                       plan.name.toLowerCase() === 'standard' ? 'CHOOSE PLAN' :
+                       'GET PREMIUM' }}
+                </span>
+            </button>
+
         </div>
       </div>
   
