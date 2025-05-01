@@ -51,15 +51,22 @@
         </div>
 
         <div class="pricing-footer">
-            <button class="select-button"
-                    [routerLink]="plan.name.toLowerCase() === 'free trial' ? '/trial/signup' :
-                                  plan.name.toLowerCase() === 'basic' ? '/company/statistics' :
-                                  plan.name.toLowerCase() === 'standard' ? '/subscribe/standard' :
-                                  plan.name.toLowerCase() === 'premium' ? '/subscribe/premium' : null">
-                {{ plan.name.toLowerCase() === 'free trial' ? 'START FREE TRIAL' :
-                   plan.name.toLowerCase() === 'basic' ? 'GET STARTED' :
-                   plan.name.toLowerCase() === 'standard' ? 'CHOOSE PLAN' :
-                   'GET PREMIUM' }}
+            <div class="auto-renew-checkbox">
+                <label>
+                    <input type="checkbox" [(ngModel)]="autoRenew[plan.id]">
+                    Auto-renew subscription
+                </label>
+            </div>
+            <button class="select-button" (click)="subscribe(plan)" [disabled]="isSubscribing[plan.id]">
+                <span *ngIf="isSubscribing[plan.id]">
+                    <i class="fas fa-spinner fa-spin"></i> Subscribing...
+                </span>
+                <span *ngIf="!isSubscribing[plan.id]">
+                    {{ plan.name.toLowerCase() === 'free trial' ? 'START FREE TRIAL' :
+                       plan.name.toLowerCase() === 'basic' ? 'GET STARTED' :
+                       plan.name.toLowerCase() === 'standard' ? 'CHOOSE PLAN' :
+                       'GET PREMIUM' }}
+                </span>
             </button>
         </div>
     </div>

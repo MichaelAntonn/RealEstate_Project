@@ -116,6 +116,26 @@
     text-align: center;
 }
 
+.auto-renew-checkbox {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.auto-renew-checkbox label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.auto-renew-checkbox input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
 .select-button {
     display: inline-block;
     padding: 16px 40px;
@@ -132,6 +152,25 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
+}
+
+.select-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.select-button:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.select-button:disabled::after {
+    opacity: 0;
+}
+
+.select-button i.fa-spinner {
+    margin-right: 8px;
 }
 
 .select-button:hover {

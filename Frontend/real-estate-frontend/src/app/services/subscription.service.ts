@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service'; // Adjust path as needed
 
@@ -10,7 +10,7 @@ export interface SubscriptionPlan {
   price?: string;
   duration_in_days: number;
   description: string;
-  features: string[]; // Keep as string[] for component compatibility
+  features: string[];
   max_properties_allowed: number;
 }
 
@@ -33,11 +33,23 @@ interface ApiResponse {
   trial_plan: RawSubscriptionPlan;
 }
 
+interface SubscribeResponse {
+  success: boolean;
+  subscription_id: number;
+  message?: string;
+}
+
+interface CheckoutResponse {
+  url: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class SubscriptionService {
-  private apiUrl = 'http://127.0.0.1:8000/api/v1/subscription/plans/all';
+  private apiUrl = 'http://localhost:8000/api/v1/subscription/plans/all';
+  private subscribeUrl = 'http://localhost:8000/api/v1/subscription/subscribe';
+  private checkoutUrl = 'http://localhost:8000/api/v1/payment/checkout-session';
 
   constructor(
     private http: HttpClient,
@@ -45,9 +57,10 @@ export class SubscriptionService {
   ) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = this.authService.getToken() || ''; // Fallback to empty string if null
+    const token = this.authService.getToken();
+    console.log('Auth token:', token); // Debug log
     return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || ''}`,
     });
   }
 
@@ -55,7 +68,6 @@ export class SubscriptionService {
     const headers = this.getAuthHeaders();
     return this.http.get<ApiResponse>(this.apiUrl, { headers }).pipe(
       map(response => {
-        // Transform features object to string array
         const transformFeatures = (plan: RawSubscriptionPlan): SubscriptionPlan => {
           const features: string[] = [];
           if (plan.features.priority_support) {
@@ -79,14 +91,55 @@ export class SubscriptionService {
         const plans = response.regular_plans.map(transformFeatures);
         if (response.trial_plan) {
           const trialPlan = transformFeatures(response.trial_plan);
-          trialPlan.price = trialPlan.price || '0.00'; // Set default price
+          trialPlan.price = trialPlan.price || '0.00';
           plans.unshift(trialPlan);
         }
         return plans;
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Error fetching plans:', error);
-        return of([]); // Return empty array on error
+        return of([]);
+      })
+    );
+  }
+
+  subscribe(planId: number, autoRenew: boolean): Observable<SubscribeResponse> {
+    const headers = this.getAuthHeaders();
+    const body = {
+      plan_id: planId,
+      auto_renew: autoRenew ? 1 : 0,
+    };
+    return this.http.post<SubscribeResponse>(this.subscribeUrl, body, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        const errorMessage = error.error?.message || 'Failed to subscribe. Please try again.';
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  initiateCheckout(subscriptionId: number, returnUrl: string): Observable<CheckoutResponse> {
+    const headers = this.getAuthHeaders();
+    const body = {
+      subscription_id: subscriptionId,
+      return_url: returnUrl,
+    };
+    return this.http.post(this.checkoutUrl, body, { headers, responseType: 'text' }).pipe(
+      map(response => {
+        try {
+          const url = JSON.parse(response); // Parse quoted string, e.g., '"https://..."'
+          if (typeof url !== 'string') {
+            throw new Error('Invalid URL format');
+          }
+          return { url };
+        } catch (e) {
+          throw new Error('Failed to parse checkout URL');
+        }
+      }),
+      catchError((error: HttpErrorResponse | Error) => {
+        const errorMessage = error instanceof HttpErrorResponse
+          ? error.error?.message || 'Failed to initiate checkout. Please try again.'
+          : error.message;
+        return throwError(() => new Error(errorMessage));
       })
     );
   }
