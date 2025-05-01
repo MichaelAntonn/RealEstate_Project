@@ -8,6 +8,7 @@ use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class SubscriptionController extends Controller
 {
@@ -265,14 +266,18 @@ class SubscriptionController extends Controller
 
     public function getAllPlansForRegistration()
     {
+        $user = Auth::user();
         $regularPlans = SubscriptionPlan::where('is_trial', false)
-            ->select(['id', 'name', 'price', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
-            ->get()
-            ->map(function ($plan) {
-                $plan->features = is_array($plan->features) ? $plan->features : json_decode($plan->features, true);
-                return $plan;
-            });
+        ->select(['id', 'name', 'price', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
+        ->get()
+        ->map(function ($plan) {
+            $plan->features = is_array($plan->features) ? $plan->features : json_decode($plan->features, true);
+            return $plan;
+        });
 
+    $trialPlan = null;
+
+    if (!$user->has_used_trial) {
         $trialPlan = SubscriptionPlan::where('is_trial', true)
             ->select(['id', 'name', 'duration_in_days', 'description', 'features', 'max_properties_allowed'])
             ->first();
@@ -280,11 +285,12 @@ class SubscriptionController extends Controller
         if ($trialPlan) {
             $trialPlan->features = is_array($trialPlan->features) ? $trialPlan->features : json_decode($trialPlan->features, true);
         }
+    }
 
-        return response()->json([
-            'regular_plans' => $regularPlans,
-            'trial_plan' => $trialPlan,
-        ]);
+    return response()->json([
+        'regular_plans' => $regularPlans,
+        'trial_plan' => $trialPlan,
+    ]);
     }
 
     public function getUpcomingExpirations(Request $request)
