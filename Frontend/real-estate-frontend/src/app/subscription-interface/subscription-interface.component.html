@@ -1,15 +1,16 @@
 <div class="pricing-container">
     <!-- Loading State -->
     <div *ngIf="isLoading" class="loading">
-        <i class="fas fa-spinner fa-spin"></i> Loading plans...
+      <i class="fas fa-spinner fa-spin"></i> Loading plans...
     </div>
-
+  
     <!-- Error State -->
     <div *ngIf="error && !isLoading" class="error">
-        <i class="fas fa-exclamation-circle"></i> {{ error }}
+      <i class="fas fa-exclamation-circle"></i> {{ error }}
     </div>
-
+  
     <!-- Dynamic Plans -->
+
     <div *ngFor="let plan of plans; let i = index"
          class="pricing-card"
          [ngClass]="{
@@ -68,6 +69,30 @@
                        'GET PREMIUM' }}
                 </span>
             </button>
+
         </div>
+      </div>
+  
+      <div class="pricing-footer">
+        <button
+          class="select-button"
+          [routerLink]="
+            plan.name.toLowerCase() === 'free trial'
+              ? '/trial/signup'
+              : ['/subscribe', plan.id]
+          "
+          [attr.aria-label]="
+            plan.name.toLowerCase() === 'free trial'
+              ? 'Start free trial for ' + plan.name
+              : 'Choose ' + plan.name + ' plan'
+          "
+        >
+          {{
+            plan.name.toLowerCase() === 'free trial'
+              ? 'START FREE TRIAL'
+              : 'CHOOSE PLAN'
+          }}
+        </button>
+      </div>
     </div>
-</div>
+  </div>
