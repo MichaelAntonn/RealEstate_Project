@@ -126,10 +126,9 @@ class PropertyController extends Controller
      */
     public function store(Request $request, PropertyMediaService $mediaService)
     {
-
         $user = Auth::user();
-
-        // 1. تحقق إن عنده اشتراك نشط
+    
+        // 1. Check if the user has an active subscription
         $subscription = Subscription::where('user_id', $user->id)
             ->where('status', 'active')
             ->where('ends_at', '>', now())
@@ -140,14 +139,14 @@ class PropertyController extends Controller
             return response()->json(['message' => 'You must have an active subscription to add a property.'], 403);
         }
     
-        // 2. تحقق من الحد الأقصى للعقارات حسب الخطة
+        // 2. Check the maximum number of properties allowed according to the plan
         $plan = $subscription->plan;
         $maxProperties = $plan->max_properties_allowed ?? null;
     
         if (!is_null($maxProperties) && $user->properties()->count() >= $maxProperties) {
             return response()->json(['message' => 'You have reached the maximum number of properties allowed in your plan.'], 403);
         }
-
+    
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -177,23 +176,23 @@ class PropertyController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         // Add the authenticated user's ID to the request data
         $data = $request->except(['media', 'cover_image']);
         $data['user_id'] = Auth::id();
-
+    
         // Set the initial status to 'pending' for regular users
         if (Auth::user()->user_type === UserType::USER) {
             $data['approval_status'] = 'pending';
         }
-
+    
         // Create the property
         $property = Property::create($data);
-
+    
         // Handle cover image upload if present
         if ($request->hasFile('cover_image')) {
             $coverImage = $request->file('cover_image');
@@ -201,16 +200,16 @@ class PropertyController extends Controller
                 'property_media/' . $property->id . '/cover_image',
                 'public'
             );
-
+    
             $property->cover_image = $coverImagePath;
             $property->save();
         }
-
+    
         // Handle media uploads if present
         if ($request->hasFile('media')) {
             try {
                 $uploadedMedia = $mediaService->handleUpload($property, $request->file('media'));
-
+    
                 // If no cover image was set but we have images, set the first one
                 if (empty($property->cover_image)) {
                     $firstImage = collect($uploadedMedia)->firstWhere('MediaType', 'image');
@@ -225,26 +224,27 @@ class PropertyController extends Controller
                 ], 201);
             }
         }
-
+    
         // Load the media relationship for the response
         $property->load('media');
-
+    
         // Notifications
         $users = User::where('id', '!=', $request->user()->id)
             ->where('city', $request->user()->city)
             ->get();
-
+    
         Notification::send($users, new NewPropertyAdded($property));
-
+    
         $admins = Admin::whereIn('user_type', ['admin', 'super-admin'])->get();
         Notification::send($admins, new NewPropertySubmitted($property));
-
+    
         return response()->json([
             'message' => 'Property created successfully',
             'success' => 'Property created successfully',
             'property' => $property,
         ], 201);
     }
+    
 
     public function checkSlug(Request $request)
     {
@@ -322,17 +322,17 @@ class PropertyController extends Controller
     {
         // Find the property
         $property = Property::find($id);
-
+    
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
-
+    
         // Check if the authenticated user is the owner, admin, or super-admin
         $user = Auth::user();
         if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
             return response()->json(['error' => 'Forbidden. You do not have permission to update this property.'], 403);
         }
-
+    
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|string|max:255',
@@ -349,6 +349,7 @@ class PropertyController extends Controller
             'listing_type' => 'sometimes|in:for_sale,for_rent',
             'construction_status' => 'sometimes|in:available,under_construction',
             'transaction_status' => 'nullable|in:pending,completed',
+            'approval_status' => 'sometimes|in:pending,accepted,rejected',
             'building_year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'legal_status' => 'nullable|in:licensed,unlicensed,pending',
             'furnished' => 'nullable|boolean',
@@ -363,39 +364,48 @@ class PropertyController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         // Prepare data for update (excluding media fields)
         $data = $request->except(['media', 'media_to_delete', 'cover_image']);
-
+    
+        // Check for any critical changes to 'property_code' or 'slug'
+        if ($request->has('property_code') && $request->input('property_code') !== $property->property_code) {
+            return response()->json(['error' => 'You cannot change the property code.'], 400);
+        }
+    
+        if ($request->has('slug') && $request->input('slug') !== $property->slug) {
+            return response()->json(['error' => 'You cannot change the property slug.'], 400);
+        }
+    
         // Handle cover image upload if present
         if ($request->hasFile('cover_image')) {
             // Delete old cover image if exists
             if ($property->cover_image) {
                 Storage::disk('public')->delete($property->cover_image);
             }
-
+    
             // Upload new cover image
             $coverImage = $request->file('cover_image');
             $coverImagePath = $coverImage->store(
                 'property_media/' . $property->id . '/cover_image',
                 'public'
             );
-
+    
             $data['cover_image'] = $coverImagePath;
         }
-
+    
         // Update the property data
         $property->update($data);
-
+    
         // Handle media deletions if requested
         if ($request->has('media_to_delete')) {
             foreach ($request->input('media_to_delete') as $mediaId) {
                 $media = PropertyMedia::find($mediaId);
-
+    
                 // Verify the media belongs to this property
                 if ($media && $media->PropertyID == $property->id) {
                     // Delete the file from storage
@@ -405,12 +415,12 @@ class PropertyController extends Controller
                 }
             }
         }
-
+    
         // Handle new media uploads if present
         if ($request->hasFile('media')) {
             try {
                 $uploadedMedia = $mediaService->handleUpload($property, $request->file('media'));
-
+    
                 // If no cover image was set but we have images, set the first one
                 if (empty($property->cover_image)) {
                     $firstImage = collect($uploadedMedia)->firstWhere('MediaType', 'image');
@@ -425,16 +435,16 @@ class PropertyController extends Controller
                 ], 200);
             }
         }
-
+    
         // Refresh the property with its relationships
         $property->load('media');
-
+    
         return response()->json([
             'success' => 'Property updated successfully',
             'property' => $property,
         ], 200);
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */

@@ -13,40 +13,47 @@ class SubscriptionController extends Controller
 {
     public function subscribe(Request $request)
     {
+        // Check if the user already has an active subscription
+        $existingActiveSubscription = Subscription::where('user_id', $request->user_id)
+            ->where('status', 'active')
+            ->first();
+    
+        // If the user has an active subscription, prevent them from having more than one
+        if ($existingActiveSubscription) {
+            return response()->json(['message' => 'A user cannot have more than one active subscription at the same time.'], 400);
+        }
+    
+        // Validate the request data
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
             'auto_renew' => 'required|boolean'
         ]);
-
+        
+        // Get the authenticated user and the selected subscription plan
         $user = Auth::user();
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
-
         $autoRenew = $request->boolean('auto_renew');
-
-        $startsAt = Carbon::now();
-        $endsAt = $startsAt->copy()->addDays($plan->duration_in_days);
-
-        // إنشاء الاشتراك الجديد
+        
+        // Create the new subscription with a 'pending' status
         $subscription = Subscription::create([
             'user_id' => $user->id,
             'plan_id' => $plan->id,
             'plan_name' => $plan->name,
             'price' => $plan->price,
             'duration_in_days' => $plan->duration_in_days,
-            'starts_at' => $startsAt,
-            'ends_at' => $endsAt,
-            'status' => 'active',
+            'starts_at' => null,  
+            'ends_at' => null,    
+            'status' => 'pending',
             'auto_renew' => $autoRenew,
         ]);
-
+        
+        // Return a response indicating the subscription is created and awaiting payment
         return response()->json([
-            'message' => 'Subscription successful.',
+            'message' => 'Subscription created and waiting for payment.',
             'subscription' => $subscription,
-            'starts_at' => $startsAt,
-            'ends_at' => $endsAt,
         ]);
     }
-
+    
     public function subscribeToTrial(Request $request)
     {
         // Get the current user
@@ -131,9 +138,9 @@ class SubscriptionController extends Controller
             'plan_name' => $plan->name,
             'price' => $plan->price,
             'duration_in_days' => $plan->duration_in_days,
-            'starts_at' => $startsAt,
-            'ends_at' => $endsAt,
-            'status' => 'active',
+            'starts_at' => null,  
+            'ends_at' => null,    
+            'status' => 'pending',
             'auto_renew' => $subscription->auto_renew,
         ]);
 
@@ -143,35 +150,35 @@ class SubscriptionController extends Controller
         ], 200);
     }
 
-    public function changePlan(Request $request)
-    {
-        $request->validate([
-            'new_plan_id' => 'required|exists:subscription_plans,id',
-        ]);
+    // public function changePlan(Request $request)
+    // {
+    //     $request->validate([
+    //         'new_plan_id' => 'required|exists:subscription_plans,id',
+    //     ]);
 
-        $user = Auth::user();
-        $newPlan = SubscriptionPlan::findOrFail($request->new_plan_id);
+    //     $user = Auth::user();
+    //     $newPlan = SubscriptionPlan::findOrFail($request->new_plan_id);
 
-        // Get the current subscription
-        $subscription = Subscription::where('user_id', $user->id)
-            ->where('status', 'active')
-            ->first();
+    //     // Get the current subscription
+    //     $subscription = Subscription::where('user_id', $user->id)
+    //         ->where('status', 'active')
+    //         ->first();
 
-        if (!$subscription) {
-            return response()->json(['message' => 'No active subscription found'], 404);
-        }
+    //     if (!$subscription) {
+    //         return response()->json(['message' => 'No active subscription found'], 404);
+    //     }
 
-        // Change the subscription plan
-        $subscription->update([
-            'plan_id' => $newPlan->id,
-            'plan_name' => $newPlan->name,
-            'price' => $newPlan->price,
-            'duration_in_days' => $newPlan->duration_in_days,
-            'ends_at' => Carbon::now()->addDays($newPlan->duration_in_days),
-        ]);
+    //     // Change the subscription plan
+    //     $subscription->update([
+    //         'plan_id' => $newPlan->id,
+    //         'plan_name' => $newPlan->name,
+    //         'price' => $newPlan->price,
+    //         'duration_in_days' => $newPlan->duration_in_days,
+    //         'ends_at' => Carbon::now()->addDays($newPlan->duration_in_days),
+    //     ]);
 
-        return response()->json(['message' => 'Plan changed successfully', 'subscription' => $subscription]);
-    }
+    //     return response()->json(['message' => 'Plan changed successfully', 'subscription' => $subscription]);
+    // }
 
     public function autoRenewSubscription($userId)
     {
@@ -201,9 +208,9 @@ class SubscriptionController extends Controller
             'plan_name' => $plan->name,
             'price' => $plan->price,
             'duration_in_days' => $plan->duration_in_days,
-            'starts_at' => $startsAt,
-            'ends_at' => $endsAt,
-            'status' => 'active',
+            'starts_at' => null,  
+            'ends_at' => null,    
+            'status' => 'pending',
             'auto_renew' => true, // Auto-renew
         ]);
 

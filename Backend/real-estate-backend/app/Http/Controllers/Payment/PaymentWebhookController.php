@@ -75,12 +75,30 @@ try {
     protected function markPaymentCompleted($sessionId)
     {
         $payment = Payment::where('payment_reference', $sessionId)->first();
-        if ($payment && $payment->status !== 'completed') {
-            $payment->status = 'completed';
-            $payment->paid_at = now();
-            $payment->save();
 
-            Log::info("Payment marked as completed", ['id' => $payment->id]);
+    if ($payment && $payment->status !== 'completed') {
+        $payment->status = 'completed';
+        $payment->paid_at = now();
+        $payment->save();
+
+        $subscription = $payment->subscription;
+
+        if ($subscription && $subscription->status === 'pending') {
+            $startsAt = now();
+            $endsAt = $startsAt->copy()->addDays($subscription->duration_in_days);
+
+            $subscription->update([
+                'status' => 'active',
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
+            ]);
+
+            Log::info("Subscription activated after payment", [
+                'subscription_id' => $subscription->id
+            ]);
         }
+
+        Log::info("Payment marked as completed", ['id' => $payment->id]);
+    }
     }
 }
