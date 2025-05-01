@@ -23,7 +23,7 @@
     <div
       class="blog-card fade-in-up"
       *ngFor="let post of posts; let i = index"
-      [routerLink]="['/blog', post.id]"
+      (click)="openPostModal(post)"
       [style.animation-delay.ms]="i * 100"
     >
       <div class="card-image">
@@ -40,40 +40,34 @@
         </div>
         <h3 class="post-title">{{ post.title }}</h3>
         <p class="post-excerpt">{{ post.excerpt }}</p>
-        <!-- <div class="tags" *ngIf="post.tags && post.tags.length > 0">
-          <span *ngFor="let tag of post.tags" class="tag">{{ tag }}</span>
-        </div> -->
-        <!-- <div class="post-stats">
-          <button
-            class="like-btn"
-            (click)="likePost(post.id, $event)"
-            [class.like-animation]="post.liked"
-          >
-            <i class="far fa-heart"></i> {{ post.likes }}
-          </button>
-          <span class="comments">
-            <i class="far fa-comment"></i> {{ post.comments }} comments
-          </span>
-        </div> -->
       </div>
+    </div>
+  </div>
+
+  <!-- Modal for Post Details -->
+  <div class="modal" *ngIf="selectedPost" (click)="closePostModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-btn" (click)="closePostModal()">&times;</span>
+      <div class="modal-image">
+        <img [src]="selectedPost.featuredImage" [alt]="selectedPost.title">
+      </div>
+      <h2>{{ selectedPost.title }}</h2>
+      <div class="post-meta">
+        <span>{{ selectedPost.author }}</span> | 
+        <span>{{ selectedPost.created_at | date:'mediumDate' }}</span> | 
+        <span>{{ selectedPost.readTime }} min read</span>
+      </div>
+      <div class="post-content" [innerHTML]="selectedPost.content"></div>
     </div>
   </div>
 
   <!-- Pagination Controls -->
   <div class="pagination" *ngIf="!isLoading && posts.length > 0">
-    <button
-      [disabled]="currentPage === 1"
-      (click)="previousPage()"
-      class="pagination-btn"
-    >
+    <button [disabled]="currentPage === 1" (click)="previousPage()" class="pagination-btn">
       Previous
     </button>
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
-    <button
-      [disabled]="currentPage === totalPages"
-      (click)="nextPage()"
-      class="pagination-btn"
-    >
+    <button [disabled]="currentPage === totalPages" (click)="nextPage()" class="pagination-btn">
       Next
     </button>
   </div>
