@@ -30,8 +30,8 @@ export class SubscriptionInterfaceComponent implements OnInit {
       next: (plans) => {
         this.plans = plans;
         plans.forEach(plan => {
-          this.autoRenew[plan.id] = true; // Default to checked
-          this.isSubscribing[plan.id] = false; // Initialize subscribing state
+          this.autoRenew[plan.id] = true;
+          this.isSubscribing[plan.id] = false;
         });
         this.isLoading = false;
       },
@@ -56,10 +56,11 @@ export class SubscriptionInterfaceComponent implements OnInit {
 
     this.isSubscribing[plan.id] = true;
     this.subscriptionService.subscribe(plan.id, this.autoRenew[plan.id]).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         console.log('Subscribe response:', response);
-        if (response.success && response.subscription_id) {
-          this.subscriptionService.initiateCheckout(response.subscription_id, 'http://localhost:4200').subscribe({
+        if (response.subscription && response.subscription.id) {
+          console.log('Proceeding to initiateCheckout with subscription_id:', response.subscription.id);
+          this.subscriptionService.initiateCheckout(response.subscription.id, 'http://localhost:4200').subscribe({
             next: (checkoutResponse) => {
               console.log('Checkout response:', checkoutResponse);
               this.isSubscribing[plan.id] = false;
@@ -86,7 +87,7 @@ export class SubscriptionInterfaceComponent implements OnInit {
             }
           });
         } else {
-          console.warn('Subscription failed:', response);
+          console.warn('Subscription response invalid:', response);
           this.isSubscribing[plan.id] = false;
           Swal.fire({
             icon: 'error',
