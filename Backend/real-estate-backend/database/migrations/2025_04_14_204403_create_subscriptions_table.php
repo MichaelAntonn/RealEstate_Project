@@ -13,7 +13,7 @@
         {
             Schema::create('subscriptions', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('company_id')->constrained('companies','company_id')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->foreignId('plan_id')->constrained('subscription_plans')->onDelete('cascade');
                 $table->string('plan_name');
                 $table->decimal('price', 10, 2);
@@ -21,6 +21,7 @@
                 $table->timestamp('starts_at')->nullable();
                 $table->timestamp('ends_at')->nullable();
                 $table->enum('status', ['active', 'expired', 'canceled'])->default('active');
+                $table->boolean('auto_renew')->default(false); 
                 $table->timestamps();
                 
             });

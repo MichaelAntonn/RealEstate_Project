@@ -6,6 +6,7 @@ use App\Constants\UserType;
 use App\Models\Admin;
 use App\Models\Property;
 use App\Models\PropertyMedia;
+use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\NewPropertyAdded;
 use App\Notifications\NewPropertySubmitted;
@@ -125,6 +126,28 @@ class PropertyController extends Controller
      */
     public function store(Request $request, PropertyMediaService $mediaService)
     {
+
+        $user = Auth::user();
+
+        // 1. تحقق إن عنده اشتراك نشط
+        $subscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('ends_at', '>', now())
+            ->latest()
+            ->first();
+    
+        if (!$subscription) {
+            return response()->json(['message' => 'You must have an active subscription to add a property.'], 403);
+        }
+    
+        // 2. تحقق من الحد الأقصى للعقارات حسب الخطة
+        $plan = $subscription->plan;
+        $maxProperties = $plan->max_properties_allowed ?? null;
+    
+        if (!is_null($maxProperties) && $user->properties()->count() >= $maxProperties) {
+            return response()->json(['message' => 'You have reached the maximum number of properties allowed in your plan.'], 403);
+        }
+
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',

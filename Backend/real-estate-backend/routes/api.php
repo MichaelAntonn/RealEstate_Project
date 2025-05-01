@@ -189,9 +189,10 @@ Route::prefix('v1')->group(function () {
         Route::prefix('subscription')->group(function () {
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe'); // Subscribe a company to a plan
             Route::post('/subscribe/trial', [SubscriptionController::class, 'subscribeToTrial'])->name('subscription.subscribeTrial'); // Subscribe a company to a trial plan
-            Route::get('/company/{id}/subscription', [SubscriptionController::class, 'show'])->name('subscription.show'); // Get a company's subscription details by company ID
             Route::post('/cancel', [SubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel'); // Cancel the subscription for the authenticated company
-            Route::put('/{id}', [SubscriptionController::class, 'updateSubscription'])->name('subscription.update'); // Update subscription details by subscription ID
+            Route::post('/renew', [SubscriptionController::class, 'renewSubscription'])->name('subscription.renew'); 
+            Route::post('/change-plan', [SubscriptionController::class, 'changePlan'])->name('subscription.change-plan');
+            Route::post('/cancel-auto-renew', [SubscriptionController::class, 'cancelAutoRenewSubscription'])->name('subscription.cancel-auto-renew');
             Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations']); // get upcoming subscription expirations within a specific number of days
             Route::get('/current-subscription-status', [SubscriptionController::class, 'getCurrentSubscriptionStatus']); // get the current subscription status of the authenticated company
 
