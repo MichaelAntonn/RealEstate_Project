@@ -14,46 +14,41 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {
-    // جلب بيان Chambre des notaires des Yvelines
     this.loadStoredUser();
   }
 
   private profileImageSubject = new BehaviorSubject<string>('assets/1.png');
-profileImage$ = this.profileImageSubject.asObservable();
+  profileImage$ = this.profileImageSubject.asObservable();
 
-updateProfileImage(image: string): void {
-  const user = this.getUser();
-  if (user) {
-    user.profile_image = image;
-    this.saveUser(user);
-    this.profileImageSubject.next(image);
+  updateProfileImage(image: string): void {
+    const user = this.getUser();
+    if (user) {
+      user.profile_image = image;
+      this.saveUser(user);
+    }
   }
-}
 
-  // تحميل بيانات المستخدم المخزنة عند بدء الخدمة
   private loadStoredUser(): void {
     const user = this.getUser();
     if (user && this.getToken()) {
       this.currentUserSubject.next(user);
+      if (user.profile_image) {
+        this.profileImageSubject.next(user.profile_image);
+      }
     }
   }
 
-  // تسجيل مستخدم جديد
-// في ملف auth.service.ts
-register(userData: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/register`, userData).pipe(
-    catchError(error => {
-      // معالجة أخطاء التحقق
-      if (error.status === 422 && error.error.errors) {
-        // نرمي الخطأ كما هو ليتم معالجته في الكومبوننت
-        return throwError(() => error.error);
-      }
-      return throwError(() => new Error(error.message || 'Server error'));
-    })
-  );
-}
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData).pipe(
+      catchError(error => {
+        if (error.status === 422 && error.error.errors) {
+          return throwError(() => error.error);
+        }
+        return throwError(() => new Error(error.message || 'Server error'));
+      })
+    );
+  }
 
-  // تسجيل الدخول
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: any) => {
@@ -61,7 +56,6 @@ register(userData: any): Observable<any> {
         this.saveToken(response.token);
         if (response.user) {
           this.saveUser(response.user);
-          this.currentUserSubject.next(response.user);
           this.router.navigate(['/dashboard']);
         }
       }),
@@ -69,43 +63,39 @@ register(userData: any): Observable<any> {
     );
   }
 
-  // إعادة تعيين كلمة المرور
   forgotPassword(email: string): Observable<any> {
     return this.http
       .post(`${this.apiUrl}/password/forgot-password`, { email })
       .pipe(catchError(this.handleError));
   }
 
-  // تسجيل شركة
   registerCompany(companyData: FormData): Observable<any> {
     return this.http
       .post(`${this.apiUrl}/company/register`, companyData)
       .pipe(catchError(this.handleError));
   }
 
-  // حفظ التوكن
   saveToken(token: string): void {
     localStorage.setItem(this.AUTH_KEY, token);
   }
 
-  // جلب التوكن
   getToken(): string | null {
     return localStorage.getItem(this.AUTH_KEY);
   }
 
-  // حفظ بيانات المستخدم
   saveUser(user: any): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUserSubject.next(user);
+    if (user.profile_image) {
+      this.profileImageSubject.next(user.profile_image);
+    }
   }
 
-  // جلب بيانات المستخدم
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
     return user ? JSON.parse(user) : null;
   }
 
-  // جلب المستخدم الحالي
   loadCurrentUser(): Observable<any> {
     const token = this.getToken();
     if (!token) {
@@ -126,19 +116,16 @@ register(userData: any): Observable<any> {
       );
   }
 
-  // تسجيل الخروج
   logout(): void {
     this.clearAllTokens();
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
-  // التحقق من حالة المصادقة
   isLoggedIn(): boolean {
-    return !!this.getToken() ;
+    return !!this.getToken();
   }
 
-  // إنشاء رؤوس المصادقة
   getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
@@ -147,7 +134,6 @@ register(userData: any): Observable<any> {
     });
   }
 
-  // التحقق من صلاحية التوكن
   isTokenValid(): Observable<boolean> {
     return this.loadCurrentUser().pipe(
       tap(() => true),
@@ -157,31 +143,32 @@ register(userData: any): Observable<any> {
     );
   }
 
-  // معالجة الأخطاء المركزية
+  updateCurrentUser(updatedUser: any): void {
+    this.saveUser(updatedUser);
+  }
+
   private handleError(error: any): Observable<never> {
     console.error('An error occurred:', error);
     return throwError(() => new Error(error.message || 'Server error'));
   }
 
-  // تنظيف التوكنات القديمة
   private clearStaleTokens(): void {
     ['access_token', 'token'].forEach((key) => localStorage.removeItem(key));
   }
 
-  // داخل AuthService class
-getCurrentUserImage(): string {
-  const user = this.getUser();
-  if (user?.profile_image) {
-    return user.profile_image.startsWith('data:image') ? 
-      user.profile_image : user.profile_image;
+  getCurrentUserImage(): string {
+    const user = this.getUser();
+    if (user?.profile_image) {
+      return user.profile_image.startsWith('data:image') ? 
+        user.profile_image : user.profile_image;
+    }
+    return 'assets/1.png';
   }
-  return 'assets/1.png'; // الصورة الافتراضية
-}
-  // مسح جميع التوكنات والبيانات
+
   private clearAllTokens(): void {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.USER_KEY);
-    this.clearStaleTokens();
+    this.clearStaleTokens(); 
     this.currentUserSubject.next(null);
   }
 }

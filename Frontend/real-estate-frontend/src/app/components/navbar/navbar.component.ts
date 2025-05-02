@@ -30,6 +30,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private profileImageSubscription!: Subscription;
   notificationsCount: number = 0;
   private subscriptions = new Subscription();
+  private userSubscription!: Subscription;
 
   constructor(
     public authService: AuthService,
@@ -40,30 +41,30 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.loadUserData();
     this.setupNotifications();
 
-    this.profileImageSubscription = this.authService.profileImage$.subscribe(
-      (newImage: string) => {
-        this.profileImage = newImage || this.defaultUserImage;
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.updateUserInfo(user);
       }
-    );
+    });
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe(); // تنظيف الاشتراكات
+    this.subscriptions.unsubscribe();
     if (this.profileImageSubscription) {
       this.profileImageSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
   private setupNotifications(): void {
-    // تحميل العدد الأولي
     this.loadNotificationsCount();
 
-    // الاشتراك في تحديثات الإشعارات
     this.subscriptions.add(
       this.notificationService.notifications$.subscribe({
         next: () => this.loadNotificationsCount(),
-        error: (err) =>
-          console.error('Error in notifications subscription:', err),
+        error: (err) => console.error('Error in notifications subscription:', err),
       })
     );
   }
@@ -97,7 +98,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         ? `${user.first_name} ${user.last_name}`
         : 'User';
 
-    // معالجة الصورة سواء كانت base64 أو مسارًا
     if (user?.profile_image) {
       this.profileImage = user.profile_image.startsWith('data:image')
         ? user.profile_image

@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faUser, faEnvelope, faPhone, faMapMarkerAlt, faLock, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProfileService } from '../services/profile.service';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
@@ -21,7 +21,6 @@ import Swal from 'sweetalert2';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  // Font Awesome Icons
   faUser = faUser;
   faEnvelope = faEnvelope;
   faPhone = faPhone;
@@ -143,12 +142,12 @@ export class ProfileComponent implements OnInit {
         this.isEditing = false;
         this.isLoading = false;
         
-        // Update local storage if email or name changed
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        user.first_name = this.profileData.first_name;
-        user.last_name = this.profileData.last_name;
-        user.email = this.profileData.email;
-        localStorage.setItem('user', JSON.stringify(user));
+        const updatedUser = {
+          ...this.authService.getUser(),
+          ...this.profileData,
+          profile_image: this.previewImage || this.profileData.profile_image
+        };
+        this.authService.updateCurrentUser(updatedUser);
         
         Swal.fire({
           icon: 'success',
@@ -245,18 +244,17 @@ export class ProfileComponent implements OnInit {
         this.isLoading = true;
         this.profileService.deleteAccount().subscribe({
           next: () => {
-            this.authService.logout().subscribe(() => {
-              localStorage.removeItem('auth_token');
-              localStorage.removeItem('user');
-              
-              Swal.fire({
-                title: 'Deleted!',
-                text: 'Your account has been permanently deleted.',
-                icon: 'success',
-                confirmButtonColor: '#3085d6'
-              }).then(() => {
-                this.router.navigate(['/login']);
-              });
+            this.authService.logout();
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Your account has been permanently deleted.',
+              icon: 'success',
+              confirmButtonColor: '#3085d6'
+            }).then(() => {
+              this.router.navigate(['/login']);
             });
           },
           error: (error) => {
