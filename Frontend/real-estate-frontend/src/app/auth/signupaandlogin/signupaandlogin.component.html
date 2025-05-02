@@ -35,11 +35,6 @@
         <div class="error-message">{{ errors.email }}</div>
       </div>
       
-      <div class="input-container">
-        <i class="bi bi-telephone"></i>
-        <input type="tel" id="phone_number" placeholder="Phone (optional)" [(ngModel)]="phone_number" name="phone_number">
-        <div class="error-message">{{ errors.phone_number }}</div>
-      </div>
       
       <div class="input-container">
         <select id="country" [(ngModel)]="country" name="country" required>
@@ -130,6 +125,13 @@
       </div>
       
       <div class="input-container">
+        <i class="bi bi-telephone"></i>
+        <input type="tel" id="phone_number" placeholder="Phone" [(ngModel)]="phone_number" name="phone_number">
+        <div class="error-message">{{ errors.phone_number }}</div>
+      </div>
+
+
+      <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="8">
         <div class="error-message">{{ errors.password }}</div>
@@ -144,14 +146,14 @@
       <div class="checkbox-container">
         <input type="checkbox" id="terms_and_conditions" [(ngModel)]="terms_and_conditions" name="terms_and_conditions">
         <label for="terms_and_conditions">I accept the terms and conditions</label>
-        <div class="error-message">{{ errors.terms_and_conditions }}</div>
       </div>
-      
+      <div class="error-message">{{ errors.terms_and_conditions }}</div>
+
       <button type="submit">Sign Up</button>
-      <div class="switch-mode">
+      <!-- <div class="switch-mode">
         <span>Register </span>
         <a type="button" class="switch-a" (click)="toggleSignupMode()">as a Company ?</a>
-      </div>
+      </div> -->
     </form>
 
     <!-- Company Sign Up Form -->
@@ -247,14 +249,15 @@
       <div class="checkbox-container">
         <input type="checkbox" id="company_accept_terms" [(ngModel)]="company.accept_terms" name="accept_terms" required>
         <label for="company_accept_terms">I accept the terms and conditions</label>
-        <div class="error-message">{{ errors.company_accept_terms }}</div>
       </div>
+    
+      <div class="error-message">{{ errors.company_accept_terms }}</div>
       
-      <button type="submit">Register Company</button>
+      <!-- <button type="submit">Register Company</button>
       <div class="switch-mode">
         <span>Register </span>
         <a type="button" class="switch-a" (click)="toggleSignupMode()">as individual?</a>
-      </div>
+      </div> -->
     </form>
   </div>
 
@@ -284,7 +287,7 @@
       <a (click)="navigateToForgotPassword()">Forgot Password?</a>
       <button type="submit">Sign In</button>
       <div class="switch-mode">
-        <a *ngIf="userType === 'user'" type="button" class="login-a" (click)="toggleLoginType()">Login as Company</a>
+        <!-- <a *ngIf="userType === 'user'" type="button" class="login-a" (click)="toggleLoginType()">Login as Company</a> -->
         <a *ngIf="userType === 'company'" type="button" class="login-a" (click)="toggleLoginType()">Login as User</a>
       </div>
     </form>
