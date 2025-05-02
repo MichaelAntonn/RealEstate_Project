@@ -1,15 +1,15 @@
 :root {
   --main-color: rgb(255, 123, 37);
-  --secondary-color: #F2D022;
-  --background-color: #F2F4F3;
-  --text-color: #F9FDFF;
+  --secondary-color: #f2d022;
+  --background-color: #f2f4f3;
+  --text-color: #f9fdff;
   --navbar-bg: #172940;
 }
 
 .navbar {
-  margin-top: -.5%; 
+  margin-top: -0.5%;
   padding: 0px 20px; /* زيادة الـ padding عشان يبقى أوسع */
-   position: sticky;
+  position: sticky;
   top: 0;
   z-index: 1000;
   background-color: white; /* لون الخلفية */
@@ -83,7 +83,7 @@
 
 /* تأثير underline متحرك لما نعمل hover أو الـ link يبقى active */
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 2px;
@@ -100,7 +100,6 @@
 
 /* لما الـ navbar يكون collapsed (في الـ mobile view) */
 .navbar-collapse {
- 
   /* padding: 10px; padding إضافي */
   border-radius: 10px; /* حواف دائرية */
 }
@@ -111,10 +110,11 @@
 }
 
 /* Login & Signup Buttons */
-.login, .btn-custom:hover {
+.login,
+.btn-custom:hover {
   /* background-color: #3e5549; */
   color: rgb(255, 123, 37);
-  border: solid 1px #F77C34;
+  border: solid 1px #f77c34;
   transform: skew(-20deg);
   border-radius: 1px;
   transition: all 0.3s ease;
@@ -122,19 +122,18 @@
   font-size: small;
   margin-left: 20px !important;
 }
-.login:hover{
+.login:hover {
   padding: 7px 15px;
- 
 }
 .btn-custom:hover {
-  color: #F9FDFF !important;
+  color: #f9fdff !important;
 }
 
 .login:hover {
   background-color: rgb(255, 123, 37);
   color: whitesmoke;
   transform: skew(-20deg) scale(1.05);
-  border-color: #F77C34;
+  border-color: #f77c34;
 }
 
 .btn-custom {
@@ -257,7 +256,7 @@
 
 .navbar-toggler-icon::before,
 .navbar-toggler-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 24px;
   height: 2px;
@@ -271,4 +270,39 @@
 
 .navbar-toggler-icon::after {
   top: 6px;
+}
+
+/* Existing styles unchanged, adding notification badge positioning */
+:root {
+  --main-color: rgb(255, 123, 37);
+  --secondary-color: #f2d022;
+  --background-color: #f2f4f3;
+  --text-color: #f9fdff;
+  --navbar-bg: #172940;
+}
+
+/* Existing styles unchanged, adding dropdown-toggle arrow color */
+.dropdown-toggle::after {
+  border-top-color: #000000 !important; /* Black color for the arrow */
+}
+
+/* Rest of the existing styles unchanged */
+.navbar {
+  margin-top: -0.5%;
+  padding: 0px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
+  max-width: 100% !important;
+}
+
+/* ... other existing styles ... */
+/* background-color: #ff7b25 !important; */
+.notification-badge {
+  top: 5px;
+  right: -5px;
+  transform: translate(0, -50%);
+  font-size: 0.65rem;
+  padding: 0.2em 0.5em;
 }

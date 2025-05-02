@@ -5,17 +5,23 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import { NotificationsComponent } from "../notifications/notifications.component";
+import { NotificationsComponent } from '../notifications/notifications.component';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule, RouterModule, NotificationsComponent, FontAwesomeModule],
+  imports: [
+    RouterLink,
+    CommonModule,
+    RouterModule,
+    NotificationsComponent,
+    FontAwesomeModule,
+  ],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrl: './navbar.component.css',
 })
-export class NavbarComponent implements OnInit ,OnInit{
+export class NavbarComponent implements OnInit, OnInit {
   faBell = faBell;
   isMenuCollapsed = true;
   defaultUserImage = 'assets/1.png';
@@ -25,9 +31,10 @@ export class NavbarComponent implements OnInit ,OnInit{
   notificationsCount: number = 0;
   private subscriptions = new Subscription();
 
-  constructor(public authService: AuthService, private notificationService: NotificationService) {
-
-  }
+  constructor(
+    public authService: AuthService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.loadUserData();
@@ -56,7 +63,8 @@ export class NavbarComponent implements OnInit ,OnInit{
     this.subscriptions.add(
       this.notificationService.notifications$.subscribe({
         next: () => this.loadNotificationsCount(),
-        error: (err) => console.error('Error in notifications subscription:', err)
+        error: (err) =>
+          console.error('Error in notifications subscription:', err),
       })
     );
   }
@@ -66,12 +74,13 @@ export class NavbarComponent implements OnInit ,OnInit{
       this.notificationService.getNotifications(1, 10, 'unread').subscribe({
         next: (response) => {
           console.log('API Response for notifications:', response);
-          this.notificationsCount = response.data?.data?.length || response.data?.length || 0;
+          this.notificationsCount =
+            response.data?.data?.length || response.data?.length || 0;
           console.log(this.notificationsCount);
         },
         error: (error) => {
           console.error('Error fetching notifications count:', error);
-        }
+        },
       })
     );
   }
@@ -84,13 +93,16 @@ export class NavbarComponent implements OnInit ,OnInit{
   }
 
   private updateUserInfo(user: any): void {
-    this.username = user?.first_name && user?.last_name ?
-      `${user.first_name} ${user.last_name}` : 'User';
+    this.username =
+      user?.first_name && user?.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : 'User';
 
     // معالجة الصورة سواء كانت base64 أو مسارًا
     if (user?.profile_image) {
-      this.profileImage = user.profile_image.startsWith('data:image') ?
-        user.profile_image : user.profile_image;
+      this.profileImage = user.profile_image.startsWith('data:image')
+        ? user.profile_image
+        : user.profile_image;
     } else {
       this.profileImage = this.defaultUserImage;
     }
@@ -122,8 +134,9 @@ export class NavbarComponent implements OnInit ,OnInit{
     if (!user) return this.defaultUserImage;
 
     if (user.profile_image) {
-      return user.profile_image.startsWith('data:image') ?
-             user.profile_image : user.profile_image;
+      return user.profile_image.startsWith('data:image')
+        ? user.profile_image
+        : user.profile_image;
     }
     return this.defaultUserImage;
   }

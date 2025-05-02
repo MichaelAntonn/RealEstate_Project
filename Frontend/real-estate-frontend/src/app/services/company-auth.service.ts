@@ -5,7 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CompanyAuthService {
   private apiUrl = 'http://localhost:8000/api/admin/company';
@@ -21,33 +21,45 @@ export class CompanyAuthService {
       const companyData = JSON.parse(storedCompany);
       console.log('Initialized with company data:', companyData);
       this.currentCompanySubject.next(companyData);
-    } else {
-      console.error('No valid token or company data found in localStorage');
     }
+    // else {
+    //   console.error('No valid token or company data found in localStorage');
+    // }
   }
 
-  login(credentials: { company_email: string; password: string }): Observable<boolean> {
-    return this.http.post<{ message: string; token: string; company: any }>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => {
-        console.log('Company login response:', response);
-        if (response.token) {
-          localStorage.setItem(this.tokenKey, response.token);
-          localStorage.setItem(this.companyKey, JSON.stringify(response.company));
-          this.currentCompanySubject.next(response.company);
-          console.log('Company login successful, token and data stored:', {
-            token: response.token,
-            company: response.company
-          });
-        } else {
-          console.error('No token in response');
-        }
-      }),
-      map(() => !!localStorage.getItem(this.tokenKey)),
-      catchError(error => {
-        console.error('Company login failed:', error);
-        return of(false);
-      })
-    );
+  login(credentials: {
+    company_email: string;
+    password: string;
+  }): Observable<boolean> {
+    return this.http
+      .post<{ message: string; token: string; company: any }>(
+        `${this.apiUrl}/login`,
+        credentials
+      )
+      .pipe(
+        tap((response) => {
+          console.log('Company login response:', response);
+          if (response.token) {
+            localStorage.setItem(this.tokenKey, response.token);
+            localStorage.setItem(
+              this.companyKey,
+              JSON.stringify(response.company)
+            );
+            this.currentCompanySubject.next(response.company);
+            console.log('Company login successful, token and data stored:', {
+              token: response.token,
+              company: response.company,
+            });
+          } else {
+            console.error('No token in response');
+          }
+        }),
+        map(() => !!localStorage.getItem(this.tokenKey)),
+        catchError((error) => {
+          console.error('Company login failed:', error);
+          return of(false);
+        })
+      );
   }
 
   isLoggedIn(): boolean {
@@ -58,7 +70,10 @@ export class CompanyAuthService {
 
   getToken(): string | null {
     const token = localStorage.getItem(this.tokenKey);
-    console.log('CompanyAuthService.getToken:', token ? 'Token exists' : 'No token');
+    console.log(
+      'CompanyAuthService.getToken:',
+      token ? 'Token exists' : 'No token'
+    );
     return token;
   }
 

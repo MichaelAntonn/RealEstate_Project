@@ -1,6 +1,18 @@
+/* Keyframes for notification slide-in animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .notifications-dropdown {
   width: 400px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.95); /* Increased opacity for light mode */
   backdrop-filter: blur(10px);
   border-radius: 10px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -8,16 +20,65 @@
   padding: 0;
 }
 
+/* Dark mode styles */
+.dark-mode .notifications-dropdown {
+  background: rgba(
+    40,
+    40,
+    40,
+    0.9
+  ); /* Darker translucent background for dark mode */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .dropdown-header {
-  background: linear-gradient(90deg, var(--main-color) 0%, #ff9a5a 100%);
-  color: white;
-  padding: 10px 15px;
+  background: linear-gradient(
+    90deg,
+    var(--main-color) 0%,
+    #ff9a5a 100%
+  ) !important; /* Ensure orange gradient */
+  padding: 8px 12px; /* Reduced padding for compact header */
   font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Styling for the New Notifications text */
+.dropdown-header h6 {
+  color: #333 !important; /* Dark gray for better visibility */
+  margin: 0; /* Remove default margin */
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Styling for Mark All as Read button */
+.mark-all-read-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.mark-all-read-btn:hover {
+  color: var(--secondary-color);
 }
 
 .notification-item {
   position: relative;
-  padding: 10px 15px;
+  padding: 8px 12px; /* Reduced padding for compact layout */
+  animation: slideIn 0.3s ease forwards; /* Slide-in animation for new notifications */
+}
+
+.notification-item:hover {
+  background: rgba(247, 124, 52, 0.1); /* Subtle hover effect */
+  transform: scale(1.02); /* Slight scale on hover */
+  transition: all 0.2s ease;
 }
 
 .notification-item.unread::before {
@@ -33,12 +94,13 @@
 .dropdown-item {
   white-space: normal;
   color: var(--text-color);
+  line-height: 1.4; /* Reduced line height for tighter text */
 }
 
 .mark-read-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px; /* Adjusted for compact layout */
+  right: 8px;
   font-size: 0.8rem;
   color: var(--main-color);
   background: none;
@@ -48,16 +110,50 @@
 
 .empty-state {
   text-align: center;
-  padding: 20px;
+  padding: 15px; /* Reduced padding */
 }
 
 .empty-state i {
-  font-size: 2rem;
+  font-size: 1.5rem; /* Smaller icon */
   color: var(--main-color);
+  animation: pulse 1.5s infinite; /* Pulse animation for empty state icon */
 }
 
+.empty-state p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* Pulse animation for empty state icon */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Styling for View All link */
 .view-all {
-  text-align: center;
+  margin: 0 auto;
+  display: block; /* Ensure block display for centering */
+  text-align: center !important; /* Force center alignment */
   font-weight: 600;
   color: var(--main-color);
+  padding: 0.75rem 1rem; /* Consistent padding */
+}
+
+/* Dark mode text adjustments */
+.dark-mode .dropdown-item,
+.dark-mode .empty-state p {
+  color: #f8f9fa;
+}
+
+h6 {
+  margin: auto !important;
+  font-weight: 400;
 }

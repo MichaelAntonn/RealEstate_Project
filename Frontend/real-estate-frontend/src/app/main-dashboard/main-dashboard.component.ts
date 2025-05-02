@@ -69,9 +69,11 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscription = this.notificationService.notifications$.subscribe(() => {
-      this.loadNotificationsCount();
-    });
+    this.subscription = this.notificationService.notifications$.subscribe(
+      () => {
+        this.loadNotificationsCount();
+      }
+    );
 
     this.loadNotificationsCount();
   }
