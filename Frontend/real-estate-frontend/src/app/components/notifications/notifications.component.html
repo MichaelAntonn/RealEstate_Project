@@ -2,17 +2,19 @@
   class="dropdown-menu dropdown-menu-end notifications-dropdown"
   aria-labelledby="notificationsDropdown"
 >
-  <li class="dropdown-header">
-    <h6>New Notifications</h6>
-    <!-- Added Mark All as Read button, shown only if there are unread notifications -->
-    <button
-      *ngIf="hasUnreadNotifications()"
-      class="mark-all-read-btn"
-      (click)="markAllAsRead()"
-    >
-      <fa-icon [icon]="faCheck"></fa-icon> Mark All Read
-    </button>
-  </li>
+  <div class="new-notifications">
+    <li class="dropdown-header">
+      <h6>New Notifications</h6>
+      <!-- Added Mark All as Read button, shown only if there are unread notifications -->
+      <button
+        *ngIf="hasUnreadNotifications()"
+        class="mark-all-read-btn"
+        (click)="markAllAsRead()"
+      >
+        <fa-icon [icon]="faCheck"></fa-icon> Mark All Read
+      </button>
+    </li>
+  </div>
   @if (notifications.length === 0) {
   <li class="empty-state">
     <div class="text-center py-3">
@@ -50,6 +52,4 @@
     }
   </li>
   } }
-  <li><hr class="dropdown-divider" /></li>
-  <li><a class="dropdown-item view-all" href="#">View All</a></li>
 </ul>
