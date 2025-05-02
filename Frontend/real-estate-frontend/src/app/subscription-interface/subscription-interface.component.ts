@@ -88,7 +88,7 @@ export class SubscriptionInterfaceComponent implements OnInit {
           console.log('Subscribe response:', response);
           if (response.subscription && response.subscription.id) {
             console.log('Proceeding to initiateCheckout with subscription_id:', response.subscription.id);
-            this.subscriptionService.initiateCheckout(response.subscription.id, this.router.url ).subscribe({
+            this.subscriptionService.initiateCheckout(response.subscription.id, this.router.url).subscribe({
               next: (checkoutResponse) => {
                 console.log('Checkout response:', checkoutResponse);
                 this.isSubscribing[plan.id] = false;

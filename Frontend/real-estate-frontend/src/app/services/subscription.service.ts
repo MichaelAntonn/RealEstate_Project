@@ -7,10 +7,10 @@ import { AuthService } from './auth.service';
 export interface SubscriptionPlan {
   id: number;
   name: string;
-  price?: string;
+  price?: string; // Optional since trial plan doesn't have a price
   duration_in_days: number;
   description: string;
-  features: string[];
+  features: string[]; // Features as an array of strings for the template
   max_properties_allowed: number;
 }
 
@@ -21,6 +21,7 @@ interface RawSubscriptionPlan {
   duration_in_days: number;
   description: string;
   features: {
+    display_priority: string;
     priority_support: boolean;
     additional_features: boolean;
     max_properties_allowed: number;
@@ -88,14 +89,32 @@ export class SubscriptionService {
     return this.http.get<ApiResponse>(this.apiUrl, { headers }).pipe(
       map(response => {
         const transformFeatures = (plan: RawSubscriptionPlan): SubscriptionPlan => {
-          const features: string[] = [];
-          if (plan.features.priority_support) {
-            features.push('Priority Support');
-          }
-          if (plan.features.additional_features) {
-            features.push('Additional Features');
-          }
-          features.push(`Max Properties: ${plan.features.max_properties_allowed}`);
+          const features: string[] = [
+            `Display Priority: ${plan.features.display_priority || 'Not specified'}`,
+            `Priority Support: ${plan.features.priority_support ? 'Yes' : 'No'}`,
+            // `Additional Features: ${plan.features.additional_features ? 'Yes' : 'No'}`,
+            `Max Properties: ${plan.features.max_properties_allowed}`
+          ];
+
+          // Add static features based on plan name
+          // const planNameLower = plan.name.toLowerCase();
+          // if (planNameLower === 'free trial') {
+          //   features.push('Basic Analytics');
+          // } else if (planNameLower === 'basic') {
+          //   features.push('Basic Analytics');
+          //   features.push('Email Notifications');
+          // } else if (planNameLower === 'standard') {
+          //   features.push('Basic Analytics');
+          //   features.push('Email Notifications');
+          //   features.push('Advanced Analytics');
+          // } else if (planNameLower === 'premium') {
+          //   features.push('Basic Analytics');
+          //   features.push('Email Notifications');
+          //   features.push('Advanced Analytics');
+          //   features.push('Custom Branding');
+          //   features.push('API Access');
+          // }
+
           return {
             id: plan.id,
             name: plan.name,
@@ -103,7 +122,7 @@ export class SubscriptionService {
             duration_in_days: plan.duration_in_days,
             description: plan.description,
             features,
-            max_properties_allowed: plan.max_properties_allowed,
+            max_properties_allowed: plan.max_properties_allowed
           };
         };
 
@@ -167,4 +186,4 @@ export class SubscriptionService {
       })
     );
   }
-  }
+}
