@@ -24,6 +24,7 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
   password: string = '';
   confirmPassword: string = '';
   terms_and_conditions: boolean = false;
+  isLoading = true;
 
   // Login form fields
   loginEmail: string = '';
@@ -325,7 +326,7 @@ checkPasswordRequirements() {
     }
   
     if (!isValid) {
-      this.showNotification('errors in the entered data', 'error');
+      // this.showNotification('errors in the entered data', 'error');
     }
   
     return isValid;
@@ -468,47 +469,40 @@ checkPasswordRequirements() {
     this.showNotification('Please correct the form errors', 'error');
   }
 
+  emailErrorMessage: string = '';
+  loginErrorMessage: string = '';
+  
   onLoginSubmit() {
+    this.isLoading = true;
+    this.emailErrorMessage = '';
+    this.loginErrorMessage = '';
+  
     if (!this.validateLoginForm()) return;
-
-    this.showNotification('Logging in...', 'info');
-
-    if (this.userType === 'company') {
-      this.companyAuthService.login({
-        company_email: this.loginEmail,
-        password: this.loginPassword
-      }).subscribe({
-        next: (success) => {
-          if (success) {
-            this.showNotification('Login successful', 'success');
-            this.router.navigate(['/company']);
-          } else {
-            this.showNotification('Invalid credentials', 'error');
-          }
-        },
-        error: () => {
-          this.showNotification('Login failed', 'error');
-        }
-      });
-    } else {
-      this.authService.login({
-        email: this.loginEmail,
-        password: this.loginPassword
-      }).subscribe({
-        next: (response: any) => {
-          this.showNotification('Welcome back', 'success');
-          this.authService.saveToken(response.access_token);
-          this.authService.saveUser(response.user);
-          this.router.navigate(['/home']);
-        },
-        error: () => {
-          this.showNotification('Login failed', 'error');
-        }
-      });
+  
+    // Validate email format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.loginEmail)) {
+      this.emailErrorMessage = 'Please enter a valid email address';
+      return;
     }
+  
+    this.authService.login({
+      email: this.loginEmail,
+      password: this.loginPassword
+    }).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        this.authService.saveToken(response.access_token);
+        this.authService.saveUser(response.user);
+        this.router.navigate(['/home']);
+      },
+      error: () => {
+        this.isLoading = false;
+        this.loginErrorMessage = 'Invalid credentials';
+      }
+    });
   }
-
-  // Form reset methods
+    // Form reset methods
   resetSignupForm() {
     this.first_name = '';
     this.last_name = '';

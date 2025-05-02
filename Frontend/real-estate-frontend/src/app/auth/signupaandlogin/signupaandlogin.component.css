@@ -253,7 +253,20 @@ body {
     min-height: 16px;
     display: block;
 }
-
+.error-messageee{
+    color: #ff4d4f; /* أحمر أنيق وواضح */
+    background-color: #fff1f0;
+    border: 1px solid #ffa39e;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-align: center;
+    margin: 1rem auto;
+    font-weight: 500;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 input.error,
 select.error {
     border-color: #dc3545 !important;
