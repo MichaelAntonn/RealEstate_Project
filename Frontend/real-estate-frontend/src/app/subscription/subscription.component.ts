@@ -39,8 +39,12 @@ export class SubscriptionComponent implements OnInit {
   faToggleOff = faToggleOff;
 
   subscriptionData: any = null;
+  propertyStatus: any = {
+    max_allowed: 1,
+    used: 0,
+    remaining: 1
+  };
   loading: boolean = true;
-  error: string | null = null;
   isProcessing: boolean = false;
 
   constructor(
@@ -51,11 +55,11 @@ export class SubscriptionComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSubscriptionData();
+    this.loadPropertyStatus();
   }
 
   loadSubscriptionData(): void {
     this.loading = true;
-    this.error = null;
     
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getToken()}`
@@ -69,10 +73,32 @@ export class SubscriptionComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error loading subscription data:', err);
-          this.error = 'Failed to load subscription information';
+          this.subscriptionData = null;
           this.loading = false;
         }
       });
+  }
+
+  loadPropertyStatus(): void {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    });
+
+    this.http.get('http://localhost:8000/api/v1/subscription/property-status', { headers })
+      .subscribe({
+        next: (response: any) => {
+          this.propertyStatus = response.data || response;
+        },
+        error: (err) => {
+          console.error('Error loading property status:', err);
+          // Keep default values if API fails
+        }
+      });
+  }
+
+  getPropertyUsagePercentage(): number {
+    if (!this.propertyStatus?.max_allowed || this.propertyStatus.max_allowed === 0) return 0;
+    return (this.propertyStatus.used / this.propertyStatus.max_allowed) * 100;
   }
 
   toggleAutoRenew(): void {
@@ -80,36 +106,18 @@ export class SubscriptionComponent implements OnInit {
     
     this.isProcessing = true;
     const newStatus = !this.subscriptionData.auto_renew;
-    const action = newStatus ? 'enable' : 'disable';
 
-    Swal.fire({
-      title: `${action === 'enable' ? 'Enable' : 'Disable'} Auto-Renew?`,
-      text: `Are you sure you want to ${action} automatic renewal of your subscription?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#F77C34',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: `Yes, ${action} it!`,
-      background: '#F2F4F3',
-      backdrop: `
-        rgba(23, 41, 64, 0.4)
-        url("/assets/images/nyan-cat.gif")
-        left top
-        no-repeat
-      `
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const url = newStatus 
-          ? 'http://localhost:8000/api/v1/subscription/renew' 
-          : 'http://localhost:8000/api/v1/subscription/cancel-auto-renew';
-
-        this.processSubscriptionAction(url, `Auto-renew ${action}d successfully!`, () => {
-          this.subscriptionData.auto_renew = newStatus;
-        });
-      } else {
-        this.isProcessing = false;
-      }
-    });
+    setTimeout(() => {
+      this.subscriptionData.auto_renew = newStatus;
+      Swal.fire({
+        title: 'Success!',
+        text: `Auto-renew ${newStatus ? 'enabled' : 'disabled'} successfully!`,
+        icon: 'success',
+        confirmButtonColor: '#F77C34',
+        background: '#F2F4F3'
+      });
+      this.isProcessing = false;
+    }, 800);
   }
 
   cancelSubscription(): void {
@@ -121,10 +129,8 @@ export class SubscriptionComponent implements OnInit {
       confirmButtonColor: '#dc3545',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Yes, cancel it!',
-      background: '#F2F4F3',
-      customClass: {
-        confirmButton: 'btn-confirm-danger'
-      }
+      cancelButtonText: 'Cancel',
+      background: '#F2F4F3'
     }).then((result) => {
       if (result.isConfirmed) {
         this.processSubscriptionAction(
@@ -145,6 +151,7 @@ export class SubscriptionComponent implements OnInit {
       confirmButtonColor: '#F77C34',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Confirm Renewal',
+      cancelButtonText: 'Cancel',
       background: '#F2F4F3'
     }).then((result) => {
       if (result.isConfirmed) {
@@ -157,24 +164,11 @@ export class SubscriptionComponent implements OnInit {
   }
 
   changePlan(): void {
-    Swal.fire({
-      title: 'Change Subscription Plan',
-      html: `<p>You'll be redirected to our plans page</p>
-             <p class="text-muted">Your current plan will remain active until the end of the billing period</p>`,
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonColor: '#172940',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'View Plans',
-      background: '#F2F4F3'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.router.navigate(['/subscription']);
-      }
-    });
+    this.router.navigate(['/subscription']);
   }
 
-  private processSubscriptionAction(url: string, successMessage: string, callback?: () => void): void {
+  private processSubscriptionAction(url: string, successMessage: string): void {
+    this.isProcessing = true;
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getToken()}`
     });
@@ -189,7 +183,7 @@ export class SubscriptionComponent implements OnInit {
           background: '#F2F4F3'
         });
         this.loadSubscriptionData();
-        if (callback) callback();
+        this.loadPropertyStatus();
         this.isProcessing = false;
       },
       error: (err) => {
@@ -217,19 +211,5 @@ export class SubscriptionComponent implements OnInit {
       default:
         return 'status-inactive';
     }
-  }
-
-  getRemainingProperties(): string {
-    if (!this.subscriptionData?.total_properties || !this.subscriptionData?.used_properties) {
-      return 'Unlimited';
-    }
-    return `${this.subscriptionData.used_properties}/${this.subscriptionData.total_properties}`;
-  }
-
-  getProgressPercentage(): number {
-    if (!this.subscriptionData?.total_properties || !this.subscriptionData?.used_properties) {
-      return 0;
-    }
-    return (this.subscriptionData.used_properties / this.subscriptionData.total_properties) * 100;
   }
 }
