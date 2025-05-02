@@ -7,7 +7,9 @@
       <table class="glass-table">
         <thead>
           <tr>
-            <th>User</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
             <th>Property</th>
             <th>Booking Date</th>
             <th>Visit Date</th>
@@ -18,6 +20,8 @@
         <tbody>
           <tr *ngFor="let booking of pendingBookings">
             <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
+            <td>{{ booking.user?.email || 'N/A' }}</td>
+            <td>{{ booking.user?.phone_number || 'N/A' }}</td>
             <td>{{ booking.property?.title }}</td>
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
@@ -32,7 +36,7 @@
             </td>
           </tr>
           <tr *ngIf="pendingBookings.length === 0" class="glass-empty">
-            <td colspan="6">No pending bookings found.</td>
+            <td colspan="8">No pending bookings found.</td>
           </tr>
         </tbody>
       </table>
@@ -64,7 +68,9 @@
       <table class="glass-table">
         <thead>
           <tr>
-            <th>User</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
             <th>Property</th>
             <th>Booking Date</th>
             <th>Visit Date</th>
@@ -75,6 +81,8 @@
         <tbody>
           <tr *ngFor="let booking of confirmedBookings" [class.reviewed]="booking.isReviewed">
             <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
+            <td>{{ booking.user?.email || 'N/A' }}</td>
+            <td>{{ booking.user?.phone_number || 'N/A' }}</td>
             <td>{{ booking.property?.title }}</td>
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
@@ -95,7 +103,7 @@
             </td>
           </tr>
           <tr *ngIf="confirmedBookings.length === 0" class="glass-empty">
-            <td colspan="6">No confirmed bookings found.</td>
+            <td colspan="8">No confirmed bookings found.</td>
           </tr>
         </tbody>
       </table>
@@ -127,7 +135,9 @@
       <table class="glass-table">
         <thead>
           <tr>
-            <th>User</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
             <th>Property</th>
             <th>Booking Date</th>
             <th>Visit Date</th>
@@ -138,6 +148,8 @@
         <tbody>
           <tr *ngFor="let booking of canceledBookings">
             <td>{{ booking.user?.first_name }} {{ booking.user?.last_name }}</td>
+            <td>{{ booking.user?.email || 'N/A' }}</td>
+            <td>{{ booking.user?.phone_number || 'N/A' }}</td>
             <td>{{ booking.property?.title }}</td>
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
@@ -152,7 +164,7 @@
             </td>
           </tr>
           <tr *ngIf="canceledBookings.length === 0" class="glass-empty">
-            <td colspan="6">No canceled bookings found.</td>
+            <td colspan="8">No canceled bookings found.</td>
           </tr>
         </tbody>
       </table>
@@ -178,13 +190,15 @@
 
   <!-- Completed Bookings Section -->
   <div class="glass-section">
-    <h2 class="glass-title">Completed Deals  <span class="glass-badge">{{ completedTotal }}</span></h2>
+    <h2 class="glass-title">Completed Deals <span class="glass-badge">{{ completedTotal }}</span></h2>
     
     <div class="glass-table-container">
       <table class="glass-table">
         <thead>
           <tr>
-            <th>User</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
             <th>Property</th>
             <th>Booking Date</th>
             <th>Visit Date</th>
@@ -194,13 +208,15 @@
         <tbody>
           <tr *ngFor="let booking of completedBookings">
             <td>{{ booking.user?.first_name || booking.user?.name || 'N/A' }} {{ booking.user?.last_name || '' }}</td>
+            <td>{{ booking.user?.email || 'N/A' }}</td>
+            <td>{{ booking.user?.phone_number || 'N/A' }}</td>
             <td>{{ booking.property?.title || 'N/A' }}</td>
             <td>{{ booking.booking_date || 'N/A' }}</td>
             <td>{{ booking.visit_date || 'N/A' }}</td>
             <td>{{ booking.status }}</td>
           </tr>
           <tr *ngIf="completedBookings.length === 0" class="glass-empty">
-            <td colspan="5">No completed bookings found.</td>
+            <td colspan="7">No completed bookings found.</td>
           </tr>
         </tbody>
       </table>
