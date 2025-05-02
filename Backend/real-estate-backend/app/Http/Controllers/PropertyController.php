@@ -475,7 +475,17 @@ class PropertyController extends Controller
 
 
 
-
+    public function getPendingAcceptedProperties()
+    {
+        $properties = Property::where('transaction_status', 'pending')
+            ->where('approval_status', 'accepted')
+            ->get();
+    
+        return response()->json([
+            'message' => 'Filtered properties retrieved successfully',
+            'properties' => $properties,
+        ], 200);
+    }
 
     /**
      * Accept a property (accessible by admin and super-admin).
