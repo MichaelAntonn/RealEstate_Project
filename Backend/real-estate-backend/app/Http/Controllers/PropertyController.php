@@ -482,11 +482,21 @@ class PropertyController extends Controller
             $query->where('transaction_status', 'pending')
                   ->orWhereNull('transaction_status');
         })
-        ->latest() // ترتيب من الأحدث إلى الأقدم باستخدام latest
-        ->paginate(10); // عرض 10 عناصر في كل صفحة
 
-    return response()->json($properties, 200);
-    }
+        ->join('users', 'properties.user_id', '=', 'users.id')
+        ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
+        ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'subscriptions.plan_id')
+        ->where('subscriptions.status', 'active') // نضمن أن الاشتراك نشط
+        ->orderByRaw("
+            FIELD(subscription_plans.name, 'Premium', 'Standard', 'Basic', 'Free Trial')
+        ")
+        ->orderBy('properties.created_at', 'desc') // ترتيب العقارات من الأحدث
+        ->select('properties.*') // نرجع فقط بيانات العقارات
+        ->paginate(10); // pagination حسب احتياجك
+
+    return response()->json($properties, 200);    }
+
+
 
     /**
      * Accept a property (accessible by admin and super-admin).

@@ -25,7 +25,6 @@ return new class extends Migration
             $table->string('payment_reference')->nullable();
             $table->timestamp('last_payment_attempt')->nullable();
             $table->boolean('auto_renew')->default(false);
-
             $table->timestamps();
         });
     }
