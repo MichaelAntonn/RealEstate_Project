@@ -273,17 +273,22 @@
       <div class="input-container">
         <i class="bi bi-envelope"></i>
         <input type="email" id="loginEmail" placeholder="{{ userType === 'company' ? 'Company Email' : 'Email' }}" 
-               [(ngModel)]="loginEmail" name="loginEmail" required>
+               [(ngModel)]="loginEmail" name="loginEmail" >
         <div class="error-message">{{ errors.loginEmail }}</div>
+        <div *ngIf="emailErrorMessage" class="error-message">{{ emailErrorMessage }}</div>
       </div>
       
       <div class="input-container">
         <i class="bi bi-lock"></i>
         <input type="password" id="loginPassword" placeholder="Password" 
-               [(ngModel)]="loginPassword" name="loginPassword" required>
+               [(ngModel)]="loginPassword" name="loginPassword" >
         <div class="error-message">{{ errors.loginPassword }}</div>
       </div>
       
+      <div *ngIf="loginErrorMessage" class="error-messageee">
+        {{ loginErrorMessage }}
+      </div>
+
       <a (click)="navigateToForgotPassword()">Forgot Password?</a>
       <button type="submit">Sign In</button>
       <div class="switch-mode">
