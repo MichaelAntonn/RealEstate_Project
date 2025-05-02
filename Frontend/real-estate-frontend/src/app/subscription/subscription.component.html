@@ -5,22 +5,15 @@
       <p>Loading your subscription details...</p>
     </div>
   
-    <!-- Error State -->
-    <div *ngIf="error && !loading" class="error-state">
-      <fa-icon [icon]="faExclamationTriangle" class="error-icon"></fa-icon>
-      <p>{{ error }}</p>
-      <button class="btn-retry" (click)="loadSubscriptionData()">Try Again</button>
-    </div>
-  
     <!-- Subscription Content -->
-    <div *ngIf="!loading && !error" class="subscription-content-wrapper">
+    <div *ngIf="!loading" class="subscription-content-wrapper">
       <!-- No Subscription -->
-      <div *ngIf="!subscriptionData || !subscriptionData.status" class="no-subscription">
+      <div *ngIf="!subscriptionData?.status" class="no-subscription">
         <div class="no-subscription-header">
           <fa-icon [icon]="faCrown" class="crown-icon"></fa-icon>
           <h2 class="text-dark">No Active Subscription</h2>
         </div>
-        <p class="no-subscription-text">Subscribe now to unlock premium features and manage your properties efficiently</p>
+        <p class="no-subscription-text">You don't have an active subscription. Subscribe now to unlock premium features and manage your properties efficiently</p>
         <button class="btn-subscribe" (click)="changePlan()">Choose a Plan</button>
       </div>
   
@@ -76,23 +69,18 @@
               </div>
             </div>
           </div>
-  
-          <!-- Properties Usage -->
-          <div class="properties-usage">
+
+          <!-- Property Status Section -->
+          <div class="property-status-section">
             <div class="usage-header">
-              <h3>Properties Allocation</h3>
-              <span class="usage-count">{{ getRemainingProperties() }} Properties</span>
+              <h3>Property Status</h3>
+              <span class="usage-count">{{ propertyStatus?.remaining || 0 }} Remaining</span>
             </div>
             <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+              <div class="progress-fill" [style.width.%]="getPropertyUsagePercentage()"></div>
             </div>
             <div class="usage-info">
-              <span *ngIf="subscriptionData.total_properties && subscriptionData.used_properties">
-                {{ subscriptionData.total_properties - subscriptionData.used_properties }} properties remaining
-              </span>
-              <span *ngIf="!subscriptionData.total_properties || !subscriptionData.used_properties">
-                Unlimited properties available
-              </span>
+              {{ propertyStatus?.used || 0 }} of {{ propertyStatus?.max_allowed || 1 }} properties used
             </div>
           </div>
         </div>
