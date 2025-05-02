@@ -56,6 +56,7 @@ Route::prefix('v1')->group(function () {
     // Property Routes (public)
     Route::prefix('properties')->name('properties.')->group(function () {
         Route::get('/', [PropertyController::class, 'index'])->name('index');
+        Route::get('/all', [PropertyController::class, 'getPendingAcceptedProperties'])->name('getPendingAcceptedProperties');
         Route::get('/check-slug', [PropertyController::class, 'checkSlug'])->name('check-slug');
         Route::get('check-property-code', [PropertyController::class, 'checkPropertyCode'])->name('check-property-code');
         Route::get('/slug/{slug}', [PropertyController::class, 'showBySlug'])->name('showBySlug');
