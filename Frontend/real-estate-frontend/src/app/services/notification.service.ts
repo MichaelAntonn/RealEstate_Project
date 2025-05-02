@@ -86,7 +86,7 @@ export class NotificationService implements OnDestroy {
       this.echo.disconnect();
       this.echo = null;
       return;
-  }
+    }
     if (
       !this.authService.isLoggedIn() &&
       !this.adminAuthService.isLoggedIn() &&
@@ -96,7 +96,7 @@ export class NotificationService implements OnDestroy {
     }
 
     (window as any).Pusher = Pusher;
-    Pusher.logToConsole = true; // Enable Pusher logging for debugging
+    // Pusher.logToConsole = true; // Enable Pusher logging for debugging
 
     this.http
       .get(`${environment.apiUrl}/sanctum/csrf-cookie`, {
@@ -173,7 +173,9 @@ export class NotificationService implements OnDestroy {
 
     const { userId, channelPrefix } = this.getChannelDetails();
     if (!userId) {
-      console.error('User/Company/Admin ID not found for notification subscription');
+      console.error(
+        'User/Company/Admin ID not found for notification subscription'
+      );
       return;
     }
 
@@ -259,11 +261,22 @@ export class NotificationService implements OnDestroy {
   }
 
   markAllAsRead(): Observable<any> {
-    return this.http.put(
-      `${environment.apiUrl}/api/v1/notifications/read-all`,
-      {},
-      { headers: this.getHeaders() }
-    );
+    return this.http
+      .put(
+        `${environment.apiUrl}/api/v1/notifications/read-all`,
+        {},
+        { headers: this.getHeaders() }
+      )
+      .pipe(
+        tap(() => {
+          // Notify components to refresh notifications
+          this.refreshNotifications();
+        }),
+        catchError((error) => {
+          console.error('Error marking all notifications as read:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   deleteNotification(notificationId: string): Observable<any> {
@@ -283,5 +296,16 @@ export class NotificationService implements OnDestroy {
     return this.http.delete(`${environment.apiUrl}/api/v1/notifications`, {
       headers: this.getHeaders(),
     });
+  }
+
+  // Added method to trigger a refresh of notifications
+  refreshNotifications(): void {
+    this.notificationsSubject.next({
+      id: '',
+      type: 'refresh',
+      data: { message: 'Notifications refreshed', url: '' },
+      read_at: null,
+      created_at: new Date().toISOString(),
+    } as Notification);
   }
 }

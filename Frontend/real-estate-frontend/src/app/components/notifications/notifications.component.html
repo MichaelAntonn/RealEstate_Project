@@ -1,36 +1,57 @@
-<ul class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropdown">
-  <li><h6 class="dropdown-header">New Notifications</h6></li>
+<ul
+  class="dropdown-menu dropdown-menu-end notifications-dropdown"
+  aria-labelledby="notificationsDropdown"
+>
+  <li class="dropdown-header">
+    <h6>New Notifications</h6>
+    <!-- Added Mark All as Read button, shown only if there are unread notifications -->
+    <button
+      *ngIf="hasUnreadNotifications()"
+      class="mark-all-read-btn"
+      (click)="markAllAsRead()"
+    >
+      <fa-icon [icon]="faCheck"></fa-icon> Mark All Read
+    </button>
+  </li>
   @if (notifications.length === 0) {
-    <li class="empty-state">
-      <div class="text-center py-4">
-        <i class="fas fa-bell-slash"></i>
-        <p class="mb-0">No new notifications</p>
+  <li class="empty-state">
+    <div class="text-center py-3">
+      <i class="fas fa-bell"></i>
+      <p class="mb-0">All caught up!</p>
+    </div>
+  </li>
+  } @for (notification of notifications; track notification.id) { @if
+  (notification?.data) {
+  <li class="notification-item" [ngClass]="{ unread: !notification.read_at }">
+    <a
+      class="dropdown-item"
+      [routerLink]="notification?.data?.url"
+      (click)="markAsRead(notification.id)"
+    >
+      <div class="notification-content">
+        {{ notification?.data?.message }}
+        @if (notification?.data?.reason) {
+        <small class="d-block text-muted"
+          >Reason: {{ notification?.data?.reason }}</small
+        >
+        } @if (notification?.data?.submitted_by) {
+        <small class="d-block text-muted"
+          >Submitted by: {{ notification?.data?.submitted_by }}</small
+        >
+        } @if (notification?.data?.booking_id) {
+        <small class="d-block text-muted"
+          >Booking ID: {{ notification?.data?.booking_id }}</small
+        >
+        }
       </div>
-    </li>
-  }
-  @for (notification of notifications; track notification.id) {
-    @if (notification?.data) {
-    <li class="notification-item" [ngClass]="{'unread': !notification.read_at}">
-      <a class="dropdown-item" [routerLink]="notification?.data?.url" (click)="markAsRead(notification.id)">
-        <div class="notification-content">
-          {{ notification?.data?.message }}
-          @if (notification?.data?.reason) {
-            <small class="d-block text-muted">Reason: {{ notification?.data?.reason }}</small>
-          }
-          @if (notification?.data?.submitted_by) {
-            <small class="d-block text-muted">Submitted by: {{ notification?.data?.submitted_by }}</small>
-          }
-          @if (notification?.data?.booking_id) {
-            <small class="d-block text-muted">Booking ID: {{ notification?.data?.booking_id }}</small>
-          }
-        </div>
-      </a>
-      @if (!notification.read_at) {
-        <button class="mark-read-btn" (click)="markAsRead(notification.id)"><fa-icon [icon]="faCheck"></fa-icon></button>
-      }
-    </li>
+    </a>
+    @if (!notification.read_at) {
+    <button class="mark-read-btn" (click)="markAsRead(notification.id)">
+      <fa-icon [icon]="faCheck"></fa-icon>
+    </button>
     }
-  }
-  <li><hr class="dropdown-divider"></li>
-  <li><a class="dropdown-item text-center" href="#">View All</a></li>
+  </li>
+  } }
+  <li><hr class="dropdown-divider" /></li>
+  <li><a class="dropdown-item view-all" href="#">View All</a></li>
 </ul>

@@ -1,64 +1,73 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top">
   <div class="container-fluid">
-      <button class="btn btn-link text-white d-lg-none" (click)="toggleSidebar()">
-          <fa-icon [icon]="faBars"></fa-icon>
-      </button>
+    <button class="btn btn-link text-white d-lg-none" (click)="toggleSidebar()">
+      <fa-icon [icon]="faBars"></fa-icon>
+    </button>
 
-      <a class="navbar-brand" routerLink="/maindashboard/dashboard">
-          <fa-icon [icon]="faHome"></fa-icon> Easy Estate
-      </a>
-
-      <div class="d-flex align-items-center justify-content-end">
-          <div class="dropdown me-4">
-              <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <fa-icon [icon]="faBell"></fa-icon>
-                  <!-- عرض عدد الإشعارات -->
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                      {{ notificationsCount }}
-                  </span>
-              </button>
-              <!-- إشعارات جديدة -->
-              <app-notifications></app-notifications>
-          </div>
-
-          <!-- الوضع المظلم -->
-          <!-- <div class="form-check form-switch me-3">
-              <label class="switch">
-                  <input type="checkbox" id="darkModeToggle" (change)="toggleDarkMode()" [checked]="darkMode">
-                  <span class="slider"></span>
-              </label>
-          </div> -->
-
-          <!-- معلومات المستخدم -->
-          <div class="dropdown">
-              <button class="btn btn-link text-white dropdown-toggle user-info" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span>Welcome, {{ username }}</span>
-                  <img [src]="profileImage" alt="User" class="user-avatar">
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                  <li>
-                      <a class="dropdown-item" routerLink="/home">
-                          <fa-icon [icon]="faHome" class="me-2"></fa-icon>
-                          Home
-                      </a>
-                  </li>
-                  <li>
-                      <a class="dropdown-item" routerLink="/maindashboard/profile">
-                          <fa-icon [icon]="faUser" class="me-2"></fa-icon>
-                          Profile
-                      </a>
-                  </li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                      <a class="dropdown-item text-danger" (click)="logout()">
-                          <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>
-                          Logout
-                      </a>
-                  </li>
-              </ul>
-          </div>
+    <a class="navbar-brand" routerLink="/maindashboard/dashboard">
+      <fa-icon [icon]="faHome"></fa-icon> Easy Estate
+    </a>
+    <!-- Show notifications -->
+    <div class="d-flex align-items-center justify-content-end">
+      <div class="dropdown me-4">
+        <button
+          class="btn btn-link text-white dropdown-toggle"
+          type="button"
+          id="notificationsDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <fa-icon [icon]="faBell" class="fa-lg"></fa-icon>
+          <span
+            *ngIf="notificationsCount > 0"
+            class="position-absolute badge rounded-pill bg-danger notification-badge"
+          >
+            {{ notificationsCount }}
+          </span>
+        </button>
+        <app-notifications></app-notifications>
       </div>
+
+
+      <!-- User info -->
+      <div class="dropdown">
+        <button
+          class="btn btn-link text-white dropdown-toggle user-info"
+          type="button"
+          id="userDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span>Welcome, {{ username }}</span>
+          <img [src]="profileImage" alt="User" class="user-avatar" />
+        </button>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="userDropdown"
+        >
+          <li>
+            <a class="dropdown-item" routerLink="/home">
+              <fa-icon [icon]="faHome" class="me-2"></fa-icon>
+              Home
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/maindashboard/profile">
+              <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+              Profile
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item text-danger" (click)="logout()">
+              <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -116,6 +125,6 @@
 
   <!-- Main Content -->
   <div class="main-content" id="mainContent">
-      <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
   </div>
 </div>

@@ -10,7 +10,7 @@
 /* Title */
 .text-gold {
   color: #d4af37; /* Elegant gold color */
-  font-family: 'Georgia', serif; /* Sophisticated font */
+  font-family: "Georgia", serif; /* Sophisticated font */
   letter-spacing: 0.5px;
 }
 
@@ -18,7 +18,7 @@
 .time-display {
   color: #555;
   font-size: 0.95rem;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 10px;
   border-radius: 20px;
@@ -50,7 +50,7 @@
 .user-name {
   color: #333;
   font-size: 1rem;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-weight: 500;
 }
 
@@ -88,4 +88,25 @@
 /* Shadow Effect */
 .shadow-elegant {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Existing styles unchanged, adding notification badge positioning */
+.dropdown-toggle::after {
+  border-top-color: #000000 !important; /* Black color for the arrow */
+}
+
+/* Rest of the existing styles unchanged */
+.navbar-container {
+  background: #0a192fd9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* ... other existing styles ... */
+.notification-badge {
+  top: 5px;
+  right: -5px;
+  transform: translate(0, -50%);
+  font-size: 0.65rem;
+  padding: 0.2em 0.5em;
 }

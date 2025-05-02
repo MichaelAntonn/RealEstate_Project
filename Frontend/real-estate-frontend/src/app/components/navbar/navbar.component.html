@@ -63,7 +63,6 @@
       </div>
 
       <!-- Show Notifications -->
-      <!-- تعديل هذا الجزء -->
       <div
         *ngIf="authService.isLoggedIn()"
         class="d-flex align-items-center justify-content-end"
@@ -79,7 +78,7 @@
             <fa-icon [icon]="faBell" class="fa-lg text-dark"></fa-icon>
             <span
               *ngIf="notificationsCount > 0"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              class="position-absolute badge rounded-pill bg-danger notification-badge"
             >
               {{ notificationsCount }}
             </span>

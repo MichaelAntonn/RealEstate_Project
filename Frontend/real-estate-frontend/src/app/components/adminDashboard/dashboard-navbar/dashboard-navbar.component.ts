@@ -5,14 +5,14 @@ import { NotificationService } from '../../../services/notification.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
-import { NotificationsComponent } from "../../notifications/notifications.component";
+import { NotificationsComponent } from '../../notifications/notifications.component';
 
 @Component({
   selector: 'app-dashboard-navbar',
   standalone: true,
   imports: [CommonModule, NotificationsComponent, FontAwesomeModule],
   templateUrl: './dashboard-navbar.component.html',
-  styleUrls: ['./dashboard-navbar.component.css']
+  styleUrls: ['./dashboard-navbar.component.css'],
 })
 export class DashboardNavbarComponent implements OnInit, OnDestroy {
   faBell = faBell;
@@ -45,7 +45,8 @@ export class DashboardNavbarComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationService.notifications$.subscribe({
         next: () => this.loadNotificationsCount(),
-        error: (err) => console.error('Error in notifications subscription:', err)
+        error: (err) =>
+          console.error('Error in notifications subscription:', err),
       })
     );
   }
@@ -55,12 +56,13 @@ export class DashboardNavbarComponent implements OnInit, OnDestroy {
       this.notificationService.getNotifications(1, 10, 'unread').subscribe({
         next: (response) => {
           console.log('API Response for notifications:', response);
-          this.notificationsCount = response.data?.data?.length || response.data?.length || 0;
+          this.notificationsCount =
+            response.data?.data?.length || response.data?.length || 0;
           console.log(this.notificationsCount);
         },
         error: (error) => {
           console.error('Error fetching notifications count:', error);
-        }
+        },
       })
     );
   }
@@ -76,13 +78,15 @@ export class DashboardNavbarComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.adminAuthService.getUserProfile().subscribe({
           next: (profile) => {
-            this.userName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Admin User';
+            this.userName =
+              `${profile.first_name || ''} ${profile.last_name || ''}`.trim() ||
+              'Admin User';
             this.userImage = profile.profile_image || this.userImage;
           },
           error: (error) => {
             console.error('Error in fetchUserDetails:', error);
             this.userName = 'Admin User';
-          }
+          },
         })
       );
     }

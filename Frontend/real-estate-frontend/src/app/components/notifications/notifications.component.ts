@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService, Notification } from '../../services/notification.service';
+import {
+  NotificationService,
+  Notification,
+} from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { CompanyAuthService } from '../../services/company-auth.service';
 import { Subscription } from 'rxjs';
@@ -13,9 +16,11 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
   standalone: true,
   imports: [CommonModule, RouterLink, FontAwesomeModule],
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.css']
+  styleUrls: ['./notifications.component.css'],
 })
-export class NotificationsComponent implements OnInit, OnDestroy, AfterViewInit {
+export class NotificationsComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   notifications: Notification[] = [];
   private subscription: Subscription = new Subscription();
   faCheck = faCheck;
@@ -27,9 +32,11 @@ export class NotificationsComponent implements OnInit, OnDestroy, AfterViewInit 
   ) {}
 
   ngOnInit() {
-    this.subscription = this.notificationService.notifications$.subscribe(() => {
-      this.loadNotifications();
-    });
+    this.subscription = this.notificationService.notifications$.subscribe(
+      () => {
+        this.loadNotifications();
+      }
+    );
     this.loadNotifications();
   }
 
@@ -49,32 +56,49 @@ export class NotificationsComponent implements OnInit, OnDestroy, AfterViewInit 
       },
       error: (error) => {
         console.error('Error fetching notifications:', error);
-      }
+      },
     });
   }
 
   markAsRead(notificationId: string) {
     this.notificationService.markAsRead(notificationId).subscribe({
       next: () => {
-        const notification = this.notifications.find(n => n.id === notificationId);
+        const notification = this.notifications.find(
+          (n) => n.id === notificationId
+        );
         if (notification) {
           notification.read_at = new Date().toISOString();
         }
       },
       error: (error) => {
         console.error('Error marking notification as read:', error);
-      }
+      },
     });
   }
 
   markAllAsRead() {
-    this.notifications
-      .filter(n => !n.read_at)
-      .forEach(n => this.markAsRead(n.id));
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications.forEach((n) => {
+          if (!n.read_at) {
+            n.read_at = new Date().toISOString();
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error marking all notifications as read:', error);
+      },
+    });
+  }
+
+  hasUnreadNotifications(): boolean {
+    return this.notifications.some((n) => !n.read_at);
   }
 
   removeNotification(notificationId: string) {
-    this.notifications = this.notifications.filter(n => n.id !== notificationId);
+    this.notifications = this.notifications.filter(
+      (n) => n.id !== notificationId
+    );
   }
 
   ngOnDestroy() {
