@@ -273,6 +273,8 @@ select.error {
     margin: 10px 0;
     width: 100%;
     font-size: 13px;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    white-space: nowrap
 }
 
 .checkbox-container input[type="checkbox"] {
@@ -286,6 +288,7 @@ select.error {
 .checkbox-container label {
     font-size: 13px;
     cursor: pointer;
+    white-space: nowrap; /* Ensure label text stays on one line */
 }
 
 /* File Inputs */
