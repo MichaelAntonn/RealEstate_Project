@@ -39,9 +39,33 @@ class RegisterFormRequest extends FormRequest
     public function messages()
     {
         return [
+            'first_name.required' => 'Please enter your first name.',
+            'first_name.string' => 'First name must be a valid string.',
+    
+            'last_name.required' => 'Please enter your last name.',
+            'last_name.string' => 'Last name must be a valid string.',
+    
+            'email.required' => 'Please enter your email address.',
+            'email.string' => 'Email must be a valid string.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email address is already registered.',
+    
             'phone_number.phone' => 'The phone number is invalid for the selected country.',
+    
+            'country.string' => 'Country must be a valid string.',
+    
+            'city.string' => 'City must be a valid string.',
+    
+            'address.string' => 'Address must be a valid string.',
+    
+            'terms_and_conditions.required' => 'You must accept the terms and conditions to register.',
             'terms_and_conditions.accepted' => 'You must accept the terms and conditions to register.',
+    
+            'password.required' => 'Please enter a password.',
+            'password.string' => 'Password must be a valid string.',
+            'password.min' => 'Password must be at least 8 characters.',
             'password.confirmed' => 'The password confirmation does not match.',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
         ];
     }
 }
