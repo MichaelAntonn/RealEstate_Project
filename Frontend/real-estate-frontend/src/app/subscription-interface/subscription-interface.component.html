@@ -39,7 +39,7 @@
                    }"></i>
                 {{ plan.name | uppercase }}
             </h3>
-            <div class="pricing-price">${{ plan.price }}</div>
+            <div class="pricing-price">{{ plan.price }} EPG</div>
             <div class="pricing-period">per {{ plan.duration_in_days }} days</div>
         </div>
 
@@ -63,8 +63,8 @@
                 </span>
                 <span *ngIf="!isSubscribing[plan.id]">
                     {{ plan.name.toLowerCase() === 'free trial' ? 'START FREE TRIAL' :
-                       plan.name.toLowerCase() === 'basic' ? 'GET STARTED' :
-                       plan.name.toLowerCase() === 'standard' ? 'CHOOSE PLAN' :
+                       plan.name.toLowerCase() === 'basic' ? 'GET BASIC' :
+                       plan.name.toLowerCase() === 'standard' ? 'GET STANDARD' :
                        'GET PREMIUM' }}
                 </span>
             </button>
