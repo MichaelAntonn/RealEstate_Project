@@ -5,35 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-
     <div class="form-container">
-      <form id="signupForm" (ngSubmit)="onSubmit()">
+      <form id="signupForm">
         <!-- First Name -->
         <label>First Name</label>
         <div class="input-box">
-          <input type="text" id="first_name" placeholder="Enter first name" [(ngModel)]="first_name" name="first_name">
+          <input type="text" id="first_name" placeholder="Enter first name" name="first_name">
         </div>
 
         <!-- Last Name -->
         <label>Last Name</label>
         <div class="input-box">
-          <input type="text" id="last_name" placeholder="Enter last name" [(ngModel)]="last_name" name="last_name">
+          <input type="text" id="last_name" placeholder="Enter last name" name="last_name">
         </div>
 
         <!-- Email -->
         <label>Email</label>
         <div class="input-box">
-          <input type="email" id="email" placeholder="Enter email" [(ngModel)]="email" name="email">
+          <input type="email" id="email" placeholder="Enter email" name="email">
         </div>
 
-  
         <!-- Country -->
         <label>Country</label>
         <div class="input-box">
-          <select id="country" [(ngModel)]="country" name="country">
+          <select id="country" name="country">
             <option value="">Select Country</option>
             <option value="USA">USA</option>
             <option value="Canada">Canada</option>
@@ -41,35 +40,35 @@
             <option value="EG">Egypt</option>
           </select>
         </div>
-      <!-- Phone Number -->
-      <label>Phone Number</label>
-      <div class="input-box">
-        <input type="tel" id="phone_number" placeholder="Enter phone number" [(ngModel)]="phone_number" name="phone_number">
-      </div>
+
+        <!-- Phone Number -->
+        <label>Phone Number</label>
+        <div class="input-box">
+          <input type="tel" id="phone_number" placeholder="Enter phone number" name="phone_number">
+        </div>
 
         <!-- Password -->
         <label>Password</label>
         <div class="input-box">
-          <input type="password" id="password" placeholder="Enter password" [(ngModel)]="password" name="password">
+          <input type="password" id="password" placeholder="Enter password" name="password">
         </div>
 
         <!-- Confirm Password -->
         <label>Confirm Password</label>
         <div class="input-box">
-          <input type="password" id="confirmPassword" placeholder="Confirm password" [(ngModel)]="confirmPassword" name="confirmPassword">
+          <input type="password" id="confirmPassword" placeholder="Confirm password" name="confirmPassword">
         </div>
 
         <!-- Terms and Conditions -->
-      <!-- Terms and Conditions -->
-<div class="checkbox-container">
-    <input type="checkbox" id="terms_and_conditions" [(ngModel)]="terms_and_conditions" name="terms_and_conditions">
-    <label for="terms_and_conditions">I accept the terms and conditions</label>
-  </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="terms_and_conditions" name="terms_and_conditions">
+          <label for="terms_and_conditions">I accept the terms and conditions</label>
+        </div>
   
         <!-- Buttons -->
         <div class="btns">
           <button type="submit" id="btn">Sign Up</button>
-          <button type="button" (click)="signInWithGoogle()" class="google-btn">
+          <button type="button" class="google-btn">
             <i class="fab fa-google"></i> Sign up with Google
           </button>
         </div>

@@ -9,20 +9,21 @@
 .checkbox-container {
     display: flex;
     align-items: center;
-    gap: 8px; /* مسافة صغيرة بين الـ checkbox والنص */
-  }
-  
-  .checkbox-container input[type="checkbox"] {
+    gap: 8px;
+    white-space: nowrap; /* Ensure text stays on one line */
+}
+
+.checkbox-container input[type="checkbox"] {
     width: 16px;
     height: 16px;
     cursor: pointer;
-  }
-  
-  .checkbox-container label {
+}
+
+.checkbox-container label {
     font-size: 14px;
     cursor: pointer;
-  }
-  
+}
+
 body {
     display: flex;
     justify-content: center;
@@ -38,14 +39,13 @@ input.error {
     background-color: #ffe5e5;
     color: red;
 }
-.btns{
+.btns {
     display: flex;
     justify-content: space-around;
     margin-top: 5vh;
 }
-#btn{
-    
-    background-color: #F77C34 ;
+#btn {
+    background-color: #F77C34;
     color: white;
     border: none;
     border-radius: 5px;
@@ -54,10 +54,10 @@ input.error {
     height: 6vh;
     font-size: 14px;
     gap: 8px;
-    transition: background-color 0.3s ease; 
+    transition: background-color 0.3s ease;
 }
 .google-btn {
-    background-color: #4285F4 ;
+    background-color: #4285F4;
     color: white;
     border: none;
     border-radius: 5px;
@@ -66,11 +66,11 @@ input.error {
     height: 6vh;
     font-size: 14px;
     gap: 8px;
-    transition: background-color 0.3s ease; 
+    transition: background-color 0.3s ease;
 }
 
 .google-btn:hover {
-    background-color: #357ABD; 
+    background-color: #357ABD;
 }
 /* Main container */
 .container {
