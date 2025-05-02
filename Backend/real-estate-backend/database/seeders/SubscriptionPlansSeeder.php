@@ -22,7 +22,9 @@ class SubscriptionPlansSeeder extends Seeder
                 'features' => json_encode([
                     'max_properties_allowed' => 5,
                     'priority_support' => false,
-                    'additional_features' => false
+                    'additional_features' => false,
+                    'display_priority'=> "Low",
+
                 ]),
                 'is_trial' => false,
                 'max_properties_allowed' => 5,
@@ -35,7 +37,9 @@ class SubscriptionPlansSeeder extends Seeder
                 'features' => json_encode([
                     'max_properties_allowed' => 20,
                     'priority_support' => true,
-                    'additional_features' => false
+                    'additional_features' => false,
+                    'display_priority'=> "Medium",
+
                 ]),
                 'is_trial' => false,
                 'max_properties_allowed' => 20,
@@ -48,7 +52,8 @@ class SubscriptionPlansSeeder extends Seeder
                 'features' => json_encode([
                     'max_properties_allowed' => 50,
                     'priority_support' => true,
-                    'additional_features' => true
+                    'additional_features' => false,
+                    'display_priority'=> "High",
                 ]),
                 'is_trial' => false,
                 'max_properties_allowed' => 50,
@@ -61,7 +66,9 @@ class SubscriptionPlansSeeder extends Seeder
                 'features' => json_encode([
                     'max_properties_allowed' => 1,
                     'priority_support' => false,
-                    'additional_features' => false
+                    'additional_features' => false,
+                    'display_priority'=> "None",
+
                 ]),
                 'is_trial' => true,
                 'max_properties_allowed' => 1,

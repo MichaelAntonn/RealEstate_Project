@@ -8,7 +8,6 @@
     <a class="navbar-brand" routerLink="/maindashboard/dashboard">
       <fa-icon [icon]="faHome"></fa-icon> Easy Estate
     </a>
-
     <!-- Show notifications -->
     <div class="d-flex align-items-center justify-content-end">
       <div class="dropdown me-4">
@@ -29,6 +28,7 @@
         </button>
         <app-notifications></app-notifications>
       </div>
+
 
       <!-- User info -->
       <div class="dropdown">
@@ -74,65 +74,53 @@
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <ul class="nav flex-column">
-      <li class="nav-item">
-        <a
-          routerLink="/maindashboard/statistics"
-          routerLinkActive="active"
-          class="nav-link"
-        >
-          <fa-icon [icon]="faChartLine"></fa-icon>
-          Statistics
-        </a>
-      </li>
-      <li class="nav-item">
-        <a
-          routerLink="/maindashboard/profile"
-          routerLinkActive="active"
-          class="nav-link"
-        >
-          <fa-icon [icon]="faUser"></fa-icon>
-          Profile
-        </a>
-      </li>
-      <li class="nav-item">
-        <a
-          routerLink="/maindashboard/properties"
-          routerLinkActive="active"
-          class="nav-link"
-        >
-          <fa-icon [icon]="faBuilding"></fa-icon>
-          My Properties
-        </a>
-      </li>
-      <li class="nav-item">
-        <a
-          routerLink="/maindashboard/favorites"
-          routerLinkActive="active"
-          class="nav-link"
-        >
-          <fa-icon [icon]="faHeart"></fa-icon>
-          Favorites
-          <span class="badge bg-danger ms-auto">2</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a
-          routerLink="/maindashboard/appointments"
-          routerLinkActive="active"
-          class="nav-link"
-        >
-          <fa-icon [icon]="faCalendarAlt"></fa-icon>
-          Appointments
-        </a>
-      </li>
-      <li class="nav-item mt-4">
-        <a href="#" class="nav-link text-danger" (click)="logout()">
-          <fa-icon [icon]="faSignOutAlt"></fa-icon>
-          Logout
-        </a>
-      </li>
-    </ul>
+      <ul class="nav flex-column">
+          <li class="nav-item">
+              <a routerLink="/maindashboard/statistics" routerLinkActive="active" class="nav-link">
+                  <fa-icon [icon]="faChartLine"></fa-icon>
+                  Statistics
+              </a>
+          </li>
+          <li class="nav-item">
+              <a routerLink="/maindashboard/profile" routerLinkActive="active" class="nav-link">
+                  <fa-icon [icon]="faUser"></fa-icon>
+                  Profile
+              </a>
+          </li>
+          <li class="nav-item">
+              <a routerLink="/maindashboard/properties" routerLinkActive="active" class="nav-link">
+                  <fa-icon [icon]="faBuilding"></fa-icon>
+                  My Properties
+              </a>
+          </li>
+          <li class="nav-item">
+              <a routerLink="/maindashboard/favorites" routerLinkActive="active" class="nav-link">
+                  <fa-icon [icon]="faHeart"></fa-icon>
+                  Favorites
+                  <span class="badge bg-danger ms-auto">2</span>
+              </a>
+          </li>
+          <li class="nav-item">
+              <a routerLink="/maindashboard/appointments" routerLinkActive="active" class="nav-link">
+                  <fa-icon [icon]="faCalendarAlt"></fa-icon>
+                  Appointments
+              </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/maindashboard/subscription" routerLinkActive="active" class="nav-link">
+                <fa-icon [icon]="faCreditCard"></fa-icon>
+                Subscription
+            </a>
+          </li>
+
+
+          <li class="nav-item mt-4">
+              <a href="#" class="nav-link text-danger" (click)="logout()">
+                  <fa-icon [icon]="faSignOutAlt"></fa-icon>
+                  Logout
+              </a>
+          </li>
+      </ul>
   </div>
 
   <!-- Main Content -->

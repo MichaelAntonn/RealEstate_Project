@@ -148,11 +148,12 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
   validateUserForm(): boolean {
     let isValid = true;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    // Clear previous errors
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  
+    // مسح الأخطاء السابقة
     Object.keys(this.errors).forEach(key => this.clearFieldError(key));
-
-    // First name
+  
+    // التحقق من الاسم الأول
     if (!this.first_name) {
       this.showFieldError('first_name', 'First name required');
       isValid = false;
@@ -160,8 +161,8 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       this.showFieldError('first_name', 'Minimum 2 characters');
       isValid = false;
     }
-
-    // Last name
+  
+    // التحقق من الاسم الأخير
     if (!this.last_name) {
       this.showFieldError('last_name', 'Last name required');
       isValid = false;
@@ -169,8 +170,8 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       this.showFieldError('last_name', 'Minimum 2 characters');
       isValid = false;
     }
-
-    // Email
+  
+    // التحقق من البريد الإلكتروني
     if (!this.email) {
       this.showFieldError('email', 'Email required');
       isValid = false;
@@ -178,29 +179,20 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       this.showFieldError('email', 'Enter valid email (e.g., example@gmail.com)');
       isValid = false;
     }
-
-    // Country
-    if (!this.country) {
-      this.showFieldError('country', 'Select country');
-      isValid = false;
-    }
-
-    // Phone number (if provided)
-    if (this.phone_number && this.country === 'EG' && !this.phone_number.startsWith('+2')) {
-      this.showFieldError('phone_number', 'Start with +2');
-      isValid = false;
-    }
-
-    // Password
+  
+    // التحقق من كلمة المرور
     if (!this.password) {
       this.showFieldError('password', 'Password required');
       isValid = false;
     } else if (this.password.length < 8) {
       this.showFieldError('password', 'Minimum 8 characters');
       isValid = false;
+    } else if (!passwordPattern.test(this.password)) {
+      this.showFieldError('password', 'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character');
+      isValid = false;
     }
-
-    // Confirm password
+  
+    // التحقق من تأكيد كلمة المرور
     if (!this.confirmPassword) {
       this.showFieldError('confirmPassword', 'Confirm password');
       isValid = false;
@@ -208,20 +200,37 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       this.showFieldError('confirmPassword', 'Passwords don\'t match');
       isValid = false;
     }
-
-    // Terms
+  
+    // التحقق من الشروط والأحكام
     if (!this.terms_and_conditions) {
       this.showFieldError('terms_and_conditions', 'Accept terms to continue');
       isValid = false;
     }
-
+  
     if (!isValid) {
       this.showNotification('Please check the form', 'error');
     }
-
+  
     return isValid;
   }
+passwordRequirements = {
+  length: false,
+  uppercase: false,
+  lowercase: false,
+  number: false,
+  specialChar: false
+};
 
+checkPasswordRequirements() {
+  const pass = this.password;
+  this.passwordRequirements = {
+    length: pass.length >= 8,
+    uppercase: /[A-Z]/.test(pass),
+    lowercase: /[a-z]/.test(pass),
+    number: /\d/.test(pass),
+    specialChar: /[@$!%*?&]/.test(pass)
+  };
+}
   validateCompanyForm(): boolean {
     let isValid = true;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -408,9 +417,9 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
 
   onSignupSubmit() {
     if (!this.validateUserForm()) return;
-
+  
     this.showNotification('Creating account...', 'info');
-
+  
     const userData = {
       first_name: this.first_name,
       last_name: this.last_name,
@@ -421,18 +430,42 @@ export class SignupaandloginComponent implements OnInit, AfterViewInit {
       password_confirmation: this.confirmPassword,
       terms_and_conditions: this.terms_and_conditions ? 1 : 0,
     };
-
-    this.http.post('http://localhost:8000/api/v1/register', userData).subscribe({
+  
+    this.authService.register(userData).subscribe({
       next: () => {
         this.showNotification('Registration complete', 'success');
         this.resetSignupForm();
         this.toggleForms();
       },
       error: (error) => {
-        const errorMsg = error.error?.message || 'Registration failed';
-        this.showNotification(errorMsg, 'error');
+        if (error.errors) {
+          // معالجة أخطاء التحقق من الخادم
+          this.handleServerValidationErrors(error.errors);
+        } else {
+          const errorMsg = error.message || 'Registration failed';
+          this.showNotification(errorMsg, 'error');
+        }
       }
     });
+  }
+  
+  // دالة جديدة لمعالجة أخطاء التحقق من الخادم
+  handleServerValidationErrors(errors: any) {
+    // مسح الأخطاء السابقة
+    Object.keys(this.errors).forEach(key => this.clearFieldError(key));
+  
+    // تعيين الأخطاء الجديدة
+    for (const field in errors) {
+      if (errors.hasOwnProperty(field)) {
+        const errorMessages = errors[field];
+        if (errorMessages.length > 0) {
+          // نأخذ أول رسالة خطأ فقط لكل حقل
+          this.showFieldError(field, errorMessages[0]);
+        }
+      }
+    }
+  
+    this.showNotification('Please correct the form errors', 'error');
   }
 
   onLoginSubmit() {

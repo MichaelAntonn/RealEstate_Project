@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Request as FacadesRequest;
 
 class PropertyController extends Controller
 {
@@ -121,10 +122,10 @@ class PropertyController extends Controller
     }
 
     const subscribed = true;
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request, PropertyMediaService $mediaService)
+
+
+
+    public function CanAdd(Request $request)
     {
         $user = Auth::user();
     
@@ -147,6 +148,34 @@ class PropertyController extends Controller
         if (!is_null($maxProperties) && $user->properties()->count() >= $maxProperties) {
             return response()->json(['message' => 'You have reached the maximum number of properties allowed in your plan.'], 403);
         }
+        return response()->json(['allowed' => true]);}
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request, PropertyMediaService $mediaService)
+    {
+        $user = Auth::user();
+    
+        // // 1. Check if the user has an active subscription
+        // $subscription = Subscription::where('user_id', $user->id)
+        //     ->where('status', 'active')
+        //     ->where('ends_at', '>', now())
+        //     ->latest()
+        //     ->first();
+    
+        // if (!$subscription) {
+        //     $subscribed = false;
+        //     return response()->json(['message' => 'You must have an active subscription to add a property.', $subscribed], 403);
+        // }
+    
+        // // 2. Check the maximum number of properties allowed according to the plan
+        // $plan = $subscription->plan;
+        // $maxProperties = $plan->max_properties_allowed ?? null;
+    
+        // if (!is_null($maxProperties) && $user->properties()->count() >= $maxProperties) {
+        //     return response()->json(['message' => 'You have reached the maximum number of properties allowed in your plan.'], 403);
+        // }
     
         // Validate the request data
         $validator = Validator::make($request->all(), [
@@ -474,6 +503,27 @@ class PropertyController extends Controller
     }
 
 
+
+    public function getPendingAcceptedProperties()
+    {
+        $properties = Property::where('approval_status', 'accepted')
+        ->where(function ($query) {
+            $query->where('transaction_status', 'pending')
+                  ->orWhereNull('transaction_status');
+        })
+
+        ->join('users', 'properties.user_id', '=', 'users.id')
+        ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
+        ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'subscriptions.plan_id')
+        ->where('subscriptions.status', 'active') // نضمن أن الاشتراك نشط
+        ->orderByRaw("
+            FIELD(subscription_plans.name, 'Premium', 'Standard', 'Basic', 'Free Trial')
+        ")
+        ->orderBy('properties.created_at', 'desc') // ترتيب العقارات من الأحدث
+        ->select('properties.*') // نرجع فقط بيانات العقارات
+        ->paginate(10); // pagination حسب احتياجك
+
+    return response()->json($properties, 200);    }
 
 
 
