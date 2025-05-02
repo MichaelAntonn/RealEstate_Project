@@ -109,7 +109,7 @@
   right: 12px !important; /* Consistent position close to bell */
   transform: translate(0, -50%); /* Consistent alignment */
   font-size: 0.75rem; /* Consistent size */
-  padding: 0.3em 0.5em; /* Consistent padding */
+  padding: 0.5em; /* Consistent padding */
   display: none; /* Hidden by default */
 }
 

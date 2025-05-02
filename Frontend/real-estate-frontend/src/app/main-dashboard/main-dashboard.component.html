@@ -29,7 +29,6 @@
         <app-notifications></app-notifications>
       </div>
 
-
       <!-- User info -->
       <div class="dropdown">
         <button
@@ -74,6 +73,7 @@
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
+
       <ul class="nav flex-column ">
           <li class="nav-item mt-2">
               <a routerLink="/maindashboard/statistics" routerLinkActive="active" class="nav-link">
@@ -113,13 +113,13 @@
           </li>
 
 
-          <li class="nav-item mt-4">
-              <a href="#" class="nav-link text-danger" (click)="logout()">
-                  <fa-icon [icon]="faSignOutAlt"></fa-icon>
-                  Logout
-              </a>
-          </li>
-      </ul>
+      <li class="nav-item mt-4">
+        <a href="#" class="nav-link text-danger" (click)="logout()">
+          <fa-icon [icon]="faSignOutAlt"></fa-icon>
+          Logout
+        </a>
+      </li>
+    </ul>
   </div>
 
   <!-- Main Content -->
