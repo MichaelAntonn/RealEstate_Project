@@ -62,34 +62,49 @@ export class ServicesCardsComponent implements AfterViewInit {
         next: (res) => {
           if (res.allowed) {
             this.router.navigate(['/add-property']);
-          } 
+          }
         },
         error: (error) => {
-                console.error('Error loading profile:', error);
-                this.isLoading = false;
-          
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Access Denied!',
-                  html:  `
-                  <strong>You are not subscribed to this service.</strong><br><br>
-                  To access this feature, you need an active subscription.<br>
-                  Please subscribe now to unlock all premium features and continue enjoying our platform.
-                `,
-                  confirmButtonText: 'Go to Subscription',
-                  showCancelButton: true,
-                  cancelButtonText: 'Cancel',
-                  confirmButtonColor: '#3085d6',
-                  cancelButtonColor: '#d33',
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    this.router.navigate(['/subscription']);
-                  }
-                });
-              }
+          console.error('Error loading profile:', error);
+          this.isLoading = false;
+  
+          let message = error.error.message || 'An unexpected error occurred.';
+          let title = 'Access Denied!';
+          let htmlContent = '';
+  
+          if (message.includes('maximum number of properties')) {
+            htmlContent = `
+              <strong>You have reached the limit!</strong><br><br>
+              ${message}<br>
+              Please upgrade your subscription plan to add more properties.
+            `;
+          } else if (message.includes('active subscription')) {
+            htmlContent = `
+              <strong>You are not subscribed to this service.</strong><br><br>
+              To access this feature, you need an active subscription.<br>
+              Please subscribe now to unlock all premium features and continue enjoying our platform.
+            `;
+          } else {
+            htmlContent = `<strong>${message}</strong>`;
+          }
+  
+          Swal.fire({
+            icon: 'error',
+            title: title,
+            html: htmlContent,
+            confirmButtonText: 'Go to Subscription',
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.router.navigate(['/subscription']);
+            }
+          });
+        }
       });
-  }
-  navigateToproperties() {
+  }  navigateToproperties() {
     this.router.navigate(['/properties'])
   }
   navigateToconsultation() {
