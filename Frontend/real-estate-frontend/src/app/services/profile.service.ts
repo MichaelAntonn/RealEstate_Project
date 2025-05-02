@@ -26,16 +26,15 @@ export class ProfileService {
     return this.http.put(`${this.apiUrl}/profile`, profileData, { headers: this.getHeaders() }).pipe(
       tap((response: any) => {
         if (response.user) {
-          this.authService.saveUser(response.user);
+          this.authService.updateCurrentUser(response.user);
         } else if (response.profile) {
           const currentUser = this.authService.getUser();
           const updatedUser = {
             ...currentUser,
-            first_name: response.profile.first_name,
-            last_name: response.profile.last_name,
-            email: response.profile.email
+            ...response.profile,
+            profile_image: response.profile.profile_image || currentUser.profile_image
           };
-          this.authService.saveUser(updatedUser);
+          this.authService.updateCurrentUser(updatedUser);
         }
       })
     );

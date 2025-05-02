@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
 import { NotificationsComponent } from '../components/notifications/notifications.component';
 import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-main-dashboard',
   standalone: true,
@@ -60,6 +61,7 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
   notificationsCount: number = 0;
   private subscription: Subscription = new Subscription();
   profileImage: string = 'assets/1.png';
+  private userSubscription!: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -77,6 +79,12 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
     );
 
     this.loadNotificationsCount();
+
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.updateUserInfo(user);
+      }
+    });
   }
 
   loadUsername() {
@@ -101,21 +109,33 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
   }
 
   getUsername(): void {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = this.authService.getUser();
     this.username =
       user?.first_name && user?.last_name
         ? `${user.first_name} ${user.last_name}`
         : 'User';
 
-    // معالجة الصورة سواء كانت base64 أو مسارًا
     if (user?.profile_image) {
-      if (user.profile_image.startsWith('data:image')) {
-        this.profileImage = user.profile_image; // base64
-      } else {
-        this.profileImage = user.profile_image; // مسار ملف
-      }
+      this.profileImage = user.profile_image.startsWith('data:image')
+        ? user.profile_image
+        : user.profile_image;
     } else {
-      this.profileImage = 'assets/1.png'; // الصورة الافتراضية
+      this.profileImage = 'assets/1.png';
+    }
+  }
+
+  updateUserInfo(user: any): void {
+    this.username =
+      user?.first_name && user?.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : 'User';
+
+    if (user?.profile_image) {
+      this.profileImage = user.profile_image.startsWith('data:image')
+        ? user.profile_image
+        : user.profile_image;
+    } else {
+      this.profileImage = 'assets/1.png';
     }
   }
 
@@ -136,16 +156,8 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-  }
-
-  // أضف هذه الدالة داخل class MainDashboardComponent
-  updateProfileImage(newImage: string): void {
-    // تحديث الصورة في localStorage
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    user.profile_image = newImage;
-    localStorage.setItem('user', JSON.stringify(user));
-
-    // تحديث العرض مباشرة
-    this.getUsername();
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 }
