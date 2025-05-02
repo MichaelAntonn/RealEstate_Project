@@ -9,11 +9,11 @@
     <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a 
-            class="nav-link" 
-            id="home" 
-            routerLink="/" 
-            [routerLinkActive]="['active']" 
+          <a
+            class="nav-link"
+            id="home"
+            routerLink="/"
+            [routerLinkActive]="['active']"
             [routerLinkActiveOptions]="{ exact: true }">Home</a>
         </li>
         <li class="nav-item">
@@ -35,7 +35,22 @@
           <a routerLink="/sign-up" class="btn btn-custom ms-3">Sign Up</a>
           <a routerLink="/login" class="btn btn-outline-light ms-2 login">Log In</a>
         </div>
-        
+
+        <!-- Show Notifications -->
+        <div class="d-flex align-items-center justify-content-end">
+          <div class="dropdown me-4">
+              <button class="btn btn-link text-white dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <fa-icon [icon]="faBell" class="fa-lg text-dark"></fa-icon>
+                  <!-- عرض عدد الإشعارات -->
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      {{ notificationsCount }}
+                  </span>
+              </button>
+              <!-- إشعارات جديدة -->
+              <app-notifications></app-notifications>
+          </div>
+
+
         <!-- Show when user is logged in -->
         <div *ngIf="authService.isLoggedIn()" class="dropdown">
           <button class="btn dropdown-toggle user-dropdown" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -60,5 +75,5 @@
         </div>
       </div>
     </div>
- 
+    </div>
 </nav>

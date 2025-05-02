@@ -1,22 +1,24 @@
-// notifications.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { CompanyAuthService } from '../../services/company-auth.service';
 import { Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink, FontAwesomeModule],
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css']
 })
-export class NotificationsComponent implements OnInit, OnDestroy {
+export class NotificationsComponent implements OnInit, OnDestroy, AfterViewInit {
   notifications: Notification[] = [];
   private subscription: Subscription = new Subscription();
+  faCheck = faCheck;
 
   constructor(
     private notificationService: NotificationService,
@@ -25,12 +27,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.notificationService.initNotifications();
     this.subscription = this.notificationService.notifications$.subscribe(() => {
-      // console.log('Notifications updated for admin');
       this.loadNotifications();
     });
     this.loadNotifications();
+  }
+
+  ngAfterViewInit() {
+    const dropdown = document.getElementById('notificationsDropdown');
+    if (dropdown) {
+      dropdown.addEventListener('shown.bs.dropdown', () => {
+        this.markAllAsRead();
+      });
+    }
   }
 
   loadNotifications() {
@@ -56,6 +65,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         console.error('Error marking notification as read:', error);
       }
     });
+  }
+
+  markAllAsRead() {
+    this.notifications
+      .filter(n => !n.read_at)
+      .forEach(n => this.markAsRead(n.id));
   }
 
   removeNotification(notificationId: string) {

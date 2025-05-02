@@ -10,14 +10,14 @@
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     --glass-effect: rgba(255, 255, 255, 0.15);
   }
-  
+
   body {
     background-color: var(--background-color);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
     overflow-x: hidden;
   }
-  
+
   /* ========== Navbar Styles ========== */
   .navbar {
     background: linear-gradient(135deg, var(--navbar-bg) 0%, #1a365d 100%);
@@ -28,7 +28,7 @@
     position: fixed;
     width: 100%;
   }
-  
+
   .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
@@ -38,7 +38,7 @@
     gap: 0.5rem;
     transition: var(--transition);
   }
-  
+
   .navbar-brand:hover {
     color: var(--secondary-color);
     transform: translateX(5px);
@@ -115,7 +115,7 @@
     z-index: 1020;
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
   }
-  
+
   .sidebar .nav-link {
     color: rgba(255, 255, 255, 0.85);
     font-size: 1rem;
@@ -128,13 +128,13 @@
     position: relative;
     overflow: hidden;
   }
-  
+
   .sidebar .nav-link fa-icon {
     margin-right: 12px;
     font-size: 1.1rem;
     transition: var(--transition);
   }
-  
+
   .sidebar .nav-link:hover,
   .sidebar .nav-link.active {
     background: linear-gradient(90deg, var(--main-color) 0%, #ff9a5a 100%);
@@ -142,7 +142,7 @@
     transform: translateX(8px);
     box-shadow: 0 4px 12px rgba(247, 124, 52, 0.3);
   }
-  
+
   .sidebar .nav-link:hover::before,
   .sidebar .nav-link.active::before {
     content: '';
@@ -153,18 +153,18 @@
     height: 100%;
     background: var(--secondary-color);
   }
-  
+
   .sidebar .nav-link .badge {
     margin-left: auto;
     font-size: 0.7rem;
     padding: 0.35em 0.65em;
     transition: var(--transition);
   }
-  
+
   .sidebar .nav-link:hover .badge {
     transform: scale(1.1);
   }
-  
+
   /* ========== Main Content ========== */
   .main-content {
     margin-left: 280px;
@@ -172,7 +172,7 @@
     transition: var(--transition);
     min-height: calc(100vh - 70px);
   }
-  
+
   /* ========== Dropdown & Notifications ========== */
   .dropdown-menu {
     border: none;
@@ -181,19 +181,19 @@
     overflow: hidden;
     margin-top: 10px;
   }
-  
+
   .dropdown-item {
     padding: 0.75rem 1.5rem;
     transition: var(--transition);
     border-left: 3px solid transparent;
   }
-  
+
   .dropdown-item:hover {
     background: rgba(247, 124, 52, 0.1);
     border-left: 3px solid var(--main-color);
     transform: translateX(5px);
   }
-  
+
   .notification-badge {
     position: absolute;
     top: -5px;
@@ -201,7 +201,7 @@
     font-size: 0.6rem;
     padding: 0.25em 0.4em;
   }
-  
+
   /* ========== Dark Mode Toggle ========== */
   .switch {
     position: relative;
@@ -209,13 +209,13 @@
     width: 50px;
     height: 26px;
   }
-  
+
   .switch input {
     opacity: 0;
     width: 0;
     height: 0;
   }
-  
+
   .slider {
     position: absolute;
     cursor: pointer;
@@ -227,7 +227,7 @@
     transition: .4s;
     border-radius: 34px;
   }
-  
+
   .slider:before {
     position: absolute;
     content: "";
@@ -240,15 +240,15 @@
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
-  
+
   input:checked + .slider {
     background: linear-gradient(90deg, var(--main-color) 0%, #ff9a5a 100%);
   }
-  
+
   input:checked + .slider:before {
     transform: translateX(24px);
   }
-  
+
   /* ========== Dark Mode ========== */
   .dark-mode {
     --background-color: #1a1a2e;
@@ -257,55 +257,55 @@
     --sidebar-bg: #0f3460;
     --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
-  
+
   .dark-mode .sidebar .nav-link {
     color: rgba(255, 255, 255, 0.75);
   }
-  
+
   .dark-mode .dropdown-menu {
     background: #1a1a2e;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
   }
-  
+
   .dark-mode .dropdown-item {
     color: #f8f9fa;
   }
-  
+
   /* ========== Responsive ========== */
   @media (max-width: 992px) {
     .sidebar {
       transform: translateX(-100%);
       box-shadow: none;
     }
-    
+
     .sidebar.show {
       transform: translateX(0);
       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
     }
-    
+
     .main-content {
       margin-left: 0;
     }
-    
+
     .navbar-brand {
       font-size: 1.3rem;
     }
-    
+
     .user-info span {
       display: none;
     }
   }
-  
+
   /* ========== Animations ========== */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .nav-item {
     animation: fadeIn 0.5s ease forwards;
   }
-  
+
   .nav-item:nth-child(1) { animation-delay: 0.1s; }
   .nav-item:nth-child(2) { animation-delay: 0.2s; }
   .nav-item:nth-child(3) { animation-delay: 0.3s; }
@@ -329,4 +329,12 @@
     flex-grow: 1; /* ليملأ المساحة المتبقية */
     padding: 90px 30px 30px;
     min-height: calc(100vh - 70px);
+}
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: -10px;
+  transform: translate(50%, -50%);
+  font-size: 0.65rem;
+  padding: 0.2em 0.5em;
 }

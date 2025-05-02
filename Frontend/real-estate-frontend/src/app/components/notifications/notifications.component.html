@@ -1,30 +1,32 @@
-<ul class="dropdown-menu dropdown-menu-end show" aria-labelledby="notificationsDropdown">
+<ul class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropdown">
   <li><h6 class="dropdown-header">New Notifications</h6></li>
   @if (notifications.length === 0) {
-    <li><a class="dropdown-item">No new notifications</a></li>
+    <li class="empty-state">
+      <div class="text-center py-4">
+        <i class="fas fa-bell-slash"></i>
+        <p class="mb-0">No new notifications</p>
+      </div>
+    </li>
   }
   @for (notification of notifications; track notification.id) {
     @if (notification?.data) {
-    <li>
-      <a class="dropdown-item"
-         [ngClass]="{
-           'bg-light': !notification.read_at,
-           'text-muted': notification.read_at
-         }"
-         [routerLink]="notification?.data?.url">
-        {{ notification?.data?.message }}
-        @if (notification?.data?.reason) {
-          <small class="d-block text-muted">Reason: {{ notification?.data?.reason }}</small>
-        }
-        @if (notification?.data?.submitted_by) {
-          <small class="d-block text-muted">Submitted by: {{ notification?.data?.submitted_by }}</small>
-        }
-        @if (notification?.data?.booking_id) {
-          <small class="d-block text-muted">Booking ID: {{ notification?.data?.booking_id }}</small>
-        }
+    <li class="notification-item" [ngClass]="{'unread': !notification.read_at}">
+      <a class="dropdown-item" [routerLink]="notification?.data?.url" (click)="markAsRead(notification.id)">
+        <div class="notification-content">
+          {{ notification?.data?.message }}
+          @if (notification?.data?.reason) {
+            <small class="d-block text-muted">Reason: {{ notification?.data?.reason }}</small>
+          }
+          @if (notification?.data?.submitted_by) {
+            <small class="d-block text-muted">Submitted by: {{ notification?.data?.submitted_by }}</small>
+          }
+          @if (notification?.data?.booking_id) {
+            <small class="d-block text-muted">Booking ID: {{ notification?.data?.booking_id }}</small>
+          }
+        </div>
       </a>
       @if (!notification.read_at) {
-        <button class="btn btn-link btn-sm" (click)="markAsRead(notification.id)">Mark as Read</button>
+        <button class="mark-read-btn" (click)="markAsRead(notification.id)"><fa-icon [icon]="faCheck"></fa-icon></button>
       }
     </li>
     }
