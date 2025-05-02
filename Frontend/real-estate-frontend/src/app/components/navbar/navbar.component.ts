@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,7 @@ import { NotificationService } from '../../services/notification.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent implements OnInit, OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   faBell = faBell;
   isMenuCollapsed = true;
   defaultUserImage = 'assets/1.png';
@@ -38,8 +38,8 @@ export class NavbarComponent implements OnInit, OnInit {
 
   ngOnInit(): void {
     this.loadUserData();
+    this.setupNotifications();
 
-    // الاشتراك لتحديثات الصورة من AuthService
     this.profileImageSubscription = this.authService.profileImage$.subscribe(
       (newImage: string) => {
         this.profileImage = newImage || this.defaultUserImage;
@@ -49,7 +49,6 @@ export class NavbarComponent implements OnInit, OnInit {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe(); // تنظيف الاشتراكات
-    // تنظيف الاشتراك عند تدمير المكون
     if (this.profileImageSubscription) {
       this.profileImageSubscription.unsubscribe();
     }
@@ -76,7 +75,7 @@ export class NavbarComponent implements OnInit, OnInit {
           console.log('API Response for notifications:', response);
           this.notificationsCount =
             response.data?.data?.length || response.data?.length || 0;
-          console.log(this.notificationsCount);
+          console.log('Notifications Count:', this.notificationsCount);
         },
         error: (error) => {
           console.error('Error fetching notifications count:', error);
@@ -122,13 +121,13 @@ export class NavbarComponent implements OnInit, OnInit {
     this.profileImage = this.defaultUserImage;
   }
 
-  // يمكنك الاحتفاظ بهذه الدالة أو استبدالها بـ loadUserData
   getUsername(): void {
     const user = this.authService.getUser();
     if (user) {
       this.updateUserInfo(user);
     }
   }
+
   getProfileImage(): string {
     const user = this.authService.getUser();
     if (!user) return this.defaultUserImage;
@@ -141,7 +140,6 @@ export class NavbarComponent implements OnInit, OnInit {
     return this.defaultUserImage;
   }
 
-  // يمكنك استخدام هذه الدالة في الـ template بدلاً من profileImage مباشرة
   getUserImage(): string {
     return this.profileImage;
   }

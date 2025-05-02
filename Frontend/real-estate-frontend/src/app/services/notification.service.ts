@@ -21,6 +21,7 @@ export interface Notification {
     reason?: string;
     submitted_by?: string;
     booking_id?: number;
+    booking_date?: Date;
   };
   read_at: string | null;
   created_at: string;

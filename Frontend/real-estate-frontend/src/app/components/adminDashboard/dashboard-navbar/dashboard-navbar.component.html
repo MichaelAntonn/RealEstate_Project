@@ -8,25 +8,27 @@
       Cairo: {{ egyptTime | date : "shortTime" }}
     </span>
     <div class="d-flex align-items-center justify-content-end">
-      <div class="dropdown me-4">
-        <button
-          class="btn btn-link text-white dropdown-toggle"
-          type="button"
-          id="notificationsDropdown"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <fa-icon [icon]="faBell" class="fa-lg text-dark"></fa-icon>
-          <!-- عرض عدد الإشعارات -->
-          <span
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+      <div class="d-flex align-items-center justify-content-end">
+        <div class="dropdown me-4">
+          <button
+            class="btn btn-link text-white dropdown-toggle"
+            type="button"
+            id="notificationsDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            {{ notificationsCount }}
-          </span>
-        </button>
-        <!-- إشعارات جديدة -->
-        <app-notifications></app-notifications>
+            <fa-icon [icon]="faBell" class="fa-lg text-dark"></fa-icon>
+            <span
+              *ngIf="notificationsCount > 0"
+              class="position-absolute badge rounded-pill bg-danger notification-badge"
+            >
+              {{ notificationsCount }}
+            </span>
+          </button>
+          <app-notifications></app-notifications>
+        </div>
       </div>
+
       <div class="dropdown">
         <div
           class="user-profile d-flex align-items-center"
