@@ -1,19 +1,63 @@
-.dropdown-menu {
-  max-height: 400px;
-  overflow-y: auto;
+.notifications-dropdown {
+  width: 400px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0;
+}
+
+.dropdown-header {
+  background: linear-gradient(90deg, var(--main-color) 0%, #ff9a5a 100%);
+  color: white;
+  padding: 10px 15px;
+  font-weight: 600;
+}
+
+.notification-item {
+  position: relative;
+  padding: 10px 15px;
+}
+
+.notification-item.unread::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--main-color);
+  margin-right: 8px;
 }
 
 .dropdown-item {
-  padding: 10px 15px;
   white-space: normal;
-  width: 400px;
+  color: var(--text-color);
 }
 
-.dropdown-item.bg-light {
-  background-color: #f8f9fa;
-}
-
-.btn-sm {
+.mark-read-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   font-size: 0.8rem;
-  padding: 2px 5px;
+  color: var(--main-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+}
+
+.empty-state i {
+  font-size: 2rem;
+  color: var(--main-color);
+}
+
+.view-all {
+  text-align: center;
+  font-weight: 600;
+  color: var(--main-color);
 }

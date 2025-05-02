@@ -25,7 +25,7 @@ class SubscriptionController extends Controller
         //     ->whereIn('status', ['active', 'pending'])
         //     ->first();
 
-            
+
         //     // If the user has an active subscription, prevent them from having more than one
         // if ($existingSubscription) {
         //     return response()->json(['message' => 'You already have an active or pending subscription.'], 400);
@@ -87,7 +87,7 @@ class SubscriptionController extends Controller
         $endsAt = $startsAt->copy()->addDays($trialPlan->duration_in_days);
 
         // Create the trial subscription for the user
-        Subscription::create([
+        $subscription = Subscription::create([
             'user_id' => $user->id,  // Replace company_id with user_id
             'plan_id' => $trialPlan->id,
             'plan_name' => $trialPlan->name,
@@ -239,35 +239,35 @@ class SubscriptionController extends Controller
     public function getPropertyLimitStatus()
     {
         $user = Auth::user();
-    
+
         $activeSubscription = Subscription::where('user_id', $user->id)
             ->where('status', 'active')
             ->latest()
             ->first();
-    
+
         if (!$activeSubscription) {
             return response()->json(['message' => 'No active subscription found.'], 404);
         }
-    
+
         $plan = SubscriptionPlan::find($activeSubscription->plan_id);
-    
+
         if (!$plan) {
             return response()->json(['message' => 'Subscription plan not found.'], 404);
         }
-    
+
         // احسب عدد العقارات اللي أنشأها المستخدم
         $propertiesCount = \App\Models\Property::where('user_id', $user->id)->count(); // غيّر اسم الموديل لو مختلف
-    
+
         $maxAllowed = $plan->max_properties_allowed;
         $remaining = max(0, $maxAllowed - $propertiesCount);
-    
+
         return response()->json([
             'max_allowed' => $maxAllowed,
             'used' => $propertiesCount,
             'remaining' => $remaining,
         ]);
     }
-    
+
     public function cancelAutoRenewSubscription()
     {
         $user = Auth::user();
