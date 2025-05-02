@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class PropertyController extends Controller
 {
@@ -29,79 +30,77 @@ class PropertyController extends Controller
     public function index(Request $request)
     {
         $query = Property::query();
-
+    
+        // Keyword search with improved performance
         if ($request->has('keyword')) {
             $keyword = strtolower($request->input('keyword'));
             $query->where(function ($q) use ($keyword) {
-                $q->whereRaw('LOWER(title) LIKE ?', ["%{$keyword}%"])
-                    ->orWhereRaw('LOWER(city) LIKE ?', ["%{$keyword}%"])
-                    ->orWhereRaw('LOWER(type) LIKE ?', ["%{$keyword}%"])
-                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$keyword}%"]);
+                $q->where('title', 'LIKE', $keyword.'%')
+                  ->orWhere('city', 'LIKE', $keyword.'%')
+                  ->orWhere('type', 'LIKE', $keyword.'%')
+                  ->orWhere('description', 'LIKE', $keyword.'%');
             });
         }
-
-        if ($request->has('city')) {
-            $query->where('city', $request->input('city'));
-        }
-        if ($request->has('type')) {
-            $query->where('type', $request->input('type'));
-        }
-        if ($request->has('listing_type') && $request->input('listing_type') !== '') {
-            $query->where('listing_type', $request->input('listing_type'));
-        }
-        if ($request->has('min_price')) {
-            $query->where('price', '>=', $request->input('min_price'));
-        }
-        if ($request->has('max_price')) {
-            $query->where('price', '<=', $request->input('max_price'));
-        }
-        if ($request->has('min_area')) {
-            $query->where('area', '>=', $request->input('min_area'));
-        }
-        if ($request->has('max_area')) {
-            $query->where('area', '<=', $request->input('max_area'));
-        }
-        if ($request->has('bedrooms')) {
-            $query->where('bedrooms', $request->input('bedrooms'));
-        }
-        if ($request->has('bathrooms')) {
-            $query->where('bathrooms', $request->input('bathrooms'));
-        }
-        if ($request->has('construction_status')) {
-            $query->where('construction_status', $request->input('construction_status'));
-        }
-        if ($request->has('approval_status')) {
-            $query->where('approval_status', $request->input('approval_status'));
-        }
-        if ($request->has('is_new_building') && filter_var($request->input('is_new_building'), FILTER_VALIDATE_BOOLEAN)) {
-            $currentYear = Carbon::now()->year;
-            $newBuildingThreshold = $currentYear - 3;
-            $query->where('building_year', '>=', $newBuildingThreshold)
-                ->whereNotNull('building_year');
-        }
-        if ($request->has('sort_by')) {
-            $sortBy = $request->input('sort_by');
-            switch ($sortBy) {
-                case 'newest':
-                    $query->latest();
-                    break;
-                case 'price_low':
-                    $query->orderBy('price', 'asc');
-                    break;
-                case 'price_high':
-                    $query->orderBy('price', 'desc');
-                    break;
-                default:
-                    $query->latest();
-                    break;
+    
+        // Exact matches
+        $exactFilters = ['city', 'type', 'listing_type', 'bedrooms', 
+                        'bathrooms', 'construction_status', 'approval_status'];
+        foreach ($exactFilters as $filter) {
+            if ($request->has($filter)) {
+                $query->where($filter, $request->input($filter));
             }
-        } else {
-            $query->latest();
         }
-
-        $perPage = $request->input('per_page', 10);
-        $properties = $query->paginate($perPage);
-
+    
+        // Range filters
+        if ($request->has('min_price') && $request->has('max_price')) {
+            $query->whereBetween('price', [$request->min_price, $request->max_price]);
+        } else {
+            if ($request->has('min_price')) {
+                $query->where('price', '>=', $request->min_price);
+            }
+            if ($request->has('max_price')) {
+                $query->where('price', '<=', $request->max_price);
+            }
+        }
+    
+        // Similar for area
+        if ($request->has('min_area') && $request->has('max_area')) {
+            $query->whereBetween('area', [$request->min_area, $request->max_area]);
+        } else {
+            if ($request->has('min_area')) {
+                $query->where('area', '>=', $request->min_area);
+            }
+            if ($request->has('max_area')) {
+                $query->where('area', '<=', $request->max_area);
+            }
+        }
+    
+        // New building filter
+        if ($request->boolean('is_new_building')) {
+            $currentYear = now()->year;
+            $query->where('building_year', '>=', $currentYear - 3)
+                  ->whereNotNull('building_year');
+        }
+    
+        // Sorting
+        $sortOptions = [
+            'newest' => ['created_at', 'desc'],
+            'price_low' => ['price', 'asc'],
+            'price_high' => ['price', 'desc']
+        ];
+        
+        $sortBy = $request->input('sort_by', 'newest');
+        [$sortColumn, $sortDirection] = $sortOptions[$sortBy] ?? $sortOptions['newest'];
+        $query->orderBy($sortColumn, $sortDirection);
+    
+        // Pagination with caching
+        $perPage = min($request->input('per_page', 10), 100); // Limit max per page
+        $cacheKey = 'properties_'.md5(json_encode($request->all()));
+        
+        $properties = Cache::remember($cacheKey, now()->addHours(1), function() use ($query, $perPage) {
+            return $query->paginate($perPage);
+        });
+    
         return response()->json([
             'data' => $properties->items(),
             'pagination' => [
