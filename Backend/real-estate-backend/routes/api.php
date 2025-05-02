@@ -196,6 +196,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/cancel-auto-renew', [SubscriptionController::class, 'cancelAutoRenewSubscription'])->name('subscription.cancel-auto-renew');
             Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations']); // get upcoming subscription expirations within a specific number of days
             Route::get('/current-subscription-status', [SubscriptionController::class, 'getCurrentSubscriptionStatus']); // get the current subscription status of the authenticated company
+            Route::get('/property-status', [SubscriptionController::class, 'getPropertyLimitStatus']);
 
         });
 
