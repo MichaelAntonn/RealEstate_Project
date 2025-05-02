@@ -39,11 +39,19 @@ updateProfileImage(image: string): void {
   }
 
   // تسجيل مستخدم جديد
-  register(userData: any): Observable<any> {
-    return this.http
-      .post(`${this.apiUrl}/register`, userData)
-      .pipe(catchError(this.handleError));
-  }
+// في ملف auth.service.ts
+register(userData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/register`, userData).pipe(
+    catchError(error => {
+      // معالجة أخطاء التحقق
+      if (error.status === 422 && error.error.errors) {
+        // نرمي الخطأ كما هو ليتم معالجته في الكومبوننت
+        return throwError(() => error.error);
+      }
+      return throwError(() => new Error(error.message || 'Server error'));
+    })
+  );
+}
 
   // تسجيل الدخول
   login(credentials: { email: string; password: string }): Observable<any> {
