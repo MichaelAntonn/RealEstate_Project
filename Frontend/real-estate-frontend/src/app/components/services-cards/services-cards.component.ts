@@ -2,7 +2,9 @@
 import { Component, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { HttpClient} from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-services-cards',
   standalone: true,
@@ -11,9 +13,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./services-cards.component.css']
 })
 export class ServicesCardsComponent implements AfterViewInit {
+  isLoading = true;
   @ViewChildren('card') cards!: QueryList<ElementRef<HTMLElement>>;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+    private http: HttpClient,
+    private toastr: ToastrService) {}
 
   ngAfterViewInit() {
     this.setDefaultTiltedCard();
@@ -52,8 +57,37 @@ export class ServicesCardsComponent implements AfterViewInit {
   }
 
   navigateToAddProperty() {
-    this.router.navigate(['/add-property']);
-    
+    this.http.get<{ allowed: boolean, message?: string }>('http://localhost:8000/api/v1/can-add-property')
+      .subscribe({
+        next: (res) => {
+          if (res.allowed) {
+            this.router.navigate(['/add-property']);
+          } 
+        },
+        error: (error) => {
+                console.error('Error loading profile:', error);
+                this.isLoading = false;
+          
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Access Denied!',
+                  html:  `
+                  <strong>You are not subscribed to this service.</strong><br><br>
+                  To access this feature, you need an active subscription.<br>
+                  Please subscribe now to unlock all premium features and continue enjoying our platform.
+                `,
+                  confirmButtonText: 'Go to Subscription',
+                  showCancelButton: true,
+                  cancelButtonText: 'Cancel',
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    this.router.navigate(['/subscription']);
+                  }
+                });
+              }
+      });
   }
   navigateToproperties() {
     this.router.navigate(['/properties'])
