@@ -84,7 +84,7 @@ class SocialLoginController extends Controller
             ]);
     
             // Redirect to frontend with token
-            return redirect('http://localhost:4200/#/home?access_token=' . urlencode($token));
+            return redirect('http://localhost:4200/home?access_token=' . urlencode($token));
         } catch (\Exception $e) {
             // Log the exception details
             Log::error('Google login failed', [
@@ -92,7 +92,7 @@ class SocialLoginController extends Controller
                 'exception' => get_class($e),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
-            return redirect('http://localhost:4200/#/login?error=google_login_failed&message=' . urlencode($e->getMessage()));
+            return redirect('http://localhost:4200/login?error=google_login_failed&message=' . urlencode($e->getMessage()));
         }
     }
 }

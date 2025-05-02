@@ -36,7 +36,7 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable)
     {
         // $resetUrl = route('password.reset.token', ['token' => $this->token]);
-        $resetUrl = 'http://localhost:4200/#/reset-password/' . $this->token;
+        $resetUrl = 'http://localhost:4200/reset-password/' . $this->token;
         Log::info($notifiable);
         return (new MailMessage)
     ->subject('Reset Password')
