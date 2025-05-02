@@ -20,17 +20,17 @@ class SubscriptionController extends Controller
     {
         $user = Auth::user();
 
-        // Check if the user already has an active subscription
-        $existingSubscription = Subscription::where('user_id', $user->id)
-            ->whereIn('status', ['active', 'pending'])
-            ->first();
+        // // Check if the user already has an active subscription
+        // $existingSubscription = Subscription::where('user_id', $user->id)
+        //     ->whereIn('status', ['active', 'pending'])
+        //     ->first();
 
             
-            // If the user has an active subscription, prevent them from having more than one
-        if ($existingSubscription) {
-            return response()->json(['message' => 'You already have an active or pending subscription.'], 400);
+        //     // If the user has an active subscription, prevent them from having more than one
+        // if ($existingSubscription) {
+        //     return response()->json(['message' => 'You already have an active or pending subscription.'], 400);
 
-        }
+        // }
 
         // Validate the request data
         $request->validate([
