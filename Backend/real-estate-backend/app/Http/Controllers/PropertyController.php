@@ -482,6 +482,7 @@ class PropertyController extends Controller
             $query->where('transaction_status', 'pending')
                   ->orWhereNull('transaction_status');
         })
+
         ->join('users', 'properties.user_id', '=', 'users.id')
         ->leftJoin('subscriptions', 'subscriptions.user_id', '=', 'users.id')
         ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'subscriptions.plan_id')
@@ -494,6 +495,8 @@ class PropertyController extends Controller
         ->paginate(10); // pagination حسب احتياجك
 
     return response()->json($properties, 200);    }
+
+
 
     /**
      * Accept a property (accessible by admin and super-admin).

@@ -70,7 +70,7 @@ export class PropertyService {
 
     return this.http
       .get<{ data: Property[]; pagination: any }>(
-        `${this.apiUrl}/properties`,
+        `${this.apiUrl}/properties/all`,
         { headers: this.getAuthHeaders(), params }
       )
       .pipe(
