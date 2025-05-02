@@ -102,7 +102,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [BlogController::class, 'index']);
         Route::get('/{id}', [BlogController::class, 'show']);
     });
-
+    
+    Route::get('/can-add-property', [PropertyController::class, 'CanAdd']);
 
     // Authenticated user routes
     Route::middleware('auth:sanctum')->group(function () {
