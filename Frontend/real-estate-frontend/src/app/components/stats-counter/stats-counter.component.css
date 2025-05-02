@@ -6,7 +6,7 @@
   color: var(--text-color);
 }
 .stats-content{
-  margin: 0 3%;
+  margin: 0 auto;
 }
 .counter-text .number {
   font-size: 2.5rem;

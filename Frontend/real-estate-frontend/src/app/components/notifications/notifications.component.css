@@ -1,6 +1,6 @@
 .notifications-dropdown {
   width: 400px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 10px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -21,7 +21,7 @@
 }
 
 .notification-item.unread::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 8px;
   height: 8px;
