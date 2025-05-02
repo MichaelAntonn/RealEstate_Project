@@ -25,7 +25,7 @@ import {
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
 import { NotificationsComponent } from '../components/notifications/notifications.component';
-
+import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-main-dashboard',
   standalone: true,
@@ -53,6 +53,7 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
   faChartLine = faChartLine;
   faCog = faCog;
   faSignOutAlt = faSignOutAlt;
+  faCreditCard = faCreditCard;
 
   username: string = '';
   darkMode: boolean = false;

@@ -23,12 +23,12 @@
           </div>
 
           <!-- الوضع المظلم -->
-          <div class="form-check form-switch me-3">
+          <!-- <div class="form-check form-switch me-3">
               <label class="switch">
                   <input type="checkbox" id="darkModeToggle" (change)="toggleDarkMode()" [checked]="darkMode">
                   <span class="slider"></span>
               </label>
-          </div>
+          </div> -->
 
           <!-- معلومات المستخدم -->
           <div class="dropdown">
@@ -97,6 +97,14 @@
                   Appointments
               </a>
           </li>
+          <li class="nav-item">
+            <a routerLink="/maindashboard/subscription" routerLinkActive="active" class="nav-link">
+                <fa-icon [icon]="faCreditCard"></fa-icon>
+                Subscription
+            </a>
+          </li>
+
+
           <li class="nav-item mt-4">
               <a href="#" class="nav-link text-danger" (click)="logout()">
                   <fa-icon [icon]="faSignOutAlt"></fa-icon>
