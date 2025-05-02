@@ -14,9 +14,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes,
-      // withHashLocation()
-    ),
+    provideRouter(routes),
     provideAnimations(),
     provideToastr(),
     provideHttpClient(
