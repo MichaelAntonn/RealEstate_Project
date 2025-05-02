@@ -236,7 +236,38 @@ class SubscriptionController extends Controller
 
         return response()->json(['message' => 'Subscription auto-renewed successfully', 'subscription' => $newSubscription]);
     }
-
+    public function getPropertyLimitStatus()
+    {
+        $user = Auth::user();
+    
+        $activeSubscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+    
+        if (!$activeSubscription) {
+            return response()->json(['message' => 'No active subscription found.'], 404);
+        }
+    
+        $plan = SubscriptionPlan::find($activeSubscription->plan_id);
+    
+        if (!$plan) {
+            return response()->json(['message' => 'Subscription plan not found.'], 404);
+        }
+    
+        // احسب عدد العقارات اللي أنشأها المستخدم
+        $propertiesCount = \App\Models\Property::where('user_id', $user->id)->count(); // غيّر اسم الموديل لو مختلف
+    
+        $maxAllowed = $plan->max_properties_allowed;
+        $remaining = max(0, $maxAllowed - $propertiesCount);
+    
+        return response()->json([
+            'max_allowed' => $maxAllowed,
+            'used' => $propertiesCount,
+            'remaining' => $remaining,
+        ]);
+    }
+    
     public function cancelAutoRenewSubscription()
     {
         $user = Auth::user();
