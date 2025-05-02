@@ -76,7 +76,6 @@
 }
 
 .notification-item:hover {
-  background: rgba(247, 124, 52, 0.1); /* Subtle hover effect */
   transform: scale(1.02); /* Slight scale on hover */
   transition: all 0.2s ease;
 }
@@ -156,4 +155,8 @@
 h6 {
   margin: auto !important;
   font-weight: 400;
+}
+
+.notification-content {
+  color: black;
 }

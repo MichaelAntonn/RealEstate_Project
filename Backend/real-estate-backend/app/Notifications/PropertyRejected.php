@@ -56,7 +56,7 @@ class PropertyRejected extends Notification
             'message' => 'Your property "' . $this->property->title . '" has been rejected.',
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
-            'url' => url('/properties/' . $this->property->id),
+            'url' => url('/properties/' . $this->property->slug),
         ];
 
         if ($this->reason) {

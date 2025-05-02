@@ -354,20 +354,18 @@ input:checked + .slider:before {
   padding: 90px 30px 30px;
   min-height: calc(100vh - 70px);
 }
+/* Updated notification badge positioning for all components */
 .notification-badge {
   position: absolute;
-  top: 0;
-  right: -10px;
-  transform: translate(50%, -50%);
-  font-size: 0.65rem;
-  padding: 0.2em 0.5em;
+  top: 3px; /* Consistent position close to bell */
+  right: 12px !important; /* Consistent position close to bell */
+  transform: translate(0, -50%); /* Consistent alignment */
+  font-size: 0.75rem; /* Consistent size */
+  padding: 0.3em 0.5em; /* Consistent padding */
+  display: none; /* Hidden by default */
 }
 
-/* Updated notification badge positioning */
-.notification-badge {
-  top: 5px; /* Moved closer to bell */
-  right: -5px; /* Moved closer to bell */
-  transform: translate(0, -50%); /* Adjusted to align better */
-  font-size: 0.65rem;
-  padding: 0.2em 0.5em;
+/* Show badge only when notifications count > 0 */
+.notification-badge:not(:empty) {
+  display: inline-block; /* Show when there are notifications */
 }

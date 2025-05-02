@@ -55,7 +55,7 @@ class NewPropertySubmitted extends Notification
             'property_id' => $this->property->id,
             'property_title' => $this->property->title,
             'submitted_by' => $this->property->user->name,
-            'url' => '/property-details/' . $this->property->slug,
+            'url' => '/admin/layout/properties',
         ];
     }
     public function toBroadcast($notifiable): BroadcastMessage

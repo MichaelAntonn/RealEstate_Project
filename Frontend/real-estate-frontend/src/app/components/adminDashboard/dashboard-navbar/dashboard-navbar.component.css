@@ -102,11 +102,18 @@
   transition: all 0.3s ease;
 }
 
-/* ... other existing styles ... */
+/* Updated notification badge positioning for all components */
 .notification-badge {
-  top: 5px;
-  right: -5px;
-  transform: translate(0, -50%);
-  font-size: 0.65rem;
-  padding: 0.2em 0.5em;
+  position: absolute;
+  top: 5px; /* Consistent position close to bell */
+  right: 12px !important; /* Consistent position close to bell */
+  transform: translate(0, -50%); /* Consistent alignment */
+  font-size: 0.75rem; /* Consistent size */
+  padding: 0.3em 0.5em; /* Consistent padding */
+  display: none; /* Hidden by default */
+}
+
+/* Show badge only when notifications count > 0 */
+.notification-badge:not(:empty) {
+  display: inline-block; /* Show when there are notifications */
 }
