@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Notifications\SubscriptionCanceled;
+use App\Notifications\SubscriptionCreated;
+use App\Notifications\SubscriptionPending;
+use App\Notifications\TrialSubscriptionActivated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -20,23 +24,25 @@ class SubscriptionController extends Controller
         $existingSubscription = Subscription::where('user_id', $user->id)
             ->whereIn('status', ['active', 'pending'])
             ->first();
+
             
             // If the user has an active subscription, prevent them from having more than one
         if ($existingSubscription) {
             return response()->json(['message' => 'You already have an active or pending subscription.'], 400);
+
         }
-    
+
         // Validate the request data
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
             'auto_renew' => 'required|boolean'
         ]);
-        
+
         // Get the authenticated user and the selected subscription plan
         $user = Auth::user();
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
         $autoRenew = $request->boolean('auto_renew');
-        
+
         // Create the new subscription with a 'pending' status
         $subscription = Subscription::create([
             'user_id' => $user->id,
@@ -44,19 +50,21 @@ class SubscriptionController extends Controller
             'plan_name' => $plan->name,
             'price' => $plan->price,
             'duration_in_days' => $plan->duration_in_days,
-            'starts_at' => null,  
-            'ends_at' => null,    
+            'starts_at' => null,
+            'ends_at' => null,
             'status' => 'pending',
             'auto_renew' => $autoRenew,
         ]);
-        
+
+        $user->notify(new SubscriptionCreated($subscription));
+
         // Return a response indicating the subscription is created and awaiting payment
         return response()->json([
             'message' => 'Subscription created and waiting for payment.',
             'subscription' => $subscription,
         ]);
     }
-    
+
     public function subscribeToTrial(Request $request)
     {
         // Get the current user
@@ -93,6 +101,10 @@ class SubscriptionController extends Controller
         // Update user to mark trial as used
         $user->update(['has_used_trial' => true]);
 
+        // TrialSubscriptionActivated
+        $user->notify(new TrialSubscriptionActivated($subscription));
+
+
         return response()->json(['message' => 'Trial subscription activated.']);
     }
 
@@ -109,6 +121,9 @@ class SubscriptionController extends Controller
         }
 
         $subscription->update(['status' => 'canceled']);
+
+        $user->notify(new SubscriptionCanceled($subscription));
+
 
         return response()->json(['message' => 'Subscription has been canceled successfully.']);
     }
@@ -141,11 +156,13 @@ class SubscriptionController extends Controller
             'plan_name' => $plan->name,
             'price' => $plan->price,
             'duration_in_days' => $plan->duration_in_days,
-            'starts_at' => null,  
-            'ends_at' => null,    
+            'starts_at' => null,
+            'ends_at' => null,
             'status' => 'pending',
             'auto_renew' => $subscription->auto_renew,
         ]);
+
+        Auth::user()->notify(new SubscriptionPending($newSubscription));
 
         return response()->json([
             'message' => 'Subscription renewed successfully.',
@@ -211,8 +228,8 @@ class SubscriptionController extends Controller
             'plan_name' => $plan->name,
             'price' => $plan->price,
             'duration_in_days' => $plan->duration_in_days,
-            'starts_at' => null,  
-            'ends_at' => null,    
+            'starts_at' => null,
+            'ends_at' => null,
             'status' => 'pending',
             'auto_renew' => true, // Auto-renew
         ]);

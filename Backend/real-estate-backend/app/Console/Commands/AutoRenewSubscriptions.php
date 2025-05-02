@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Admin;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Notifications\SubscriptionRenewed;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Notification;
 
 class AutoRenewSubscriptions extends Command
 {
@@ -21,6 +24,11 @@ class AutoRenewSubscriptions extends Command
             ->whereDate('ends_at', $today)
             ->where('auto_renew', true)
             ->get();
+
+        if ($subscriptions->isEmpty()) {
+            $this->info('No subscriptions to renew today.');
+            return Command::SUCCESS;
+        }
 
         foreach ($subscriptions as $subscription) {
             $plan = SubscriptionPlan::find($subscription->plan_id);
@@ -46,7 +54,18 @@ class AutoRenewSubscriptions extends Command
                 'auto_renew' => true,
             ]);
 
-            $this->info("Renewed subscription for user ID: {$subscription->user_id}");
+            // Notify the user
+            $user = $subscription->user;
+            if ($user) {
+                $user->notify(new SubscriptionRenewed($newSubscription));
+            }
+
+            // Notify admins
+            $admins = Admin::whereIn('user_type', ['admin', 'super-admin'])->get();
+
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new SubscriptionRenewed($newSubscription, true));
+            }
         }
 
         return Command::SUCCESS;

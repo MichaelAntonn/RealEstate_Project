@@ -58,13 +58,8 @@ class PropertyAccepted extends Notification
             'url' => '/property-details/' . $this->property->slug,
         ];
     }
-    public function toBroadcast(object $notifiable): BroadcastMessage
+    public function toBroadcast($notifiable): BroadcastMessage
     {
-        return new BroadcastMessage([
-            'message' => 'Your property "' . $this->property->title . '" has been accepted!',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'url' => '/property-details/' . $this->property->slug,
-        ]);
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

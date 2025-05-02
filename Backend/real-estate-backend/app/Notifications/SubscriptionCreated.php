@@ -4,24 +4,23 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 
-
-class PropertyBooked extends Notification
+class SubscriptionCreated extends Notification
 {
     use Queueable;
-    protected $booking;
-    protected $property;
+
+    protected $subscription;
+
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($booking, $property)
+    public function __construct($subscription)
     {
-        $this->booking = $booking;
-        $this->property = $property;
+        $this->subscription = $subscription;
     }
 
     /**
@@ -50,20 +49,14 @@ class PropertyBooked extends Notification
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable)
     {
         return [
-            'message' => 'Someone booked your property "' . $this->property->title . '"!',
-            'property_id' => $this->property->id,
-            'property_title' => $this->property->title,
-            'booking_id' => $this->booking->id,
-            'booker_id' => $this->booking->user_id,
-            'booking_date' => $this->booking->booking_date,
-            'url' => '/property-details/' . $this->property->slug,
-
+            'message' => 'New subscription created for ' . $this->subscription->plan_name,
+            'subscription_id' => $this->subscription->id,
+            'status' => $this->subscription->status,
         ];
     }
-
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage($this->toArray($notifiable));
