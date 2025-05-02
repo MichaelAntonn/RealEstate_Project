@@ -39,7 +39,9 @@
                    }"></i>
                 {{ plan.name | uppercase }}
             </h3>
-            <div class="pricing-price">{{ plan.price }} EPG</div>
+            <div class="pricing-price">
+                {{ plan.price ? (plan.price + ' EPG') : 'Free' }}
+            </div>
             <div class="pricing-period">per {{ plan.duration_in_days }} days</div>
         </div>
 
