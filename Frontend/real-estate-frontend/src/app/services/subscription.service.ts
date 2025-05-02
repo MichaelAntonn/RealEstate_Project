@@ -150,41 +150,21 @@ export class SubscriptionService {
 
   initiateCheckout(subscriptionId: number, returnUrl: string): Observable<CheckoutResponse> {
     const headers = this.getAuthHeaders();
+    const return_url = window.location.origin + '/';
     const body = {
       subscription_id: subscriptionId,
-      return_url: returnUrl,
+      return_url: return_url,
     };
-    return this.http.post(this.checkoutUrl, body, { headers, responseType: 'text' }).pipe(
+    return this.http.post<CheckoutResponse>(this.checkoutUrl, body, { headers }).pipe(
       map(response => {
-        console.log('Raw checkout response:', response);
-        try {
-          let url: string;
-          try {
-            url = JSON.parse(response);
-            if (typeof url !== 'string') {
-              throw new Error('Parsed response is not a string');
-            }
-          } catch (e) {
-            const jsonResponse = JSON.parse(response);
-            if (jsonResponse.url && typeof jsonResponse.url === 'string') {
-              url = jsonResponse.url;
-            } else {
-              throw new Error('Invalid URL format in JSON response');
-            }
-          }
-          return { url };
-        } catch (e) {
-          console.error('Failed to parse checkout response:', e);
-          throw new Error('Failed to parse checkout URL');
-        }
+        console.log('Checkout response:', response);
+        return response;
       }),
-      catchError((error: HttpErrorResponse | Error) => {
-        const errorMessage = error instanceof HttpErrorResponse
-          ? error.error?.message || 'Failed to initiate checkout. Please try again.'
-          : error.message;
+      catchError((error: HttpErrorResponse) => {
+        const errorMessage = error.error?.message || 'Failed to initiate checkout. Please try again.';
         console.error('Checkout error:', error);
         return throwError(() => new Error(errorMessage));
       })
     );
   }
-}
+  }
