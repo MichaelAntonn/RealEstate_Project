@@ -1,12 +1,12 @@
 .container {
-  margin-top: -30px !important;
+  margin-top: 30px !important;
   margin-bottom: 10vh !important;
   max-width: 100%;
   overflow-x: hidden;
 }
 
 .text-muted {
-  color: #D0944B;
+  color: #d0944b;
   text-transform: uppercase;
   font-weight: 200 !important;
   font-size: 1.7rem !important;
@@ -27,28 +27,30 @@
 .real-estate-card-icon {
   font-size: 40px;
   margin-bottom: 10px;
-  color: #D94B2B;
+  color: #d94b2b;
 }
 
 .real-estate-card:hover {
   background-color: #172940;
-  color: #F9FDFF !important;
+  color: #f9fdff !important;
   clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
 }
 
 .title {
-  font-family: 'PlayfairDisplay','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "PlayfairDisplay", "Gill Sans", "Gill Sans MT", Calibri,
+    "Trebuchet MS", sans-serif;
   color: black;
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #FFA500, #FF4500);
+  background: linear-gradient(90deg, #ffa500, #ff4500);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
   font-weight: normal;
-  font-family: 'Poppins-Medium','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Poppins-Medium", "Gill Sans", "Gill Sans MT", Calibri,
+    "Trebuchet MS", sans-serif;
   font-size: 1.2rem;
   letter-spacing: 2px;
 }
@@ -59,9 +61,7 @@
   clip-path: polygon(10% 0%, 100% 30%, 100% 100%, 0% 100%);
 }
 
-
 /* للتأكد من أن الصفحة لا تسحب أفقيًا */
 body {
   overflow-x: hidden;
 }
-
