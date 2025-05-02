@@ -477,14 +477,15 @@ class PropertyController extends Controller
 
     public function getPendingAcceptedProperties()
     {
-        $properties = Property::where('transaction_status', 'pending')
-            ->where('approval_status', 'accepted')
-            ->get();
-    
-        return response()->json([
-            'message' => 'Filtered properties retrieved successfully',
-            'properties' => $properties,
-        ], 200);
+        $properties = Property::where('approval_status', 'accepted')
+        ->where(function ($query) {
+            $query->where('transaction_status', 'pending')
+                  ->orWhereNull('transaction_status');
+        })
+        ->latest() // ترتيب من الأحدث إلى الأقدم باستخدام latest
+        ->paginate(10); // عرض 10 عناصر في كل صفحة
+
+    return response()->json($properties, 200);
     }
 
     /**
