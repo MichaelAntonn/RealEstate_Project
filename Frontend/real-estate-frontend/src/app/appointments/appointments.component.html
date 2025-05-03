@@ -44,10 +44,10 @@
                                 <tr *ngFor="let appointment of filteredAppointments | slice: (currentPage-1)*itemsPerPage : currentPage*itemsPerPage">
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img [src]="appointment.property?.images?.[0] || 'assets/property-placeholder.jpg'" 
+                                            <!-- <img [src]="appointment.property?.images?.[0] || 'assets/property-placeholder.jpg'" 
                                                  alt="Property Image" 
                                                  class="rounded me-3" 
-                                                 style="width: 60px; height: 45px; object-fit: cover;">
+                                                 style="width: 60px; height: 45px; object-fit: cover;"> -->
                                             <div>
                                                 <h6 class="mb-0">{{ appointment.property?.title || 'N/A' }}</h6>
                                                 <small class="text-muted">{{ appointment.property?.address || '' }}</small>
