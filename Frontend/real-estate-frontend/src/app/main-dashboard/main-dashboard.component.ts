@@ -72,6 +72,7 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    window.scrollTo({ top: 0 });
     this.subscription = this.notificationService.notifications$.subscribe(
       () => {
         this.loadNotificationsCount();
@@ -80,7 +81,7 @@ export class MainDashboardComponent implements OnInit, OnDestroy {
 
     this.loadNotificationsCount();
 
-    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+    this.userSubscription = this.authService.currentUser$.subscribe((user) => {
       if (user) {
         this.updateUserInfo(user);
       }

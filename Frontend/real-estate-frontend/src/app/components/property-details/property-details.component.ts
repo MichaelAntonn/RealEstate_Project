@@ -30,6 +30,7 @@ export class PropertyDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    window.scrollTo({ top: 0 });
     this.route.paramMap.subscribe((params) => {
       const slug = params.get('slug');
       if (slug) {
@@ -49,5 +50,4 @@ export class PropertyDetailsComponent implements OnInit {
       }
     });
   }
-  
 }

@@ -11,7 +11,13 @@ import { normalizeTags } from '../../utils/normalize-tags';
 @Component({
   selector: 'app-real-estate-blog',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent, FooterComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    NavbarComponent,
+    FooterComponent,
+  ],
   templateUrl: './real-estate-blog.component.html',
   styleUrls: ['./real-estate-blog.component.scss'],
 })
@@ -30,6 +36,7 @@ export class RealEstateBlogComponent implements OnInit {
   constructor(private blogService: BlogService) {}
 
   ngOnInit(): void {
+    window.scrollTo({ top: 0 });
     this.loadBlogs(this.currentPage);
   }
 
@@ -106,7 +113,6 @@ export class RealEstateBlogComponent implements OnInit {
       //     console.error('Error liking post:', error);
       //     this.errorMessage = 'Failed to like the post. Please try again.';
       //   },
-      
     }
   }
 
