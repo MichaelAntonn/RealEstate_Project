@@ -49,7 +49,7 @@ export class MyPropertiesComponent implements OnInit {
   isLoading = true;
   searchTerm = '';
   currentStatus = 'all';
-  apiUrl = 'http://localhost:8000/api/v1/properties';
+  apiUrl = 'http://localhost:8000/api/v1/myproperties';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -62,13 +62,14 @@ export class MyPropertiesComponent implements OnInit {
       'Authorization': `Bearer ${this.authService.getToken()}`
     });
   
-    let endpoint = `${this.apiUrl}/status/pending`;
+    let endpoint = `${this.apiUrl}`;
     
-    if (this.currentStatus === 'accepted') {
-      endpoint = `${this.apiUrl}/status/accepted`;
+    if (this.currentStatus === 'pending') {
+      endpoint = `${this.apiUrl}/pending`;
     } else if (this.currentStatus === 'rejected') {
-      endpoint = `${this.apiUrl}/status/rejected`;
-    }
+      endpoint = `${this.apiUrl}/rejected`;
+    }else if (this.currentStatus === 'accepted') {
+      endpoint = `${this.apiUrl}/accepted`;}
   
     this.http.get<any>(endpoint, { headers }).subscribe({
       next: (response) => {
