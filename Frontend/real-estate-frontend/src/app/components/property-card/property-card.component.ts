@@ -21,9 +21,9 @@ export class PropertyCardComponent {
 
   getPriceDisplay(property: Property): string {
     if (property.listing_type === 'for_sale') {
-      return `$${property.price.toLocaleString()}`; // Added toLocaleString for better formatting
+      return `EPG ${property.price.toLocaleString()}`; // Added toLocaleString for better formatting
     } else if (property.listing_type === 'for_rent') {
-      return `$${property.price.toLocaleString()}`; // Added toLocaleString for better formatting
+      return `EPG ${property.price.toLocaleString()}`; // Added toLocaleString for better formatting
     }
     return '';
   }
