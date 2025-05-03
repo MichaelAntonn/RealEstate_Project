@@ -3,16 +3,16 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterModule, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { 
-  faEdit, faTrash, faPlus, faSpinner, 
+import {
+  faEdit, faTrash, faPlus, faSpinner,
   faCheckCircle, faTimesCircle, faClock,
   faSearch, faFilter, faSync
 } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../services/auth.service';
 import { faBed } from '@fortawesome/free-solid-svg-icons';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { faBath } from '@fortawesome/free-solid-svg-icons';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-my-properties',
@@ -22,14 +22,14 @@ import Swal from 'sweetalert2';
     RouterModule,
     RouterLink,
     FontAwesomeModule,
-    FormsModule 
+    FormsModule
   ],
   templateUrl: './my-properties.component.html',
   styleUrls: ['./my-properties.component.css']
 })
 export class MyPropertiesComponent implements OnInit {
-  faBed = faBed; 
-  faBath = faBath; 
+  faBed = faBed;
+  faBath = faBath;
 
   // Font Awesome Icons
   faEdit = faEdit;
@@ -61,22 +61,22 @@ export class MyPropertiesComponent implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getToken()}`
     });
-  
+
     let endpoint = `${this.apiUrl}`;
-    
+
     if (this.currentStatus === 'pending') {
       endpoint = `${this.apiUrl}/pending`;
     } else if (this.currentStatus === 'rejected') {
       endpoint = `${this.apiUrl}/rejected`;
     }else if (this.currentStatus === 'accepted') {
       endpoint = `${this.apiUrl}/accepted`;}
-  
+
     this.http.get<any>(endpoint, { headers }).subscribe({
       next: (response) => {
         this.properties = response.properties?.data || [];
         this.filteredProperties = [...this.properties];
         this.isLoading = false;
-        
+
         if (this.properties.length === 0) {
           Swal.fire({
             icon: 'info',
@@ -112,8 +112,8 @@ export class MyPropertiesComponent implements OnInit {
     }
 
     const term = this.searchTerm.toLowerCase();
-    this.filteredProperties = this.properties.filter(property => 
-      property.title.toLowerCase().includes(term) || 
+    this.filteredProperties = this.properties.filter(property =>
+      property.title.toLowerCase().includes(term) ||
       property.property_code.toLowerCase().includes(term)
     );
   }
@@ -133,11 +133,11 @@ export class MyPropertiesComponent implements OnInit {
           'Authorization': `Bearer ${this.authService.getToken()}`
         });
 
-        this.http.delete(`${this.apiUrl}/${id}`, { headers }).subscribe({
+        this.http.delete(`http://localhost:8000/api/v1/properties/${id}`, { headers }).subscribe({
           next: () => {
             this.properties = this.properties.filter(p => p.id !== id);
             this.filteredProperties = this.filteredProperties.filter(p => p.id !== id);
-            
+
             Swal.fire(
               'Deleted!',
               'Your property has been deleted.',
