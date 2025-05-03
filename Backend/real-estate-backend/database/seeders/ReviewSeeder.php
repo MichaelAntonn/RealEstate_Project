@@ -11,7 +11,7 @@ class ReviewSeeder extends Seeder
     {
         // Review 1: Property review for Luxury Villa in Cairo (PROP001)
         Review::create([
-            'user_id' => 1,
+            'user_id' => 5,
             'property_id' => 1, // PROP001
             'review_type' => 'property',
             'rating' => 5,
@@ -24,7 +24,7 @@ class ReviewSeeder extends Seeder
 
         // Review 2: Agent review for Downtown Apartment (PROP002)
         Review::create([
-            'user_id' => 2,
+            'user_id' => 6,
             'property_id' => 2, // PROP002
             'review_type' => 'agent',
             'rating' => 4,
@@ -37,7 +37,7 @@ class ReviewSeeder extends Seeder
 
         // Review 3: Location review for Beachfront Land (PROP003)
         Review::create([
-            'user_id' => 3,
+            'user_id' => 7,
             'property_id' => 3, // PROP003
             'review_type' => 'location',
             'rating' => 3,
@@ -50,7 +50,7 @@ class ReviewSeeder extends Seeder
 
         // Review 4: Property review for Office in Giza (PROP004)
         Review::create([
-            'user_id' => 4,
+            'user_id' => 8,
             'property_id' => 4, // PROP004
             'review_type' => 'property',
             'rating' => 5,
@@ -63,7 +63,7 @@ class ReviewSeeder extends Seeder
 
         // Review 5: Agent review for Apartment in Zamalek (PROP005)
         Review::create([
-            'user_id' => 5,
+            'user_id' => 7,
             'property_id' => 5, // PROP005
             'review_type' => 'agent',
             'rating' => 2,
@@ -76,7 +76,7 @@ class ReviewSeeder extends Seeder
 
         // Review 6: Location review for Villa in Maadi (PROP006)
         Review::create([
-            'user_id' => 2,
+            'user_id' => 7,
             'property_id' => 6, // PROP006
             'review_type' => 'location',
             'rating' => 4,
@@ -89,7 +89,7 @@ class ReviewSeeder extends Seeder
 
         // Review 7: Property review for Apartment in Heliopolis (PROP007)
         Review::create([
-            'user_id' => 3,
+            'user_id' => 5,
             'property_id' => 7, // PROP007
             'review_type' => 'property',
             'rating' => 3,
@@ -128,7 +128,7 @@ class ReviewSeeder extends Seeder
 
         // Review 10: Property review for Villa in El Gouna (PROP010)
         Review::create([
-            'user_id' => 1,
+            'user_id' => 4,
             'property_id' => 10, // PROP010
             'review_type' => 'property',
             'rating' => 5,
@@ -141,7 +141,7 @@ class ReviewSeeder extends Seeder
 
         // Review 11: Agent review for Land in Madinaty (PROP011)
         Review::create([
-            'user_id' => 2,
+            'user_id' => 5,
             'property_id' => 11, // PROP011
             'review_type' => 'agent',
             'rating' => 3,
@@ -154,7 +154,7 @@ class ReviewSeeder extends Seeder
 
         // Review 12: Location review for Apartment in Mansoura (PROP012)
         Review::create([
-            'user_id' => 3,
+            'user_id' => 6,
             'property_id' => 12, // PROP012
             'review_type' => 'location',
             'rating' => 2,
@@ -193,7 +193,7 @@ class ReviewSeeder extends Seeder
 
         // Review 15: Location review for Villa in Luxor (PROP015)
         Review::create([
-            'user_id' => 1,
+            'user_id' => 7,
             'property_id' => 15, // PROP015
             'review_type' => 'location',
             'rating' => 5,
@@ -206,7 +206,7 @@ class ReviewSeeder extends Seeder
 
         // Review 16: Property review for PROP001 (repeat property)
         Review::create([
-            'user_id' => 2,
+            'user_id' => 8,
             'property_id' => 1, // PROP001
             'review_type' => 'property',
             'rating' => 4,
@@ -219,7 +219,7 @@ class ReviewSeeder extends Seeder
 
         // Review 17: Agent review for PROP004 (repeat property)
         Review::create([
-            'user_id' => 3,
+            'user_id' => 7,
             'property_id' => 4, // PROP004
             'review_type' => 'agent',
             'rating' => 5,
@@ -258,7 +258,7 @@ class ReviewSeeder extends Seeder
 
         // Review 20: Agent review for PROP013 (repeat property)
         Review::create([
-            'user_id' => 1,
+            'user_id' => 7,
             'property_id' => 13, // PROP013
             'review_type' => 'agent',
             'rating' => 4,
