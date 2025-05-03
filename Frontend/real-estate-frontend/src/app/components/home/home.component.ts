@@ -12,8 +12,6 @@ import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user';
 import { Location } from '@angular/common';
 
-
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -40,8 +38,9 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    window.scrollTo({ top: 0 });
     // Check for access_token in query parameters
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const token = params['access_token'];
       this.location.replaceState('/home');
 
@@ -57,7 +56,7 @@ export class HomeComponent implements OnInit {
             this.router.navigate([], {
               relativeTo: this.route,
               queryParams: {}, // Clear query parameters
-              replaceUrl: true // Avoid adding to browser history
+              replaceUrl: true, // Avoid adding to browser history
             });
           },
           error: () => {
@@ -66,9 +65,9 @@ export class HomeComponent implements OnInit {
             this.router.navigate([], {
               relativeTo: this.route,
               queryParams: {},
-              replaceUrl: true
+              replaceUrl: true,
             });
-          }
+          },
         });
       }
     });

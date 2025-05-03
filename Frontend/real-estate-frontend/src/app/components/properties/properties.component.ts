@@ -5,7 +5,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PropertyService } from '../../services/property.service';
 import { FilterService } from '../../services/filter.service';
-import { Property, PropertySearchApiResponse, PropertyFilters } from '../../models/property';
+import {
+  Property,
+  PropertySearchApiResponse,
+  PropertyFilters,
+} from '../../models/property';
 import { PropertyCardComponent } from '../property-card/property-card.component';
 import { PropertyFilterComponent } from '../property-filter/property-filter.component';
 import { PaginationComponent } from '../pagination/pagination.component';
@@ -79,7 +83,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadCities();
-
+    window.scrollTo({ top: 0 });
     // Subscribe to query params to initialize filters
     this.subscription.add(
       this.route.queryParams.subscribe((params) => {
@@ -161,7 +165,8 @@ export class PropertiesComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Unexpected error:', error);
-        this.errorMessage = 'An unexpected error occurred while fetching properties';
+        this.errorMessage =
+          'An unexpected error occurred while fetching properties';
         this.properties = [];
         this.currentPage = 1;
         this.lastPage = 1;
@@ -173,6 +178,8 @@ export class PropertiesComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(page: number): void {
+    this.currentPage = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.filterService.updateFilters({ page });
     this.router.navigate([], {
       relativeTo: this.route,
