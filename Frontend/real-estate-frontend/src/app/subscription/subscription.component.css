@@ -277,7 +277,7 @@
 
 .usage-count {
   background: var(--dark-color);
-  color: white;
+  color:  #FF9A5A;
   padding: 0.4rem 1rem;
   border-radius: 50px;
   font-size: 0.9rem;

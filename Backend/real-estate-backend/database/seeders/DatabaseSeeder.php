@@ -30,6 +30,9 @@ class DatabaseSeeder extends Seeder
             SubscriptionPlansSeeder::class,
             CompanySeeder::class,
             SubscriptionSeeder::class,
+            // BlogsSeeder::class,
+            ConsultantSeeder::class,
+            SettingsTableSeeder::class
         ]);
     }
 }
