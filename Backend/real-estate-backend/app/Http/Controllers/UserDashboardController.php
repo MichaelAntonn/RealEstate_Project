@@ -243,7 +243,49 @@ class UserDashboardController extends Controller
             'properties' => $properties,
         ]);
     }
-
+    public function getPendingProperties(Request $request)
+    {
+        $user = Auth::user();
+    
+        $properties = Property::where('user_id', $user->id)
+            ->where('approval_status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->input('per_page', 10));
+    
+        return response()->json([
+            'success' => true,
+            'properties' => $properties,
+        ]);
+    }
+    public function getAcceptedProperties(Request $request)
+    {
+        $user = Auth::user();
+    
+        $properties = Property::where('user_id', $user->id)
+            ->where('approval_status', 'accepted')
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->input('per_page', 10));
+    
+        return response()->json([
+            'success' => true,
+            'properties' => $properties,
+        ]);
+    }
+    public function getRejectedProperties(Request $request)
+    {
+        $user = Auth::user();
+    
+        $properties = Property::where('user_id', $user->id)
+            ->where('approval_status', 'rejected')
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->input('per_page', 10));
+    
+        return response()->json([
+            'success' => true,
+            'properties' => $properties,
+        ]);
+    }
+            
     /**
      * Get user bookings
      */
