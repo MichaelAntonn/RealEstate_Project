@@ -206,6 +206,11 @@ Route::prefix('v1')->group(function () {
         Route::prefix('payment')->group(function () {
             Route::post('/checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout-session');  //  create a Stripe checkout session
         });
+        Route::get('/myproperties', [UserDashboardController::class, 'getProperties'])->name('dashboard');
+        Route::get('/myproperties/accepted', [UserDashboardController::class, 'getAcceptedProperties'])->name('dashboard');
+        Route::get('/myproperties/pending', [UserDashboardController::class, 'getPendingProperties'])->name('dashboard');
+        Route::get('/myproperties/rejected', [UserDashboardController::class, 'getRejectedProperties'])->name('dashboard');
+
     });
 
     // Admin routes
