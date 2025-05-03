@@ -2,7 +2,7 @@
   <!-- Pending Bookings Section -->
   <div class="glass-section">
     <h2 class="glass-title">Pending Bookings <span class="glass-badge">{{ pendingTotal }}</span></h2>
-    
+
     <div class="glass-table-container">
       <table class="glass-table">
         <thead>
@@ -41,13 +41,13 @@
         </tbody>
       </table>
     </div>
-    
+
     <div class="glass-pagination">
       <button class="glass-btn" (click)="prevPage('pending')" [disabled]="pendingPage === 1">
         <i class="fas fa-chevron-left"></i> Previous
       </button>
       <div class="glass-pagination-numbers">
-        <button class="glass-pagination-number" 
+        <button class="glass-pagination-number"
                 *ngFor="let page of getPageNumbers('pending')"
                 [class.glass-pagination-active]="page === pendingPage"
                 (click)="goToPage('pending', page)">
@@ -63,7 +63,7 @@
   <!-- Confirmed Bookings Section -->
   <div class="glass-section">
     <h2 class="glass-title">Confirmed Bookings <span class="glass-badge">{{ confirmedTotal }}</span></h2>
-    
+
     <div class="glass-table-container">
       <table class="glass-table">
         <thead>
@@ -95,10 +95,10 @@
                 <i class="fas fa-times"></i> Cancel
               </button>
               <button class="glass-btn glass-btn-revert" (click)="updateBookingStatus(booking.id, 'pending')">
-                <i class="fas fa-undo"></i> Revert to Pending
+                <i class="fas fa-undo"></i>Pending
               </button>
               <button class="glass-btn glass-btn-done" (click)="updateBookingStatus(booking.id, 'completed', booking.property_id)" [disabled]="booking.status === 'completed'">
-                <i class="fas fa-check-double"></i> Deal is Done
+                <i class="fas fa-check-double"></i>sold
               </button>
             </td>
           </tr>
@@ -108,13 +108,13 @@
         </tbody>
       </table>
     </div>
-    
+
     <div class="glass-pagination">
       <button class="glass-btn" (click)="prevPage('confirmed')" [disabled]="confirmedPage === 1">
         <i class="fas fa-chevron-left"></i> Previous
       </button>
       <div class="glass-pagination-numbers">
-        <button class="glass-pagination-number" 
+        <button class="glass-pagination-number"
                 *ngFor="let page of getPageNumbers('confirmed')"
                 [class.glass-pagination-active]="page === confirmedPage"
                 (click)="goToPage('confirmed', page)">
@@ -130,7 +130,7 @@
   <!-- Canceled Bookings Section -->
   <div class="glass-section">
     <h2 class="glass-title">Canceled Bookings <span class="glass-badge">{{ canceledTotal }}</span></h2>
-    
+
     <div class="glass-table-container">
       <table class="glass-table">
         <thead>
@@ -159,7 +159,7 @@
                 <i class="fas fa-check"></i> Confirm
               </button>
               <button class="glass-btn glass-btn-revert" (click)="updateBookingStatus(booking.id, 'pending')">
-                <i class="fas fa-undo"></i> Revert to Pending
+                <i class="fas fa-undo"></i>Pending
               </button>
             </td>
           </tr>
@@ -169,13 +169,13 @@
         </tbody>
       </table>
     </div>
-    
+
     <div class="glass-pagination">
       <button class="glass-btn" (click)="prevPage('canceled')" [disabled]="canceledPage === 1">
         <i class="fas fa-chevron-left"></i> Previous
       </button>
       <div class="glass-pagination-numbers">
-        <button class="glass-pagination-number" 
+        <button class="glass-pagination-number"
                 *ngFor="let page of getPageNumbers('canceled')"
                 [class.glass-pagination-active]="page === canceledPage"
                 (click)="goToPage('canceled', page)">
@@ -191,7 +191,7 @@
   <!-- Completed Bookings Section -->
   <div class="glass-section">
     <h2 class="glass-title">Completed Deals <span class="glass-badge">{{ completedTotal }}</span></h2>
-    
+
     <div class="glass-table-container">
       <table class="glass-table">
         <thead>
@@ -221,13 +221,13 @@
         </tbody>
       </table>
     </div>
-    
+
     <div class="glass-pagination" *ngIf="completedLastPage > 1">
       <button class="glass-btn" (click)="prevPage('completed')" [disabled]="completedPage === 1">
         <i class="fas fa-chevron-left"></i> Previous
       </button>
       <div class="glass-pagination-numbers">
-        <button class="glass-pagination-number" 
+        <button class="glass-pagination-number"
                 *ngFor="let page of getPageNumbers('completed')"
                 [class.glass-pagination-active]="page === completedPage"
                 (click)="goToPage('completed', page)">
