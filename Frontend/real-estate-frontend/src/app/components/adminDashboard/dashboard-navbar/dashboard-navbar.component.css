@@ -105,11 +105,11 @@
 /* Updated notification badge positioning for all components */
 .notification-badge {
   position: absolute;
-  top: 5px; /* Consistent position close to bell */
+  top: 4px; /* Consistent position close to bell */
   right: 12px !important; /* Consistent position close to bell */
   transform: translate(0, -50%); /* Consistent alignment */
   font-size: 0.75rem; /* Consistent size */
-  padding: 0.5em; /* Consistent padding */
+  padding: 0.4em; /* Consistent padding */
   display: none; /* Hidden by default */
 }
 
