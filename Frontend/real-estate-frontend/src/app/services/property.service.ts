@@ -217,10 +217,13 @@ export class PropertyService {
           }
         });
         return this.http
-          .get<{ data: Property[]; pagination: any }>(`${this.apiUrl}/properties`, {
-            params,
-            headers: this.getAuthHeaders(),
-          })
+          .get<{ data: Property[]; pagination: any }>(
+            `${this.apiUrl}/properties/search`,
+            {
+              params,
+              headers: this.getAuthHeaders(),
+            }
+          )
           .pipe(
             map((response) => {
               return {
@@ -284,10 +287,13 @@ export class PropertyService {
 
   checkPropertyCodeAvailability(property_code: string): Observable<boolean> {
     return this.http
-      .get<{ available: boolean }>(`${this.apiUrl}/properties/check-property-code`, {
-        headers: this.getAuthHeaders(),
-        params: { property_code },
-      })
+      .get<{ available: boolean }>(
+        `${this.apiUrl}/properties/check-property-code`,
+        {
+          headers: this.getAuthHeaders(),
+          params: { property_code },
+        }
+      )
       .pipe(
         map((response) => response.available),
         catchError((error: HttpErrorResponse) => {

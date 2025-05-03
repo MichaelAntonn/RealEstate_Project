@@ -31,7 +31,7 @@ class PropertyController extends Controller
     public function index(Request $request)
     {
         $query = Property::query();
-    
+
         // Keyword search with improved performance
         if ($request->has('keyword')) {
             $keyword = strtolower($request->input('keyword'));
@@ -42,16 +42,16 @@ class PropertyController extends Controller
                   ->orWhere('description', 'LIKE', $keyword.'%');
             });
         }
-    
+
         // Exact matches
-        $exactFilters = ['city', 'type', 'listing_type', 'bedrooms', 
+        $exactFilters = ['city', 'type', 'listing_type', 'bedrooms',
                         'bathrooms', 'construction_status', 'approval_status'];
         foreach ($exactFilters as $filter) {
             if ($request->has($filter)) {
                 $query->where($filter, $request->input($filter));
             }
         }
-    
+
         // Range filters
         if ($request->has('min_price') && $request->has('max_price')) {
             $query->whereBetween('price', [$request->min_price, $request->max_price]);
@@ -63,7 +63,7 @@ class PropertyController extends Controller
                 $query->where('price', '<=', $request->max_price);
             }
         }
-    
+
         // Similar for area
         if ($request->has('min_area') && $request->has('max_area')) {
             $query->whereBetween('area', [$request->min_area, $request->max_area]);
@@ -75,33 +75,33 @@ class PropertyController extends Controller
                 $query->where('area', '<=', $request->max_area);
             }
         }
-    
+
         // New building filter
         if ($request->boolean('is_new_building')) {
             $currentYear = now()->year;
             $query->where('building_year', '>=', $currentYear - 3)
                   ->whereNotNull('building_year');
         }
-    
+
         // Sorting
         $sortOptions = [
             'newest' => ['created_at', 'desc'],
             'price_low' => ['price', 'asc'],
             'price_high' => ['price', 'desc']
         ];
-        
+
         $sortBy = $request->input('sort_by', 'newest');
         [$sortColumn, $sortDirection] = $sortOptions[$sortBy] ?? $sortOptions['newest'];
         $query->orderBy($sortColumn, $sortDirection);
-    
+
         // Pagination with caching
         $perPage = min($request->input('per_page', 10), 100); // Limit max per page
         $cacheKey = 'properties_'.md5(json_encode($request->all()));
-        
+
         $properties = Cache::remember($cacheKey, now()->addHours(1), function() use ($query, $perPage) {
             return $query->paginate($perPage);
         });
-    
+
         return response()->json([
             'data' => $properties->items(),
             'pagination' => [
@@ -128,23 +128,23 @@ class PropertyController extends Controller
     public function CanAdd(Request $request)
     {
         $user = Auth::user();
-    
+
         // 1. Check if the user has an active subscription
         $subscription = Subscription::where('user_id', $user->id)
             ->where('status', 'active')
             ->where('ends_at', '>', now())
             ->latest()
             ->first();
-    
+
         if (!$subscription) {
             $subscribed = false;
             return response()->json(['message' => 'You must have an active subscription to add a property.', $subscribed], 403);
         }
-    
+
         // 2. Check the maximum number of properties allowed according to the plan
         $plan = $subscription->plan;
         $maxProperties = $plan->max_properties_allowed ?? null;
-    
+
         if (!is_null($maxProperties) && $user->properties()->count() >= $maxProperties) {
             return response()->json(['message' => 'You have reached the maximum number of properties allowed in your plan.'], 403);
         }
@@ -156,27 +156,27 @@ class PropertyController extends Controller
     public function store(Request $request, PropertyMediaService $mediaService)
     {
         $user = Auth::user();
-    
+
         // // 1. Check if the user has an active subscription
         // $subscription = Subscription::where('user_id', $user->id)
         //     ->where('status', 'active')
         //     ->where('ends_at', '>', now())
         //     ->latest()
         //     ->first();
-    
+
         // if (!$subscription) {
         //     $subscribed = false;
         //     return response()->json(['message' => 'You must have an active subscription to add a property.', $subscribed], 403);
         // }
-    
+
         // // 2. Check the maximum number of properties allowed according to the plan
         // $plan = $subscription->plan;
         // $maxProperties = $plan->max_properties_allowed ?? null;
-    
+
         // if (!is_null($maxProperties) && $user->properties()->count() >= $maxProperties) {
         //     return response()->json(['message' => 'You have reached the maximum number of properties allowed in your plan.'], 403);
         // }
-    
+
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -206,23 +206,23 @@ class PropertyController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-    
+
         // Add the authenticated user's ID to the request data
         $data = $request->except(['media', 'cover_image']);
         $data['user_id'] = Auth::id();
-    
+
         // Set the initial status to 'pending' for regular users
         if (Auth::user()->user_type === UserType::USER) {
             $data['approval_status'] = 'pending';
         }
-    
+
         // Create the property
         $property = Property::create($data);
-    
+
         // Handle cover image upload if present
         if ($request->hasFile('cover_image')) {
             $coverImage = $request->file('cover_image');
@@ -230,16 +230,16 @@ class PropertyController extends Controller
                 'property_media/' . $property->id . '/cover_image',
                 'public'
             );
-    
+
             $property->cover_image = $coverImagePath;
             $property->save();
         }
-    
+
         // Handle media uploads if present
         if ($request->hasFile('media')) {
             try {
                 $uploadedMedia = $mediaService->handleUpload($property, $request->file('media'));
-    
+
                 // If no cover image was set but we have images, set the first one
                 if (empty($property->cover_image)) {
                     $firstImage = collect($uploadedMedia)->firstWhere('MediaType', 'image');
@@ -254,27 +254,27 @@ class PropertyController extends Controller
                 ], 201);
             }
         }
-    
+
         // Load the media relationship for the response
         $property->load('media');
-    
+
         // Notifications
         $users = User::where('id', '!=', $request->user()->id)
             ->where('city', $request->user()->city)
             ->get();
-    
+
         Notification::send($users, new NewPropertyAdded($property));
-    
+
         $admins = Admin::whereIn('user_type', ['admin', 'super-admin'])->get();
         Notification::send($admins, new NewPropertySubmitted($property));
-    
+
         return response()->json([
             'message' => 'Property created successfully',
             'success' => 'Property created successfully',
             'property' => $property,
         ], 201);
     }
-    
+
 
     public function checkSlug(Request $request)
     {
@@ -352,17 +352,17 @@ class PropertyController extends Controller
     {
         // Find the property
         $property = Property::find($id);
-    
+
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
-    
+
         // Check if the authenticated user is the owner, admin, or super-admin
         $user = Auth::user();
         if ($user->user_type !== UserType::ADMIN && $user->user_type !== UserType::SUPER_ADMIN && $property->user_id !== $user->id) {
             return response()->json(['error' => 'Forbidden. You do not have permission to update this property.'], 403);
         }
-    
+
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|string|max:255',
@@ -394,48 +394,48 @@ class PropertyController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-    
+
         // Prepare data for update (excluding media fields)
         $data = $request->except(['media', 'media_to_delete', 'cover_image']);
-    
+
         // Check for any critical changes to 'property_code' or 'slug'
         if ($request->has('property_code') && $request->input('property_code') !== $property->property_code) {
             return response()->json(['error' => 'You cannot change the property code.'], 400);
         }
-    
+
         if ($request->has('slug') && $request->input('slug') !== $property->slug) {
             return response()->json(['error' => 'You cannot change the property slug.'], 400);
         }
-    
+
         // Handle cover image upload if present
         if ($request->hasFile('cover_image')) {
             // Delete old cover image if exists
             if ($property->cover_image) {
                 Storage::disk('public')->delete($property->cover_image);
             }
-    
+
             // Upload new cover image
             $coverImage = $request->file('cover_image');
             $coverImagePath = $coverImage->store(
                 'property_media/' . $property->id . '/cover_image',
                 'public'
             );
-    
+
             $data['cover_image'] = $coverImagePath;
         }
-    
+
         // Update the property data
         $property->update($data);
-    
+
         // Handle media deletions if requested
         if ($request->has('media_to_delete')) {
             foreach ($request->input('media_to_delete') as $mediaId) {
                 $media = PropertyMedia::find($mediaId);
-    
+
                 // Verify the media belongs to this property
                 if ($media && $media->PropertyID == $property->id) {
                     // Delete the file from storage
@@ -445,12 +445,12 @@ class PropertyController extends Controller
                 }
             }
         }
-    
+
         // Handle new media uploads if present
         if ($request->hasFile('media')) {
             try {
                 $uploadedMedia = $mediaService->handleUpload($property, $request->file('media'));
-    
+
                 // If no cover image was set but we have images, set the first one
                 if (empty($property->cover_image)) {
                     $firstImage = collect($uploadedMedia)->firstWhere('MediaType', 'image');
@@ -465,16 +465,16 @@ class PropertyController extends Controller
                 ], 200);
             }
         }
-    
+
         // Refresh the property with its relationships
         $property->load('media');
-    
+
         return response()->json([
             'success' => 'Property updated successfully',
             'property' => $property,
         ], 200);
     }
-    
+
     /**
      * Remove the specified resource from storage.
      */
@@ -664,42 +664,130 @@ class PropertyController extends Controller
         ]);
     }
 
+    // public function search(Request $request)
+    // {
+    //     $query = Property::query();
+
+    //     if ($request->has('keyword')) {
+    //         $keyword = strtolower($request->input('keyword'));
+    //         $query->where(function ($q) use ($keyword) {
+    //             $q->whereRaw('LOWER(title) LIKE ?', ["%{$keyword}%"])
+    //                 ->orWhereRaw('LOWER(city) LIKE ?', ["%{$keyword}%"])
+    //                 ->orWhereRaw('LOWER(type) LIKE ?', ["%{$keyword}%"])
+    //                 ->orWhereRaw('LOWER(description) LIKE ?', ["%{$keyword}%"]);
+    //         });
+    //     }
+
+    //     if ($request->has('type') && $request->input('type') !== '') {
+    //         $query->where('type', $request->input('type'));
+    //     }
+
+    //     if ($request->has('city') && $request->input('city') !== '') {
+    //         $query->where('city', $request->input('city'));
+    //     }
+
+    //     if ($request->has('listing_type') && $request->input('listing_type') !== '') {
+    //         $query->where('listing_type', $request->input('listing_type'));
+    //     }
+
+    //     if ($request->has('is_new_building') && filter_var($request->input('is_new_building'), FILTER_VALIDATE_BOOLEAN)) {
+    //         $currentYear = Carbon::now()->year;
+    //         $newBuildingThreshold = $currentYear - 3;
+    //         $query->where('building_year', '>=', $newBuildingThreshold)
+    //             ->whereNotNull('building_year');
+    //     }
+
+    //     // Pagination
+    //     $perPage = $request->input('per_page', 5); // Default 5 items per page
+    //     $properties = $query->latest()->paginate($perPage);
+
+    //     return response()->json([
+    //         'data' => $properties->items(),
+    //         'pagination' => [
+    //             'current_page' => $properties->currentPage(),
+    //             'total_pages' => $properties->lastPage(),
+    //             'total_items' => $properties->total(),
+    //             'per_page' => $properties->perPage(),
+    //         ],
+    //     ]);
+    // }
+
     public function search(Request $request)
     {
         $query = Property::query();
 
+        // Exclude pending and rejected properties
+        $query->where('approval_status', 'accepted');
+
+        // Keyword search with improved performance
         if ($request->has('keyword')) {
             $keyword = strtolower($request->input('keyword'));
             $query->where(function ($q) use ($keyword) {
-                $q->whereRaw('LOWER(title) LIKE ?', ["%{$keyword}%"])
-                    ->orWhereRaw('LOWER(city) LIKE ?', ["%{$keyword}%"])
-                    ->orWhereRaw('LOWER(type) LIKE ?', ["%{$keyword}%"])
-                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$keyword}%"]);
+                $q->where('title', 'LIKE', $keyword.'%')
+                ->orWhere('city', 'LIKE', $keyword.'%')
+                ->orWhere('type', 'LIKE', $keyword.'%')
+                ->orWhere('description', 'LIKE', $keyword.'%');
             });
         }
 
-        if ($request->has('type') && $request->input('type') !== '') {
-            $query->where('type', $request->input('type'));
+        // Exact matches
+        $exactFilters = ['city', 'type', 'listing_type', 'bedrooms',
+                        'bathrooms', 'construction_status'];
+        foreach ($exactFilters as $filter) {
+            if ($request->has($filter) && $request->input($filter) !== '') {
+                $query->where($filter, $request->input($filter));
+            }
         }
 
-        if ($request->has('city') && $request->input('city') !== '') {
-            $query->where('city', $request->input('city'));
+        // Range filters
+        if ($request->has('min_price') && $request->has('max_price')) {
+            $query->whereBetween('price', [$request->min_price, $request->max_price]);
+        } else {
+            if ($request->has('min_price')) {
+                $query->where('price', '>=', $request->min_price);
+            }
+            if ($request->has('max_price')) {
+                $query->where('price', '<=', $request->max_price);
+            }
         }
 
-        if ($request->has('listing_type') && $request->input('listing_type') !== '') {
-            $query->where('listing_type', $request->input('listing_type'));
+        // Similar for area
+        if ($request->has('min_area') && $request->has('max_area')) {
+            $query->whereBetween('area', [$request->min_area, $request->max_area]);
+        } else {
+            if ($request->has('min_area')) {
+                $query->where('area', '>=', $request->min_area);
+            }
+            if ($request->has('max_area')) {
+                $query->where('area', '<=', $request->max_area);
+            }
         }
 
-        if ($request->has('is_new_building') && filter_var($request->input('is_new_building'), FILTER_VALIDATE_BOOLEAN)) {
+        // New building filter
+        if ($request->boolean('is_new_building')) {
             $currentYear = Carbon::now()->year;
-            $newBuildingThreshold = $currentYear - 3;
-            $query->where('building_year', '>=', $newBuildingThreshold)
+            $query->where('building_year', '>=', $currentYear - 3)
                 ->whereNotNull('building_year');
         }
 
-        // Pagination
-        $perPage = $request->input('per_page', 5); // Default 5 items per page
-        $properties = $query->latest()->paginate($perPage);
+        // Sorting
+        $sortOptions = [
+            'newest' => ['created_at', 'desc'],
+            'price_low' => ['price', 'asc'],
+            'price_high' => ['price', 'desc']
+        ];
+
+        $sortBy = $request->input('sort_by', 'newest');
+        [$sortColumn, $sortDirection] = $sortOptions[$sortBy] ?? $sortOptions['newest'];
+        $query->orderBy($sortColumn, $sortDirection);
+
+        // Pagination with caching
+        $perPage = min($request->input('per_page', 10), 100); // Limit max per page
+        $cacheKey = 'properties_'.md5(json_encode($request->all()));
+
+        $properties = Cache::remember($cacheKey, now()->addHours(1), function() use ($query, $perPage) {
+            return $query->paginate($perPage);
+        });
 
         return response()->json([
             'data' => $properties->items(),
@@ -711,6 +799,7 @@ class PropertyController extends Controller
             ],
         ]);
     }
+
 
     public function getCities()
     {

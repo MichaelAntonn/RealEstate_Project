@@ -59,12 +59,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/all', [PropertyController::class, 'getPendingAcceptedProperties'])->name('getPendingAcceptedProperties');
         Route::get('/check-slug', [PropertyController::class, 'checkSlug'])->name('check-slug');
         Route::get('check-property-code', [PropertyController::class, 'checkPropertyCode'])->name('check-property-code');
+        Route::get('/search', [PropertyController::class, 'search'])->name('search.properties');
         Route::get('/slug/{slug}', [PropertyController::class, 'showBySlug'])->name('showBySlug');
-        Route::get('/{id}', [PropertyController::class, 'show'])->name('show');
+        Route::get('/{id}', [PropertyController::class, 'show'])->name('show')->where('id', '[0-9]+');
     });
 
     // Search Route (public)
-    Route::get('/search', [PropertyController::class, 'search'])->name('search.properties') /*->middleware('throttle:search')*/;
 
     // Cities Route (public)
     Route::get('/cities', [PropertyController::class, 'getCities'])->name('cities.index');
@@ -102,7 +102,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [BlogController::class, 'index']);
         Route::get('/{id}', [BlogController::class, 'show']);
     });
-    
+
     Route::get('/can-add-property', [PropertyController::class, 'CanAdd']);
 
     // Authenticated user routes
@@ -193,7 +193,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe'); // Subscribe a company to a plan
             Route::post('/subscribe/trial', [SubscriptionController::class, 'subscribeToTrial'])->name('subscription.subscribeTrial'); // Subscribe a company to a trial plan
             Route::post('/cancel', [SubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel'); // Cancel the subscription for the authenticated company
-            Route::post('/renew', [SubscriptionController::class, 'renewSubscription'])->name('subscription.renew'); 
+            Route::post('/renew', [SubscriptionController::class, 'renewSubscription'])->name('subscription.renew');
             Route::post('/change-plan', [SubscriptionController::class, 'changePlan'])->name('subscription.change-plan');
             Route::post('/cancel-auto-renew', [SubscriptionController::class, 'cancelAutoRenewSubscription'])->name('subscription.cancel-auto-renew');
             Route::get('/upcoming-expirations', [SubscriptionController::class, 'getUpcomingExpirations']); // get upcoming subscription expirations within a specific number of days
@@ -283,7 +283,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', [PaymentController::class, 'Payments'])->name('index'); // list all payments (accessible by admin users)
             });
 
-            // consultants Route 
+            // consultants Route
             Route::prefix('consultants')->group(function () {
                 Route::get('/', [ConsultantController::class, 'index']);
                 Route::get('/{id}', [ConsultantController::class, 'show']);
@@ -291,7 +291,7 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [ConsultantController::class, 'destroy']);
             });
 
-            // blogs Route 
+            // blogs Route
             Route::post('/blogs', [BlogController::class, 'store']);
             Route::put('blogs/{blog}', [BlogController::class, 'update']);
             Route::delete('blogs/{blog}', [BlogController::class, 'destroy']);

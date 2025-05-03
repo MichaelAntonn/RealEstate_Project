@@ -22,11 +22,12 @@
   <div class="mt-6 p-6 bg-gray-50 rounded-lg shadow-sm space-y-8">
     <h2 class="text-xl font-semibold mb-4">Recent Post</h2>
     <ul class="space-y-3 text-sm text-gray-800">
-      <li class="border-b pb-2">
-        🗂️ A picture is worth standard and stand us return
+      <li *ngFor="let post of recentPosts$ | async">
+        <a routerLink="/blog" class="group">
+          <span class="text-orange-500 mr-2">🗂️</span>
+          <span class="group-hover:text-orange-600">{{ post.title }}</span>
+        </a>
       </li>
-      <li class="border-b pb-2">🗂️ Your journey homeownership starts here</li>
-      <li class="border-b pb-2">🗂️ Trust us to guide you the process</li>
     </ul>
   </div>
 </div>
