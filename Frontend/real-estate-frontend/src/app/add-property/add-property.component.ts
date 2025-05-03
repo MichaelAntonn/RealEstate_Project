@@ -165,20 +165,29 @@ export class AddPropertyComponent implements OnInit, AfterViewInit {
   }
 
   private setMarker(lat: number, lng: number): void {
+    // إنشاء أيقونة مخصصة
+    const customIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/69/69524.png', // مسار الصورة
+      iconSize: [22, 25], // حجم الأيقونة
+      iconAnchor: [16, 32], // نقطة تثبيت الأيقونة
+      popupAnchor: [0, -32] // نقطة ظهور البوب أب
+    });
+  
     if (this.marker) {
       this.marker.setLatLng([lat, lng]);
     } else {
       this.marker = L.marker([lat, lng], {
         draggable: true,
+        icon: customIcon // استخدام الأيقونة المخصصة
       }).addTo(this.map);
-
+  
       this.marker.on('dragend', () => {
         const position = this.marker.getLatLng();
         this.updateFormCoordinates(position.lat, position.lng);
         this.reverseGeocode(position.lat, position.lng);
       });
     }
-
+  
     this.map.setView([lat, lng], 13);
     this.updateFormCoordinates(lat, lng);
   }
