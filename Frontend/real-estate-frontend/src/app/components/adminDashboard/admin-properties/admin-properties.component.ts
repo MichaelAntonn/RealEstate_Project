@@ -264,7 +264,7 @@ export class AdminPropertiesComponent implements OnInit, OnDestroy {
   }
 
   getReviewerImage(review: any): string {
-    const baseUrl = 'http://localhost:8000/storage/';
+    const baseUrl = 'http://localhost:8000/storage/profile';
     const placeholder = 'https://via.placeholder.com/50';
     if (review.anonymous_review || !review.user?.profile_image) {
       return placeholder;

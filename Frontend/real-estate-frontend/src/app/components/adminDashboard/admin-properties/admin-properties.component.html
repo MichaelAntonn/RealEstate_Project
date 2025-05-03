@@ -245,19 +245,19 @@
           <div class="glass-reviews-list">
             <div class="glass-review-item" *ngFor="let review of reviews">
               <div class="glass-review-header">
-                <img
+                <!-- <img
                   [src]="getReviewerImage(review)"
                   alt="Reviewer Image"
                   class="glass-reviewer-pic"
                   (error)="onImageError($event)"
-                />
+                /> -->
                 <div class="glass-review-content">
                   <p class="glass-review-text">{{ review.comment || 'No comment provided' }}</p>
                   <p class="glass-review-meta">
                     <strong>Rating:</strong> {{ review.rating }} / 5 |
-                    <strong>Reviewer:</strong> {{ review.anonymous_review ? 'Anonymous' : (review.user?.first_name + ' ' + review.user?.last_name) || 'Unknown' }} |
+                    <!-- <strong>Reviewer:</strong> {{ review.anonymous_review ? 'Anonymous' : (review.user?.first_name + ' ' + review.user?.last_name) || 'Unknown' }} |
                     <strong>Date:</strong> {{ review.review_date | date:'medium' }}
-                  </p>
+                  </p> -->
                 </div>
               </div>
               <button class="glass-btn glass-btn-delete glass-btn-small" (click)="deleteReview(review.id)">
