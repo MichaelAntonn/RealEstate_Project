@@ -84,7 +84,7 @@ export class PropertiesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadCities();
     window.scrollTo({ top: 0 });
-    // Subscribe to query params to initialize filters
+
     this.subscription.add(
       this.route.queryParams.subscribe((params) => {
         this.currentPage = parseInt(params['page'] || '1', 10);
@@ -99,14 +99,11 @@ export class PropertiesComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Subscribe to filterService to update filters dynamically
     this.subscription.add(
       this.filterService.filters$.subscribe((filters) => {
         this.filters = { ...this.filters, ...filters };
         this.currentPage = filters.page || 1;
         this.loadProperties();
-
-        // Update URL query params to reflect filter changes
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: {
@@ -144,83 +141,64 @@ export class PropertiesComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = null;
 
-    this.propertyService.searchProperties(this.perPage).subscribe({
-      next: (response: PropertySearchApiResponse) => {
-        if ('status' in response && response.status === 'error') {
-          this.errorMessage = response.message;
+    console.time('getProperties');
+
+    this.propertyService
+      .searchProperties(this.perPage, this.filters)
+      .subscribe({
+        next: (response: PropertySearchApiResponse) => {
+          console.timeEnd('getProperties');
+
+          if ('status' in response && response.status === 'error') {
+            this.errorMessage = response.message;
+            this.properties = [];
+            this.currentPage = response.pagination?.current_page ?? 1;
+            this.lastPage = response.pagination?.total_pages ?? 1;
+            this.totalItems = response.pagination?.total_items ?? 0;
+            this.perPage = response.pagination?.per_page ?? this.perPage;
+          } else {
+            this.errorMessage = null;
+            this.properties = response.data || [];
+            this.currentPage = response.pagination?.current_page ?? 1;
+            this.lastPage = response.pagination?.total_pages ?? 1;
+            this.totalItems = response.pagination?.total_items ?? 0;
+            this.perPage = response.pagination?.per_page ?? this.perPage;
+          }
+
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.timeEnd('getProperties');
+          console.error('Unexpected error:', error);
+          this.errorMessage =
+            'An unexpected error occurred while fetching properties';
           this.properties = [];
-          this.currentPage = response.pagination?.current_page ?? 1;
-          this.lastPage = response.pagination?.total_pages ?? 1;
-          this.totalItems = response.pagination?.total_items ?? 0;
-          this.perPage = response.pagination?.per_page ?? this.perPage;
-        } else {
-          this.errorMessage = null;
-          this.properties = response.data || [];
-          this.currentPage = response.pagination?.current_page ?? 1;
-          this.lastPage = response.pagination?.total_pages ?? 1;
-          this.totalItems = response.pagination?.total_items ?? 0;
-          this.perPage = response.pagination?.per_page ?? this.perPage;
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Unexpected error:', error);
-        this.errorMessage =
-          'An unexpected error occurred while fetching properties';
-        this.properties = [];
-        this.currentPage = 1;
-        this.lastPage = 1;
-        this.perPage = 8;
-        this.totalItems = 0;
-        this.isLoading = false;
-      },
-    });
+          this.currentPage = 1;
+          this.lastPage = 1;
+          this.perPage = 8;
+          this.totalItems = 0;
+          this.isLoading = false;
+        },
+      });
   }
 
   onPageChange(page: number): void {
     this.currentPage = page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.filterService.updateFilters({ page });
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-    });
+    this.filterService.updateFilters({ ...this.filters, page });
   }
 
   onFilterChange(): void {
     this.filterService.updateFilters({
-      type: this.filters.type,
-      city: this.filters.city,
-      listing_type: this.filters.listing_type,
+      ...this.filters,
       page: 1,
-    });
-    // Update query params to maintain filter state
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        type: this.filters.type || undefined,
-        city: this.filters.city || undefined,
-        listing_type: this.filters.listing_type || undefined,
-        page: 1,
-      },
-      queryParamsHandling: 'merge',
     });
   }
 
   onSearch(): void {
     this.filterService.updateFilters({
-      keyword: this.filters.keyword,
+      ...this.filters,
       page: 1,
-    });
-    // Update query params to maintain keyword
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        keyword: this.filters.keyword || undefined,
-        page: 1,
-      },
-      queryParamsHandling: 'merge',
     });
   }
 }
