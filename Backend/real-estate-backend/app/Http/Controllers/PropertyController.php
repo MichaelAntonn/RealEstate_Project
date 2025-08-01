@@ -28,90 +28,179 @@ class PropertyController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     $query = Property::query();
+
+    //     // Keyword search with improved performance
+    //     if ($request->has('keyword')) {
+    //         $keyword = strtolower($request->input('keyword'));
+    //         $query->where(function ($q) use ($keyword) {
+    //             $q->where('title', 'LIKE', $keyword.'%')
+    //               ->orWhere('city', 'LIKE', $keyword.'%')
+    //               ->orWhere('type', 'LIKE', $keyword.'%')
+    //               ->orWhere('description', 'LIKE', $keyword.'%');
+    //         });
+    //     }
+
+    //     // Exact matches
+    //     $exactFilters = ['city', 'type', 'listing_type', 'bedrooms',
+    //                     'bathrooms', 'construction_status', 'approval_status'];
+    //     foreach ($exactFilters as $filter) {
+    //         if ($request->has($filter)) {
+    //             $query->where($filter, $request->input($filter));
+    //         }
+    //     }
+
+    //     // Range filters
+    //     if ($request->has('min_price') && $request->has('max_price')) {
+    //         $query->whereBetween('price', [$request->min_price, $request->max_price]);
+    //     } else {
+    //         if ($request->has('min_price')) {
+    //             $query->where('price', '>=', $request->min_price);
+    //         }
+    //         if ($request->has('max_price')) {
+    //             $query->where('price', '<=', $request->max_price);
+    //         }
+    //     }
+
+    //     // Similar for area
+    //     if ($request->has('min_area') && $request->has('max_area')) {
+    //         $query->whereBetween('area', [$request->min_area, $request->max_area]);
+    //     } else {
+    //         if ($request->has('min_area')) {
+    //             $query->where('area', '>=', $request->min_area);
+    //         }
+    //         if ($request->has('max_area')) {
+    //             $query->where('area', '<=', $request->max_area);
+    //         }
+    //     }
+
+    //     // New building filter
+    //     if ($request->boolean('is_new_building')) {
+    //         $currentYear = now()->year;
+    //         $query->where('building_year', '>=', $currentYear - 3)
+    //               ->whereNotNull('building_year');
+    //     }
+
+    //     // Sorting
+    //     $sortOptions = [
+    //         'newest' => ['created_at', 'desc'],
+    //         'price_low' => ['price', 'asc'],
+    //         'price_high' => ['price', 'desc']
+    //     ];
+
+    //     $sortBy = $request->input('sort_by', 'newest');
+    //     [$sortColumn, $sortDirection] = $sortOptions[$sortBy] ?? $sortOptions['newest'];
+    //     $query->orderBy($sortColumn, $sortDirection);
+
+    //     // Pagination with caching
+    //     $perPage = min($request->input('per_page', 10), 100); // Limit max per page
+    //     $cacheKey = 'properties_'.md5(json_encode($request->all()));
+
+    //     $properties = Cache::remember($cacheKey, now()->addHours(1), function() use ($query, $perPage) {
+    //         return $query->paginate($perPage);
+    //     });
+
+    //     return response()->json([
+    //         'data' => $properties->items(),
+    //         'pagination' => [
+    //             'current_page' => $properties->currentPage(),
+    //             'total_pages' => $properties->lastPage(),
+    //             'total_items' => $properties->total(),
+    //             'per_page' => $properties->perPage(),
+    //         ],
+    //     ]);
+    // }
+
+
     public function index(Request $request)
-    {
-        $query = Property::query();
-
-        // Keyword search with improved performance
-        if ($request->has('keyword')) {
-            $keyword = strtolower($request->input('keyword'));
-            $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'LIKE', $keyword.'%')
-                  ->orWhere('city', 'LIKE', $keyword.'%')
-                  ->orWhere('type', 'LIKE', $keyword.'%')
-                  ->orWhere('description', 'LIKE', $keyword.'%');
-            });
-        }
-
-        // Exact matches
-        $exactFilters = ['city', 'type', 'listing_type', 'bedrooms',
-                        'bathrooms', 'construction_status', 'approval_status'];
-        foreach ($exactFilters as $filter) {
-            if ($request->has($filter)) {
-                $query->where($filter, $request->input($filter));
-            }
-        }
-
-        // Range filters
-        if ($request->has('min_price') && $request->has('max_price')) {
-            $query->whereBetween('price', [$request->min_price, $request->max_price]);
-        } else {
-            if ($request->has('min_price')) {
-                $query->where('price', '>=', $request->min_price);
-            }
-            if ($request->has('max_price')) {
-                $query->where('price', '<=', $request->max_price);
-            }
-        }
-
-        // Similar for area
-        if ($request->has('min_area') && $request->has('max_area')) {
-            $query->whereBetween('area', [$request->min_area, $request->max_area]);
-        } else {
-            if ($request->has('min_area')) {
-                $query->where('area', '>=', $request->min_area);
-            }
-            if ($request->has('max_area')) {
-                $query->where('area', '<=', $request->max_area);
-            }
-        }
-
-        // New building filter
-        if ($request->boolean('is_new_building')) {
-            $currentYear = now()->year;
-            $query->where('building_year', '>=', $currentYear - 3)
-                  ->whereNotNull('building_year');
-        }
-
-        // Sorting
-        $sortOptions = [
-            'newest' => ['created_at', 'desc'],
-            'price_low' => ['price', 'asc'],
-            'price_high' => ['price', 'desc']
-        ];
-
-        $sortBy = $request->input('sort_by', 'newest');
-        [$sortColumn, $sortDirection] = $sortOptions[$sortBy] ?? $sortOptions['newest'];
-        $query->orderBy($sortColumn, $sortDirection);
-
-        // Pagination with caching
-        $perPage = min($request->input('per_page', 10), 100); // Limit max per page
-        $cacheKey = 'properties_'.md5(json_encode($request->all()));
-
-        $properties = Cache::remember($cacheKey, now()->addHours(1), function() use ($query, $perPage) {
-            return $query->paginate($perPage);
+{
+    $query = Property::query();
+    $query->where('approval_status', 'accepted');
+    // Keyword search (case-insensitive)
+    if ($request->filled('keyword')) {
+        $keyword = strtolower($request->input('keyword')) . '%';
+        $query->where(function ($q) use ($keyword) {
+            $q->whereRaw('LOWER(title) LIKE ?', [$keyword])
+              ->orWhereRaw('LOWER(city) LIKE ?', [$keyword])
+              ->orWhereRaw('LOWER(type) LIKE ?', [$keyword])
+              ->orWhereRaw('LOWER(description) LIKE ?', [$keyword]);
         });
-
-        return response()->json([
-            'data' => $properties->items(),
-            'pagination' => [
-                'current_page' => $properties->currentPage(),
-                'total_pages' => $properties->lastPage(),
-                'total_items' => $properties->total(),
-                'per_page' => $properties->perPage(),
-            ],
-        ]);
     }
+
+    // Exact match filters
+    $exactFilters = ['city', 'type', 'listing_type', 'bedrooms', 'bathrooms', 'construction_status', 'approval_status'];
+    foreach ($exactFilters as $filter) {
+        if ($request->filled($filter)) {
+            $query->where($filter, $request->input($filter));
+        }
+    }
+
+    // Range filters (price and area)
+    $rangeFilters = [
+        'price' => ['min_price', 'max_price'],
+        'area' => ['min_area', 'max_area']
+    ];
+
+    foreach ($rangeFilters as $column => [$minKey, $maxKey]) {
+        $min = $request->input($minKey);
+        $max = $request->input($maxKey);
+        if ($min !== null && $max !== null) {
+            $query->whereBetween($column, [$min, $max]);
+        } elseif ($min !== null) {
+            $query->where($column, '>=', $min);
+        } elseif ($max !== null) {
+            $query->where($column, '<=', $max);
+        }
+    }
+
+    // New building filter (last 3 years)
+    if ($request->boolean('is_new_building')) {
+        $query->where('building_year', '>=', now()->year - 3)
+              ->whereNotNull('building_year');
+    }
+
+    // Sorting
+    $sortOptions = [
+        'newest'     => ['created_at', 'desc'],
+        'price_low'  => ['price', 'asc'],
+        'price_high' => ['price', 'desc']
+    ];
+    [$sortColumn, $sortDirection] = $sortOptions[$request->input('sort_by', 'newest')] ?? $sortOptions['newest'];
+    $query->orderBy($sortColumn, $sortDirection);
+
+    // Pagination with limit
+    $perPage = min((int) $request->input('per_page', 10), 100);
+    $page = $request->input('page', 1);
+
+    // Generate lightweight cache key (limit to only used filters)
+    $filterParams = collect($request->only([
+        'keyword', 'city', 'type', 'listing_type', 'bedrooms', 'bathrooms',
+        'construction_status', 'approval_status',
+        'min_price', 'max_price', 'min_area', 'max_area',
+        'is_new_building', 'sort_by', 'per_page', 'page'
+    ]))->toArray();
+
+    $cacheKey = 'properties_' . md5(json_encode($filterParams));
+
+    // Cache with Redis for 10 minutes
+    // Cache with default store (file) for 10 minutes
+    $properties = Cache::remember($cacheKey, 600, function () use ($query, $perPage) {
+        return $query->paginate($perPage);
+    });
+
+    return response()->json([
+        'data' => $properties->items(),
+        'pagination' => [
+            'current_page' => $properties->currentPage(),
+            'total_pages' => $properties->lastPage(),
+            'total_items' => $properties->total(),
+            'per_page' => $properties->perPage(),
+        ],
+    ]);
+}
+
 
     /**
      * Show the form for creating a new resource.

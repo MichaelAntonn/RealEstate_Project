@@ -9,9 +9,6 @@ import { Observable, of, throwError } from 'rxjs';
 import {
   map,
   catchError,
-  switchMap,
-  debounceTime,
-  distinctUntilChanged,
 } from 'rxjs/operators';
 import {
   PropertyApiResponse,
@@ -57,7 +54,6 @@ export class PropertyService {
       .set('page', page.toString())
       .set('per_page', perPage.toString());
 
-    // Add filters to query params
     Object.entries(filters).forEach(([key, value]) => {
       if (key === 'is_new_building') {
         if (value === true) {
@@ -94,9 +90,57 @@ export class PropertyService {
       );
   }
 
-  createProperty(
-    propertyData: FormData
-  ): Observable<{ success: boolean; property: Property }> {
+  searchProperties(perPage: number = 8, filters: any = {}): Observable<PropertySearchApiResponse> {
+    let params = new HttpParams().set('per_page', perPage.toString());
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === 'is_new_building') {
+        if (value === true) {
+          params = params.set(key, 'true');
+        }
+      } else if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    });
+
+    return this.http
+      .get<{ data: Property[]; pagination: any }>(
+        `${this.apiUrl}/properties/search`,
+        {
+          params,
+          headers: this.getAuthHeaders(),
+        }
+      )
+      .pipe(
+        map((response) => {
+          return {
+            data: response.data || [],
+            pagination: {
+              current_page: response.pagination?.current_page || 1,
+              total_pages: response.pagination?.total_pages || 1,
+              total_items: response.pagination?.total_items || 0,
+              per_page: response.pagination?.per_page || perPage,
+            },
+          } as PropertySearchResponse;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error searching properties:', error);
+          return of({
+            status: 'error',
+            message: error.message || 'Failed to fetch properties',
+            data: undefined,
+            pagination: {
+              current_page: 1,
+              total_pages: 1,
+              total_items: 0,
+              per_page: perPage,
+            },
+          } as PropertySearchErrorResponse);
+        })
+      );
+  }
+
+  createProperty(propertyData: FormData): Observable<{ success: boolean; property: Property }> {
     return this.http
       .post<{ success: boolean; property: Property }>(
         `${this.apiUrl}/properties`,
@@ -109,8 +153,8 @@ export class PropertyService {
             () =>
               new Error(
                 error.error?.error?.['media.0']?.[0] ||
-                  error.error?.warning ||
-                  'Failed to create property'
+                error.error?.warning ||
+                'Failed to create property'
               )
           );
         })
@@ -181,77 +225,6 @@ export class PropertyService {
     return this.http.get<{ cities: string[] }>(`${this.apiUrl}/cities`).pipe(
       map((response) => response.cities || []),
       catchError(() => of([]))
-    );
-  }
-
-  searchProperties(perPage: number = 8): Observable<PropertySearchApiResponse> {
-    return this.filterService.filters$.pipe(
-      debounceTime(500),
-      distinctUntilChanged((prev, curr) => {
-        return (
-          prev.keyword === curr.keyword &&
-          prev.type === curr.type &&
-          prev.city === curr.city &&
-          prev.listing_type === curr.listing_type &&
-          prev.page === curr.page &&
-          prev.sort_by === curr.sort_by &&
-          prev.min_price === curr.min_price &&
-          prev.max_price === curr.max_price &&
-          prev.min_area === curr.min_area &&
-          prev.max_area === curr.max_area &&
-          prev.bedrooms === curr.bedrooms &&
-          prev.bathrooms === curr.bathrooms &&
-          prev.is_new_building === curr.is_new_building
-        );
-      }),
-      switchMap((filters) => {
-        let params = new HttpParams();
-        params = params.set('per_page', perPage.toString());
-        Object.entries(filters).forEach(([key, value]) => {
-          if (key === 'is_new_building') {
-            if (value === true) {
-              params = params.set(key, 'true');
-            }
-          } else if (value !== undefined && value !== null && value !== '') {
-            params = params.set(key, value.toString());
-          }
-        });
-        return this.http
-          .get<{ data: Property[]; pagination: any }>(
-            `${this.apiUrl}/properties/search`,
-            {
-              params,
-              headers: this.getAuthHeaders(),
-            }
-          )
-          .pipe(
-            map((response) => {
-              return {
-                data: response.data || [],
-                pagination: {
-                  current_page: response.pagination?.current_page || 1,
-                  total_pages: response.pagination?.total_pages || 1,
-                  total_items: response.pagination?.total_items || 0,
-                  per_page: response.pagination?.per_page || perPage,
-                },
-              } as PropertySearchResponse;
-            }),
-            catchError((error: HttpErrorResponse) => {
-              console.error('Error searching properties:', error);
-              return of({
-                status: 'error',
-                message: error.message || 'Failed to fetch properties',
-                data: undefined,
-                pagination: {
-                  current_page: 1,
-                  total_pages: 1,
-                  total_items: 0,
-                  per_page: perPage,
-                },
-              } as PropertySearchErrorResponse);
-            })
-          );
-      })
     );
   }
 
